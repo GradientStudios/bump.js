@@ -51,7 +51,7 @@ var // Program References
 					eqnull: true,
 					curly: true,
 					browser: true
-          // onevar: true,
+					// onevar: true,
 					// "eqnull": true,
 					// "immed": true,
 					// "newcap": true,
@@ -332,4 +332,3 @@ task( "stats", [], function() {
 		});
 	});
 });
-
