@@ -24,7 +24,7 @@ this.Bump = {};
     }
 
     if ( !exports.prototype.init ) {
-      exports.prototype.init = function() {};
+      exports.prototype.init = options.constructor || Bump.noop;
     }
 
     for ( key in typeMethods ) {
