@@ -3,17 +3,17 @@
 // the main library object
 this.Bump = {};
 
-(function(window, Bump) {
+(function( window, Bump ) {
 
   // The type function will be used for object inheritance.
   // Objects are instantiated with Object.create()
-  Bump.type = function(prototype, members, properties, objectMembers) {
+  Bump.type = function( options ) {
     var exports = {}, key;
 
     properties = properties || {};
     objectMembers = objectMembers || {};
 
-    exports.prototype = Object.create(prototype || {}, properties);
+    exports.prototype = Object.create( (options.parent || {}).prototype, options.properties || {} );
 
     for ( key in members ) {
       exports.prototype[key] = members[key];
@@ -29,13 +29,19 @@ this.Bump = {};
 
     if ( !exports.create ) {
       exports.create = function() {
-        var o = Object.create(exports.prototype);
-        o.init.apply(o, arguments);
+        var o = Object.create( exports.prototype );
+        o.init.apply( o, arguments );
         return o;
       };
     }
 
     return exports;
   }
+
+  Bump.btTypedObject = Bump.type( {}, {
+    init: function() {
+    }
+  });
+
 
 })(this, this.Bump);
