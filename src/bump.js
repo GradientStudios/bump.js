@@ -5,6 +5,8 @@ this.Bump = {};
 
 (function( window, Bump ) {
 
+  Bump.noop = function noop() {};
+
   // The type function will be used for object inheritance.
   // Objects are instantiated with Object.create()
   Bump.type = function type( options ) {
