@@ -1,0 +1,25 @@
+{
+	"author": "Gradient Studios",
+	"name": "Bump",
+	"description": "Bump",
+	"version": "0.0.1",
+	"repository": {
+		"type": "git",
+		"url": "git@github.com:GradientStudios/bump.js.git"
+	},
+	"engines": {
+		"node": ">=v0.4.8"
+	},
+	"devDependencies": {
+		"underscore": "*",
+		"jshint": "*",
+		"uglify-js": "*",
+		"express": "*",
+		"vows": "*",
+		"stats": "*",
+		"colors": "*",
+		"zlib": "*",
+		"dateformat": "*",
+		"jsonlint": "*"
+	}
+}
