@@ -1,0 +1,21 @@
+{
+	"files": {
+		"dist/bump": {
+			"src": [
+				"src/bump.js"
+			],
+			"prehint": true,
+			"posthint": true,
+			"debug": true,
+
+			"meta": {
+				"label": "Bump",
+				"author": "Gradient Studios",
+				"version": "0.0.0",
+				"homeurl": "",
+				"license": [],
+				"copyright": ""
+			}
+		}
+	}
+}
