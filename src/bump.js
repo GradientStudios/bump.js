@@ -25,7 +25,7 @@ this.Bump = {};
     return ret || walkProtoChain( Object.getPrototypeOf( prototype ), func );
   }
 
-  var superTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
+  var superTest = /xyz/.test(function(){var xyz;}) ? /\b_super\b/ : /.*/;
 
   // The type function will be used for object inheritance.
   // Objects are instantiated with Object.create()
@@ -33,23 +33,25 @@ this.Bump = {};
     options = options || {};
     
     var exports = options.constructor || {},
-        parent = ( options.parent || {} ).prototype,
+        parent = ( options.parent || {} ).prototype || {},
         prototype = options.prototype || {},
         properties = options.properties || {},
         typeMethods = options.typeMethods || {},
         key,
         otter;
 
+    function getDescriptor( prototype ) {
+      var desc = Object.getOwnPropertyDescriptor( prototype, key );
+      if ( desc ) {
+        return desc[ otter ];
+      }
+      return undefined;
+    }
+
     for ( key in properties ) {
       for ( otter in [ 'get', 'set' ] ) {
         if ( properties[ key ][ otter ] && superTest.test( properties[ key ][ otter ] ) ) {
-          properties[ key ][ otter ] = superWrap( walkProtoChain( parent, function( prototype ) {
-            var desc = Object.getOwnPropertyDescriptor( prototype, key );
-            if ( desc ) {
-              return desc.get;
-            }
-            return undefined;
-          } ), properties[ key ][ otter ] );
+          properties[ key ][ otter ] = superWrap( walkProtoChain( parent, getDescriptor ), properties[ key ][ otter ] );
         }
       }
     }
