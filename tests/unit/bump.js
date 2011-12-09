@@ -123,7 +123,7 @@ test( '_super methods', 3, function() {
   }, 'type raises error if parent does not contain method for _super' );
 } );
 
-test( '_super properties', 1, function() {
+test( '_super properties', 3, function() {
   var A = Bump.type( {
         init: function( name ) {
           this._name = name;
@@ -136,7 +136,58 @@ test( '_super properties', 1, function() {
           }
         }
       } ),
-      a = A.create( 'a' );
+      B = Bump.type( {
+        parent: A,
+        properties: {
+          name: {
+            get: function() {
+              return this._super();
+            }
+          }
+        }
+      } ),
+      a = B.create( 'a' );
 
   equal( a.name, 'a', 'property returns private by convention variable' );
+
+  raises( function() {
+    Bump.type( {
+      properties: {
+        name: {
+          get: function() {
+            return this._super();
+          }
+        }
+      }
+    } );
+  }, function( e ) {
+    return e.short == 'no parent function';
+  }, 'type raises error if no parent is defined and using this._super' );
+
+  raises( function() {
+    Bump.type( {
+      parent: Bump.type(),
+      properties: {
+        name: {
+          get: function() {
+            return this._super();
+          }
+        }
+      }
+    } );
+  }, function( e ) {
+    return e.short == 'no parent function';
+  }, 'type raises error if parent does not contain property for _super' );
+} );
+
+test( 'typeMembers', 1, function() {
+  var A = Bump.type( {
+        typeMembers: {
+          didYouGetThatThing: function() {
+            return 'i sent you?';
+          }
+        }
+      } );
+
+  equal( A.didYouGetThatThing(), 'i sent you?', 'Type has type members!' );
 } );
