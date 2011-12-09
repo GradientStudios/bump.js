@@ -36,26 +36,26 @@ this.Bump = {};
         parent = ( options.parent || {} ).prototype || {},
         prototype = options.prototype || {},
         properties = options.properties || {},
-        typeMethods = options.typeMethods || {},
+        typeMembers = options.typeMembers || {},
         key,
         key2,
         key3,
-        otter;
+        getset;
 
-    function getDescriptor( key, otter, prototype ) {
+    function getDescriptor( key, getset, prototype ) {
       var desc = Object.getOwnPropertyDescriptor( prototype, key );
       if ( desc ) {
-        return desc[ otter ];
+        return desc[ getset ];
       }
       return undefined;
     }
 
     for ( key in properties ) {
-      for ( otter in [ 'get', 'set' ] ) {
-        if ( properties[ key ][ otter ] && superTest.test( properties[ key ][ otter ] ) ) {
-          properties[ key ][ otter ] = superWrap(
-            walkProtoChain( parent, getDescriptor.bind( null, key, otter ) ),
-             properties[ key ][ otter ] );
+      for ( getset in [ 'get', 'set' ] ) {
+        if ( properties[ key ][ getset ] && superTest.test( properties[ key ][ getset ] ) ) {
+          properties[ key ][ getset ] = superWrap(
+            walkProtoChain( parent, getDescriptor.bind( null, key, getset ) ),
+             properties[ key ][ getset ] );
         }
       }
     }
@@ -78,8 +78,8 @@ this.Bump = {};
 
     exports.prototype.constructor = exports.prototype.init;
 
-    for ( key3 in typeMethods ) {
-      exports[ key3 ] = typeMethods[ key3 ];
+    for ( key3 in typeMembers ) {
+      exports[ key3 ] = typeMembers[ key3 ];
     }
 
     if ( !exports.create ) {
