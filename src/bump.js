@@ -28,8 +28,9 @@ this.Bump = {};
   }
 
   function walkProtoChain( prototype, func ) {
+    if ( prototype == null ) return;
     var ret = func( prototype );
-    return ret || walkProtoChain( Object.getPrototypeOf( prototype ), func );
+    return ret || prototype && walkProtoChain( Object.getPrototypeOf( prototype ), func );
   }
 
   var superTest = /xyz/.test(function(){var xyz;}) ? /\b_super\b/ : /.*/;
@@ -44,10 +45,12 @@ this.Bump = {};
         members = options.members || {},
         properties = options.properties || {},
         typeMembers = options.typeMembers || {},
+        getsetValues = [ 'get', 'set' ],
         key,
         key2,
         key3,
-        getset;
+        getset,
+        getsetIndex;
 
     function getDescriptor( key, getset, prototype ) {
       var desc = Object.getOwnPropertyDescriptor( prototype, key );
@@ -58,7 +61,9 @@ this.Bump = {};
     }
 
     for ( key in properties ) {
-      for ( getset in [ 'get', 'set' ] ) {
+      for ( getsetIndex = 0; getsetIndex < 2; getsetIndex++ ) {
+        getset = getsetValues[ getsetIndex ];
+        
         if ( properties[ key ][ getset ] && superTest.test( properties[ key ][ getset ] ) ) {
           properties[ key ][ getset ] = superWrap(
             walkProtoChain( parent, getDescriptor.bind( null, key, getset ) ),
@@ -80,7 +85,7 @@ this.Bump = {};
     }
 
     if ( !exports.prototype.init ) {
-      exports.prototype.init = options.init || function(){};
+      exports.prototype.init = options.init || parent.init || function(){};
     }
 
     exports.prototype.constructor = exports.prototype.init;
