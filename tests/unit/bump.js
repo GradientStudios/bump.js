@@ -78,7 +78,7 @@ test( 'properties', 2, function() {
   equal( a.name, 'b', 'name == "b"' );
 } );
 
-test( '_super methods', 2, function() {
+test( '_super methods', 3, function() {
   var A = Bump.type( { members: {
         get: function() {
           return 1;
@@ -92,7 +92,7 @@ test( '_super methods', 2, function() {
           }
         }
       } ),
-      a = A.create();
+      a = A.create(),
       b = B.create();
 
   equal( b.get(), a.get(), 'B instance uses supertype\'s value' );
@@ -108,4 +108,35 @@ test( '_super methods', 2, function() {
   }, function( e ) {
     return e.short == 'no parent function';
   }, 'type raises error if no parent is defined and using this._super' );
+
+  raises( function() {
+    Bump.type( {
+      parent: A,
+      members: {
+        set: function( value ) {
+          this._super( value );
+        }
+      }
+    } );
+  }, function( e ) {
+    return e.short == 'no parent function';
+  }, 'type raises error if parent does not contain method for _super' );
+} );
+
+test( '_super properties', 1, function() {
+  var A = Bump.type( {
+        init: function( name ) {
+          this._name = name;
+        },
+        properties: {
+          name: {
+            get: function() {
+              return this._name;
+            }
+          }
+        }
+      } ),
+      a = A.create( 'a' );
+
+  equal( a.name, 'a', 'property returns private by convention variable' );
 } );
