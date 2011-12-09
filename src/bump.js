@@ -34,7 +34,7 @@ this.Bump = {};
     
     var exports = {},
         parent = ( options.parent || {} ).prototype || {},
-        prototype = options.prototype || {},
+        members = options.members || {},
         properties = options.properties || {},
         typeMembers = options.typeMembers || {},
         key,
@@ -64,12 +64,12 @@ this.Bump = {};
       parent,
       properties );
 
-    for ( key2 in prototype ) {
-      if ( typeof prototype[ key2 ] === 'function' && superTest.test( prototype[ key2 ] ) ) {
-        prototype[ key2 ] = superWrap( parent[ key2 ], prototype[ key2 ] );
+    for ( key2 in members ) {
+      if ( typeof members[ key2 ] === 'function' && superTest.test( members[ key2 ] ) ) {
+        members[ key2 ] = superWrap( parent[ key2 ], members[ key2 ] );
       }
       
-      exports.prototype[ key2 ] = prototype[ key2 ];
+      exports.prototype[ key2 ] = members[ key2 ];
     }
 
     if ( !exports.prototype.init ) {
