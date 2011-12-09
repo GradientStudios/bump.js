@@ -38,9 +38,11 @@ this.Bump = {};
         properties = options.properties || {},
         typeMethods = options.typeMethods || {},
         key,
+        key2,
+        key3,
         otter;
 
-    function getDescriptor( prototype ) {
+    function getDescriptor( key, otter, prototype ) {
       var desc = Object.getOwnPropertyDescriptor( prototype, key );
       if ( desc ) {
         return desc[ otter ];
@@ -51,7 +53,9 @@ this.Bump = {};
     for ( key in properties ) {
       for ( otter in [ 'get', 'set' ] ) {
         if ( properties[ key ][ otter ] && superTest.test( properties[ key ][ otter ] ) ) {
-          properties[ key ][ otter ] = superWrap( walkProtoChain( parent, getDescriptor ), properties[ key ][ otter ] );
+          properties[ key ][ otter ] = superWrap(
+            walkProtoChain( parent, getDescriptor.bind( null, key, otter ) ),
+             properties[ key ][ otter ] );
         }
       }
     }
@@ -60,20 +64,20 @@ this.Bump = {};
       parent,
       properties );
 
-    for ( key in prototype ) {
-      if ( typeof prototype[ key ] === 'function' && superTest.test( prototype[ key ] ) ) {
-        prototype[ key ] = superWrap( parent[ key ], prototype[ key ] );
+    for ( key2 in prototype ) {
+      if ( typeof prototype[ key2 ] === 'function' && superTest.test( prototype[ key2 ] ) ) {
+        prototype[ key2 ] = superWrap( parent[ key2 ], prototype[ key2 ] );
       }
       
-      exports.prototype[ key ] = prototype[ key ];
+      exports.prototype[ key2 ] = prototype[ key2 ];
     }
 
     if ( !exports.prototype.init ) {
       exports.prototype.init = options.constructor || Bump.noop;
     }
 
-    for ( key in typeMethods ) {
-      exports[ key ] = typeMethods[ key ];
+    for ( key3 in typeMethods ) {
+      exports[ key3 ] = typeMethods[ key3 ];
     }
 
     if ( !exports.create ) {
@@ -85,7 +89,7 @@ this.Bump = {};
     }
 
     return exports;
-  }
+  };
 
   Bump.TypedObject = Bump.type();
 
