@@ -117,6 +117,46 @@ test( 'properties', 2, function() {
   equal( a.name, 'b', 'name == "b"' );
 } );
 
+test( '_super init', 3, function() {
+  var A = Bump.type( { 
+        init: function() {
+          this.a = 1;
+        }
+      } ),
+      B = Bump.type( {
+        parent: A,
+        init: function() {
+          this._super();
+          
+          this.b = 2;
+        }
+      } ),
+      a = A.create(),
+      b = B.create();
+
+  equal( b.a, a.a, 'B instance initialized with A values' );
+
+  raises( function() {
+    Bump.type( {
+      init: function() {
+        this._super();
+      }
+    } );
+  }, function( e ) {
+    return e.short == 'no parent function';
+  }, 'type raises error if no parent is defined and using this._super' );
+
+  ok( (function() {
+    Bump.type( {
+      parent: Bump.type(),
+      init: function() {
+        this._super();
+      }
+    } );
+    return true;
+  })(), 'type does not raise error for _super as parent always has init' );
+} );
+
 test( '_super methods', 3, function() {
   var A = Bump.type( { members: {
         get: function() {
