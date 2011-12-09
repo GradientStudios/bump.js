@@ -33,6 +33,32 @@ test( 'inheritance supports instanceof', 3, function() {
   ok( c instanceof A.prototype.constructor, 'instance of subtype of subtype passes instanceof' );
 } );
 
+test( 'inheritance with init method supports instanceof', 3, function() {
+  var A = Bump.type( { init: function A() {} } ),
+      B = Bump.type( { init: function B() {}, parent: A } ),
+      C = Bump.type( { init: function C() {}, parent: B } ),
+      a = A.create(),
+      b = B.create(),
+      c = C.create();
+
+  ok( a instanceof A.prototype.constructor, 'direct instance passes instanceof' );
+  ok( b instanceof A.prototype.constructor, 'instance of subtype passes instanceof' );
+  ok( c instanceof A.prototype.constructor, 'instance of subtype of subtype passes instanceof' );
+} );
+
+test( 'inheritance with missing init method supports instanceof', 3, function() {
+  var A = Bump.type( { init: function A() {} } ),
+      B = Bump.type( { parent: A } ),
+      C = Bump.type( { init: function C() {}, parent: B } ),
+      a = A.create(),
+      b = B.create(),
+      c = C.create();
+
+  ok( a instanceof A.prototype.constructor, 'direct instance passes instanceof' );
+  ok( b instanceof A.prototype.constructor, 'instance of subtype passes instanceof' );
+  ok( c instanceof A.prototype.constructor, 'instance of subtype of subtype passes instanceof' );
+} );
+
 test( 'init method/constructor', 2, function() {
   var A = Bump.type( {
         init: function A() {}
@@ -41,6 +67,15 @@ test( 'init method/constructor', 2, function() {
 
   equal( A.constructor.name, 'Type', 'type name' );
   equal( a.constructor.name, 'A', 'instance name' );
+} );
+
+test( 'init once', 1, function() {
+  var A = Bump.type( {
+        init: function A() {
+          ok( true, 'initialized' );
+        }
+      } ),
+      a = A.create();
 } );
 
 test( 'methods', 2, function() {
