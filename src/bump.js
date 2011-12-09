@@ -35,12 +35,15 @@ this.Bump = {};
 
   var superTest = /xyz/.test(function(){var xyz;}) ? /\b_super\b/ : /.*/;
 
+  // all objects created by Bump.type
+  function Type() {}
+
   // The type function will be used for object inheritance.
   // Objects are instantiated with Object.create()
   Bump.type = function type( options ) {
     options = options || {};
     
-    var exports = {},
+    var exports = Object.create( Type.prototype ),
         parent = ( options.parent || {} ).prototype || {},
         members = options.members || {},
         properties = options.properties || {},
@@ -76,6 +79,9 @@ this.Bump = {};
       parent,
       properties );
 
+    exports.prototype.constructor = options.init || parent.init || function(){};
+    exports.prototype.constructor.prototype = exports.prototype;
+
     for ( key2 in members ) {
       if ( typeof members[ key2 ] === 'function' && superTest.test( members[ key2 ] ) ) {
         members[ key2 ] = superWrap( parent[ key2 ], members[ key2 ] );
@@ -85,10 +91,8 @@ this.Bump = {};
     }
 
     if ( !exports.prototype.init ) {
-      exports.prototype.init = options.init || parent.init || function(){};
+      exports.prototype.init = exports.prototype.constructor;
     }
-
-    exports.prototype.constructor = exports.prototype.init;
 
     for ( key3 in typeMembers ) {
       exports[ key3 ] = typeMembers[ key3 ];

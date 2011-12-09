@@ -20,23 +20,27 @@ test( 'instantiate test 1', 3, function() {
   equal( Object.getPrototypeOf(a), ObjectA.prototype );
 } );
 
-test( 'inheritance supports instanceof', 2, function() {
+test( 'inheritance supports instanceof', 3, function() {
   var A = Bump.type(),
       B = Bump.type( { parent: A } ),
+      C = Bump.type( { parent: B } ),
       a = A.create(),
-      b = B.create();
+      b = B.create(),
+      c = C.create();
 
-  ok( a instanceof A.constructor, 'direct instance passes instanceof' );
-  ok( b instanceof A.constructor, 'instance of subtype passes instanceof' );
+  ok( a instanceof A.prototype.constructor, 'direct instance passes instanceof' );
+  ok( b instanceof A.prototype.constructor, 'instance of subtype passes instanceof' );
+  ok( c instanceof A.prototype.constructor, 'instance of subtype of subtype passes instanceof' );
 } );
 
-test( 'init method/constructor', 1, function() {
+test( 'init method/constructor', 2, function() {
   var A = Bump.type( {
         init: function A() {}
       }),
       a = A.create();
 
-  equal( A.prototype.constructor.name, 'A', 'name' );
+  equal( A.constructor.name, 'Type', 'type name' );
+  equal( a.constructor.name, 'A', 'instance name' );
 } );
 
 test( 'methods', 2, function() {
