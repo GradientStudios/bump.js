@@ -42,6 +42,7 @@ this.Bump = {};
   // Objects are instantiated with Object.create()
   Bump.type = function type( options ) {
     options = options || {};
+    options.init = options.init || function(){};
     
     var exports = Object.create( Type.prototype ),
         parent = ( options.parent || {} ).prototype || {},
@@ -75,11 +76,15 @@ this.Bump = {};
       }
     }
 
+    if ( superTest.test( options.init ) ) {
+      options.init = superWrap( parent.init, options.init );
+    }
+
     exports.prototype = Object.create(
       parent,
       properties );
 
-    exports.prototype.constructor = options.init || function(){};
+    exports.prototype.constructor = options.init;
     exports.prototype.constructor.prototype = exports.prototype;
 
     for ( key2 in members ) {
@@ -91,7 +96,7 @@ this.Bump = {};
     }
 
     if ( !exports.prototype.init ) {
-      exports.prototype.init = options.init || function(){};
+      exports.prototype.init = options.init;
     }
 
     for ( key3 in typeMembers ) {
