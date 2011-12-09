@@ -32,7 +32,7 @@ this.Bump = {};
   Bump.type = function type( options ) {
     options = options || {};
     
-    var exports = options.constructor || {},
+    var exports = {},
         parent = ( options.parent || {} ).prototype || {},
         prototype = options.prototype || {},
         properties = options.properties || {},
@@ -73,8 +73,10 @@ this.Bump = {};
     }
 
     if ( !exports.prototype.init ) {
-      exports.prototype.init = options.constructor || Bump.noop;
+      exports.prototype.init = options.init || function(){};
     }
+
+    exports.prototype.constructor = exports.prototype.init;
 
     for ( key3 in typeMethods ) {
       exports[ key3 ] = typeMethods[ key3 ];
