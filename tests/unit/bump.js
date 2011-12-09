@@ -50,6 +50,62 @@ test( 'methods', 2, function() {
       } } ),
       a = A.create();
 
-  ok( a.get, 'get method' );
-  ok( a.set, 'set method' );
+  equal( typeof a.get, 'function', 'get method' );
+  equal( typeof a.set, 'function', 'set method' );
+} );
+
+test( 'properties', 2, function() {
+  var A = Bump.type( { 
+        init: function A( name ) {
+          this.name = name || 'a';
+        },
+        properties: {
+          name: {
+            get: function() {
+              return this._name;
+            },
+            set: function( value ) {
+              this._name = value;
+            }
+          }
+        } 
+      } ),
+      a = A.create();
+
+  equal( a.name, 'a', 'name == "a"' );
+  
+  a.name = 'b';
+  equal( a.name, 'b', 'name == "b"' );
+} );
+
+test( '_super methods', 2, function() {
+  var A = Bump.type( { members: {
+        get: function() {
+          return 1;
+        }
+      } } ),
+      B = Bump.type( {
+        parent: A,
+        members: {
+          get: function() {
+            return this._super();
+          }
+        }
+      } ),
+      a = A.create();
+      b = B.create();
+
+  equal( b.get(), a.get(), 'B instance uses supertype\'s value' );
+
+  raises( function() {
+    Bump.type( {
+      members: {
+        get: function() {
+          return this._super();
+        }
+      }
+    } );
+  }, function( e ) {
+    return e.short == 'no parent function';
+  }, 'type raises error if no parent is defined and using this._super' );
 } );
