@@ -79,7 +79,7 @@ this.Bump = {};
       parent,
       properties );
 
-    exports.prototype.constructor = options.init || parent.init || function(){};
+    exports.prototype.constructor = options.init || function(){};
     exports.prototype.constructor.prototype = exports.prototype;
 
     for ( key2 in members ) {
@@ -91,7 +91,7 @@ this.Bump = {};
     }
 
     if ( !exports.prototype.init ) {
-      exports.prototype.init = exports.prototype.constructor;
+      exports.prototype.init = options.init || function(){};
     }
 
     for ( key3 in typeMembers ) {
