@@ -8,6 +8,13 @@ this.Bump = {};
   Bump.noop = function noop() {};
 
   function superWrap( superFunc, newFunc ) {
+    if ( superFunc == null ) {
+      throw {
+        short: 'no parent function',
+        message: 'trying to access _super function without parent or function in parent'
+      };
+    }
+
     return function() {
       var tmp = this._super,
           ret;
