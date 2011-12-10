@@ -22,18 +22,18 @@ this.Bump = {};
 
       ret = newFunc.apply( this, arguments );
       this._super = tmp;
-      
+
       return ret;
     };
   }
 
   function walkProtoChain( prototype, func ) {
-    if ( prototype == null ) return;
+    if ( prototype == null ) { return; }
     var ret = func( prototype );
     return ret || prototype && walkProtoChain( Object.getPrototypeOf( prototype ), func );
   }
 
-  var superTest = /xyz/.test(function(){var xyz;}) ? /\b_super\b/ : /.*/;
+  var superTest = /xyz/.test(function() { var xyz; }) ? /\b_super\b/ : /.*/;
 
   // all objects created by Bump.type
   function Type() {}
@@ -43,7 +43,7 @@ this.Bump = {};
   Bump.type = function type( options ) {
     options = options || {};
     options.init = options.init || function(){};
-    
+
     var exports = Object.create( Type.prototype ),
         parent = ( options.parent || {} ).prototype || {},
         members = options.members || {},
@@ -51,8 +51,6 @@ this.Bump = {};
         typeMembers = options.typeMembers || {},
         getsetValues = [ 'get', 'set' ],
         key,
-        key2,
-        key3,
         getset,
         getsetIndex;
 
@@ -67,7 +65,7 @@ this.Bump = {};
     for ( key in properties ) {
       for ( getsetIndex = 0; getsetIndex < 2; getsetIndex++ ) {
         getset = getsetValues[ getsetIndex ];
-        
+
         if ( properties[ key ][ getset ] && superTest.test( properties[ key ][ getset ] ) ) {
           properties[ key ][ getset ] = superWrap(
             walkProtoChain( parent, getDescriptor.bind( null, key, getset ) ),
@@ -87,20 +85,20 @@ this.Bump = {};
     exports.prototype.constructor = options.init;
     exports.prototype.constructor.prototype = exports.prototype;
 
-    for ( key2 in members ) {
-      if ( typeof members[ key2 ] === 'function' && superTest.test( members[ key2 ] ) ) {
-        members[ key2 ] = superWrap( parent[ key2 ], members[ key2 ] );
+    for ( key in members ) {
+      if ( typeof members[ key ] === 'function' && superTest.test( members[ key ] ) ) {
+        members[ key ] = superWrap( parent[ key ], members[ key ] );
       }
-      
-      exports.prototype[ key2 ] = members[ key2 ];
+
+      exports.prototype[ key ] = members[ key ];
     }
 
     if ( !exports.prototype.init ) {
       exports.prototype.init = options.init;
     }
 
-    for ( key3 in typeMembers ) {
-      exports[ key3 ] = typeMembers[ key3 ];
+    for ( key in typeMembers ) {
+      exports[ key ] = typeMembers[ key ];
     }
 
     if ( !exports.create ) {
