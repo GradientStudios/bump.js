@@ -28,7 +28,9 @@ this.Bump = {};
   }
 
   function walkProtoChain( prototype, func ) {
-    if ( prototype == null ) return;
+    if ( prototype == null ) {
+      return;
+    }
     var ret = func( prototype );
     return ret || prototype && walkProtoChain( Object.getPrototypeOf( prototype ), func );
   }
