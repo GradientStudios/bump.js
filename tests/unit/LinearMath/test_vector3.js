@@ -570,3 +570,32 @@ test( 'notEqual', 4, function() {
   ok( Bump.Vector3.create( 0, Bump.SIMD_EPSILON, 0 ).notEqual( Bump.Vector3.create() ) );
   ok( Bump.Vector3.create( 0, 0, Bump.SIMD_EPSILON ).notEqual( Bump.Vector3.create() ) );
 } );
+
+test( 'setMax', 2, function() {
+  var v = Bump.Vector3.create( 1, 4, 9 ),
+  ret;
+
+  ret = v.setMax( Bump.Vector3.create( 5, 1, 9 ) );
+  ok( ret === v, "return value has correct reference" );
+  deepEqual( v, Bump.Vector3.create( 5, 4, 9 ), "correct result" );
+} );
+
+test( 'setMin', 2, function() {
+  var v = Bump.Vector3.create( 1, 4, 9 ),
+  ret;
+
+  ret = v.setMin( Bump.Vector3.create( 5, 1, 9 ) );
+  ok( ret === v, "return value has correct reference" );
+  deepEqual( v, Bump.Vector3.create( 1, 1, 9 ), "correct result" );
+} );
+
+test( 'setValue', 2, function() {
+  var v = Bump.Vector3.create( 1, 4, 9 ),
+  ret;
+
+  v.w = 7; // w value should get set to 0 by setValue() method
+
+  ret = v.setValue( 5, 1, 9 );
+  ok( ret === v, "return value has correct reference" );
+  deepEqual( v, Bump.Vector3.create( 5, 1, 9 ), "correct result" );
+} );
