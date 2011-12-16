@@ -621,3 +621,37 @@ test( 'getSkewSymmetricMatrix', 80, function() {
     deepEqual( v2, Bump.Vector3.create( -y, x, 0 ), "matrix column 2 correct" );
   }
 } );
+
+test( 'setZero', 10, function() {
+  for( var i = 0; i < 5; i++ ) {
+    var v = Bump.Vector3.create( Math.random(), Math.random(), Math.random() ),
+    ret = v.setZero();
+    ok( ret === v, 'return reference is correct' );
+    deepEqual( v, Bump.Vector3.create( 0, 0, 0 ), 'correct result' );
+  }
+} );
+
+test( 'isZero (and setZero)', 6, function() {
+  var v = Bump.Vector3.create();
+
+  ok( v.isZero() );
+  ok( !Bump.Vector3.create( Bump.SIMD_EPSILON, 0, 0 ).isZero() );
+  ok( !Bump.Vector3.create( 0, Bump.SIMD_EPSILON, 0 ).isZero() );
+  ok( !Bump.Vector3.create( 0, 0, Bump.SIMD_EPSILON ).isZero() );
+
+  v = Bump.Vector3.create( Bump.SIMD_EPSILON, Bump.SIMD_EPSILON, Bump.SIMD_EPSILON );
+  ok( !v.isZero() );
+  v.setZero();
+  ok( v.isZero() );
+
+} );
+
+test( 'fuzzyZero', 7, function() {
+  ok( Bump.Vector3.create( 0, 0, 0 ).fuzzyZero() );
+  ok( !Bump.Vector3.create( Math.sqrt( Bump.SIMD_EPSILON ), 0, 0 ).fuzzyZero() );
+  ok( !Bump.Vector3.create( 0, Math.sqrt( Bump.SIMD_EPSILON ), 0 ).fuzzyZero() );
+  ok( !Bump.Vector3.create( 0, 0, Math.sqrt( Bump.SIMD_EPSILON ) ).fuzzyZero() );
+  ok( Bump.Vector3.create( Bump.SIMD_EPSILON, 0, 0 ).fuzzyZero() );
+  ok( Bump.Vector3.create( 0, Bump.SIMD_EPSILON, 0 ).fuzzyZero() );
+  ok( Bump.Vector3.create( 0, 0, Bump.SIMD_EPSILON).fuzzyZero() );
+} );
