@@ -316,7 +316,7 @@
         this.z = Math.max( this.z, vec.z );
         this.w = Math.max( this.w, vec.w );
 
-        return vec;
+        return this;
       },
 
       // set elements to be the min of the original elements and vec's elements
@@ -326,7 +326,7 @@
         this.z = Math.min( this.z, vec.z );
         this.w = Math.min( this.w, vec.w );
 
-        return vec;
+        return this;
       },
 
       // set elements equal to x, y, z
