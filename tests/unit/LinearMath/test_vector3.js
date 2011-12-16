@@ -313,3 +313,208 @@ test( 'normalized', 6, function() {
   deepEqual( v3, Bump.Vector3.create( 0, 1/Math.sqrt( 2 ), -1/Math.sqrt( 2 ) ),
              'correct result' );
 } );
+
+// definitely should add more tests for this one
+test( 'rotate', 5, function() {
+  var v1 = Bump.Vector3.create( 1, 0, 0 ),
+  zAxis = Bump.Vector3.create( 0, 0, 1 ),
+  vRot = Bump.Vector3.create(),
+  ret;
+
+  ret = vRot.rotate( v1, zAxis, Math.PI/2 );
+
+  ok( ret === vRot, 'return value references correct vector' );
+  deepEqual( v1, Bump.Vector3.create( 1, 0, 0 ), 'input unchanged' );
+  ok( Math.abs( vRot[0] ) < Bump.SIMD_EPSILON, 'correct result : x is close to 0' );
+  ok( Math.abs( vRot[1] - 1 ) < Bump.SIMD_EPSILON, 'correct result : y is close to 1' );
+  ok( Math.abs( vRot[0] ) < Bump.SIMD_EPSILON, 'correct result: z is close to 0' );
+} );
+
+test( 'angle', 12, function() {
+  var right = Bump.Vector3.create( 1, 0, 0 ),
+  up = Bump.Vector3.create( 0, 1, 0 ),
+  left = Bump.Vector3.create( -1, 0, 0 ),
+  forward = Bump.Vector3.create( 0, 0, 1 ),
+  upRight = Bump.Vector3.create( 1, 1, 0 );
+
+  ok( Math.abs( right.angle( up ) - Math.PI / 2 ) < Bump.SIMD_EPSILON,
+    'angle( right, up ) is close to pi/2' );
+  ok( Math.abs( right.angle( forward ) - Math.PI / 2 ) < Bump.SIMD_EPSILON,
+    'angle( right, forward ) is close to pi/2' );
+  ok( Math.abs( right.angle( left ) - Math.PI ) < Bump.SIMD_EPSILON,
+    'angle( right, left ) is close to pi' );
+  ok( Math.abs( right.angle( upRight ) - Math.PI / 4 ) < Bump.SIMD_EPSILON,
+    'angle( right, up + right ) is close to pi/4' );
+  ok( Math.abs( left.angle( upRight ) - 3 * Math.PI / 4 ) < Bump.SIMD_EPSILON,
+    'angle( left, up + right ) is close to 3*pi/4' );
+  ok( Math.abs( up.angle( upRight ) - Math.PI / 4 ) < Bump.SIMD_EPSILON,
+    'angle( up, up + right ) is close to pi/4' );
+  ok( Math.abs( forward.angle( upRight ) - Math.PI / 2 ) < Bump.SIMD_EPSILON,
+    'angle( forward, up + right ) is close to pi/2' );
+
+  deepEqual( right, Bump.Vector3.create( 1, 0, 0 ), 'right unchanged' );
+  deepEqual( up, Bump.Vector3.create( 0, 1, 0 ), 'up unchanged' );
+  deepEqual( left, Bump.Vector3.create( -1, 0, 0 ), 'left unchanged' );
+  deepEqual( forward, Bump.Vector3.create( 0, 0, 1 ), 'forward unchanged' );
+  deepEqual( upRight, Bump.Vector3.create( 1, 1, 0 ), 'up + right unchanged' );
+} );
+
+test( 'absolute', 5, function() {
+  var v1 = Bump.Vector3.create( -1, -2, 3 ),
+  v2 = Bump.Vector3.create(),
+  ret;
+
+  ret = v2.absolute( v1 );
+
+  ok( ret === v2, 'return value references correct vector' );
+  deepEqual( v1, Bump.Vector3.create( -1, -2, 3 ), 'input unchanged' );
+  deepEqual( v2, Bump.Vector3.create( 1, 2, 3 ), 'correct result' );
+
+  ret = v1.absolute( v1 );
+
+  ok( ret === v1, 'in place: return value references correct vector' );
+  deepEqual( v1, Bump.Vector3.create( 1, 2, 3 ), 'correct result' );
+
+} );
+
+test( 'cross', 15, function() {
+
+  // given params for a "right", "up" and "forward" perpendicular vectors,
+  // checks cross products between them (5 tests total)
+  var crossTest = function( right, up, forward ) {
+    var rightCrossUp = Bump.Vector3.create(),
+    upCrossForward = Bump.Vector3.create(),
+    diff = Bump.Vector3.create(),
+    ret;
+
+    right.safeNormalize();
+    up.safeNormalize();
+    forward.safeNormalize();
+
+    //ok( Math.abs( Bump.Vector3.length( right ) - 1) < Bump.SIMD_EPSILON );
+    //ok( Math.abs( Bump.Vector3.length( up ) - 1 ) < Bump.SIMD_EPSILON );
+    //ok( Math.abs( Bump.Vector3.length( forward ) - 1 ) < Bump.SIMD_EPSILON );
+
+    ret = rightCrossUp.cross( right, up );
+    //console.log( "( " + right + " ), ( " + up + " ), ( " + rightCrossUp + " ) " );
+    diff.subtract( rightCrossUp, forward );
+    //console.log( "( " + diff + " ) " );
+    ok( ret === rightCrossUp, "return value references correct vector" );
+    ok( diff.fuzzyZero(), "right cross up : correct result" );
+
+    ret = upCrossForward.cross( up, forward );
+    diff.subtract( upCrossForward, right );
+    ok( diff.fuzzyZero(), "up cross forward : correct result" );
+
+    // do the third one in place, just to make sure that works
+    ret = forward.cross( forward, right );
+    diff.subtract( forward, up );
+    ok( ret === forward, "in place: return value references correct vector" );
+    ok( diff.fuzzyZero(), "forward cross right : correct result" );
+
+  }
+
+  // TODO : add more ground truths
+  crossTest( Bump.Vector3.create(1, 0, 0 ),
+             Bump.Vector3.create(0, 1, 0 ),
+             Bump.Vector3.create(0, 0, 1 )
+           );
+  crossTest( Bump.Vector3.create(1, 1, 0 ),
+             Bump.Vector3.create(-1, 1, 0 ),
+             Bump.Vector3.create(0, 0, 1 )
+           );
+  crossTest( Bump.Vector3.create(1, 0, 1 ),
+             Bump.Vector3.create(0, 1, 0 ),
+             Bump.Vector3.create(-1, 0, 1 )
+           );
+} );
+
+test( 'triple', 2, function() {
+  equal( Bump.Vector3.create( 1, 0, 0 ).triple( Bump.Vector3.create( 1, 0, 0 ),
+                                                Bump.Vector3.create( 0, 1, 0 ) ),
+         0);
+  equal( Bump.Vector3.create( 0, 1, 0 ).triple( Bump.Vector3.create( 0, 0, 1 ),
+                                                Bump.Vector3.create( 1, 0, 0 ) ),
+         1 );
+} );
+
+test( 'minAxis', 7, function() {
+  equal( Bump.Vector3.create().minAxis(),  2 );
+  equal( Bump.Vector3.create( 1, 0, 0 ).minAxis(), 2 );
+  equal( Bump.Vector3.create( 0, 1, 0 ).minAxis(), 2 );
+  equal( Bump.Vector3.create( 0, 0, 1 ).minAxis(), 1 );
+  equal( Bump.Vector3.create( 0, 2, 3 ).minAxis(), 0 );
+  equal( Bump.Vector3.create( 0, 3, -4 ).minAxis(), 2 );
+  equal( Bump.Vector3.create( -1, -3, -2 ).minAxis(), 1 );
+} );
+
+test( 'min', 7, function() {
+  equal( Bump.Vector3.create().min(),  0 );
+  equal( Bump.Vector3.create( 1, 0, 0 ).min(), 0 );
+  equal( Bump.Vector3.create( 0, 1, 0 ).min(), 0 );
+  equal( Bump.Vector3.create( 0, 0, 1 ).min(), 0 );
+  equal( Bump.Vector3.create( 0, 2, 3 ).min(), 0 );
+  equal( Bump.Vector3.create( 0, 3, -4 ).min(), -4 );
+  equal( Bump.Vector3.create( -1, -3, -2 ).min(), -3 );
+} );
+
+test( 'maxAxis', 7, function() {
+  equal( Bump.Vector3.create().maxAxis(), 2 );
+  equal( Bump.Vector3.create( -1, 0, 0 ).maxAxis(), 2 );
+  equal( Bump.Vector3.create( 0, -1, 0 ).maxAxis(), 2 );
+  equal( Bump.Vector3.create( 0, 0, -1 ).maxAxis(), 1 );
+  equal( Bump.Vector3.create( 0, 2, 3 ).maxAxis(), 2 );
+  equal( Bump.Vector3.create( 0, 3, -4 ).maxAxis(), 1 );
+  equal( Bump.Vector3.create( -1, -3, -2 ).maxAxis(), 0 );
+} );
+
+test( 'max', 7, function() {
+  equal( Bump.Vector3.create().max(), 0 );
+  equal( Bump.Vector3.create( -1, 0, 0 ).max(), 0 );
+  equal( Bump.Vector3.create( 0, -1, 0 ).max(), 0 );
+  equal( Bump.Vector3.create( 0, 0, -1 ).max(), 0 );
+  equal( Bump.Vector3.create( 0, 2, 3 ).max(), 3 );
+  equal( Bump.Vector3.create( 0, 3, -4 ).max(), 3 );
+  equal( Bump.Vector3.create( -1, -3, -2 ).max(), -1 );
+} );
+
+
+test( 'furthestAxis', 7, function() {
+  equal( Bump.Vector3.create().furthestAxis(), 2 );
+  equal( Bump.Vector3.create( 1, 0, 0 ).furthestAxis(), 2 );
+  equal( Bump.Vector3.create( 0, 1, 0 ).furthestAxis(), 2 );
+  equal( Bump.Vector3.create( 0, 0, 1 ).furthestAxis(), 1 );
+  equal( Bump.Vector3.create( 0, 2, 3 ).furthestAxis(), 0 );
+  equal( Bump.Vector3.create( 4, 1, -3 ).furthestAxis(), 1 );
+  equal( Bump.Vector3.create( -2, -3, -1 ).furthestAxis(), 2 );
+} );
+
+test( 'furthest', 7, function() {
+  equal( Bump.Vector3.create().furthest(), 0 );
+  equal( Bump.Vector3.create( 1, 0, 0 ).furthest(), 0 );
+  equal( Bump.Vector3.create( 0, 1, 0 ).furthest(), 0 );
+  equal( Bump.Vector3.create( 0, 0, 1 ).furthest(), 0 );
+  equal( Bump.Vector3.create( 0, 2, 3 ).furthest(), 0 );
+  equal( Bump.Vector3.create( 4, 1, -3 ).furthest(), 1 );
+  equal( Bump.Vector3.create( -2, -3, -1 ).furthest(), 1 );
+} );
+
+test( 'closestAxis', 7, function() {
+  equal( Bump.Vector3.create().closestAxis(), 2 );
+  equal( Bump.Vector3.create( 0, 1, 1 ).closestAxis(), 2 );
+  equal( Bump.Vector3.create( 1, 0, 1 ).closestAxis(), 2 );
+  equal( Bump.Vector3.create( 1, 1, 0 ).closestAxis(), 1 );
+  equal( Bump.Vector3.create( 0, 2, 3 ).closestAxis(), 2 );
+  equal( Bump.Vector3.create( 4, 1, -3 ).closestAxis(), 0 );
+  equal( Bump.Vector3.create( -2, -3, -1 ).closestAxis(), 1 );
+} );
+
+test( 'closest', 7, function() {
+  equal( Bump.Vector3.create().closest(), 0 );
+  equal( Bump.Vector3.create( 0, 1, 1 ).closest(), 1 );
+  equal( Bump.Vector3.create( 1, 0, 1 ).closest(), 1 );
+  equal( Bump.Vector3.create( 1, 1, 0 ).closest(), 1 );
+  equal( Bump.Vector3.create( 0, 2, 3 ).closest(), 3 );
+  equal( Bump.Vector3.create( 4, 1, -3 ).closest(), 4 );
+  equal( Bump.Vector3.create( -2, -3, -1 ).closest(), 3 );
+} );
