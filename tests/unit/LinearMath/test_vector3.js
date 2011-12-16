@@ -556,3 +556,17 @@ test( 'lerp', 5, function() {
   ok( up.subtractSelf( Bump.Vector3.create( 0, 0.7, 0.3 ) ).fuzzyZero(),
       "in place: correct result" );
 } );
+
+test( 'equal', 4, function() {
+  ok( Bump.Vector3.create().equal( Bump.Vector3.create() ) );
+  ok( !Bump.Vector3.create( Bump.SIMD_EPSILON, 0, 0 ).equal( Bump.Vector3.create() ) );
+  ok( !Bump.Vector3.create( 0, Bump.SIMD_EPSILON, 0 ).equal( Bump.Vector3.create() ) );
+  ok( !Bump.Vector3.create( 0, 0, Bump.SIMD_EPSILON ).equal( Bump.Vector3.create() ) );
+} );
+
+test( 'notEqual', 4, function() {
+  ok( !Bump.Vector3.create().notEqual( Bump.Vector3.create() ) );
+  ok( Bump.Vector3.create( Bump.SIMD_EPSILON, 0, 0 ).notEqual( Bump.Vector3.create() ) );
+  ok( Bump.Vector3.create( 0, Bump.SIMD_EPSILON, 0 ).notEqual( Bump.Vector3.create() ) );
+  ok( Bump.Vector3.create( 0, 0, Bump.SIMD_EPSILON ).notEqual( Bump.Vector3.create() ) );
+} );
