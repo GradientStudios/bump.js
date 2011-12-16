@@ -538,23 +538,21 @@ test( 'setInterpolate3', 5, function() {
       "in place: correct result" );
 } );
 
-test( 'lerp', 5, function() {
+test( 'lerp', 4, function() {
   var right = Bump.Vector3.create( 1, 0, 0 ),
   up = Bump.Vector3.create( 0, 1, 0 ),
   forward = Bump.Vector3.create( 0, 0, 1 ),
-  lerped = Bump.Vector3.create(),
   ret;
 
-  ret = lerped.lerp( right, up, 0.5 );
-  ok( ret === lerped, "return value references correct vector" );
-  deepEqual( right, Bump.Vector3.create( 1, 0, 0 ), "original unchanged" );
-  ok( lerped.subtractSelf( Bump.Vector3.create( 0.5, 0.5, 0 ) ).fuzzyZero(),
+  ret = right.lerp( up, 0.5 );
+  ok( ret === right, "return value references correct vector" );
+  ok( right.subtractSelf( Bump.Vector3.create( 0.5, 0.5, 0 ) ).fuzzyZero(),
       "correct result" );
 
-  ret = up.lerp( up, forward, 0.3 );
+  ret = up.lerp( forward, 0.3 );
   ok( ret === up, "return value references correct vector" );
   ok( up.subtractSelf( Bump.Vector3.create( 0, 0.7, 0.3 ) ).fuzzyZero(),
-      "in place: correct result" );
+      "correct result" );
 } );
 
 test( 'equal', 4, function() {
