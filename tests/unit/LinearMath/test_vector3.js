@@ -599,3 +599,25 @@ test( 'setValue', 2, function() {
   ok( ret === v, "return value has correct reference" );
   deepEqual( v, Bump.Vector3.create( 5, 1, 9 ), "correct result" );
 } );
+
+test( 'getSkewSymmetricMatrix', 80, function() {
+  var v0 = Bump.Vector3.create(),
+  v1 = Bump.Vector3.create(),
+  v2 = Bump.Vector3.create(),
+  vec,
+  x,
+  y,
+  z;
+
+  for( var i = 0; i < 20; i++ ) {
+    x = Math.random();
+    y = Math.random();
+    z = Math.random();
+    vec = Bump.Vector3.create( x, y, z );
+    vec.getSkewSymmetricMatrix( v0, v1, v2 );
+    deepEqual( vec, Bump.Vector3.create( x, y, z ), "context vector unchanged" );
+    deepEqual( v0, Bump.Vector3.create( 0, -z, y ), "matrix column 0 correct" );
+    deepEqual( v1, Bump.Vector3.create( z, 0, -x ), "matrix column 1 correct" );
+    deepEqual( v2, Bump.Vector3.create( -y, x, 0 ), "matrix column 2 correct" );
+  }
+} );
