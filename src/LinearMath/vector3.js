@@ -284,7 +284,8 @@
         return Bump.Vector3.create().absolute( this ).max();
       },
 
-      // Linearly interpolate between the two vectors
+      // Linearly interpolate between the two vectors and place the
+      // result in this
       setInterpolate3 : function( vec, vec2, rt ) {
         var s = 1 - rt;
         this.x = s * vec.x + rt * vec2.x;
@@ -294,10 +295,13 @@
         return this;
       },
 
-      // not sure if this needs to exist as well as setInterpolate3...
-      // also, change how this is done
-      lerp : function( vec, vec2, t ) {
-        return this.setInterpolate3( vec, vec2, t );
+      // Linearly interpolate between this and vec, place the result in this
+      lerp : function( vec, t ) {
+        this.x += ( vec.x - this.x ) * t;
+        this.y += ( vec.y - this.y ) * t;
+        this.z += ( vec.z - this.z ) * t;
+
+        return this;
       },
 
       // element-wise comparison of vectors ( note : ignores w values )
