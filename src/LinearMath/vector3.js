@@ -204,9 +204,21 @@
         return this;
       },
 
-      // hmmm what happens if this == vec or this == vec2 ?
-      // seems dangerous
+      // compute cross product of vec and vec2, store result in this
       cross: function( vec, vec2 ) {
+        if( this === vec || this === vec2 ){
+          // just in case
+          var x = vec.y * vec2.z - vec.z * vec2.y,
+          y = vec.z * vec2.x - vec.x * vec2.z,
+          z = vec.x * vec2.y - vec.y * vec2.x;
+
+          this.x = x;
+          this.y = y;
+          this.z = z;
+
+          return this;
+        }
+
         this.x = vec.y * vec2.z - vec.z * vec2.y;
         this.y = vec.z * vec2.x - vec.x * vec2.z;
         this.z = vec.x * vec2.y - vec.y * vec2.x;
@@ -280,8 +292,8 @@
 
       // not sure if this needs to exist as well as setInterpolate3...
       // also, change how this is done
-      lerp : function( vec, vec2, t, dest ) {
-        return this.setInterpolate3( vec, vec2, t, dest );
+      lerp : function( vec, vec2, t ) {
+        return this.setInterpolate3( vec, vec2, t );
       },
 
       // element-wise comparison of vectors ( note : ignores w values )
