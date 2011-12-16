@@ -44,6 +44,10 @@
 
     members: {
 
+      clone: function( ) {
+        return Bump.Vector3.create( this.x, this.y, this.z );
+      },
+
       add: function( vec, vec2 ) {
         this.x = vec.x + vec2.x;
         this.y = vec.y + vec2.y;
@@ -354,6 +358,13 @@
 
       fuzzyZero : function() {
         return this.length2() < Bump.SIMD_EPSILON;
+      }
+    },
+
+    typeMembers: {
+
+      clone: function( vec ) {
+        return this.create( vec.x, vec.y, vec.z );
       }
     }
   } );
