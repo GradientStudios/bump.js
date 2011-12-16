@@ -518,3 +518,41 @@ test( 'closest', 7, function() {
   equal( Bump.Vector3.create( 4, 1, -3 ).closest(), 4 );
   equal( Bump.Vector3.create( -2, -3, -1 ).closest(), 3 );
 } );
+
+test( 'setInterpolate3', 5, function() {
+  var right = Bump.Vector3.create( 1, 0, 0 ),
+  up = Bump.Vector3.create( 0, 1, 0 ),
+  forward = Bump.Vector3.create( 0, 0, 1 ),
+  lerped = Bump.Vector3.create(),
+  ret;
+
+  ret = lerped.setInterpolate3( right, up, 0.5 );
+  ok( ret === lerped, "return value references correct vector" );
+  deepEqual( right, Bump.Vector3.create( 1, 0, 0 ), "original unchanged" );
+  ok( lerped.subtractSelf( Bump.Vector3.create( 0.5, 0.5, 0 ) ).fuzzyZero(),
+      "correct result" );
+
+  ret = up.setInterpolate3( up, forward, 0.3 );
+  ok( ret === up, "return value references correct vector" );
+  ok( up.subtractSelf( Bump.Vector3.create( 0, 0.7, 0.3 ) ).fuzzyZero(),
+      "in place: correct result" );
+} );
+
+test( 'lerp', 5, function() {
+  var right = Bump.Vector3.create( 1, 0, 0 ),
+  up = Bump.Vector3.create( 0, 1, 0 ),
+  forward = Bump.Vector3.create( 0, 0, 1 ),
+  lerped = Bump.Vector3.create(),
+  ret;
+
+  ret = lerped.lerp( right, up, 0.5 );
+  ok( ret === lerped, "return value references correct vector" );
+  deepEqual( right, Bump.Vector3.create( 1, 0, 0 ), "original unchanged" );
+  ok( lerped.subtractSelf( Bump.Vector3.create( 0.5, 0.5, 0 ) ).fuzzyZero(),
+      "correct result" );
+
+  ret = up.lerp( up, forward, 0.3 );
+  ok( ret === up, "return value references correct vector" );
+  ok( up.subtractSelf( Bump.Vector3.create( 0, 0.7, 0.3 ) ).fuzzyZero(),
+      "in place: correct result" );
+} );
