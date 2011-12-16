@@ -2,7 +2,8 @@
 	"files": {
 		"dist/bump": {
 			"src": [
-				"src/bump.js"
+				"src/bump.js",
+                                "src/LinearMath/vector3.js"
 			],
 			"prehint": true,
 			"posthint": true,
