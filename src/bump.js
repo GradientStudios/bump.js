@@ -47,7 +47,9 @@ this.Bump = {};
     options = options || {};
     options.init = options.init || function(){};
 
-    var exports = Object.create( Type.prototype ),
+    var exports = Object.create(
+          Type.prototype,
+          options.typeProperties || {} ),
         parent = ( options.parent || {} ).prototype || {},
         members = options.members || {},
         properties = options.properties || {},
