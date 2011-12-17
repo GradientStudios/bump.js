@@ -44,8 +44,12 @@
 
     members: {
 
-      clone: function( ) {
-        return Bump.Vector3.create( this.x, this.y, this.z );
+      clone: function( v ) {
+        this.x = v.x;
+        this.y = v.y;
+        this.z = v.z;
+        this.w = 0;
+        return this;
       },
 
       add: function( vec, vec2 ) {
