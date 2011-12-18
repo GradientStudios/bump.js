@@ -6,13 +6,13 @@ test( 'Matrix3x3 exists', function() {
 
 module( 'Bump.Matrix3x3 basic' );
 
-test( 'instantiation', function() {
-  // create
+test( 'create' , function() {
   ok( Bump.Matrix3x3.create, 'create exists' );
+  ok( typeof Bump.Matrix3x3.create() === 'object', 'creates an object' );
 
   var a = Bump.Matrix3x3.create(),
       b = Bump.Matrix3x3.create();
-  ok( typeof a === 'object', 'creates an object' );
+
   ok( a !== b, 'creates different objects' );
   deepEqual( a, b, 'creates similar objects' );
 
@@ -40,12 +40,44 @@ test( 'instantiation', function() {
         a.m31 === 0 && a.m32 === 0 && a.m33 === 0 );
   }
 
-  // getIdentity
+  var c = Bump.Matrix3x3.create(
+    1, 2, 3,
+    4, 5, 6,
+    7, 8/*0*/
+  );
+
+  if ( c.m_el0 ) {
+    ok( c.m_el0.x === 1 && c.m_el0.y === 2 && c.m_el0.z === 3 &&
+        c.m_el1.x === 4 && c.m_el1.y === 5 && c.m_el1.z === 6 &&
+        c.m_el2.x === 7 && c.m_el2.y === 8 && c.m_el2.z === 0 );
+  }
+
+  if ( c.m_el ) {
+    ok( c.m_el[0].x === 1 && c.m_el[0].y === 2 && c.m_el[0].z === 3 &&
+        c.m_el[1].x === 4 && c.m_el[1].y === 5 && c.m_el[1].z === 6 &&
+        c.m_el[2].x === 7 && c.m_el[2].y === 8 && c.m_el[2].z === 0 );
+  }
+
+  if ( c.m ) {
+    deepEqual( c.m, [ 1, 2, 3,
+                      4, 5, 6,
+                      7, 8, 0 ] );
+  }
+
+  if ( c.m11 ) {
+    ok( c.m11 === 1 && c.m12 === 2 && c.m13 === 3 &&
+        c.m21 === 4 && c.m22 === 5 && c.m23 === 6 &&
+        c.m31 === 7 && c.m32 === 8 && c.m33 === 0 );
+  }
+});
+
+test( 'getIdentity', function() {
   ok( Bump.Matrix3x3.getIdentity, 'getIdentity exists' );
+  ok( typeof Bump.Matrix3x3.getIdentity() === 'object', 'creates an object' );
+
   var c = Bump.Matrix3x3.getIdentity(),
       d = Bump.Matrix3x3.getIdentity();
 
-  ok( typeof c === 'object', 'creates an object' );
   ok( c !== d, 'creates different objects' );
   deepEqual( c, d, 'creates similar objects' );
 
@@ -72,16 +104,61 @@ test( 'instantiation', function() {
         c.m21 === 0 && c.m22 === 1 && c.m23 === 0 &&
         c.m31 === 0 && c.m32 === 0 && c.m33 === 1 );
   }
-
-  // clone
-  ok( Bump.Matrix3x3.clone, 'clone exists' );
-  var e = Bump.Matrix3x3.clone( c );
-
-  ok( e !== c, 'clone creates new object' );
-  deepEqual( e, c, 'clone copies object' );
 });
 
-test( 'accessors', function() {
+test( 'setValue', function() {
+  ok( Bump.Matrix3x3.prototype.setValue, 'setValue exists' );
+  ok( Bump.Matrix3x3.create().setValue, 'setValue exists' );
+
+  var a = Bump.Matrix3x3.getIdentity(),
+      b = Bump.Matrix3x3.create();
+
+  b.setValue( 1, 0, 0,
+              0, 1, 0,
+              0, 0, 1 );
+  deepEqual( a, b );
+});
+
+test( 'operator[] property', function() {
+  ok( '0' in Bump.Matrix3x3.prototype, '0 property exists' );
+  ok( '1' in Bump.Matrix3x3.prototype, '1 property exists' );
+  ok( '2' in Bump.Matrix3x3.prototype, '2 property exists' );
+
+  var a = Bump.Matrix3x3.create( 1, 2, 3, 4, 5, 6, 7, 8, 9 );
+
+  deepEqual( a[0], Bump.Vector3.create( 1, 2, 3 ) );
+  deepEqual( a[1], Bump.Vector3.create( 4, 5, 6 ) );
+  deepEqual( a[2], Bump.Vector3.create( 7, 8, 9 ) );
+
+  var a0 = a[0],
+      a1 = a[1],
+      a2 = a[2];
+
+  a[0] = Bump.Vector3.create( 10, 11, 12 );
+  a[1] = Bump.Vector3.create( 13, 14, 15 );
+  a[2] = Bump.Vector3.create( 16, 17, 18 );
+
+  strictEqual( a0, a[0], 'assignment does not change underlying object' );
+  strictEqual( a1, a[1], 'assignment does not change underlying object' );
+  strictEqual( a2, a[2], 'assignment does not change underlying object' );
+
+  deepEqual( a[0], Bump.Vector3.create( 10, 11, 12 ) );
+  deepEqual( a[1], Bump.Vector3.create( 13, 14, 15 ) );
+  deepEqual( a[2], Bump.Vector3.create( 16, 17, 18 ) );
+});
+
+test( 'clone', function() {
+  ok( Bump.Matrix3x3.clone, 'clone exists' );
+
+  var a = Bump.Matrix3x3.getIdentity(),
+      b = Bump.Matrix3x3.clone( a ),
+      c = Bump.Matrix3x3.clone( a );
+
+  notStrictEqual( a, b, 'clone creates new object' );
+  deepEqual( a, b, 'clone copies object' );
+});
+
+test( 'getColumn', function() {
   var a = Bump.Matrix3x3.getIdentity(),
       tmp = Bump.Vector3.create();
 
@@ -93,6 +170,11 @@ test( 'accessors', function() {
 
   ok( tmp === a.getColumn( 2, tmp ), 'getColumn returns reference to passed in Vector3' );
   deepEqual( tmp, Bump.Vector3.create( 0, 0, 1 ) );
+});
+
+test( 'getRow', function() {
+  var a = Bump.Matrix3x3.getIdentity(),
+      tmp = Bump.Vector3.create();
 
   ok( tmp === a.getRow( 0, tmp ), 'getRow returns reference to passed in Vector3' );
   deepEqual( tmp, Bump.Vector3.create( 1, 0, 0 ) );
@@ -104,12 +186,14 @@ test( 'accessors', function() {
   deepEqual( tmp, Bump.Vector3.create( 0, 0, 1 ) );
 });
 
-test( 'setters', function() {
+test( 'setIdentity', function() {
   var a = Bump.Matrix3x3.getIdentity(),
       b = Bump.Matrix3x3.create().setIdentity();
 
   deepEqual( a, b, 'getIdentity and setIdentity produce the same matrix' );
+});
 
+test( 'member clone', function() {
   var c = Bump.Matrix3x3.create( 1, 2, 3, 4, 5, 6, 7, 8, 9 ),
       d = Bump.Matrix3x3.clone( c ),
       dRef = d,
