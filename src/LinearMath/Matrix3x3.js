@@ -27,17 +27,17 @@
     properties: {
       0: {
         get: function() { return this.m_el0; },
-        set: function( vec3 ) { this.m_el0 = vec3; }
+        set: function( vec3 ) { this.m_el0.clone( vec3 ); }
       },
 
       1: {
         get: function() { return this.m_el1; },
-        set: function( vec3 ) { this.m_el1 = vec3; }
+        set: function( vec3 ) { this.m_el1.clone( vec3 ); }
       },
 
       2: {
         get: function() { return this.m_el2; },
-        set: function( vec3 ) { this.m_el2 = vec3; }
+        set: function( vec3 ) { this.m_el2.clone( vec3 ); }
       }
     },
 
