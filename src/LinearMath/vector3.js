@@ -16,11 +16,13 @@
       this.w = w || 0;
     },
 
-    /* Adding properties 0, 1, 2, 3 to provide array-like access.
-     * Note that using these properties is much slower than accessing
-     * the members directly.
-     */
+    // ## Properties
     properties: {
+      // The properties 0, 1, 2, 3 provide array-like access, emulating
+      // `btVector3`'s `operator[]` overload.
+      // Note that using these properties is much slower than accessing
+      // the members directly or by name.
+
       0: {
         get: function() { return this.x; },
         set: function( v ) { this.x = v; }
@@ -42,18 +44,25 @@
       }
     },
 
+    // ## Member functions
     members: {
 
-      clone: function( v ) {
-        this.x = v.x;
-        this.y = v.y;
-        this.z = v.z;
-        this.w = 0;
-        return this;
+      // Clones `this` vector into `dest`. If `dest` is not provided,
+      // a new Vector3 is created and returned.
+      clone: function( dest ) {
+        if( dest ) {
+          dest.x = this.x;
+          dest.y = this.y;
+          dest.z = this.z;
+          dest.w = this.w;
+          return dest;
+        }
+        return Bump.Vector3.create( this.x, this.y, this.z );
       },
 
-      // add this to v, return result in dest if provided
-      // if not, a new vector3 is created and returned
+      // Add `this` to `vec`, storing the result in `dest` if provided.
+      // If not, a new Vector3 is created and returned.
+      // This function is analogous to `btVector3`'s `operator+`.
       add: function( vec, dest ) {
         if( dest ) {
           dest.x = this.x + vec.x;
@@ -66,7 +75,8 @@
                                     this.z + vec.z );
       },
 
-      // this = this + v
+      // Add `this` vector to `v`, storing the result in `this`.
+      // This function is analogous to `btVector3`'s `operator+=`.
       addSelf: function( v ) {
         this.x += v.x;
         this.y += v.y;
@@ -74,6 +84,9 @@
         return this;
       },
 
+      // Subtract `vec` from `this`, storing thee result in `dest` if provided.
+      // If not, a new Vector3 is created and returned.
+      // This function is analogous to `btVector3`'s `operator-`.
       subtract: function( vec, dest ) {
         if( dest ) {
           dest.x = this.x - vec.x;
@@ -86,8 +99,8 @@
                                     this.z - vec.z );
       },
 
-      // subtract v from this, return result in dest if provided
-      // if not, a new vector3 is created and returned
+      // Subtract `v` from `this`, storing the result in `this`.
+      // This function is analogous to `btVector3`'s `operator-=`.
       subtractSelf: function( v ) {
         this.x -= v.x;
         this.y -= v.y;
@@ -95,8 +108,9 @@
         return this;
       },
 
-      // multiply this by scalar
-      // store result in dest if provided, create new vector3 if not
+      // Multiply `this` vector by the given `scalar`, storing result in `dest`
+      // if provided. If not, a new Vector3 is created and returned.
+      // This function is analogous to `btVector3`'s `operator*` for `btScalar`.
       multiply: function( scalar, dest ) {
         if( dest ) {
           dest.x = this.x * scalar;
@@ -109,6 +123,8 @@
                                     this.z * scalar );
       },
 
+      // Multiply `this` by the given `scalar`, storing the result in `this`.
+      // This function is analogous to `btVector3`'s `operator*=` for `btScalar`.
       multiplySelf: function( scalar ) {
         this.x *= scalar;
         this.y *= scalar;
@@ -116,8 +132,10 @@
         return this;
       },
 
-      // element-wise multiplication: multiply this by the elements of vec
-      // store result in dest if provided, create new vector3 if not
+      // Performs element-wise multiplication, multiply the elements of `this` by
+      // the corresponding elements of `vec`, and storing the result in `dest` if
+      // provided. If not, a new Vector3 is created and returned.
+      // This function is analogous to `btVector3`'s `operator*` for `btVector3`.
       scale: function( vec, dest ) {
         if( dest ) {
           dest.x = this.x * vec.x;
@@ -130,7 +148,10 @@
                                     this.z * vec.z );
       },
 
-      // element-wise multiplication in place: this = this * vec
+      // Performs in-place element-wise multiplication, multiply the elements of
+      // `this` by the corresponding elements of `vec`, and storing the result
+      // in `this`.
+      // This function is analogous to `btVector3`'s `operator*=` for `btVector3`.
       scaleSelf: function( vec ) {
         this.x *= vec.x;
         this.y *= vec.y;
@@ -138,8 +159,9 @@
         return this;
       },
 
-      // scalar division : divide this by scalar
-      // store result in dest if provided, else create new vector3
+      // Divides `this` vector by the given `scalar`, storing the result in `dest`
+      // if provided. If not, a new Vector3 is created and returned.
+      // This function is analogous to `btVector3`'s `operator/` for `btScalar`.
       divide: function( scalar, dest ) {
         if( dest ) {
           dest.x = this.x / scalar;
@@ -152,7 +174,8 @@
                                     this.z / scalar );
       },
 
-      // in-place scalar division
+      // Divides `this` vector by the given `scalar`, storing the result in `this`.
+      // This function is analogous to `btVector3`'s `operator/=` for `btScalar`.
       divideSelf: function( scalar ) {
         this.x /= scalar;
         this.y /= scalar;
@@ -160,9 +183,10 @@
         return this;
       },
 
-      // element-wise vector division : divide this by elements of vec
-      // store result in dest if provided, else create new vector3
-      // not sure on this naming convention
+      // Performs element-wise division, dividing the elements of `this` by
+      // the corresponding elements of `vec`, and storing the result in `dest` if
+      // provided. If not, a new Vector3 is created and returned.
+      // This function is analogous to `btVector3`'s `operator/` for `btVector3`.
       inverseScale: function( vec, dest ) {
         if( dest ) {
           dest.x = this.x / vec.x;
@@ -175,8 +199,10 @@
                                     this.z / vec.z );
       },
 
-      // element-wise vector division in place:
-      // this = this / vec
+      // Performs in-place element-wise division, dividing the elements of
+      // `this` by the corresponding elements of `vec`, and storing the result
+      // in `this`.
+      // This function is analogous to `btVector3`'s `operator/=` for `btVector3`.
       inverseScaleSelf: function( vec ) {
         this.x /= vec.x;
         this.y /= vec.y;
@@ -184,37 +210,41 @@
         return this;
       },
 
-      // dot product between this vector and the provided one
+      // Computes and returns the dot product of `this` vector and `vec`.
       dot: function( vec ) {
         return this.x * vec.x + this.y * vec.y + this.z * vec.z;
       },
 
-      // squared magnitude of this vector
+      // Computes and returns the squared magnitude of `this` vector.
       length2: function() {
         return this.x * this.x + this.y * this.y + this.z * this.z;
       },
 
-      // magnitude of this vector
+      // Computes and returns the magnitude of `this` vector.
       length: function() {
         return Math.sqrt( this.x * this.x +
                           this.y * this.y +
                           this.z * this.z);
       },
 
-      // squared distance between this vector and vec
+      // Computes and returns the squared distance between
+      // `this` vector and `vec`.
       distance2: function( vec ) {
         return vec.subtract( this ).length2();
       },
 
-      // distance between this vector and vec
+
+      // Computes and returns the squared distance between
+      // `this` vector and `vec`.
       distance: function( vec ) {
         return vec.subtract( this ).length();
       },
 
-      // Normalize this vector in place, safely checking for cases
+      // Normalizes `this` vector in place, safely checking for cases
       // of division by zero.
-      // Altered slightly to avoid index [] notation.
       safeNormalize: function( ) {
+        // Altered slightly from `btVector3`'s original source to to
+        // avoid index [] notation, which is slow.
         var absMax = this.absolute().max();
 
         if( absMax > 0 ) {
@@ -225,20 +255,20 @@
         return this;
       },
 
-      // Normalize this vector in place.
+      // Normalizes `this` vector in place.
       normalize: function( ) {
         return this.divideSelf( this.length() );
       },
 
-      // Compute normalized version of this vector. Store result in dest
-      // if provided, create new vector3 if not.
+      // Computes normalized version of `this` vector, stores result in
+      // `dest` if provided. If not, creates and returns new Vector3.
       normalized: function( dest ) {
         // divide function will check if dest is null
         return this.divide( this.length(), dest );
       },
 
-      // Return a rotated version of this vector, rotating around wAxis by angle
-      // Store result in dest if provided, else create new Vector3.
+      // Returns a rotated version of `this` vector, rotating around `wAxis` by `angle`.
+      // Stores result in `dest` if provided. If not, creates and returns a new Vector3.
       rotate: function( wAxis, angle, dest ) {
         // wAxis must be a unit length vector
         var o = wAxis.multiply( wAxis.dot( this ), dest ), // new temp if dest unspecified
@@ -248,15 +278,16 @@
         return o.addSelf( x.add( y ) );
       },
 
-      // Return angle between this vector and vec.
+      // Returns angle between `this` vector and `vec`.
       angle: function( v ) {
         var s = Math.sqrt( this.length2() * v.length2() );
         // btFullAssert( s != btScalar( 0.0 ) )
         return Math.acos( this.dot( v ) / s );
       },
 
-      // Return a vector3 with the absolute values of this vector's elements.
-      // Store the result in dest if provided, else create a new Vector3.
+      // Returns a Vector3 with the absolute values of `this` vector's elements.
+      // Stores the result in `dest` if provided. If not, a new Vector3 is
+      // created and returned.
       absolute: function( dest ) {
         if ( dest ) {
           dest.x = Math.abs( this.x );
@@ -270,9 +301,10 @@
                                     Math.abs( this.z ) );
       },
 
-      // Compute cross product of this and vec.
-      // Store result in dest if provided, else create new Vector3.
-      // Note that this will fail if dest === this
+      // Computes the cross product of `this` and `vec`, storing the result in
+      // `dest` if provided. If not a new Vector3 is created and returned.
+      // Note that this will fail if `dest` === `this`. Instead, use the
+      // `crossSelf` function.
       cross: function( vec, dest ) {
         if( dest ) {
           dest.x = this.y * vec.z - this.z * vec.y;
@@ -286,7 +318,8 @@
                                     this.x * vec.y - this.y * vec.x );
       },
 
-      // Compute cross product of this and vec, storing result in this
+      // Computes the cross product of `this` and `vec`, storing the result
+      // in `this`. This function is not a part of the original `btVector3`.
       crossSelf: function( vec ) {
         var x = this.y * vec.z - this.z * vec.y,
         y = this.z * vec.x - this.x * vec.z,
@@ -299,51 +332,57 @@
         return this;
       },
 
-      // return triple scalar product between this, vec, and vec2
+      // Returns the triple scalar product between `this`, `vec`, and `vec2`.
       triple: function( vec, vec2 ) {
         return this.x * ( vec.y * vec2.z - vec.z * vec2.y ) +
           this.y * ( vec.z * vec2.x - vec.x * vec2.z ) +
           this.z * ( vec.x * vec2.y - vec.y * vec2.x );
       },
 
-      // return the array index of the minimum value (0,1,2)
+      // Returns the array index (0, 1, or 2) of the minimum value in `this`.
+      // Note that accessing vector properties using [] notation is slow and
+      // should be avoided.
       minAxis: function() {
         return this.x < this.y ?
           ( this.x < this.z ? 0 : 2 ) :
           ( this.y < this.z ? 1 : 2 );
       },
 
-      // return the property of the minimum value ('x', 'y', 'z')
-      // added because property access by name is faster than by index
+      // Returns the member name ('x', 'y', 'z') of the minimum value in `this`.
+      // This function was added because property access by name is faster than
+      // by array index.
       minProperty: function() {
         return this.x < this.y ?
           ( this.x < this.z ? 'x' : 'z' ) :
           ( this.y < this.z ? 'y' : 'z' );
       },
 
-      // return the min value
+      // Returns the minimum value stored in `this`, (not considering w).
       min: function() {
         return this.x < this.y ?
           ( this.x < this.z ? this.x : this.z ) :
           ( this.y < this.z ? this.y : this.z );
       },
 
-      // return the array index of the maximum value (0,1,2)
+      // Returns the array index (0, 1, or 2) of the maximum value in `this`.
+      // Note that accessing vector properties using [] notation is slow and
+      // should be avoided.
       maxAxis: function() {
         return this.x > this.y ?
           ( this.x > this.z ? 0 : 2 ) :
           ( this.y > this.z ? 1 : 2 );
       },
 
-      // return the property of the minimum value ('x', 'y', 'z')
-      // added because property access by name is faster than by index
+      // Returns the member name ('x', 'y', 'z') of the maximum value in `this`.
+      // This function was added because property access by name is faster than
+      // by array index.
       maxProperty: function() {
         return this.x > this.y ?
           ( this.x > this.z ? 'x' : 'z' ) :
           ( this.y > this.z ? 'y' : 'z' );
       },
 
-      // return the max value
+      // Returns the maximum value stored in `this`.
       max: function() {
         return this.x > this.y ?
           ( this.x > this.z ? this.x : this.z ) :
@@ -353,24 +392,34 @@
       /* Note: the furthestAxis and closestAxis functions seem
        *  backwards...
        */
+      // Returns the array index (0, 1, or 2) of the "furthest" value in `this`,
+      // which `btVector3` defines as the axis with the least absolute value.
+      // Note that accessing vector properties using [] notation is slow and
+      // should be avoided.
       furthestAxis: function() {
         return this.absolute().minAxis();
       },
 
+      // Returns the "furthest" value stored in `this`.
       furthest: function() {
         return this.absolute().min();
       },
 
+      // Returns the array index (0, 1, or 2) of the "closest" value in `this`,
+      // which `btVector3` defines as the axis with the greatest absolute value.
+      // Note that accessing vector properties using [] notation is slow and
+      // should be avoided.
       closestAxis: function() {
         return this.absolute().maxAxis();
       },
 
+      // Returns the "closest" value stored in `this`.
       closest: function() {
         return this.absolute().max();
       },
 
-      // Linearly interpolate between the two vectors and place the
-      // result in this
+      // Linearly interpolate between the vectors `vec` and `vec2`, using `rt`
+      // as the weight of `vec`. The result is stored in `this`.
       setInterpolate3 : function( vec, vec2, rt ) {
         var s = 1 - rt;
         this.x = s * vec.x + rt * vec2.x;
@@ -380,8 +429,9 @@
         return this;
       },
 
-      // Linearly interpolate between this and vec
-      // Store the result in dest if provided, else create a new Vector3.
+      // Linearly interpolates between `this` and `vec`, using t as the weight
+      // of 'vec'. Stores the result in dest if provided. If not, a new Vector3
+      // is created and returned.
       lerp : function( vec, t, dest ) {
         if( dest ) {
           dest.x = this.x + ( vec.x - this.x ) * t;
@@ -395,16 +445,26 @@
                                     this.z + ( vec.z - this.z ) * t );
       },
 
-      // element-wise comparison of vectors ( note : ignores w values )
+      // Perform element-wise comparison of `this` and `vec` and return true if
+      // the two vectors are equal.
+      // This function is analogous to `btVector3`'s `operator==`.
+      // Note that values are compared directly, with no consideration of floating point
+      // rounding errors. Also note that the comparison ignores w values.
       equal : function( vec ) {
         return ( this.x == vec.x ) && ( this.y == vec.y ) && ( this.z == vec.z );
       },
 
+      // Perform element-wise comparison of `this` and `vec`, and return true if
+      // the two vectors are not equal.
+      // This function is analogous to `btVector3`'s `operator!=`.
+      // Note that values are compared directly, with no consideration of floating point
+      // rounding errors. Also note that the comparison ignores w values.
       notEqual : function( vec ) {
         return ( this.x != vec.x ) || ( this.y != vec.y ) || ( this.z != vec.z );
       },
 
-      // set elements to be the max of the original elements and vec's elements
+      // Clamp each value of `this` to be less than or equal to the maximum value
+      // specified by the corresponding element of `vec`.
       setMax : function( vec ) {
         this.x = Math.max( this.x, vec.x );
         this.y = Math.max( this.y, vec.y );
@@ -414,7 +474,8 @@
         return this;
       },
 
-      // set elements to be the min of the original elements and vec's elements
+      // Clamp each value of `this` to be greater than or equal to the minimum
+      // value specified by the corresponding element of `vec`.
       setMin : function( vec ) {
         this.x = Math.min( this.x, vec.x );
         this.y = Math.min( this.y, vec.y );
@@ -424,7 +485,8 @@
         return this;
       },
 
-      // set elements equal to x, y, z
+      // Set the elements of `this` equal to the specified `x`, `y`, `z` values.
+      // Note that this also sets `this.w` to 0.
       setValue : function( x, y, z ) {
         this.x = x;
         this.y = y;
@@ -434,30 +496,48 @@
         return this;
       },
 
-      // set the column(?) vectors v0, v1, v2 equal to the columns of the skew symmetric matrix
+      // Set the column vectors `v0`, `v1`, and `v2` equal to the columns of
+      // the skew symmetric matrix defined by `this` as follows :
+      //
+      //     ┌                ┐    ┌                           ┐
+      //     │ v0.x v1.x v2.x │    │ 0        this.z   -this.y │
+      //     │ v0.y v1.y v2.y │ =  │ -this.z  0        this.x  │
+      //     │ v0.z v1.z v2.z │    │ this.y   -this.x  0       │
+      //     └                ┘    └                           ┘
+      //
       getSkewSymmetricMatrix : function( v0, v1, v2 ) {
         v0.setValue( 0, -this.z, this.y );
         v1.setValue( this.z, 0, -this.x );
         v2.setValue( -this.y, this.x, 0 );
       },
 
+      // Set the values of `this` matrix to 0, including w.
       setZero : function() {
-        this.setValue( 0, 0, 0 );
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+        this.w = 0;
 
         return this;
       },
 
+      // Return true if all elements of `this` matrix are 0.
+      // Note that this does not include w.
       isZero : function() {
         return ( this.x === 0 ) && ( this.y === 0 ) && ( this.z === 0 );
       },
 
+      // Return true if `this` vector is "close" to zero, meaning that
+      // its squared magnitude is less than `Bump.SIMD_EPSILON`.
       fuzzyZero : function() {
         return this.length2() < Bump.SIMD_EPSILON;
       }
     },
 
+    // ## Type member functions
     typeMembers: {
 
+      // Create and return a clone of `vec`.
       clone: function( vec ) {
         return this.create( vec.x, vec.y, vec.z );
       }
