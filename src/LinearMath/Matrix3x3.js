@@ -47,15 +47,14 @@
     members: {
       // ### Basic utilities
 
-      // Clones `this` matrix in to `dest`.
+      // Clones `this` matrix into `dest`.
       clone: function( dest ) {
         dest = dest || Bump.Matrix3x3.create();
-        dest.setValue(
+        return dest.setValue(
           this.m_el0.x, this.m_el0.y, this.m_el0.z,
           this.m_el1.x, this.m_el1.y, this.m_el1.z,
           this.m_el2.x, this.m_el2.y, this.m_el2.z
         );
-        return this;
       },
 
       // Puts the `i`th column into the given [`Bump.Vector3`](vector3.html)
@@ -72,8 +71,7 @@
       // `dest`.
       getRow: function( i, dest ) {
         dest = dest || Bump.Vector3.create();
-        dest.clone( this[ i ] );
-        return dest;
+        return dest.clone( this[ i ] );
       },
 
       // Given *exactly* nine arguments in row major order, sets the values of
@@ -105,59 +103,106 @@
 
       // ### Math functions
 
-      // Multiplies the given matrices and stores it in `this` matrix.
+      // Add matrices into `dest`.
+      add: function( m, dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+        return dest.setValue(
+          this.m_el0.x + m.m_el0.x, this.m_el0.y + m.m_el0.y, this.m_el0.z + m.m_el0.z,
+          this.m_el1.x + m.m_el1.x, this.m_el1.y + m.m_el1.y, this.m_el1.z + m.m_el1.z,
+          this.m_el2.x + m.m_el2.x, this.m_el2.y + m.m_el2.y, this.m_el2.z + m.m_el2.z
+        );
+      },
+
+      // Add matrix `m` to `this`.
+      addSelf: function( m ) {
+        return this.setValue(
+          this.m_el0.x + m.m_el0.x, this.m_el0.y + m.m_el0.y, this.m_el0.z + m.m_el0.z,
+          this.m_el1.x + m.m_el1.x, this.m_el1.y + m.m_el1.y, this.m_el1.z + m.m_el1.z,
+          this.m_el2.x + m.m_el2.x, this.m_el2.y + m.m_el2.y, this.m_el2.z + m.m_el2.z
+        );
+      },
+
+      // Subtract matrices into `dest`.
+      subtract: function( m, dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+        return dest.setValue(
+          this.m_el0.x - m.m_el0.x, this.m_el0.y - m.m_el0.y, this.m_el0.z - m.m_el0.z,
+          this.m_el1.x - m.m_el1.x, this.m_el1.y - m.m_el1.y, this.m_el1.z - m.m_el1.z,
+          this.m_el2.x - m.m_el2.x, this.m_el2.y - m.m_el2.y, this.m_el2.z - m.m_el2.z
+        );
+      },
+
+      // Subtract matrix from `this`.
+      subtractSelf: function( m ) {
+        return this.setValue(
+          this.m_el0.x - m.m_el0.x, this.m_el0.y - m.m_el0.y, this.m_el0.z - m.m_el0.z,
+          this.m_el1.x - m.m_el1.x, this.m_el1.y - m.m_el1.y, this.m_el1.z - m.m_el1.z,
+          this.m_el2.x - m.m_el2.x, this.m_el2.y - m.m_el2.y, this.m_el2.z - m.m_el2.z
+        );
+      },
+
+      // Multiplies the given matrices and stores it in `dest` matrix.
       multiplyMatrix: function( m, dest ) {
         dest = dest || Bump.Matrix3x3.create();
-        dest.setValue(
+        return dest.setValue(
           m.tdotx( this.m_el0 ), m.tdoty( this.m_el0 ), m.tdotz( this.m_el0 ),
           m.tdotx( this.m_el1 ), m.tdoty( this.m_el1 ), m.tdotz( this.m_el1 ),
           m.tdotx( this.m_el2 ), m.tdoty( this.m_el2 ), m.tdotz( this.m_el2 )
         );
-        return dest;
       },
 
       // Multiplies `this` matrix and the given matrix and stores it in
-      // `this` matrix.
+      // `dest` matrix.
       multiplyMatrixSelf: function( m ) {
-        this.setValue(
+        return this.setValue(
           m.tdotx( this.m_el0 ), m.tdoty( this.m_el0 ), m.tdotz( this.m_el0 ),
           m.tdotx( this.m_el1 ), m.tdoty( this.m_el1 ), m.tdotz( this.m_el1 ),
           m.tdotx( this.m_el2 ), m.tdoty( this.m_el2 ), m.tdotz( this.m_el2 )
         );
-        return this;
       },
 
       // Multiplies `this` matrix with vector `v` and stores it in `dest`.
       //
       //     ┌             ┐   ┌    ┐
-      //     │ t11 t12 t13 │ * │ v1 │
-      //     │ t21 t22 t23 │   │ v2 │
-      //     │ t31 t32 t33 │   │ v3 │
+      //     │ t11 t12 t13 │ * │ vx │
+      //     │ t21 t22 t23 │   │ vy │
+      //     │ t31 t32 t33 │   │ vz │
       //     └             ┘   └    ┘
       //
       multiplyVector: function( v, dest ) {
         dest = dest || Bump.Vector3.create();
-        dest.setValue(
+        return dest.setValue(
           this.m_el0.dot( v ),
           this.m_el1.dot( v ),
           this.m_el2.dot( v )
         );
-        return dest;
+      },
+
+      // Get a scaled version of `this` matrix. The components of `s` are
+      // multiplied through the respective columns.
+      scaled: function( s, dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+        return dest.setValue(
+          this.m_el0.x * s.x, this.m_el0.y * s.y, this.m_el0.z * s.z,
+          this.m_el1.x * s.x, this.m_el1.y * s.y, this.m_el1.z * s.z,
+          this.m_el2.x * s.x, this.m_el2.y * s.y, this.m_el2.z * s.z
+        );
       },
 
       // Transposes `v` and multiplies it with `this` matrix and stores it in
       // `dest`.
       //
       //     ┌          ┐   ┌             ┐
-      //     │ v1 v2 v3 │ * │ t11 t12 t13 │
+      //     │ vx vy vz │ * │ t11 t12 t13 │
       //     └          ┘   │ t21 t22 t23 │
       //                    │ t31 t32 t33 │
       //                    └             ┘
       //
       vectorMultiply: function( v, dest ) {
         dest = dest || Bump.Vector3.create();
-        dest.setValue( this.tdotx( v ), this.tdoty( v ), this.tdotz( v ) );
-        return dest;
+        return dest.setValue(
+          this.tdotx( v ), this.tdoty( v ), this.tdotz( v )
+        );
       },
 
       // Multiplies the transpose of `this` matrix with `m` and stores it in
@@ -171,7 +216,7 @@
       //
       transposeTimes: function( m, dest ) {
         dest = dest || Bump.Matrix3x3.create();
-        dest.setValue(
+        return dest.setValue(
           this.m_el0.x * m.m_el0.x + this.m_el1.x * m.m_el1.x + this.m_el2.x * m.m_el2.x,
           this.m_el0.x * m.m_el0.y + this.m_el1.x * m.m_el1.y + this.m_el2.x * m.m_el2.y,
           this.m_el0.x * m.m_el0.z + this.m_el1.x * m.m_el1.z + this.m_el2.x * m.m_el2.z,
@@ -182,7 +227,6 @@
           this.m_el0.z * m.m_el0.y + this.m_el1.z * m.m_el1.y + this.m_el2.z * m.m_el2.y,
           this.m_el0.z * m.m_el0.z + this.m_el1.z * m.m_el1.z + this.m_el2.z * m.m_el2.z
         );
-        return dest;
       },
 
       // Multiplies `this` matrix with the transpose of `m` and stores it in
@@ -196,12 +240,52 @@
       //
       timesTranspose: function( m, dest ) {
         dest = dest || Bump.Matrix3x3.create();
-        dest.setValue(
+        return dest.setValue(
           this.m_el0.dot( m.m_el0 ), this.m_el0.dot( m.m_el1 ), this.m_el0.dot( m.m_el2 ),
           this.m_el1.dot( m.m_el0 ), this.m_el1.dot( m.m_el1 ), this.m_el1.dot( m.m_el2 ),
           this.m_el2.dot( m.m_el0 ), this.m_el2.dot( m.m_el1 ), this.m_el2.dot( m.m_el2 )
         );
-        return dest;
+      },
+
+      // ## Advanced utilities and transformations
+
+      // Get the [determinant](http://en.wikipedia.org/wiki/Determinant) of
+      // `this` matrix.
+      determinant: function() {
+        return this.m_el0.triple( this.m_el1, this.m_el2 );
+      },
+
+      // Computes the [adjugate matrix](http://en.wikipedia.org/wiki/Adjugate_matrix)
+      // of `this` matrix.
+      adjoint: function( dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+        return dest.setValue(
+          this.cofac( 1, 1, 2, 2 ), this.cofac( 0, 2, 2, 1 ), this.cofac( 0, 1, 1, 2 ),
+          this.cofac( 1, 2, 2, 0 ), this.cofac( 0, 0, 2, 2 ), this.cofac( 0, 2, 1, 0 ),
+          this.cofac( 1, 0, 2, 1 ), this.cofac( 0, 1, 2, 0) , this.cofac( 0, 0, 1, 1 )
+        );
+      },
+
+      // Computes a matrix composed of the absolute value of the elements of
+      // `this` matrix.
+      absolute: function( dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+        return dest.setValue(
+          Math.abs( this.m_el0.x ), Math.abs( this.m_el0.y ), Math.abs( this.m_el0.z ),
+          Math.abs( this.m_el1.x ), Math.abs( this.m_el1.y ), Math.abs( this.m_el1.z ),
+          Math.abs( this.m_el2.x ), Math.abs( this.m_el2.y ), Math.abs( this.m_el2.z )
+        );
+      },
+
+      // Computes the [transpose](http://en.wikipedia.org/wiki/Transpose) of
+      // `this` matrix.
+      transpose: function( dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+        return dest.setValue(
+          this.m_el0.x, this.m_el1.x, this.m_el2.x,
+          this.m_el0.y, this.m_el1.y, this.m_el2.y,
+          this.m_el0.z, this.m_el1.z, this.m_el2.z
+        );
       },
 
       // Returns the dot product of the first column and the given vector.
@@ -217,6 +301,11 @@
       // Returns the dot product of the first column and the given vector.
       tdotz: function( v ) {
         return this.m_el0.z * v.x + this.m_el1.z * v.y + this.m_el2.z * v.z;
+      },
+
+      // Compute the matrix cofactor
+      cofac: function( r1, c1, r2, c2 ) {
+        return this[r1][c1] * this[r2][c2] - this[r1][c2] * this[r2][c1];
       },
 
       // ## Non-public, internal methods
