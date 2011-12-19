@@ -159,6 +159,8 @@ test( 'clone', function() {
 });
 
 test( 'getColumn', function() {
+  ok( Bump.Matrix3x3.prototype.getColumn, 'getColumn exists' );
+
   var a = Bump.Matrix3x3.getIdentity(),
       tmp = Bump.Vector3.create();
 
@@ -173,6 +175,8 @@ test( 'getColumn', function() {
 });
 
 test( 'getRow', function() {
+  ok( Bump.Matrix3x3.prototype.getRow, 'getRow exists' );
+
   var a = Bump.Matrix3x3.getIdentity(),
       tmp = Bump.Vector3.create();
 
@@ -187,6 +191,8 @@ test( 'getRow', function() {
 });
 
 test( 'setIdentity', function() {
+  ok( Bump.Matrix3x3.prototype.setIdentity, 'setIdentity exists' );
+
   var a = Bump.Matrix3x3.getIdentity(),
       b = Bump.Matrix3x3.create().setIdentity();
 
@@ -194,13 +200,13 @@ test( 'setIdentity', function() {
 });
 
 test( 'member clone', function() {
+  ok( Bump.Matrix3x3.prototype.clone, 'clone exists' );
+
   var c = Bump.Matrix3x3.create( 1, 2, 3, 4, 5, 6, 7, 8, 9 ),
       d = Bump.Matrix3x3.clone( c ),
       dRef = d,
-      e = Bump.Matrix3x3.create(),
+      e = d.clone(),
       eRef = e;
-
-  e.clone( d );
 
   ok( c !== d, 'Bump.Matrix3x3.clone creates new object' );
   ok( e === eRef, 'this.clone does not create new object' );
