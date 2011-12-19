@@ -270,7 +270,7 @@ test( 'distance function', 1, function() {
 
 test( 'safeNormalize', 3, function() {
   var v1 = Bump.Vector3.create( 2, 0, 0 ).safeNormalize(),
-  v2 = Bump.Vector3.create( 0, 1, -1 );
+  v2 = Bump.Vector3.create( 0, 1, -1 ),
   v3 = Bump.Vector3.create().safeNormalize();
 
   v2.safeNormalize();
