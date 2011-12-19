@@ -164,9 +164,9 @@
       // Multiplies `this` matrix with vector `v` and stores it in `dest`.
       //
       //     ┌             ┐   ┌    ┐
-      //     │ t11 t12 t13 │ * │ v1 │
-      //     │ t21 t22 t23 │   │ v2 │
-      //     │ t31 t32 t33 │   │ v3 │
+      //     │ t11 t12 t13 │ * │ vx │
+      //     │ t21 t22 t23 │   │ vy │
+      //     │ t31 t32 t33 │   │ vz │
       //     └             ┘   └    ┘
       //
       multiplyVector: function( v, dest ) {
@@ -178,11 +178,22 @@
         );
       },
 
+      // Get a scaled version of `this` matrix. The components of `s` are
+      // multiplied through the respective columns.
+      scaled: function( s, dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+        return dest.setValue(
+          this.m_el0.x * s.x, this.m_el0.y * s.y, this.m_el0.z * s.z,
+          this.m_el1.x * s.x, this.m_el1.y * s.y, this.m_el1.z * s.z,
+          this.m_el2.x * s.x, this.m_el2.y * s.y, this.m_el2.z * s.z
+        );
+      },
+
       // Transposes `v` and multiplies it with `this` matrix and stores it in
       // `dest`.
       //
       //     ┌          ┐   ┌             ┐
-      //     │ v1 v2 v3 │ * │ t11 t12 t13 │
+      //     │ vx vy vz │ * │ t11 t12 t13 │
       //     └          ┘   │ t21 t22 t23 │
       //                    │ t31 t32 t33 │
       //                    └             ┘
@@ -236,6 +247,47 @@
         );
       },
 
+      // ## Advanced utilities and transformations
+
+      // Get the [determinant](http://en.wikipedia.org/wiki/Determinant) of
+      // `this` matrix.
+      determinant: function() {
+        return this.m_el0.triple( this.m_el1, this.m_el2 );
+      },
+
+      // Computes the [adjugate matrix](http://en.wikipedia.org/wiki/Adjugate_matrix)
+      // of `this` matrix.
+      adjoint: function( dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+        return dest.setValue(
+          this.cofac( 1, 1, 2, 2 ), this.cofac( 0, 2, 2, 1 ), this.cofac( 0, 1, 1, 2 ),
+          this.cofac( 1, 2, 2, 0 ), this.cofac( 0, 0, 2, 2 ), this.cofac( 0, 2, 1, 0 ),
+          this.cofac( 1, 0, 2, 1 ), this.cofac( 0, 1, 2, 0) , this.cofac( 0, 0, 1, 1 )
+        );
+      },
+
+      // Computes a matrix composed of the absolute value of the elements of
+      // `this` matrix.
+      absolute: function( dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+        return dest.setValue(
+          Math.abs( this.m_el0.x ), Math.abs( this.m_el0.y ), Math.abs( this.m_el0.z ),
+          Math.abs( this.m_el1.x ), Math.abs( this.m_el1.y ), Math.abs( this.m_el1.z ),
+          Math.abs( this.m_el2.x ), Math.abs( this.m_el2.y ), Math.abs( this.m_el2.z )
+        );
+      },
+
+      // Computes the [transpose](http://en.wikipedia.org/wiki/Transpose) of
+      // `this` matrix.
+      transpose: function( dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+        return dest.setValue(
+          this.m_el0.x, this.m_el1.x, this.m_el2.x,
+          this.m_el0.y, this.m_el1.y, this.m_el2.y,
+          this.m_el0.z, this.m_el1.z, this.m_el2.z
+        );
+      },
+
       // Returns the dot product of the first column and the given vector.
       tdotx: function( v ) {
         return this.m_el0.x * v.x + this.m_el1.x * v.y + this.m_el2.x * v.z;
@@ -249,6 +301,11 @@
       // Returns the dot product of the first column and the given vector.
       tdotz: function( v ) {
         return this.m_el0.z * v.x + this.m_el1.z * v.y + this.m_el2.z * v.z;
+      },
+
+      // Compute the matrix cofactor
+      cofac: function( r1, c1, r2, c2 ) {
+        return this[r1][c1] * this[r2][c2] - this[r1][c2] * this[r2][c1];
       },
 
       // ## Non-public, internal methods
