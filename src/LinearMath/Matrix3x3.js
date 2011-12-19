@@ -62,9 +62,9 @@
       // `dest`.
       getColumn: function( i, dest ) {
         dest = dest || Bump.Vector3.create();
-        dest.x = this.m_el[0][i];
-        dest.y = this.m_el[1][i];
-        dest.z = this.m_el[2][i];
+        dest.x = this.m_el0[i];
+        dest.y = this.m_el1[i];
+        dest.z = this.m_el2[i];
         return dest;
       },
 
@@ -103,6 +103,121 @@
                               0, 0, 1 );
       },
 
+      // ### Math functions
+
+      // Multiplies the given matrices and stores it in `this` matrix.
+      multiplyMatrix: function( m, dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+        dest.setValue(
+          m.tdotx( this.m_el0 ), m.tdoty( this.m_el0 ), m.tdotz( this.m_el0 ),
+          m.tdotx( this.m_el1 ), m.tdoty( this.m_el1 ), m.tdotz( this.m_el1 ),
+          m.tdotx( this.m_el2 ), m.tdoty( this.m_el2 ), m.tdotz( this.m_el2 )
+        );
+        return dest;
+      },
+
+      // Multiplies `this` matrix and the given matrix and stores it in
+      // `this` matrix.
+      multiplyMatrixSelf: function( m ) {
+        this.setValue(
+          m.tdotx( this.m_el0 ), m.tdoty( this.m_el0 ), m.tdotz( this.m_el0 ),
+          m.tdotx( this.m_el1 ), m.tdoty( this.m_el1 ), m.tdotz( this.m_el1 ),
+          m.tdotx( this.m_el2 ), m.tdoty( this.m_el2 ), m.tdotz( this.m_el2 )
+        );
+        return this;
+      },
+
+      // Multiplies `this` matrix with vector `v` and stores it in `dest`.
+      //
+      //     ┌             ┐   ┌    ┐
+      //     │ t11 t12 t13 │ * │ v1 │
+      //     │ t21 t22 t23 │   │ v2 │
+      //     │ t31 t32 t33 │   │ v3 │
+      //     └             ┘   └    ┘
+      //
+      multiplyVector: function( v, dest ) {
+        dest = dest || Bump.Vector3.create();
+        dest.setValue(
+          this.m_el0.dot( v ),
+          this.m_el1.dot( v ),
+          this.m_el2.dot( v )
+        );
+        return dest;
+      },
+
+      // Transposes `v` and multiplies it with `this` matrix and stores it in
+      // `dest`.
+      //
+      //     ┌          ┐   ┌             ┐
+      //     │ v1 v2 v3 │ * │ t11 t12 t13 │
+      //     └          ┘   │ t21 t22 t23 │
+      //                    │ t31 t32 t33 │
+      //                    └             ┘
+      //
+      vectorMultiply: function( v, dest ) {
+        dest = dest || Bump.Vector3.create();
+        dest.setValue( this.tdotx( v ), this.tdoty( v ), this.tdotz( v ) );
+        return dest;
+      },
+
+      // Multiplies the transpose of `this` matrix with `m` and stores it in
+      // `dest`.
+      //
+      //     ┌             ┐   ┌             ┐
+      //     │ t11 t21 t31 │ * │ m11 m12 m13 │
+      //     │ t12 t22 t32 │   │ m21 m22 m23 │
+      //     │ t13 t23 t33 │   │ m31 m32 m33 │
+      //     └             ┘   └             ┘
+      //
+      transposeTimes: function( m, dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+        dest.setValue(
+          this.m_el0.x * m.m_el0.x + this.m_el1.x * m.m_el1.x + this.m_el2.x * m.m_el2.x,
+          this.m_el0.x * m.m_el0.y + this.m_el1.x * m.m_el1.y + this.m_el2.x * m.m_el2.y,
+          this.m_el0.x * m.m_el0.z + this.m_el1.x * m.m_el1.z + this.m_el2.x * m.m_el2.z,
+          this.m_el0.y * m.m_el0.x + this.m_el1.y * m.m_el1.x + this.m_el2.y * m.m_el2.x,
+          this.m_el0.y * m.m_el0.y + this.m_el1.y * m.m_el1.y + this.m_el2.y * m.m_el2.y,
+          this.m_el0.y * m.m_el0.z + this.m_el1.y * m.m_el1.z + this.m_el2.y * m.m_el2.z,
+          this.m_el0.z * m.m_el0.x + this.m_el1.z * m.m_el1.x + this.m_el2.z * m.m_el2.x,
+          this.m_el0.z * m.m_el0.y + this.m_el1.z * m.m_el1.y + this.m_el2.z * m.m_el2.y,
+          this.m_el0.z * m.m_el0.z + this.m_el1.z * m.m_el1.z + this.m_el2.z * m.m_el2.z
+        );
+        return dest;
+      },
+
+      // Multiplies `this` matrix with the transpose of `m` and stores it in
+      // `dest`.
+      //
+      //     ┌             ┐   ┌             ┐
+      //     │ t11 t12 t13 │ * │ m11 m21 m31 │
+      //     │ t21 t22 t23 │   │ m12 m22 m32 │
+      //     │ t31 t32 t33 │   │ m13 m23 m33 │
+      //     └             ┘   └             ┘
+      //
+      timesTranspose: function( m, dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+        dest.setValue(
+          this.m_el0.dot( m.m_el0 ), this.m_el0.dot( m.m_el1 ), this.m_el0.dot( m.m_el2 ),
+          this.m_el1.dot( m.m_el0 ), this.m_el1.dot( m.m_el1 ), this.m_el1.dot( m.m_el2 ),
+          this.m_el2.dot( m.m_el0 ), this.m_el2.dot( m.m_el1 ), this.m_el2.dot( m.m_el2 )
+        );
+        return dest;
+      },
+
+      // Returns the dot product of the first column and the given vector.
+      tdotx: function( v ) {
+        return this.m_el0.x * v.x + this.m_el1.x * v.y + this.m_el2.x * v.z;
+      },
+
+      // Returns the dot product of the first column and the given vector.
+      tdoty: function( v ) {
+        return this.m_el0.y * v.x + this.m_el1.y * v.y + this.m_el2.y * v.z;
+      },
+
+      // Returns the dot product of the first column and the given vector.
+      tdotz: function( v ) {
+        return this.m_el0.z * v.x + this.m_el1.z * v.y + this.m_el2.z * v.z;
+      },
 
       // ## Non-public, internal methods
       // **Warning:** May cause undesired side-effects when used. Probably don't
