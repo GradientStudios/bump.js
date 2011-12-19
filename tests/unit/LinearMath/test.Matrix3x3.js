@@ -215,3 +215,127 @@ test( 'member clone', function() {
   deepEqual( c, d, 'all copies are similar' );
   deepEqual( c, e, 'all copies are similar' );
 });
+
+module( 'Bump.Matrix3x3 math' );
+
+test( 'multiplyMatrix', function() {
+  ok( Bump.Matrix3x3.prototype.multiplyMatrix, 'multiplyMatrix exists' );
+
+  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+      aRef = a,
+      aClone = Bump.Matrix3x3.clone( a ),
+      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
+      bRef = b,
+      bClone = Bump.Matrix3x3.clone( b ),
+      answer = Bump.Matrix3x3.create( 273, 455, 97, 243, 235, 77, 244, 205, 75 ),
+      I = Bump.Matrix3x3.getIdentity();
+
+  deepEqual( aClone, a.multiplyMatrix( I ), 'identity serves as identity' );
+  deepEqual( answer, a.multiplyMatrix( b ) );
+
+  deepEqual( b, bClone, 'does not modify b' );
+
+  var newBRef = a.multiplyMatrix( b, b );
+  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
+  deepEqual( answer, b );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+  deepEqual( a, aClone, 'does not modify a' );
+});
+
+test( 'multiplyMatrixSelf', function() {
+  ok( Bump.Matrix3x3.prototype.multiplyMatrixSelf, 'multiplyMatrixSelf exists' );
+
+  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+      aRef = a,
+      aClone = Bump.Matrix3x3.clone( a ),
+      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
+      bRef = b,
+      bClone = Bump.Matrix3x3.clone( b ),
+      answer = Bump.Matrix3x3.create( 273, 455, 97, 243, 235, 77, 244, 205, 75 ),
+      I = Bump.Matrix3x3.getIdentity();
+
+  deepEqual( aClone, a.multiplyMatrixSelf( I ), 'identity serves as identity' );
+  deepEqual( answer, a.multiplyMatrixSelf( b ) );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+  deepEqual( b, bClone, 'does not modify argument matrix' );
+});
+
+test( 'multiplyVector', function() {
+  ok( Bump.Matrix3x3.prototype.multiplyVector, 'multiplyVector exists' );
+
+  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+      aRef = a,
+      aClone = Bump.Matrix3x3.clone( a ),
+      b = Bump.Vector3.create( 12, 25, 5 ),
+      bRef = b,
+      bClone = Bump.Vector3.clone( b ),
+      answer = Bump.Vector3.create( 408, 374, 385 ),
+      I = Bump.Matrix3x3.getIdentity();
+
+  deepEqual( bClone, I.multiplyVector( b ), 'identity serves as identity' );
+  deepEqual( answer, a.multiplyVector( b ) );
+
+  deepEqual( b, bClone, 'does not modify b' );
+
+  var newBRef = a.multiplyVector( b, b );
+  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
+  deepEqual( answer, b );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+  deepEqual( a, aClone, 'does not modify a' );
+});
+
+test( 'transposeTimes', function() {
+  ok( Bump.Matrix3x3.prototype.transposeTimes, 'transposeTimes exists' );
+
+  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+      aRef = a,
+      aClone = Bump.Matrix3x3.clone( a ),
+      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
+      bRef = b,
+      bClone = Bump.Matrix3x3.clone( b ),
+      answer = Bump.Matrix3x3.create( 186, 370, 74, 303, 395, 103, 307, 310, 96 ),
+      I = Bump.Matrix3x3.getIdentity();
+
+  deepEqual( aClone, I.transposeTimes( a ) );
+  deepEqual( answer, a.transposeTimes( b ) );
+  deepEqual( b, bClone, 'does not modify b' );
+
+  var newBRef = a.transposeTimes( b, b );
+  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
+  deepEqual( answer, b );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+  deepEqual( a, aClone, 'does not modify a' );
+});
+
+test( 'timesTranspose', function() {
+  ok( Bump.Matrix3x3.prototype.timesTranspose, 'timesTranspose exists' );
+
+  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+      aRef = a,
+      aClone = Bump.Matrix3x3.clone( a ),
+      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
+      bRef = b,
+      bClone = Bump.Matrix3x3.clone( b ),
+      answer = Bump.Matrix3x3.create( 408, 222, 166, 374, 158, 116, 385, 154, 111 ),
+      I = Bump.Matrix3x3.getIdentity();
+
+  deepEqual( aClone, a.timesTranspose( I ) );
+  deepEqual( answer, a.timesTranspose( b ) );
+  deepEqual( b, bClone, 'does not modify b' );
+
+  var newBRef = a.timesTranspose( b, b );
+  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
+  deepEqual( answer, b );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+  deepEqual( a, aClone, 'does not modify a' );
+});
