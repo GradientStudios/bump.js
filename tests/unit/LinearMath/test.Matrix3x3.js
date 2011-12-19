@@ -382,6 +382,10 @@ test( 'multiplyVector', function() {
   deepEqual( a, aClone, 'does not modify a' );
 });
 
+test( 'scaled', function() {
+  ok( Bump.Matrix3x3.prototype.transpose, 'transpose exists' );
+});
+
 test( 'transposeTimes', function() {
   ok( Bump.Matrix3x3.prototype.transposeTimes, 'transposeTimes exists' );
 
@@ -430,4 +434,113 @@ test( 'timesTranspose', function() {
   strictEqual( a, aRef, 'does not allocate new a' );
   strictEqual( b, bRef, 'does not allocate new b' );
   deepEqual( a, aClone, 'does not modify a' );
+});
+
+module( 'Bump.Matrix3x3 advanced utilities' );
+
+test( 'determinant', function() {
+  ok( Bump.Matrix3x3.prototype.determinant, 'determinant exists' );
+
+  var Z = Bump.Matrix3x3.create(),
+      I = Bump.Matrix3x3.getIdentity(),
+      a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 );
+
+  equal( Z.determinant(), 0 );
+  equal( I.determinant(), 1 );
+  equal( a.determinant(), -136 );
+  equal( b.determinant(), -210 );
+});
+
+test( 'adjoint', function() {
+  ok( Bump.Matrix3x3.prototype.adjoint, 'adjoint exists' );
+
+  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+      aRef = a,
+      aClone = Bump.Matrix3x3.clone( a ),
+      aAdj = Bump.Matrix3x3.create( 7, -117, 102, -34, 238, -204, 24, -168, 136 ),
+      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
+      bRef = b,
+      bClone = Bump.Matrix3x3.clone( b ),
+      bAdj = Bump.Matrix3x3.create( 20, -50, 0, -11, -4, 21, -35, 140, -105 );
+
+  deepEqual( a.adjoint(), aAdj );
+  deepEqual( b.adjoint(), bAdj );
+  deepEqual( b, bClone, 'does not modify b' );
+
+  var newBRef = b.adjoint( b );
+  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
+  deepEqual( b, bAdj );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+  deepEqual( a, aClone, 'does not modify a' );
+});
+
+test( 'absolute', function() {
+  ok( Bump.Matrix3x3.prototype.absolute, 'absolute exists' );
+
+  var a = Bump.Matrix3x3.create( -14, 9, -3, 2, -11, 15, -0, 12, -17 ),
+      aRef = a,
+      aClone = Bump.Matrix3x3.clone( a ),
+      aAbs = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+      b = Bump.Matrix3x3.create( 12, -25, 5, -9, 10, -2, 8, -5, 3 ),
+      bRef = b,
+      bClone = Bump.Matrix3x3.clone( b ),
+      bAbs = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 );
+
+  deepEqual( a.absolute(), aAbs );
+  deepEqual( b.absolute(), bAbs );
+  deepEqual( b, bClone, 'does not modify b' );
+
+  var newBRef = b.absolute( b );
+  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
+  deepEqual( b, bAbs );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+  deepEqual( a, aClone, 'does not modify a' );
+});
+
+test( 'transpose', function() {
+  ok( Bump.Matrix3x3.prototype.transpose, 'transpose exists' );
+
+  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+      aRef = a,
+      aClone = Bump.Matrix3x3.clone( a ),
+      aTrp = Bump.Matrix3x3.create( 14, 2, 0, 9, 11, 12, 3, 15, 17 ),
+      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
+      bRef = b,
+      bClone = Bump.Matrix3x3.clone( b ),
+      bTrp = Bump.Matrix3x3.create( 12, 9, 8, 25, 10, 5, 5, 2, 3 );
+
+  deepEqual( a.transpose(), aTrp );
+  deepEqual( b.transpose(), bTrp );
+  deepEqual( b, bClone, 'does not modify b' );
+
+  var newBRef = b.transpose( b );
+  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
+  deepEqual( b, bTrp );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+  deepEqual( a, aClone, 'does not modify a' );
+});
+
+test( 'cofac', function() {
+  ok( Bump.Matrix3x3.prototype.cofac, 'cofac exists' );
+
+  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 );
+
+  equal( a.cofac( 1, 1, 2, 2 ), 7 );
+  equal( a.cofac( 1, 2, 2, 0 ), -34 );
+  equal( a.cofac( 1, 0, 2, 1 ), 24 );
+
+  equal( a.cofac( 2, 1, 0, 2 ), -117 );
+  equal( a.cofac( 2, 2, 0, 0 ), 238 );
+  equal( a.cofac( 2, 0, 0, 1 ), -168 );
+
+  equal( a.cofac( 0, 1, 1, 2 ), 102 );
+  equal( a.cofac( 0, 2, 1, 0 ), -204 );
+  equal( a.cofac( 0, 0, 1, 1 ), 136 );
 });
