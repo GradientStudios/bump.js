@@ -18,7 +18,7 @@ test( 'create', 2, function() {
   ok( v1, 'object created' );
 } );
 
-test( 'member functions exist', 45, function() {
+test( 'member functions exist', 47, function() {
   var v0 = Bump.Vector3.create();
 
   ok( v0.clone, 'clone exists' );
@@ -48,8 +48,10 @@ test( 'member functions exist', 45, function() {
   ok( v0.cross, 'cross exists' );
   ok( v0.triple, 'triple exists' );
   ok( v0.minAxis, 'minAxis exists' );
+  ok( v0.minAxis, 'minProperty exists' );
   ok( v0.min, 'min exists' );
   ok( v0.maxAxis, 'maxAxis exists' );
+  ok( v0.maxAxis, 'maxProperty exists' );
   ok( v0.max, 'max exists' );
   ok( v0.furthestAxis, 'furthestAxis exists' );
   ok( v0.furthest, 'furthest exists' );
@@ -448,6 +450,17 @@ test( 'minAxis', 7, function() {
   equal( Bump.Vector3.create( -1, -3, -2 ).minAxis(), 1 );
 } );
 
+test( 'minProperty', 7, function() {
+  equal( Bump.Vector3.create().minProperty(),  'z' );
+  equal( Bump.Vector3.create( 1, 0, 0 ).minProperty(), 'z' );
+  equal( Bump.Vector3.create( 0, 1, 0 ).minProperty(), 'z' );
+  equal( Bump.Vector3.create( 0, 0, 1 ).minProperty(), 'y' );
+  equal( Bump.Vector3.create( 0, 2, 3 ).minProperty(), 'x' );
+  equal( Bump.Vector3.create( 0, 3, -4 ).minProperty(), 'z' );
+  equal( Bump.Vector3.create( -1, -3, -2 ).minProperty(), 'y' );
+} );
+
+
 test( 'min', 7, function() {
   equal( Bump.Vector3.create().min(),  0 );
   equal( Bump.Vector3.create( 1, 0, 0 ).min(), 0 );
@@ -466,6 +479,16 @@ test( 'maxAxis', 7, function() {
   equal( Bump.Vector3.create( 0, 2, 3 ).maxAxis(), 2 );
   equal( Bump.Vector3.create( 0, 3, -4 ).maxAxis(), 1 );
   equal( Bump.Vector3.create( -1, -3, -2 ).maxAxis(), 0 );
+} );
+
+test( 'maxProperty', 7, function() {
+  equal( Bump.Vector3.create().maxProperty(), 'z' );
+  equal( Bump.Vector3.create( -1, 0, 0 ).maxProperty(), 'z' );
+  equal( Bump.Vector3.create( 0, -1, 0 ).maxProperty(), 'z' );
+  equal( Bump.Vector3.create( 0, 0, -1 ).maxProperty(), 'y' );
+  equal( Bump.Vector3.create( 0, 2, 3 ).maxProperty(), 'z' );
+  equal( Bump.Vector3.create( 0, 3, -4 ).maxProperty(), 'y' );
+  equal( Bump.Vector3.create( -1, -3, -2 ).maxProperty(), 'x' );
 } );
 
 test( 'max', 7, function() {
