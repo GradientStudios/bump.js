@@ -248,6 +248,14 @@
           ( this.y < this.z ? 1 : 2 );
       },
 
+      // return the property of the minimum value ('x', 'y', 'z')
+      // added because property access by name is faster than by index
+      minProperty: function() {
+        return this.x < this.y ?
+          ( this.x < this.z ? 'x' : 'z' ) :
+          ( this.y < this.z ? 'y' : 'z' );
+      },
+
       // return the min value
       min: function() {
         return this.x < this.y ?
@@ -260,6 +268,14 @@
         return this.x > this.y ?
           ( this.x > this.z ? 0 : 2 ) :
           ( this.y > this.z ? 1 : 2 );
+      },
+
+      // return the property of the minimum value ('x', 'y', 'z')
+      // added because property access by name is faster than by index
+      maxProperty: function() {
+        return this.x > this.y ?
+          ( this.x > this.z ? 'x' : 'z' ) :
+          ( this.y > this.z ? 'y' : 'z' );
       },
 
       // return the max value
