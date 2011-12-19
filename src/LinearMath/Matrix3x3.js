@@ -29,17 +29,17 @@
       // the object.
       0: {
         get: function() { return this.m_el0; },
-        set: function( vec3 ) { this.m_el0.clone( vec3 ); }
+        set: function( v ) { this.m_el0.clone( v ); }
       },
 
       1: {
         get: function() { return this.m_el1; },
-        set: function( vec3 ) { this.m_el1.clone( vec3 ); }
+        set: function( v ) { this.m_el1.clone( v ); }
       },
 
       2: {
         get: function() { return this.m_el2; },
-        set: function( vec3 ) { this.m_el2.clone( vec3 ); }
+        set: function( v ) { this.m_el2.clone( v ); }
       }
     },
 
@@ -47,30 +47,21 @@
     members: {
       // ### Basic utilities
 
-      // Clones the value of the given matrix `other` in to `this` matrix.
-      clone: function( other ) {
-        this.m_el0.clone( other.m_el0 );
-        this.m_el1.clone( other.m_el1 );
-        this.m_el2.clone( other.m_el2 );
-
-        this.m_el[0].clone( other.m_el[0] );
-        this.m_el[1].clone( other.m_el[1] );
-        this.m_el[2].clone( other.m_el[2] );
-
-        this.m[0] = other.m[0]; this.m[1] = other.m[1]; this.m[2] = other.m[2];
-        this.m[3] = other.m[3]; this.m[4] = other.m[4]; this.m[5] = other.m[5];
-        this.m[6] = other.m[6]; this.m[7] = other.m[7]; this.m[8] = other.m[8];
-
-        this.m11 = other.m11; this.m12 = other.m12; this.m13 = other.m13;
-        this.m21 = other.m21; this.m22 = other.m22; this.m23 = other.m23;
-        this.m31 = other.m31; this.m32 = other.m32; this.m33 = other.m33;
-
+      // Clones `this` matrix in to `dest`.
+      clone: function( dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+        dest.setValue(
+          this.m_el0.x, this.m_el0.y, this.m_el0.z,
+          this.m_el1.x, this.m_el1.y, this.m_el1.z,
+          this.m_el2.x, this.m_el2.y, this.m_el2.z
+        );
         return this;
       },
 
       // Puts the `i`th column into the given [`Bump.Vector3`](vector3.html)
       // `dest`.
       getColumn: function( i, dest ) {
+        dest = dest || Bump.Vector3.create();
         dest.x = this.m_el[0][i];
         dest.y = this.m_el[1][i];
         dest.z = this.m_el[2][i];
@@ -80,6 +71,7 @@
       // Puts the `i`th row into the given [`Bump.Vector3`](vector3.html)
       // `dest`.
       getRow: function( i, dest ) {
+        dest = dest || Bump.Vector3.create();
         dest.clone( this[ i ] );
         return dest;
       },
