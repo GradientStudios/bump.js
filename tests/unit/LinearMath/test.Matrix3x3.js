@@ -218,6 +218,98 @@ test( 'member clone', function() {
 
 module( 'Bump.Matrix3x3 math' );
 
+test( 'add', function() {
+  ok( Bump.Matrix3x3.prototype.add, 'add exists' );
+
+  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+      aRef = a,
+      aClone = Bump.Matrix3x3.clone( a ),
+      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
+      bRef = b,
+      bClone = Bump.Matrix3x3.clone( b ),
+      answer = Bump.Matrix3x3.create( 26, 34, 8, 11, 21, 17, 8, 17, 20 ),
+      Z = Bump.Matrix3x3.create();
+
+  deepEqual( aClone, a.add( Z ), 'zero serves as identity' );
+  deepEqual( answer, a.add( b ) );
+
+  deepEqual( b, bClone, 'does not modify b' );
+
+  var newBRef = a.add( b, b );
+  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
+  deepEqual( answer, b );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+  deepEqual( a, aClone, 'does not modify a' );
+});
+
+test( 'addSelf', function() {
+  ok( Bump.Matrix3x3.prototype.addSelf, 'addSelf exists' );
+
+  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+      aRef = a,
+      aClone = Bump.Matrix3x3.clone( a ),
+      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
+      bRef = b,
+      bClone = Bump.Matrix3x3.clone( b ),
+      answer = Bump.Matrix3x3.create( 26, 34, 8, 11, 21, 17, 8, 17, 20 ),
+      Z = Bump.Matrix3x3.create();
+
+  deepEqual( aClone, a.addSelf( Z ), 'zero serves as identity' );
+  deepEqual( answer, a.addSelf( b ) );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+  deepEqual( b, bClone, 'does not modify argument matrix' );
+});
+
+test( 'subtract', function() {
+  ok( Bump.Matrix3x3.prototype.subtract, 'subtract exists' );
+
+  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+      aRef = a,
+      aClone = Bump.Matrix3x3.clone( a ),
+      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
+      bRef = b,
+      bClone = Bump.Matrix3x3.clone( b ),
+      answer = Bump.Matrix3x3.create( 2, -16, -2, -7, 1, 13, -8, 7, 14 ),
+      Z = Bump.Matrix3x3.create();
+
+  deepEqual( aClone, a.subtract( Z ), 'zero serves as identity' );
+  deepEqual( answer, a.subtract( b ) );
+
+  deepEqual( b, bClone, 'does not modify b' );
+
+  var newBRef = a.subtract( b, b );
+  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
+  deepEqual( answer, b );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+  deepEqual( a, aClone, 'does not modify a' );
+});
+
+test( 'subtractSelf', function() {
+  ok( Bump.Matrix3x3.prototype.subtractSelf, 'subtractSelf exists' );
+
+  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+      aRef = a,
+      aClone = Bump.Matrix3x3.clone( a ),
+      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
+      bRef = b,
+      bClone = Bump.Matrix3x3.clone( b ),
+      answer = Bump.Matrix3x3.create( 2, -16, -2, -7, 1, 13, -8, 7, 14 ),
+      Z = Bump.Matrix3x3.create();
+
+  deepEqual( aClone, a.subtractSelf( Z ), 'zero serves as identity' );
+  deepEqual( answer, a.subtractSelf( b ) );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+  deepEqual( b, bClone, 'does not modify argument matrix' );
+});
+
 test( 'multiplyMatrix', function() {
   ok( Bump.Matrix3x3.prototype.multiplyMatrix, 'multiplyMatrix exists' );
 
