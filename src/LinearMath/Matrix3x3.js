@@ -31,17 +31,17 @@
       // the object.
       0: {
         get: function() { return this.m_el0; },
-        set: function( v ) { this.m_el0.clone( v ); }
+        set: function( v ) { v.clone( this.m_el0 ); }
       },
 
       1: {
         get: function() { return this.m_el1; },
-        set: function( v ) { this.m_el1.clone( v ); }
+        set: function( v ) { v.clone( this.m_el1 ); }
       },
 
       2: {
         get: function() { return this.m_el2; },
-        set: function( v ) { this.m_el2.clone( v ); }
+        set: function( v ) { v.clone( this.m_el2 ); }
       }
     },
 
@@ -453,7 +453,7 @@
       //
       // **Note:** `this` matrix is assumed to be symmetric.
       diagonalize: function( rot, threshold, maxSteps ) {
-        rot = rot || Bump.Matrix.getIdentity();
+        rot = rot || Bump.Matrix3x3.getIdentity();
 
         var step;
         for ( step = maxSteps; step > 0; --step ) {
@@ -480,7 +480,7 @@
 
           if ( max <= t ) {
             if ( max <= EPSILON * t ) {
-              return;
+              return this;
             }
             step = 1;
           }
@@ -493,7 +493,7 @@
               cos,
               sin;
 
-          if ( theta2 * theta2 < 10 / EPSILON) {
+          if ( theta2 * theta2 < ( 10 / EPSILON ) ) {
             t = ( theta >= 0 ) ?
               1 / ( theta + Math.sqrt( 1 + theta2 ) ) :
               1 / ( theta - Math.sqrt( 1 + theta2 ) );
@@ -529,6 +529,8 @@
             row[q] = cos * mrq + sin * mrp;
           }
         }
+
+        return this;
       },
 
       // Returns the dot product of the first column and the given vector.
