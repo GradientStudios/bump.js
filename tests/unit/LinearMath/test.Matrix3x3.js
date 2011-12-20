@@ -760,11 +760,11 @@ module( 'Bump.Matrix3x3 TODO' );
 test( 'incomplete', function() {
   if ( ok( Bump.Quaternion, 'Matrix3x3 depends on Quaternion' ) || Bump.Quaternion ) {
     if (Bump.Quaternion.prototype.setValue ) {
-      ok( Bump.Matrix3x3.prototype.getRotation );
+      ok( Bump.Matrix3x3.prototype.getRotation, 'getRotation exists' );
     }
 
     if ( Bump.Quaternion.prototype.length2 ) {
-      ok( Bump.Matrix3x3.prototype.setRotation );
+      ok( Bump.Matrix3x3.prototype.setRotation, 'setRotation exists' );
     }
   }
 });
