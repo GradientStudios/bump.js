@@ -522,7 +522,7 @@
           // Apply rotation to `rot` (`rot = rot * J`)
           var i, row;
           for ( i = 0; i < 3; ++i ) {
-            row = this[i];
+            row = rot[i];
             mrp = row[p];
             mrq = row[q];
             row[p] = cos * mrp - sin * mrq;
