@@ -199,6 +199,83 @@ test( 'setIdentity', function() {
   deepEqual( a, b, 'getIdentity and setIdentity produce the same matrix' );
 });
 
+test( 'setEulerZYX', function() {
+  ok( Bump.Matrix3x3.prototype.setEulerZYX, 'setEulerZYX exists' );
+
+  var a = Bump.Matrix3x3.create(),
+      aRef = a,
+      answer = Bump.Matrix3x3.getIdentity(),
+      EPSILON = Math.pow( 2, -48 ),
+      newARef;
+
+  a.setEulerZYX( 0, 0, 0 );
+  deepEqual( a, answer, 'euler angles 0, 0, 0 == identity' );
+
+  answer.setValue(
+                      0,  Math.sqrt( 3 ) / 2,              -1 / 2,
+                 -1 / 2, -Math.sqrt( 3 ) / 4,              -3 / 4,
+    -Math.sqrt( 3 ) / 2,               1 / 4,  Math.sqrt( 3 ) / 4
+  );
+
+  newARef = a.setEulerZYX( Math.PI / 6, Math.PI / 3, -Math.PI / 2 );
+  ok( Math.abs( answer.m_el0.x - newARef.m_el0.x ) < EPSILON &&
+      Math.abs( answer.m_el0.y - newARef.m_el0.y ) < EPSILON &&
+      Math.abs( answer.m_el0.z - newARef.m_el0.z ) < EPSILON &&
+      Math.abs( answer.m_el1.x - newARef.m_el1.x ) < EPSILON &&
+      Math.abs( answer.m_el1.y - newARef.m_el1.y ) < EPSILON &&
+      Math.abs( answer.m_el1.z - newARef.m_el1.z ) < EPSILON &&
+      Math.abs( answer.m_el2.x - newARef.m_el2.x ) < EPSILON &&
+      Math.abs( answer.m_el2.y - newARef.m_el2.y ) < EPSILON &&
+      Math.abs( answer.m_el2.z - newARef.m_el2.z ) < EPSILON );
+
+  // Wolfram Alpha output
+  answer.setValue(
+    1/4*(Math.sqrt(3)-1), 1/8*Math.sqrt(3)*(1+Math.sqrt(3))-1/(2*Math.sqrt(2)), 1/8*(-1-Math.sqrt(3))-Math.sqrt(3/2)/2,
+    1/4*(1-Math.sqrt(3)), -1/(2*Math.sqrt(2))-1/8*Math.sqrt(3)*(1+Math.sqrt(3)), 1/8*(1+Math.sqrt(3))-Math.sqrt(3/2)/2,
+    -(1+Math.sqrt(3))/(2*Math.sqrt(2)), 1/4*Math.sqrt(3/2)*(Math.sqrt(3)-1), -(Math.sqrt(3)-1)/(4*Math.sqrt(2))
+  );
+
+  newARef = a.setEulerZYX( 2 * Math.PI / 3, 5 * Math.PI / 12, -Math.PI / 4 );
+
+  ok( Math.abs( answer.m_el0.x - newARef.m_el0.x ) < EPSILON &&
+      Math.abs( answer.m_el0.y - newARef.m_el0.y ) < EPSILON &&
+      Math.abs( answer.m_el0.z - newARef.m_el0.z ) < EPSILON &&
+      Math.abs( answer.m_el1.x - newARef.m_el1.x ) < EPSILON &&
+      Math.abs( answer.m_el1.y - newARef.m_el1.y ) < EPSILON &&
+      Math.abs( answer.m_el1.z - newARef.m_el1.z ) < EPSILON &&
+      Math.abs( answer.m_el2.x - newARef.m_el2.x ) < EPSILON &&
+      Math.abs( answer.m_el2.y - newARef.m_el2.y ) < EPSILON &&
+      Math.abs( answer.m_el2.z - newARef.m_el2.z ) < EPSILON );
+
+  strictEqual( newARef, aRef, 'does not allocate new a' );
+});
+
+test( 'getEulerZYX', function() {
+  ok( Bump.Matrix3x3.prototype.getEulerZYX, 'getEulerZYX exists' );
+
+  var a = Bump.Matrix3x3.create(
+        1/4*(Math.sqrt(3)-1), 1/8*Math.sqrt(3)*(1+Math.sqrt(3))-1/(2*Math.sqrt(2)), 1/8*(-1-Math.sqrt(3))-Math.sqrt(3/2)/2,
+        1/4*(1-Math.sqrt(3)), -1/(2*Math.sqrt(2))-1/8*Math.sqrt(3)*(1+Math.sqrt(3)), 1/8*(1+Math.sqrt(3))-Math.sqrt(3/2)/2,
+        -(1+Math.sqrt(3))/(2*Math.sqrt(2)), 1/4*Math.sqrt(3/2)*(Math.sqrt(3)-1), -(Math.sqrt(3)-1)/(4*Math.sqrt(2))
+      ),
+      aRef = a,
+      aClone = a.clone(),
+      answer = {
+        yaw: -Math.PI / 4,
+        pitch: 5 * Math.PI / 12,
+        roll: 2 * Math.PI / 3
+      },
+      EPSILON = Math.pow( 2, -48 );
+
+  var results = a.getEulerZYX( {} );
+  ok( Math.abs( answer.yaw   - results.yaw   ) < EPSILON &&
+      Math.abs( answer.pitch - results.pitch ) < EPSILON &&
+      Math.abs( answer.roll  - results.roll  ) < EPSILON );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  deepEqual( a, aClone, 'does not modify a' );
+});
+
 test( 'member clone', function() {
   ok( Bump.Matrix3x3.prototype.clone, 'clone exists' );
 
@@ -382,8 +459,54 @@ test( 'multiplyVector', function() {
   deepEqual( a, aClone, 'does not modify a' );
 });
 
+test( 'vectorMultiply', function() {
+  ok( Bump.Matrix3x3.prototype.vectorMultiply, 'vectorMultiply exists' );
+
+  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+      aRef = a,
+      aClone = Bump.Matrix3x3.clone( a ),
+      b = Bump.Vector3.create( 12, 25, 5 ),
+      bRef = b,
+      bClone = Bump.Vector3.clone( b ),
+      answer = Bump.Vector3.create( 218, 443, 496 ),
+      I = Bump.Matrix3x3.getIdentity();
+
+  deepEqual( bClone, I.vectorMultiply( b ), 'identity serves as identity' );
+  deepEqual( answer, a.vectorMultiply( b ) );
+
+  deepEqual( b, bClone, 'does not modify b' );
+
+  var newBRef = a.vectorMultiply( b, b );
+  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
+  deepEqual( answer, b );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+  deepEqual( a, aClone, 'does not modify a' );
+});
+
+test( 'multiplyScalar', function() {
+  ok( Bump.Matrix3x3.prototype.multiplyScalar, 'multiplyScalar exists' );
+
+  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+      aRef = a,
+      aClone = Bump.Matrix3x3.clone( a ),
+      answer = Bump.Matrix3x3.create( -42, -27, -9, -6, -33, -45, 0, -36, -51 ),
+      I = Bump.Matrix3x3.getIdentity();
+
+  deepEqual( aClone, a.multiplyScalar( 1 ), '1 serves as identity' );
+  deepEqual( answer, a.multiplyScalar( -3 ) );
+  deepEqual( a, aClone, 'does not modify a' );
+
+  var newARef = a.multiplyScalar( -3, a );
+  strictEqual( aRef, newARef, 'answer is placed in specified destination' );
+  deepEqual( answer, a );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+});
+
 test( 'scaled', function() {
-  ok( Bump.Matrix3x3.prototype.transpose, 'transpose exists' );
+  ok( Bump.Matrix3x3.prototype.scaled, 'scaled exists' );
 });
 
 test( 'transposeTimes', function() {
@@ -526,6 +649,98 @@ test( 'transpose', function() {
   strictEqual( b, bRef, 'does not allocate new b' );
   deepEqual( a, aClone, 'does not modify a' );
 });
+
+test( 'inverse', function() {
+  ok( Bump.Matrix3x3.prototype.inverse, 'inverse exists' );
+
+  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+      aRef = a,
+      aClone = Bump.Matrix3x3.clone( a ),
+      aInv = Bump.Matrix3x3.create( -7 / 136, 117 / 136, -102 / 136, 34 / 136, -238 / 136, 204 / 136, -24 / 136, 168 / 136, -1 ),
+      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
+      bRef = b,
+      bClone = Bump.Matrix3x3.clone( b ),
+      bInv = Bump.Matrix3x3.create( -20 / 210, 50 / 210, 0, 11 / 210, 4 / 210, -21 / 210, 35 / 210, -140 / 210, 105 / 210 ),
+      EPSILON = Math.pow( 2, -48 ),
+      result = Bump.Matrix3x3.create();
+
+  a.inverse( result );
+
+  ok( Math.abs( aInv.m_el0.x - result.m_el0.x ) < EPSILON &&
+      Math.abs( aInv.m_el0.y - result.m_el0.y ) < EPSILON &&
+      Math.abs( aInv.m_el0.z - result.m_el0.z ) < EPSILON &&
+      Math.abs( aInv.m_el1.x - result.m_el1.x ) < EPSILON &&
+      Math.abs( aInv.m_el1.y - result.m_el1.y ) < EPSILON &&
+      Math.abs( aInv.m_el1.z - result.m_el1.z ) < EPSILON &&
+      Math.abs( aInv.m_el2.x - result.m_el2.x ) < EPSILON &&
+      Math.abs( aInv.m_el2.y - result.m_el2.y ) < EPSILON &&
+      Math.abs( aInv.m_el2.z - result.m_el2.z ) < EPSILON );
+
+  b.inverse( result );
+
+  ok( Math.abs( bInv.m_el0.x - result.m_el0.x ) < EPSILON &&
+      Math.abs( bInv.m_el0.y - result.m_el0.y ) < EPSILON &&
+      Math.abs( bInv.m_el0.z - result.m_el0.z ) < EPSILON &&
+      Math.abs( bInv.m_el1.x - result.m_el1.x ) < EPSILON &&
+      Math.abs( bInv.m_el1.y - result.m_el1.y ) < EPSILON &&
+      Math.abs( bInv.m_el1.z - result.m_el1.z ) < EPSILON &&
+      Math.abs( bInv.m_el2.x - result.m_el2.x ) < EPSILON &&
+      Math.abs( bInv.m_el2.y - result.m_el2.y ) < EPSILON &&
+      Math.abs( bInv.m_el2.z - result.m_el2.z ) < EPSILON );
+
+  deepEqual( b, bClone, 'does not modify b' );
+
+  var newBRef = b.inverse( b );
+  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
+
+  ok( Math.abs( bInv.m_el0.x - b.m_el0.x ) < EPSILON &&
+      Math.abs( bInv.m_el0.y - b.m_el0.y ) < EPSILON &&
+      Math.abs( bInv.m_el0.z - b.m_el0.z ) < EPSILON &&
+      Math.abs( bInv.m_el1.x - b.m_el1.x ) < EPSILON &&
+      Math.abs( bInv.m_el1.y - b.m_el1.y ) < EPSILON &&
+      Math.abs( bInv.m_el1.z - b.m_el1.z ) < EPSILON &&
+      Math.abs( bInv.m_el2.x - b.m_el2.x ) < EPSILON &&
+      Math.abs( bInv.m_el2.y - b.m_el2.y ) < EPSILON &&
+      Math.abs( bInv.m_el2.z - b.m_el2.z ) < EPSILON );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+  deepEqual( a, aClone, 'does not modify a' );
+});
+
+// test( 'diagonalize', function() {
+//   ok( Bump.Matrix3x3.prototype.diagonalize, 'diagonalize exists' );
+
+//   var EPSILON = Math.pow( 2, -48 );
+
+//   deepEqual(
+//     Bump.Matrix3x3.getIdentity().diagonalize( undefined, EPSILON, Infinity ),
+//     Bump.Matrix3x3.getIdentity(),
+//     'identity diagonalizes to identity'
+//   );
+
+//   var a = Bump.Matrix3x3.create( 1, 1, 0, 1, 5, 0, 0, 0, 1 ),
+//       aRef = a,
+//       aClone = a.clone(),
+//       aDgn = Bump.Matrix3x3.create( 3 + Math.sqrt( 5 ), 0, 0, 0, 1, 0, 0, 0, 3 - Math.sqrt( 5 ) );
+
+//   a.diagonalize( undefined, EPSILON, Infinity );
+//   equal( aDgn.m_el0.x, a.m_el0.x );
+//   equal( 1/(2*Math.sqrt(5))-1/2*Math.sqrt(5)*(-2-Math.sqrt(5))+(-2+Math.sqrt(5))*(1/(2*Math.sqrt(5))-(-2-Math.sqrt(5))/(2*Math.sqrt(5))), a.m_el0.x );
+//   equal( ((1+Math.sqrt(5))*(5+Math.sqrt(5)))/(2*Math.sqrt(5)), a.m_el0.x );
+//   equal( 1/2*(1+Math.sqrt(5)*(2+Math.sqrt(5))), a.m_el0.x );
+//   equal( aDgn.m_el0.y, a.m_el0.y );
+//   equal( aDgn.m_el0.z, a.m_el0.z );
+//   ok( Math.abs( aDgn.m_el0.x - a.m_el0.x ) < EPSILON &&
+//       Math.abs( aDgn.m_el0.y - a.m_el0.y ) < EPSILON &&
+//       Math.abs( aDgn.m_el0.z - a.m_el0.z ) < EPSILON &&
+//       Math.abs( aDgn.m_el1.x - a.m_el1.x ) < EPSILON &&
+//       Math.abs( aDgn.m_el1.y - a.m_el1.y ) < EPSILON &&
+//       Math.abs( aDgn.m_el1.z - a.m_el1.z ) < EPSILON &&
+//       Math.abs( aDgn.m_el2.x - a.m_el2.x ) < EPSILON &&
+//       Math.abs( aDgn.m_el2.y - a.m_el2.y ) < EPSILON &&
+//       Math.abs( aDgn.m_el2.z - a.m_el2.z ) < EPSILON );
+// });
 
 test( 'cofac', function() {
   ok( Bump.Matrix3x3.prototype.cofac, 'cofac exists' );
