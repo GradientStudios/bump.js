@@ -2,6 +2,8 @@
 // [Bullet](http://bulletphysics.org).
 
 (function( window, Bump ) {
+  var EPSILON = Math.pow( 2, -52 );
+
   Bump.Matrix3x3 = Bump.type({
     // Given *exactly* nine arguments in row major order,
     // initializes a 3x3 matrix.
@@ -57,6 +59,15 @@
         );
       },
 
+      // Compares `this` to `that` and returns whether they are the same.
+      equal: function( that ) {
+        return (
+          this.m_el0.x === that.m_el0.x && this.m_el0.y === that.m_el0.y && this.m_el0.z === that.m_el0.z &&
+          this.m_el1.x === that.m_el1.x && this.m_el1.y === that.m_el1.y && this.m_el1.z === that.m_el1.z &&
+          this.m_el2.x === that.m_el2.x && this.m_el2.y === that.m_el2.y && this.m_el2.z === that.m_el2.z
+        );
+      },
+
       // Puts the `i`th column into the given [`Bump.Vector3`](vector3.html)
       // `dest`.
       getColumn: function( i, dest ) {
@@ -99,6 +110,115 @@
         return this.setValue( 1, 0, 0,
                               0, 1, 0,
                               0, 0, 1 );
+      },
+
+      // Set `this` matrix to be a rotation matrix calculated from the given
+      // yaw, pitch, and roll.
+      setEulerYPR: function( yaw, pitch, roll ) {
+        return this.setEulerZYX( roll, pitch, yaw );
+      },
+
+      // Set `this` matrix to be a rotation matrix calculated from the given
+      // Euler angles. The Euler angles are applied in ZYX order.
+      setEulerZYX: function( eulerX, eulerY, eulerZ ) {
+        var ci = Math.cos( eulerX ),
+            cj = Math.cos( eulerY ),
+            ch = Math.cos( eulerZ ),
+            si = Math.sin( eulerX ),
+            sj = Math.sin( eulerY ),
+            sh = Math.sin( eulerZ ),
+            cc = ci * ch,
+            cs = ci * sh,
+            sc = si * ch,
+            ss = si * sh;
+
+        return this.setValue(
+          cj * ch, sj * sc - cs, sj * cc + ss,
+          cj * sh, sj * ss + cc, sj * cs - sc,
+          -sj,     cj * si,      cj * ci
+        );
+      },
+
+      // Get `this` matrix represented as euler angles around YXZ.
+      getEulerYPR: function( dest ) {
+        dest = dest || {};
+
+        dest.yaw   = Math.atan2( this.m_el1.x, this.m_el0.x );
+        dest.pitch = Math.asin( -this.m_el2.x );
+        dest.roll  = Math.atan2( this.m_el2.y, this.m_el2.z );
+
+        if ( Math.abs( dest.pitch ) === Math.PI / 2 ) {
+          if ( dest.yaw > 0 ) {
+            dest.yaw -= Math.PI;
+          } else {
+            dest.yaw += Math.PI;
+          }
+
+          if ( dest.roll > 0 ) {
+            dest.roll -= Math.PI;
+          } else {
+            dest.roll += Math.PI;
+          }
+        }
+
+        return dest;
+      },
+
+      // Get `this` matrix represented as euler angles around ZYX.
+      getEulerZYX: function( dest, solutionNumber ) {
+        dest = dest || {};
+        solutionNumber = solutionNumber === undefined ? 1 : solutionNumber;
+
+        var eulerOut1, eulerOut2;
+
+        if ( solutionNumber === 1 ) {
+          eulerOut1 = dest;
+          eulerOut2 = {};
+        } else {
+          eulerOut2 = dest;
+          eulerOut1 = {};
+        }
+
+        // check that pitch is not at a singularity
+        if ( Math.abs( this.m_el2.x ) >= 1) {
+          eulerOut1.yaw = 0;
+          eulerOut2.yaw = 0;
+
+          // from difference of angles formula
+          var delta = Math.atan2( this.m_el0.x, this.m_el0.z );
+
+          //gimbal locked up
+          if ( this.m_el2.x  > 0 ) {
+            eulerOut1.pitch = Math.PI / 2;
+            eulerOut2.pitch = Math.PI / 2;
+            eulerOut1.roll = eulerOut1.pitch + delta;
+            eulerOut2.roll = eulerOut1.pitch + delta;
+          }
+
+          // gimbal locked down
+          else {
+            eulerOut1.pitch = -Math.PI / 2;
+            eulerOut2.pitch = -Math.PI / 2;
+            eulerOut1.roll = -eulerOut1.pitch + delta;
+            eulerOut2.roll = -eulerOut1.pitch + delta;
+          }
+        }
+
+        else {
+          eulerOut1.pitch = - Math.asin( this.m_el2.x );
+          eulerOut2.pitch = Math.PI - eulerOut1.pitch;
+
+          var cp1 = Math.cos( eulerOut1.pitch ),
+              cp2 = Math.cos( eulerOut2.pitch );
+
+          eulerOut1.roll = Math.atan2( this.m_el2.y / cp1, this.m_el2.z / cp1);
+          eulerOut2.roll = Math.atan2( this.m_el2.y / cp2, this.m_el2.z / cp2);
+
+          eulerOut1.yaw = Math.atan2( this.m_el1.x / cp1, this.m_el0.x / cp1);
+          eulerOut2.yaw = Math.atan2( this.m_el1.x / cp2, this.m_el0.x / cp2);
+        }
+
+        return dest;
       },
 
       // ### Math functions
@@ -178,17 +298,6 @@
         );
       },
 
-      // Get a scaled version of `this` matrix. The components of `s` are
-      // multiplied through the respective columns.
-      scaled: function( s, dest ) {
-        dest = dest || Bump.Matrix3x3.create();
-        return dest.setValue(
-          this.m_el0.x * s.x, this.m_el0.y * s.y, this.m_el0.z * s.z,
-          this.m_el1.x * s.x, this.m_el1.y * s.y, this.m_el1.z * s.z,
-          this.m_el2.x * s.x, this.m_el2.y * s.y, this.m_el2.z * s.z
-        );
-      },
-
       // Transposes `v` and multiplies it with `this` matrix and stores it in
       // `dest`.
       //
@@ -202,6 +311,27 @@
         dest = dest || Bump.Vector3.create();
         return dest.setValue(
           this.tdotx( v ), this.tdoty( v ), this.tdotz( v )
+        );
+      },
+
+      // Multiplies each element of `this` matrix and stores it in `dest`.
+      multiplyScalar: function( k, dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+        return dest.setValue(
+          this.m_el0.x * k, this.m_el0.y * k, this.m_el0.z * k,
+          this.m_el1.x * k, this.m_el1.y * k, this.m_el1.z * k,
+          this.m_el2.x * k, this.m_el2.y * k, this.m_el2.z * k
+        );
+      },
+
+      // Get a scaled version of `this` matrix. The components of `s` are
+      // multiplied through the respective columns.
+      scaled: function( s, dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+        return dest.setValue(
+          this.m_el0.x * s.x, this.m_el0.y * s.y, this.m_el0.z * s.z,
+          this.m_el1.x * s.x, this.m_el1.y * s.y, this.m_el1.z * s.z,
+          this.m_el2.x * s.x, this.m_el2.y * s.y, this.m_el2.z * s.z
         );
       },
 
@@ -286,6 +416,119 @@
           this.m_el0.y, this.m_el1.y, this.m_el2.y,
           this.m_el0.z, this.m_el1.z, this.m_el2.z
         );
+      },
+
+      // Computes the [inverse](http://en.wikipedia.org/wiki/Invertible_matrix),
+      // of `this` matrix, if it exists.
+      inverse: function( dest ) {
+        dest = dest || Bump.Matrix3x3.create();
+
+        var co = Bump.Vector3.create(
+              this.cofac( 1, 1, 2, 2 ),
+              this.cofac( 1, 2, 2, 0 ),
+              this.cofac( 1, 0, 2, 1 )
+            ),
+            det = this.m_el0.dot( co );
+
+        // btFullAssert( det !== 0);
+        var s = 1 / det;
+        return dest.setValue(
+          co.x * s, this.cofac( 0, 2, 2, 1 ) * s, this.cofac( 0, 1, 1, 2 ) * s,
+          co.y * s, this.cofac( 0, 0, 2, 2 ) * s, this.cofac( 0, 2, 1, 0 ) * s,
+          co.z * s, this.cofac( 0, 1, 2, 0 ) * s, this.cofac( 0, 0, 1, 1 ) * s
+        );
+      },
+
+      // "Diagonalizes" `this` matrix using the Jacobi method.
+      //
+      // `rot` argument then stores the rotation from the coordinate system in
+      // which the matrix is diagonal to the original coordinate system, i.e.,
+      //
+      //     `old_this = rot * new_this * rot^T;`
+      //
+      // `threshold` and `maxSteps` determine how many iterations are run. It
+      // stops when all off-diagonal elements are less than `threshold`
+      // multiplied by the sum of the absolute values of the diagonal, or
+      // `maxSteps` iterations have been performed.
+      //
+      // **Note:** `this` matrix is assumed to be symmetric.
+      diagonalize: function( rot, threshold, maxSteps ) {
+        rot = rot || Bump.Matrix.getIdentity();
+
+        var step;
+        for ( step = maxSteps; step > 0; --step ) {
+          // Find off-diagonal element `[p][q]` with largest magnitude
+          var p = 0, q = 1, r = 2,
+
+              max = Math.abs( this.m_el0.y ),
+              v   = Math.abs( this.m_el0.z );
+
+          if ( v > max ) {
+            q = 2;
+            r = 1;
+            max = v;
+          }
+          v = Math.abs( this.m_el1.z );
+          if ( v > max ) {
+            p = 1;
+            q = 2;
+            r = 0;
+            max = v;
+          }
+
+          var t = threshold * ( Math.abs( this.m_el0.x ) + Math.abs( this.m_el1.y ) + Math.abs( this.m_el2.z ) );
+
+          if ( max <= t ) {
+            if ( max <= EPSILON * t ) {
+              return;
+            }
+            step = 1;
+          }
+
+          // Compute Jacobi rotation J which leads to a zero for element
+          // `[p][q]`
+          var mpq = this[p][q],
+              theta = ( this[q][q] - this[p][p] ) / ( 2 * mpq ),
+              theta2 = theta * theta,
+              cos,
+              sin;
+
+          if ( theta2 * theta2 < 10 / EPSILON) {
+            t = ( theta >= 0 ) ?
+              1 / ( theta + Math.sqrt( 1 + theta2 ) ) :
+              1 / ( theta - Math.sqrt( 1 + theta2 ) );
+
+            cos = 1 / Math.sqrt( 1 + t * t );
+            sin = cos * t;
+          } else {
+            // Approximation for large theta-value, i.e., a nearly
+            // diagonal matrix
+            t = 1 / ( theta * ( 2 + 0.5 / theta2 ) );
+            cos = 1 - 0.5 * t * t;
+            sin = cos * t;
+          }
+
+          // Apply rotation to matrix (`this = J^T * this * J`)
+          this[p][q]  = this[q][p] = 0;
+          this[p][p] -= t * mpq;
+          this[q][q] += t * mpq;
+
+          var mrp = this[r][p],
+              mrq = this[r][q];
+
+          this[r][p] = this[p][r] = cos * mrp - sin * mrq;
+          this[r][q] = this[q][r] = cos * mrq + sin * mrp;
+
+          // Apply rotation to `rot` (`rot = rot * J`)
+          var i, row;
+          for ( i = 0; i < 3; ++i ) {
+            row = this[i];
+            mrp = row[p];
+            mrq = row[q];
+            row[p] = cos * mrp - sin * mrq;
+            row[q] = cos * mrq + sin * mrp;
+          }
+        }
       },
 
       // Returns the dot product of the first column and the given vector.

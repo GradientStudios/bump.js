@@ -544,3 +544,12 @@ test( 'cofac', function() {
   equal( a.cofac( 0, 2, 1, 0 ), -204 );
   equal( a.cofac( 0, 0, 1, 1 ), 136 );
 });
+
+module( 'Bump.Matrix3x3 TODO' );
+
+test( 'incomplete', function() {
+  if ( ok( Bump.Quaternion, 'Matrix3x3 depends on Quaternion' ) ) {
+    ok( Bump.Matrix3x3.prototype.getRotation );
+    ok( Bump.Matrix3x3.prototype.setRotation );
+  }
+});
