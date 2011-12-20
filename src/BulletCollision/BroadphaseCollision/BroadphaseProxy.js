@@ -5,6 +5,8 @@
 
   // ## BroadphaseNativeTypes enum
   // The values declared will be integers for now.
+  // To anyone editing: the indentation in the original bullet source seems intentional,
+  // so it was maintained here.
   (function( Bump ) {
     var _broadphaseNativeTypes = [
       'BOX_SHAPE_PROXYTYPE',
@@ -63,30 +65,33 @@
     }
   } )( Bump );
 
+  // The ***btBroadphaseProxy*** is the main class that can be used with the Bullet broadphases.
+  // It stores collision shape type information, collision filter information and a client object,
+  // typically a `btCollisionObject` or `btRigidBody`.
+
   Bump.BroadphaseProxy = Bump.type( {
 
-    // The `args` param is an object that may contain any of the following properties:
+    // Given *exactly* the following arguments, initializes the BroadphaseProxy:
     // `aabbMin` : A Vector3 representing the minimum x, y, x values of the axis aligned bounding box.
     // `aabbMax` : A Vector3 representing the maximum x, y, x values of the axis aligned bounding box.
     // `userPtr` : The client object for the proxy (usually a CollisionObject or Rigidbody).
     // `collisionFilterGroup` : The unsigned integer collision filter group. ???
     // `collisionFilterMask` : The unsigned integer collision filter mask. ???
     // `multiSapParentProxy` : ???
-    init: function BroadphaseProxy( args ) {
-
-      args = args || {};
+    init: function BroadphaseProxy( aabbMin, aabbMax, userPtr, collisionFilterGroup,
+                                    collisionFilterMask, multiSapParentProxy ) {
 
       // Usually the client CollisionObject or Rigidbody class
-      this.m_clientObject = args.userPtr || null;
+      this.m_clientObject = userPtr;
 
-      this.m_collisionFilterGroup = args.collisionFilterGroup || 0;
-      this.m_collisionFilterMask = args.collisionFilterMask || 0;
+      this.m_collisionFilterGroup = collisionFilterGroup;
+      this.m_collisionFilterMask = collisionFilterMask;
 
-      this.m_multiSapParentProxy = args.multiSapParentProxy || null;
+      this.m_multiSapParentProxy = multiSapParentProxy;
       this.m_uniqueID = null;
 
-      this.m_aabbMin = args.aabbMin || Bump.Vector3.create( );
-      this.m_aabbMax = args.aabbMax || Bump.Vector3.create( );
+      this.m_aabbMin = aabbMin;
+      this.m_aabbMax = aabbMax;
     },
 
     // ## Properties
@@ -138,9 +143,79 @@
       isConvex2d: function( proxyType ) {
 	return (proxyType === Bump.BroadphaseNativeTypes.BOX_2D_SHAPE_PROXYTYPE) ||
           (proxyType === Bump.BroadphaseNativeTypes.CONVEX_2D_SHAPE_PROXYTYPE);
+      },
+
+      // Create an empty `BroadphaseProxy.` This is analogous to the default constructor
+      // of `btBroadphaseProxy`.
+      createEmpty: function() {
+        var newProxy = Object.create( Bump.BroadphaseProxy.prototype );
+
+        newProxy.m_clientObject = null;
+        newProxy.m_collisionFilterGroup = 0;
+        newProxy.m_collisionFilterMask = 0;
+        newProxy.m_multiSapParentProxy = null;
+        newProxy.m_uniqueID = 0;
+        newProxy.m_aabbMin = Bump.Vector3.create();
+        newProxy.m_aabbMax = Bump.Vector3.create();
+
+        return newProxy;
       }
 
     }
 
   } );
+
+  // The ***BroadphasePair*** class contains a pair of aabb-overlapping objects.
+  // A `Dispatcher` can search a `CollisionAlgorithm` that performs exact/narrowphase collision
+  // detection on the actual collision shapes.
+
+  Bump.BroadphasePair = Bump.type( {
+    init : function BroadphasePair( proxy0, proxy1 ) {
+      if( args ){
+        if( proxy0.m_uniqueId < proxy1.m_uniqueId ) {
+          m_pProxy0 = proxy0;
+          m_pProxy1 = proxy1;
+        }
+        else {
+          m_pProxy0 = proxy1;
+          m_pProxy1 = proxy0;
+        }
+      }
+
+      this.m_algorithm = null;
+      this.m_internalInfo1 = null;
+    },
+
+    members: {
+    },
+
+    typeMembers: {
+      // Create a new `BroadphasePair` with values copied from `other`. This
+      // is analogous to the copy constructor of `btBroadphasePair`.
+      clone: function( other ) {
+        var newPair = Object.create( Bump.BroadphasePair.prototype );
+
+        newPair.m_pProxy0 = other.m_pProxy0;
+        newPair.m_pProxy1 = other.m_pProxy1;
+        newPair.m_algorithm = other.m_algorithm;
+        newPair.m_internalInfo1 = other.m_internalInfo1;
+
+        return newPair;
+      },
+
+      // Create an empty `BroadphasePair`. This is analogous to the default
+      // constructor of `btBroadphasePair`.
+      createEmpty: function() {
+        var newPair = Object.create( Bump.BroadphasePair.prototype );
+
+        newPair.m_pProxy0 = null;
+        newPair.m_pProxy1 = null;
+        newPair.m_algorithm = null;
+        newPair.m_internalInfo1 = null;
+
+        return newPair;
+      }
+    }
+  } );
+
 } )( this, this.Bump );
