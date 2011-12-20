@@ -109,7 +109,7 @@ test( 'add', 4, function() {
   v2 = Bump.Vector3.create(),
   ret;
 
-  ret = v2.add( v0, v1 );
+  ret = v0.add( v1, v2 );
   ok( ret === v2, 'return value references correct vector' );
   deepEqual( v0, Bump.Vector3.create( 1, 2, 3), 'input vector unchanged' );
   deepEqual( v1, Bump.Vector3.create( 1, -2, 0), 'input vector unchanged' );
@@ -133,7 +133,7 @@ test( 'subtract', 4, function() {
   v2 = Bump.Vector3.create(),
   ret;
 
-  ret = v2.subtract( v0, v1 );
+  ret = v0.subtract( v1, v2 );
   ok( ret === v2, 'return value references correct vector' );
   deepEqual( v0, Bump.Vector3.create( 1, 2, 3), 'input vector unchanged' );
   deepEqual( v1, Bump.Vector3.create( 1, -2, 0), 'input vector unchanged' );
@@ -156,7 +156,7 @@ test( 'multiply', 3, function() {
   v1 = Bump.Vector3.create(),
   ret;
 
-  ret = v1.multiply( v0, 2 );
+  ret = v0.multiply( 2, v1 );
   ok( ret === v1, 'return value references correct vector' );
   deepEqual( v0, Bump.Vector3.create( 1, 2, 3), 'input vector unchanged' );
   deepEqual( v1, Bump.Vector3.create( 2, 4, 6 ), 'correct result' );
@@ -177,7 +177,7 @@ test( 'scale', 4, function() {
   v2 = Bump.Vector3.create(),
   ret;
 
-  ret = v2.scale( v0, v1 );
+  ret = v0.scale( v1, v2 );
   ok( ret === v2, 'return value references correct vector' );
   deepEqual( v0, Bump.Vector3.create( 1, 2, 3 ), 'input vector unchanged' );
   deepEqual( v1, Bump.Vector3.create( 2, -1, 0 ), 'input vector unchanged' );
@@ -200,7 +200,7 @@ test( 'divide', 3, function() {
   v1 = Bump.Vector3.create(),
   ret;
 
-  ret = v1.divide( v0, 2 );
+  ret = v0.divide( 2, v1 );
   ok( ret === v1, 'return value references correct vector' );
   deepEqual( v0, Bump.Vector3.create( 1, 2, 3 ), 'input vector unchanged' );
   deepEqual( v1, Bump.Vector3.create( 0.5, 1, 1.5 ), 'correct result' );
@@ -221,7 +221,7 @@ test( 'inverseScale', 4, function() {
   v2 = Bump.Vector3.create(),
   ret;
 
-  ret = v2.inverseScale( v0, v1 );
+  ret = v0.inverseScale( v1, v2 );
   ok( ret === v2, 'return value references correct vector' );
   deepEqual( v0, Bump.Vector3.create( 1, 2, 3 ), 'input vector unchanged' );
   deepEqual( v1, Bump.Vector3.create( 2, 1, -3 ), 'input vector unchanged' );
@@ -270,7 +270,7 @@ test( 'distance function', 1, function() {
 
 test( 'safeNormalize', 3, function() {
   var v1 = Bump.Vector3.create( 2, 0, 0 ).safeNormalize(),
-  v2 = Bump.Vector3.create( 0, 1, -1 );
+  v2 = Bump.Vector3.create( 0, 1, -1 ),
   v3 = Bump.Vector3.create().safeNormalize();
 
   v2.safeNormalize();
@@ -296,40 +296,46 @@ test( 'normalize', 4, function() {
   deepEqual( v2, Bump.Vector3.create( 0, 1/Math.sqrt( 2 ), -1/Math.sqrt( 2 ) ), 'correct result' );
 } );
 
-test( 'normalized', 6, function() {
+test( 'normalized', 5, function() {
   var v1 = Bump.Vector3.create( 2, 0, 0 ),
   v2 = Bump.Vector3.create( 0, 1, -1 ),
   v3 = Bump.Vector3.create(),
   ret;
 
-  ret = v3.normalized( v1 );
+  ret = v1.normalized( v3 );
 
-  ok( ret === v3, 'return value references correct vector' );
+  ok( ret === v3, 'with destination : return value references correct vector' );
   deepEqual( v1, Bump.Vector3.create( 2, 0, 0 ), 'original unchanged' );
   deepEqual( v3, Bump.Vector3.create( 1, 0, 0 ), 'correct result' );
 
-  ret = v3.normalized( v2 );
+  ret = v2.normalized();
 
-  ok( ret === v3, 'return value references correct vector' );
-  deepEqual( v2, Bump.Vector3.create( 0, 1, -1 ), 'original unchanged' );
-  deepEqual( v3, Bump.Vector3.create( 0, 1/Math.sqrt( 2 ), -1/Math.sqrt( 2 ) ),
+  deepEqual( v2, Bump.Vector3.create( 0, 1, -1 ), 'without destinatoin original unchanged' );
+  deepEqual( ret, Bump.Vector3.create( 0, 1/Math.sqrt( 2 ), -1/Math.sqrt( 2 ) ),
              'correct result' );
 } );
 
 // definitely should add more tests for this one
-test( 'rotate', 5, function() {
+test( 'rotate', 9, function() {
   var v1 = Bump.Vector3.create( 1, 0, 0 ),
   zAxis = Bump.Vector3.create( 0, 0, 1 ),
   vRot = Bump.Vector3.create(),
   ret;
 
-  ret = vRot.rotate( v1, zAxis, Math.PI/2 );
+  ret = v1.rotate( zAxis, Math.PI/2, vRot );
 
-  ok( ret === vRot, 'return value references correct vector' );
-  deepEqual( v1, Bump.Vector3.create( 1, 0, 0 ), 'input unchanged' );
+  ok( ret === vRot, 'with destination : return value references correct vector' );
+  deepEqual( v1, Bump.Vector3.create( 1, 0, 0 ), 'with destination : input unchanged' );
   ok( Math.abs( vRot[0] ) < Bump.SIMD_EPSILON, 'correct result : x is close to 0' );
   ok( Math.abs( vRot[1] - 1 ) < Bump.SIMD_EPSILON, 'correct result : y is close to 1' );
-  ok( Math.abs( vRot[0] ) < Bump.SIMD_EPSILON, 'correct result: z is close to 0' );
+  ok( Math.abs( vRot[2] ) < Bump.SIMD_EPSILON, 'correct result: z is close to 0' );
+
+  ret = v1.rotate( zAxis, Math.PI );
+  deepEqual( v1, Bump.Vector3.create( 1, 0, 0 ), 'without destination : input unchanged' );
+  ok( Math.abs( ret[0] + 1 ) < Bump.SIMD_EPSILON, 'correct result : x is close to -1' );
+  ok( Math.abs( ret[1] ) < Bump.SIMD_EPSILON, 'correct result : y is close to 0' );
+  ok( Math.abs( ret[2] ) < Bump.SIMD_EPSILON, 'correct result: z is close to 0' );
+
 } );
 
 test( 'angle', 12, function() {
@@ -366,26 +372,24 @@ test( 'absolute', 5, function() {
   v2 = Bump.Vector3.create(),
   ret;
 
-  ret = v2.absolute( v1 );
+  ret = v1.absolute( v2 );
 
-  ok( ret === v2, 'return value references correct vector' );
+  ok( ret === v2, 'with destinaton : return value references correct vector' );
   deepEqual( v1, Bump.Vector3.create( -1, -2, 3 ), 'input unchanged' );
   deepEqual( v2, Bump.Vector3.create( 1, 2, 3 ), 'correct result' );
 
-  ret = v1.absolute( v1 );
-
-  ok( ret === v1, 'in place: return value references correct vector' );
-  deepEqual( v1, Bump.Vector3.create( 1, 2, 3 ), 'correct result' );
+  ret = v1.absolute();
+  deepEqual( v1, Bump.Vector3.create( -1, -2, 3 ), 'without destination: input unchanged' );
+  deepEqual( ret, Bump.Vector3.create( 1, 2, 3 ), 'without destination: correct result' );
 
 } );
 
-test( 'cross', 15, function() {
+test( 'cross and crossSelf', 15, function() {
 
   // given params for a "right", "up" and "forward" perpendicular vectors,
   // checks cross products between them (5 tests total)
   var crossTest = function( right, up, forward ) {
     var rightCrossUp = Bump.Vector3.create(),
-    upCrossForward = Bump.Vector3.create(),
     diff = Bump.Vector3.create(),
     ret;
 
@@ -397,21 +401,20 @@ test( 'cross', 15, function() {
     //ok( Math.abs( Bump.Vector3.length( up ) - 1 ) < Bump.SIMD_EPSILON );
     //ok( Math.abs( Bump.Vector3.length( forward ) - 1 ) < Bump.SIMD_EPSILON );
 
-    ret = rightCrossUp.cross( right, up );
+    ret = right.cross( up, rightCrossUp );
     //console.log( "( " + right + " ), ( " + up + " ), ( " + rightCrossUp + " ) " );
-    diff.subtract( rightCrossUp, forward );
+    rightCrossUp.subtract( forward, diff );
     //console.log( "( " + diff + " ) " );
-    ok( ret === rightCrossUp, "return value references correct vector" );
+    ok( ret === rightCrossUp, "cross with destination : return value references correct vector" );
     ok( diff.fuzzyZero(), "right cross up : correct result" );
 
-    ret = upCrossForward.cross( up, forward );
-    diff.subtract( upCrossForward, right );
+    ret = up.cross( forward );
+    ret.subtract( right, diff );
     ok( diff.fuzzyZero(), "up cross forward : correct result" );
 
-    // do the third one in place, just to make sure that works
-    ret = forward.cross( forward, right );
-    diff.subtract( forward, up );
-    ok( ret === forward, "in place: return value references correct vector" );
+    ret = forward.crossSelf( right );
+    forward.subtract( up, diff );
+    ok( ret === forward, "crossSelf: return value references correct vector" );
     ok( diff.fuzzyZero(), "forward cross right : correct result" );
 
   }
@@ -561,21 +564,22 @@ test( 'setInterpolate3', 5, function() {
       "in place: correct result" );
 } );
 
-test( 'lerp', 4, function() {
+test( 'lerp', 3, function() {
   var right = Bump.Vector3.create( 1, 0, 0 ),
   up = Bump.Vector3.create( 0, 1, 0 ),
   forward = Bump.Vector3.create( 0, 0, 1 ),
+  dest = Bump.Vector3.create(),
   ret;
 
-  ret = right.lerp( up, 0.5 );
-  ok( ret === right, "return value references correct vector" );
-  ok( right.subtractSelf( Bump.Vector3.create( 0.5, 0.5, 0 ) ).fuzzyZero(),
-      "correct result" );
+  ret = right.lerp( up, 0.5, dest );
+  ok( ret === dest, "with destination: return value references correct vector" );
+  ok( dest.subtractSelf( Bump.Vector3.create( 0.5, 0.5, 0 ) ).fuzzyZero(),
+      "with destination: correct result" );
 
   ret = up.lerp( forward, 0.3 );
-  ok( ret === up, "return value references correct vector" );
-  ok( up.subtractSelf( Bump.Vector3.create( 0, 0.7, 0.3 ) ).fuzzyZero(),
-      "correct result" );
+  //ok( ret === up, "return value references correct vector" );
+  ok( ret.subtractSelf( Bump.Vector3.create( 0, 0.7, 0.3 ) ).fuzzyZero(),
+      "without destination: correct result" );
 } );
 
 test( 'equal', 4, function() {
