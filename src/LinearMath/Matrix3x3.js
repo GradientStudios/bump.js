@@ -82,7 +82,7 @@
       // `dest`.
       getRow: function( i, dest ) {
         dest = dest || Bump.Vector3.create();
-        return dest.clone( this[ i ] );
+        return this[i].clone( dest );
       },
 
       // Given *exactly* nine arguments in row major order, sets the values of
