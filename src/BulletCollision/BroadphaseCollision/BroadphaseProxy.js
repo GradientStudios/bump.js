@@ -159,6 +159,17 @@
         newProxy.m_aabbMax = Bump.Vector3.create();
 
         return newProxy;
+      },
+
+      // Emulates the `CollisionFilterGroup` "enum" from `btBroadphaseProxy`.
+      CollisionFilterGroups: {
+        DefaultFilter: 1,
+        StaticFilter: 2,
+	KinematicFilter: 4,
+	DebrisFilter: 8,
+	SensorTrigger: 16,
+	CharacterFilter: 32,
+	AllFilter: -1 //all bits sets: DefaultFilter | StaticFilter | KinematicFilter | DebrisFilter | SensorTrigger
       }
 
     }
@@ -171,15 +182,13 @@
 
   Bump.BroadphasePair = Bump.type( {
     init : function BroadphasePair( proxy0, proxy1 ) {
-      if( args ){
-        if( proxy0.m_uniqueId < proxy1.m_uniqueId ) {
-          m_pProxy0 = proxy0;
-          m_pProxy1 = proxy1;
-        }
-        else {
-          m_pProxy0 = proxy1;
-          m_pProxy1 = proxy0;
-        }
+      if( proxy0.m_uniqueId < proxy1.m_uniqueId ) {
+        this.m_pProxy0 = proxy0;
+        this.m_pProxy1 = proxy1;
+      }
+      else {
+        this.m_pProxy0 = proxy1;
+        this.m_pProxy1 = proxy0;
       }
 
       this.m_algorithm = null;
