@@ -199,6 +199,20 @@ test( 'setIdentity', function() {
   deepEqual( a, b, 'getIdentity and setIdentity produce the same matrix' );
 });
 
+test( 'setRotation', function() {
+  ok( Bump.Matrix3x3.prototype.setRotation, 'setRotation exists' );
+
+  var a = Bump.Matrix3x3.create(),
+      aRef = a,
+      aExpected = Bump.Matrix3x3.getIdentity();
+
+  notDeepEqual( a, aExpected );
+  a.setRotation( Bump.Quaternion.getIdentity() );
+  deepEqual( a, aExpected, 'identity rotation is identity' );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+});
+
 test( 'setEulerZYX', function() {
   ok( Bump.Matrix3x3.prototype.setEulerZYX, 'setEulerZYX exists' );
 
@@ -248,6 +262,20 @@ test( 'setEulerZYX', function() {
       Math.abs( answer.m_el2.z - newARef.m_el2.z ) < EPSILON );
 
   strictEqual( newARef, aRef, 'does not allocate new a' );
+});
+
+test( 'getRotation', function() {
+  ok( Bump.Matrix3x3.prototype.getRotation, 'getRotation exists' );
+
+  var a = Bump.Matrix3x3.getIdentity(),
+      aRef = a,
+      aClone = a.clone(),
+      aExpected = Bump.Quaternion.getIdentity();
+
+  deepEqual( a.getRotation(), aExpected, 'identity is identity rotation' );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  deepEqual( a, aClone, 'does not modify a' );
 });
 
 test( 'getEulerZYX', function() {
@@ -753,18 +781,4 @@ test( 'cofac', function() {
   equal( a.cofac( 0, 1, 1, 2 ), 102 );
   equal( a.cofac( 0, 2, 1, 0 ), -204 );
   equal( a.cofac( 0, 0, 1, 1 ), 136 );
-});
-
-module( 'Bump.Matrix3x3 TODO' );
-
-test( 'incomplete', function() {
-  if ( ok( Bump.Quaternion, 'Matrix3x3 depends on Quaternion' ) || Bump.Quaternion ) {
-    if (Bump.Quaternion.prototype.setValue ) {
-      ok( Bump.Matrix3x3.prototype.getRotation, 'getRotation exists' );
-    }
-
-    if ( Bump.Quaternion.prototype.length2 ) {
-      ok( Bump.Matrix3x3.prototype.setRotation, 'setRotation exists' );
-    }
-  }
 });
