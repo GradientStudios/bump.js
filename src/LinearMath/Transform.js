@@ -44,9 +44,17 @@
         this.basis = Bump.Matrix3x3.create();
         this.origin = Bump.Vector3.create();
         return this;
-      }
+      },
 
       // ## Members
+
+      // Clones `this` transform to `dest`.
+      clone: function( dest ) {
+        dest = dest || Bump.Transform.create();
+        this.basis.clone( dest.basis );
+        this.origin.clone( dest.origin );
+        return dest;
+      }
     }
   });
 })( this, this.Bump );
