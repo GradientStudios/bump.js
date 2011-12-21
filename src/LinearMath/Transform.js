@@ -25,6 +25,12 @@
         other.basis.clone( transform.basis );
         other.origin.clone( transform.origin );
         return transform;
+      },
+
+      getIdentity: function() {
+        var transform = Object.create( Bump.Transform.prototype );
+        transform._initEmpty();
+        return transform.setIdentity();
       }
     },
 
@@ -54,6 +60,18 @@
         this.basis.clone( dest.basis );
         this.origin.clone( dest.origin );
         return dest;
+      },
+
+      getOrigin: function() {
+        return this.origin;
+      },
+
+      getBasis: function() {
+        return this.basis;
+      },
+
+      getRotation: function( dest ) {
+        return this.basis.getRotation( dest );
       },
 
       setOrigin: function( origin ) {
