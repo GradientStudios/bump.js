@@ -315,3 +315,185 @@ test( 'setMax', function() {
   strictEqual( b, bRef, 'does not allocate new b' );
   deepEqual( b, bClone, 'does not change b' );
 });
+
+module( 'Bump.Quaternion btQuaternion members' );
+
+test( 'setRotation', function() {
+  exist( 'setRotation' );
+
+  var a = Bump.Quaternion.create(),
+      aRef = a,
+      aExpected = Bump.Quaternion.create( 0.5, 0.5, 0.5, 0.5 ),
+      EPSILON = Math.pow( 2, -48 );
+
+  a.setRotation( Bump.Vector3.create( 1, 1, 1 ), 2 * Math.PI / 3 );
+
+  if ( a.x ) {
+    ok( Math.abs( a.x - aExpected.x ) < EPSILON &&
+        Math.abs( a.y - aExpected.y ) < EPSILON &&
+        Math.abs( a.z - aExpected.z ) < EPSILON &&
+        Math.abs( a.w - aExpected.w ) < EPSILON );
+  }
+
+  if ( a.m_floats ) {
+    ok( Math.abs( a.m_floats[0] - aExpected.m_floats[0] ) < EPSILON &&
+        Math.abs( a.m_floats[1] - aExpected.m_floats[1] ) < EPSILON &&
+        Math.abs( a.m_floats[2] - aExpected.m_floats[2] ) < EPSILON &&
+        Math.abs( a.m_floats[3] - aExpected.m_floats[3] ) < EPSILON );
+  }
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+});
+
+test( 'setEuler', function() {
+  exist( 'setEuler' );
+
+  var a = Bump.Quaternion.create(),
+      aRef = a,
+      aExpected = Bump.Quaternion.create( 0.5, 0.5, 0.5, 0.5 ),
+      EPSILON = Math.pow( 2, -48 );
+
+  a.setEuler( Math.PI / 2, 0, Math.PI / 2 );
+
+  if ( a.x ) {
+    ok( Math.abs( a.x - aExpected.x ) < EPSILON &&
+        Math.abs( a.y - aExpected.y ) < EPSILON &&
+        Math.abs( a.z - aExpected.z ) < EPSILON &&
+        Math.abs( a.w - aExpected.w ) < EPSILON );
+  }
+
+  if ( a.m_floats ) {
+    ok( Math.abs( a.m_floats[0] - aExpected.m_floats[0] ) < EPSILON &&
+        Math.abs( a.m_floats[1] - aExpected.m_floats[1] ) < EPSILON &&
+        Math.abs( a.m_floats[2] - aExpected.m_floats[2] ) < EPSILON &&
+        Math.abs( a.m_floats[3] - aExpected.m_floats[3] ) < EPSILON );
+  }
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+});
+
+test( 'setEulerZYX', function() {
+  exist( 'setEulerZYX' );
+
+  var a = Bump.Quaternion.create(),
+      aRef = a,
+      aExpected = Bump.Quaternion.create( 0.5, 0.5, 0.5, 0.5 ),
+      EPSILON = Math.pow( 2, -48 );
+
+  a.setEulerZYX( Math.PI / 2, 0, Math.PI / 2 );
+
+  if ( a.x ) {
+    ok( Math.abs( a.x - aExpected.x ) < EPSILON &&
+        Math.abs( a.y - aExpected.y ) < EPSILON &&
+        Math.abs( a.z - aExpected.z ) < EPSILON &&
+        Math.abs( a.w - aExpected.w ) < EPSILON );
+  }
+
+  if ( a.m_floats ) {
+    ok( Math.abs( a.m_floats[0] - aExpected.m_floats[0] ) < EPSILON &&
+        Math.abs( a.m_floats[1] - aExpected.m_floats[1] ) < EPSILON &&
+        Math.abs( a.m_floats[2] - aExpected.m_floats[2] ) < EPSILON &&
+        Math.abs( a.m_floats[3] - aExpected.m_floats[3] ) < EPSILON );
+  }
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+});
+
+test( 'negate', function() {
+  exist( 'negate' );
+
+  var a = Bump.Quaternion.create( 0.5, 0.5, 0.5, 0.5 ),
+      aRef = a,
+      aClone = a.clone(),
+      aExpected = Bump.Quaternion.create( -0.5, -0.5, -0.5, -0.5 ),
+      EPSILON = Math.pow( 2, -48 );
+
+  deepEqual( a.negate(), aExpected );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  deepEqual( a, aClone, 'does not modify a' );
+});
+
+test( 'add', function() {
+  exist( 'add' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      aRef = a,
+      aClone = a.clone(),
+      aExpected = Bump.Quaternion.create( 1.5, 2, 2.5, 3 ),
+      b = Bump.Quaternion.create( 1, 2, 3, 4 ),
+      bRef = b,
+      bClone = b.clone();
+
+  deepEqual( a.add( b ), aExpected );
+  deepEqual( b, bClone, 'does not modify b' );
+
+  var newBRef = a.add( b, b );
+  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
+  deepEqual( b, aExpected );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  deepEqual( a, aClone, 'does not modify a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+});
+
+test( 'addSelf', function() {
+  exist( 'addSelf' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      aRef = a,
+      aExpected = Bump.Quaternion.create( 1.5, 2, 2.5, 3 ),
+      b = Bump.Quaternion.create( 1, 2, 3, 4 ),
+      bRef = b,
+      bClone = b.clone();
+
+  var newAref = a.addSelf( b );
+  strictEqual( newAref, aRef, 'returns a' );
+  deepEqual( a, aExpected );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+  deepEqual( b, bClone, 'does not modify b' );
+});
+
+test( 'subtract', function() {
+  exist( 'subtract' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      aRef = a,
+      aClone = a.clone(),
+      aExpected = Bump.Quaternion.create( 1.5, 2, 2.5, 3 ),
+      b = Bump.Quaternion.create( -1, -2, -3, -4 ),
+      bRef = b,
+      bClone = b.clone();
+
+  deepEqual( a.subtract( b ), aExpected );
+  deepEqual( b, bClone, 'does not modify b' );
+
+  var newBRef = a.subtract( b, b );
+  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
+  deepEqual( b, aExpected );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  deepEqual( a, aClone, 'does not modify a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+});
+
+test( 'subtractSelf', function() {
+  exist( 'subtractSelf' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      aRef = a,
+      aExpected = Bump.Quaternion.create( 1.5, 2, 2.5, 3 ),
+      b = Bump.Quaternion.create( -1, -2, -3, -4 ),
+      bRef = b,
+      bClone = b.clone();
+
+  var newAref = a.subtractSelf( b );
+  strictEqual( newAref, aRef, 'returns a' );
+  deepEqual( a, aExpected );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  strictEqual( b, bRef, 'does not allocate new b' );
+  deepEqual( b, bClone, 'does not modify b' );
+});
