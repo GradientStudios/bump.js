@@ -73,3 +73,73 @@ test( 'member clone to destination', function() {
   strictEqual( a, aRef, 'a is not reallocated' );
   strictEqual( b, bRef, 'b is not reallocated' );
 });
+
+module( 'Bump.Transform.setOrigin' );
+test( 'basic', function() {
+  var a = Bump.Transform.create(),
+      aRef = a,
+      aOriginRef = a.origin,
+      o = Bump.Vector3.create( 1, 1, 1 ),
+      oRef = o,
+      oClone = o.clone(),
+      n = a.setOrigin( o );
+
+  strictEqual( n, aRef, 'returns original transform' );
+  deepEqual( a.origin, o, 'sets origin' );
+  strictEqual( a, aRef, 'a is not reallocated' );
+  strictEqual( a.origin, aOriginRef, 'a.origin is not reallocated' );
+  deepEqual( o, oClone, 'o is not modified' );
+  strictEqual( o, oRef, 'o is not reallocated' );
+});
+
+module( 'Bump.Transform.setBasis' );
+test( 'basic', function() {
+  var a = Bump.Transform.create(),
+      aRef = a,
+      aBasisRef = a.basis,
+      b = Bump.Matrix3x3.create( 1, 2, 3, 4, 5, 6, 7, 8, 9 ),
+      bRef = b,
+      bClone = b.clone(),
+      n = a.setBasis( b );
+
+  strictEqual( n, aRef, 'returns original transform' );
+  deepEqual( a.basis, b, 'sets basis' );
+  strictEqual( a, aRef, 'a is not reallocated' );
+  strictEqual( a.basis, aBasisRef, 'a.basis is not reallocated' );
+  deepEqual( b, bClone, 'b is not modified' );
+  strictEqual( b, bRef, 'b is not reallocated' );
+});
+
+module( 'Bump.Transform.setRotation' );
+test( 'basic', function() {
+  var a = Bump.Transform.create(),
+      aRef = a,
+      aBasisRef = a.basis,
+      q = Bump.Quaternion.getIdentity(),
+      qRef = q,
+      qClone = q.clone(),
+      n = a.setRotation( q );
+
+  strictEqual( n, aRef, 'returns original transform' );
+  deepEqual( a.basis, Bump.Matrix3x3.getIdentity(), 'sets basis to identity rotation' );
+  strictEqual( a, aRef, 'a is not reallocated' );
+  strictEqual( a.basis, aBasisRef, 'a.basis is not reallocated' );
+  deepEqual( q, qClone, 'q is not modified' );
+  strictEqual( q, qRef, 'q is not reallocated' );
+});
+
+module( 'Bump.Transform.setIdentity' );
+test( 'basic', function() {
+  var a = Bump.Transform.create( Bump.Quaternion.create(), Bump.Vector3.create( 1, 1, 1 ) ),
+      aRef = a,
+      aBasisRef = a.basis,
+      aOriginRef = a.origin,
+      n = a.setIdentity();
+
+  strictEqual( n, aRef, 'returns original transform' );
+  deepEqual( a.basis, Bump.Matrix3x3.getIdentity(), 'sets basis to identity rotation' );
+  deepEqual( a.origin, Bump.Vector3.create( 0, 0, 0 ), 'zeroes out origin' );
+  strictEqual( a, aRef, 'a is not reallocated' );
+  strictEqual( a.basis, aBasisRef, 'a.basis is not reallocated' );
+  strictEqual( a.origin, aOriginRef, 'a.origin is not reallocated' );
+});
