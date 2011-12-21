@@ -54,6 +54,27 @@
         this.basis.clone( dest.basis );
         this.origin.clone( dest.origin );
         return dest;
+      },
+
+      setOrigin: function( origin ) {
+        origin.clone( this.origin );
+        return this;
+      },
+
+      setBasis: function( basis ) {
+        basis.clone( this.basis );
+        return this;
+      },
+
+      setRotation: function( quat ) {
+        this.basis.setRotation( quat );
+        return this;
+      },
+
+      setIdentity: function() {
+        this.basis.setIdentity();
+        this.origin.setValue( 0, 0, 0 );
+        return this;
       }
     }
   });
