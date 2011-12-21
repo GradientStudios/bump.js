@@ -63,6 +63,7 @@
     members: {
       // ### btQuadword members
 
+      // Clones `this` quaternion into `dest`.
       clone: function( dest ) {
         dest = dest || Bump.Quaternion.create();
         dest.x = this.x;
@@ -77,46 +78,55 @@
         return dest;
       },
 
+      // *For compatibility.* `this.x` is faster.
       getX: function() {
         return this.m_floats[0];
       },
 
+      // *For compatibility.* `this.y` is faster.
       getY: function() {
         return this.m_floats[1];
       },
 
+      // *For compatibility.* `this.z` is faster.
       getZ: function() {
         return this.m_floats[2];
       },
 
+      // *For compatibility.* `this.w` is faster.
       getW: function() {
         return this.m_floats[3];
       },
 
+      // *For compatibility.* `this.x` is faster.
       setX: function( x ) {
         this.m_floats[0] = x;
         this.x = x;
         return this;
       },
 
+      // *For compatibility.* `this.y` is faster.
       setY: function( y ) {
         this.m_floats[1] = y;
         this.y = y;
         return this;
       },
 
+      // *For compatibility.* `this.z` is faster.
       setZ: function( z ) {
         this.m_floats[2] = z;
         this.z = z;
         return this;
       },
 
+      // *For compatibility.* `this.w` is faster.
       setW: function( w ) {
         this.m_floats[3] = w;
         this.w = w;
         return this;
       },
 
+      // `operator==`
       equal: function( other ) {
         return this.x === other.x &&
           this.y === other.y &&
@@ -124,6 +134,7 @@
           this.w === other.w;
       },
 
+      // `operator!=`
       notEqual: function( other ) {
         return this.x !== other.x ||
           this.y !== other.y ||
@@ -131,6 +142,7 @@
           this.w !== other.w;
       },
 
+      // Sets the elements of `this` quaternion to the four given values.
       setValue: function( x, y, z, w ) {
         this.x = this.m_floats[0] = x;
         this.y = this.m_floats[1] = y;
@@ -139,6 +151,7 @@
         return this;
       },
 
+      // Sets each element to be the minimum of `this` and `other` quaternion.
       setMin: function( other ) {
         if ( other.x < this.x ) { this.x = other.x; }
         if ( other.y < this.y ) { this.y = other.y; }
@@ -152,6 +165,7 @@
         return this;
       },
 
+      // Sets each element to be the maximum of `this` and `other` quaternion.
       setMax: function( other ) {
         if ( other.x > this.x ) { this.x = other.x; }
         if ( other.y > this.y ) { this.y = other.y; }
@@ -195,6 +209,7 @@
         );
       },
 
+      // Sets `this` rotation given `yaw`, `pitch`, and `roll` Euler angles.
       setEulerZYX: function( yaw, pitch, roll ) {
         var halfYaw = yaw * 0.5,
             halfPitch = pitch * 0.5,
@@ -216,12 +231,14 @@
 
       // ### Math operator functions
 
-      // Negates each element and stores the resulting quaternion in `dest`.
+      // Negates `this` quaternion element-wise and stores the result into
+      // `dest`.
       negate: function( dest ) {
         dest = dest || Bump.Quaternion.create();
         return dest.setValue( -this.x, -this.y, -this.z, -this.w );
       },
 
+      // Adds quaternions element-wise into `dest`.
       add: function( quat, dest ) {
         dest = dest || Bump.Quaternion.create();
         return dest.setValue(
@@ -232,6 +249,7 @@
         );
       },
 
+      // Add `quat` to `this`.
       addSelf: function( quat ) {
         return this.setValue(
           this.x + quat.x,
@@ -241,6 +259,7 @@
         );
       },
 
+      // Subtracts quaternions element-wise into `dest`.
       subtract: function( quat, dest ) {
         dest = dest || Bump.Quaternion.create();
         return dest.setValue(
@@ -251,6 +270,7 @@
         );
       },
 
+      // Subtract `quat` from `this`.
       subtractSelf: function( quat ) {
         return this.setValue(
           this.x - quat.x,
@@ -260,6 +280,7 @@
         );
       },
 
+      // Stores the product of `this` and `quat` into `dest`.
       multiplyQuaternion: function( quat, dest ) {
         dest = dest || Bump.Quaternion.create();
         return dest.setValue(
@@ -469,6 +490,8 @@
         return newQuat;
       },
 
+      // ### More utility functions
+
       dot: function( q1, q2 ) {
         return q1.dot( q2 );
       },
@@ -481,12 +504,12 @@
         return q1.angle( q2 );
       },
 
-      inverse: function( quat ) {
-        return quat.inverse();
+      inverse: function( quat, dest ) {
+        return quat.inverse( dest );
       },
 
-      slerp: function( q1, q2, t ) {
-        return q1.slerp( q2, t );
+      slerp: function( q1, q2, t, dest ) {
+        return q1.slerp( q2, t, dest );
       },
 
       quatRotation: function( rotation, v, dest ) {
