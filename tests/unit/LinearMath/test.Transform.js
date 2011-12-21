@@ -38,10 +38,38 @@ test( 'arguments (Quaternion, Vector3)', function() {
 
 module( 'Bump.Transform.clone' );
 
-test( 'basic', function() {
-  var a = Bump.Transform.create( Bump.Quaternion.getIdentity(), Bump.Vector3.create() );
-  var b = Bump.Transform.clone( a );
+test( 'static', function() {
+  var a = Bump.Transform.create( Bump.Quaternion.getIdentity(), Bump.Vector3.create() ),
+      aRef = a,
+      b = Bump.Transform.clone( a );
+
   deepEqual( a, b, 'clone is equivalent' );
   notStrictEqual( a, b, 'clones object' );
   ok( a.basis !== b.basis && a.origin !== b.basis, 'deep clones properties' )
+  strictEqual( a, aRef, 'a is not reallocated' );
+});
+
+test( 'member clone without destination', function() {
+  var a = Bump.Transform.create( Bump.Quaternion.getIdentity(), Bump.Vector3.create() ),
+      aRef = a,
+      b = a.clone();
+
+  deepEqual( a, b, 'clone is equivalent' );
+  notStrictEqual( a, b, 'clones object' );
+  ok( a.basis !== b.basis && a.origin !== b.origin, 'deep clones properties' );
+  strictEqual( a, aRef, 'a is not reallocated' );
+});
+
+test( 'member clone to destination', function() {
+  var a = Bump.Transform.create( Bump.Quaternion.getIdentity(), Bump.Vector3.create() ),
+      aRef = a,
+      b = Bump.Transform.create(),
+      bRef = b;
+
+  a.clone( b );
+  deepEqual( a, b, 'clone is equivalent' );
+  notStrictEqual( a, b, 'clones object' );
+  ok( a.basis !== b.basis && a.origin !== b.origin, 'deep clones properties' );
+  strictEqual( a, aRef, 'a is not reallocated' );
+  strictEqual( b, bRef, 'b is not reallocated' );
 });
