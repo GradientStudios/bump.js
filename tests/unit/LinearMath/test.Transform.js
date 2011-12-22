@@ -143,3 +143,26 @@ test( 'basic', function() {
   strictEqual( a.basis, aBasisRef, 'a.basis is not reallocated' );
   strictEqual( a.origin, aOriginRef, 'a.origin is not reallocated' );
 });
+
+module( 'Bump.Transform.multiplyTransform' );
+test( 'self destination', function() {
+  var a = Bump.Transform.create(
+        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, -1, 1 ), Math.PI / 3 ),
+        Bump.Vector3.create( -1, -1, -1 )
+      ),
+      b = a.clone(),
+      c = Bump.Transform.create(
+        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, 1, 1 ), Math.PI ),
+        Bump.Vector3.create( 1, 1, 1 )
+      );
+
+  deepEqual(
+    a.multiplyTransform( c, a ),
+    b.multiplyTransform( c ),
+    'setting yourself as destination correctly works'
+  );
+});
+
+module( 'Bump.Transform.multiplyQuaternion' );
+
+module( 'Bump.Transform.multiplyVector' );
