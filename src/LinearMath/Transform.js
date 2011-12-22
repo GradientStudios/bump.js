@@ -54,6 +54,8 @@
 
       // ## Members
 
+      // ### Basic utilities
+
       // Clones `this` transform to `dest`.
       clone: function( dest ) {
         dest = dest || Bump.Transform.create();
@@ -93,6 +95,38 @@
         this.basis.setIdentity();
         this.origin.setValue( 0, 0, 0 );
         return this;
+      },
+
+      // ### Math operators
+
+      // Port of `btTransform::operator()`.
+      transform: function( vec, dest ) {
+        dest = dest || Bump.Vector3.create();
+        return dest.setValue(
+          this.basis.m_el0.dot( vec ) + this.origin.x,
+          this.basis.m_el1.dot( vec ) + this.origin.y,
+          this.basis.m_el2.dot( vec ) + this.origin.z
+        );
+      },
+
+      multiplyTransform: function( t, dest ) {
+        dest = dest || Bump.Transform.create();
+
+        // Perform the origin transformation first, so that we can avoid having
+        // to use a temporary `Matrix3x3` when `this === dest`.
+        this.transform( t.origin, dest.origin );
+        this.basis.multiplyMatrix( t.basis, dest.basis );
+
+        return dest;
+      },
+
+      multiplyQuaternion: function( quat, dest ) {
+        dest = dest || Bump.Quaternion.create();
+        return this.getRotation( dest ).multiplyQuaternion( quat, dest );
+      },
+
+      multiplyVector: function( vec, dest ) {
+        return this.transform( vec, dest );
       }
     }
   });
