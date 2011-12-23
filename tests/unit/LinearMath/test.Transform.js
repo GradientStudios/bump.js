@@ -1,3 +1,37 @@
+// Assuming that clone works, tests `op` on `a` with a list of arguments `b` and
+// expected values `expected`.
+var testBinaryOp = function( op, a, b, expected, options ) {
+  options = options || {};
+  options.takesDestination = options.takesDestination === undefined ? true : options.takesDestination;
+
+  b = Array.isArray( b ) ? b : [ b ];
+  expected = Array.isArray( expected ) ? expected : [ expected ];
+
+  var aRef = a,
+      aClone = a.clone();
+
+  for ( var i = 0; i < b.length; ++i ) {
+    var bRef = b[i],
+        bClone = b[i].clone(),
+        c;
+
+    deepEqual( op.apply( a, [ b[i] ] ), expected[i] );
+    deepEqual( a, aClone, 'does not modify a' );
+
+    if ( options.takesDestination ) {
+      c = op.apply( a, [ b[i], a ] );
+      strictEqual( c, aRef, 'answer is placed in specified destination' );
+      deepEqual( a, expected[i], 'setting yourself as destination works correctly' );
+    }
+
+    strictEqual( a, aRef, 'does not allocate new a' );
+    strictEqual( b[i], bRef, 'does not allocate new b' );
+    deepEqual( b[i], bClone, 'does not modify b' );
+
+    aClone.clone( a );
+  }
+};
+
 module( 'Bump.Transform' );
 
 test( 'Transform exists', function() {
@@ -145,6 +179,27 @@ test( 'basic', function() {
 });
 
 module( 'Bump.Transform.multiplyTransform' );
+test( 'basic', function() {
+  var a = Bump.Transform.create(
+        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, -1, 1 ), Math.PI / 3 ),
+        Bump.Vector3.create( -1, -1, -1 )
+      ),
+      b = Bump.Transform.create(
+        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, 1, 1 ), Math.PI ),
+        Bump.Vector3.create( 1, 1, 1 )
+      ),
+      expected = Bump.Transform.create(
+        Bump.Matrix3x3.create(
+          -0.8888888888888891, 0.4444444444444444, 0.1111111111111114,
+          -0.11111111111111094, -0.44444444444444464, 0.8888888888888891,
+          0.4444444444444445, 0.7777777777777779, 0.4444444444444444
+        ),
+        Bump.Vector3.create( -1.3333333333333333, -0.6666666666666666, 0.6666666666666667 )
+      );
+
+  testBinaryOp( Bump.Transform.prototype.multiplyTransform, a, b, expected );
+});
+
 test( 'self destination', function() {
   var a = Bump.Transform.create(
         Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, -1, 1 ), Math.PI / 3 ),
