@@ -2,6 +2,8 @@
 // [Bullet](http://bulletphysics.org).
 
 (function( window, Bump ) {
+  var tmpV1, tmpM1;
+
   Bump.Transform = Bump.type({
 
     typeMembers: {
@@ -131,6 +133,12 @@
         return dest;
       },
 
+      multiplyTransformSelf: function( t ) {
+        this.origin.addSelf( this.basis.multiplyVector( t.origin, tmpV1 ) );
+        this.basis.multiplyMatrixSelf( t.basis );
+        return this;
+      },
+
       multiplyQuaternion: function( quat, dest ) {
         dest = dest || Bump.Quaternion.create();
         return this.getRotation( dest ).multiplyQuaternion( quat, dest );
@@ -141,4 +149,7 @@
       }
     }
   });
+
+  tmpV1 = Bump.Vector3.create();
+  tmpM1 = Bump.Matrix3x3.create();
 })( this, this.Bump );
