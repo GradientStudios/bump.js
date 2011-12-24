@@ -146,6 +146,26 @@
 
       multiplyVector: function( vec, dest ) {
         return this.transform( vec, dest );
+      },
+
+      // ### Other utilities
+
+      inverse: function( dest ) {
+        dest = dest || Bump.Transform.create();
+
+        var inv = this.basis.transpose( tmpM1 );
+        dest.setBasis( inv );
+        inv.multiplyVector( this.origin.negate( tmpV1 ), dest.origin );
+        return dest;
+      },
+
+      inverseTimes: function( t, dest ) {
+        dest = dest || Bump.Transform.create();
+
+        var v = t.origin.subtract( this.origin, tmpV1 );
+        this.basis.vectorMultiply( v, dest.origin );
+        this.basis.transposeTimes( t.basis, dest.basis );
+        return dest;
       }
     }
   });

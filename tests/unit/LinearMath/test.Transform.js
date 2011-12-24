@@ -308,3 +308,52 @@ test( 'basic', function() {
     destType: Bump.Vector3
   });
 });
+
+module( 'Bump.Transform.inverse' );
+test( 'basic', function() {
+  var a = Bump.Transform.create(
+        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, -1, 1 ), Math.PI / 3 ),
+        Bump.Vector3.create( -1, -1, -1 )
+      ),
+      aRef = a,
+      aClone = a.clone(),
+      expected = Bump.Transform.create(
+        Bump.Matrix3x3.create(
+          0.6666666666666667, 0.33333333333333337, 0.6666666666666666,
+          -0.6666666666666666, 0.6666666666666667, 0.33333333333333337,
+          -0.33333333333333337, -0.6666666666666666, 0.6666666666666667
+        ),
+        Bump.Vector3.create( 1.6666666666666665, 0.3333333333333335, -0.33333333333333326 )
+      );
+
+  deepEqual( a.inverse(), expected );
+  deepEqual( a, aClone, 'does not modify a' );
+
+  deepEqual( a.inverse(), a.inverse( a ) );
+  strictEqual( a, aRef, 'does not allocate new a' );
+});
+
+module( 'Bump.Transform.inverseTimes' );
+test( 'basic', function() {
+  var a = Bump.Transform.create(
+        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, -1, 1 ), Math.PI / 3 ),
+        Bump.Vector3.create( -1, -1, -1 )
+      ),
+      b = Bump.Transform.create(
+        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, 1, 1 ), Math.PI ),
+        Bump.Vector3.create( 1, 1, 1 )
+      ),
+      expected = Bump.Transform.create(
+        Bump.Matrix3x3.create(
+          0.4444444444444444, 0.7777777777777779, 0.44444444444444453,
+          0.8888888888888892, -0.4444444444444444, -0.11111111111111123,
+          0.1111111111111111, 0.44444444444444475, -0.8888888888888891
+        ),
+        Bump.Vector3.create( 3.333333333333333, 0.666666666666667, -0.6666666666666665 )
+      );
+
+  testBinaryOp( Bump.Transform.prototype.inverseTimes, a, b, expected, {
+    selfDestination: true,
+    destType: Bump.Transform
+  });
+});
