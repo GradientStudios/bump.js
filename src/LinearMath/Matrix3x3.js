@@ -641,6 +641,13 @@
         return mat;
       },
 
+      createFromQuaternion: function( quat ) {
+        var mat = Object.create( Bump.Matrix3x3.prototype );
+        mat.init( 0, 0, 0, 0, 0, 0, 0, 0, 0 );
+        mat.setRotation( quat );
+        return mat;
+      },
+
       // **Creates** a 3x3 identity matrix. **Note:** this does not return a
       // `const` static reference like in C++.
       getIdentity: function() {
