@@ -368,7 +368,7 @@
       // Get the angle between `this` quaternion and the quaternion `quat`.
       angle: function( quat ) {
         var s = Math.sqrt( this.length2() * quat.length2() );
-        // btAssert( s !== 0 );
+        // `btAssert( s !== 0 );`
         return Math.acos( this.dot( quat ) / s );
       },
 
