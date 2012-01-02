@@ -206,6 +206,22 @@ test( 'basic', function() {
   strictEqual( a.origin, aOriginRef, 'a.origin is not reallocated' );
 });
 
+module( 'Bump.Transform.equal' );
+test( 'basic', function() {
+  var a = Bump.Transform.getIdentity(),
+      aRef = a,
+      aClone = a.clone(),
+      b = Bump.Transform.getIdentity(),
+      bRef = b,
+      bClone = b.clone();
+
+  equal( a.equal( b ), true, 'identity equals identity' );
+  deepEqual( a, aClone, 'a is not changed' );
+  deepEqual( b, bClone, 'b is not changed' );
+  strictEqual( a, aRef, 'a is not reallocated' );
+  strictEqual( b, bRef, 'b is not reallocated' );
+});
+
 module( 'Bump.Transform.multiplyTransform' );
 test( 'basic', function() {
   var a = Bump.Transform.create(
@@ -254,6 +270,39 @@ test( 'basic', function() {
     selfDestination: true,
     destType: Bump.Transform
   });
+});
+
+module( 'Bump.Transform.mult' );
+test( 'basic', function() {
+  var a = Bump.Transform.create(
+        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, -1, 1 ), Math.PI / 3 ),
+        Bump.Vector3.create( -1, -1, -1 )
+      ),
+      aRef = a,
+      aClone = a.clone();
+      b = Bump.Transform.create(
+        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, 1, 1 ), Math.PI ),
+        Bump.Vector3.create( 1, 1, 1 )
+      ),
+      bRef = b,
+      bClone = b.clone();
+      expected = Bump.Transform.create(
+        Bump.Matrix3x3.create(
+          -0.8888888888888891, 0.4444444444444444, 0.1111111111111114,
+          -0.11111111111111094, -0.44444444444444464, 0.8888888888888891,
+          0.4444444444444445, 0.7777777777777779, 0.4444444444444444
+        ),
+        Bump.Vector3.create( -1.3333333333333333, -0.6666666666666666, 0.6666666666666667 )
+      ),
+      c = Bump.Transform.create();
+
+  c.mult( a, b );
+  deepEqual( c, expected );
+
+  deepEqual( a, aClone, 'does not change a' );
+  deepEqual( b, bClone, 'does not change b' );
+  strictEqual( a, aRef, 'does not reallocate a' );
+  strictEqual( b, bRef, 'does not reallocate b' );
 });
 
 module( 'Bump.Transform.multiplyTransformSelf' );
@@ -331,6 +380,13 @@ test( 'basic', function() {
 
   deepEqual( a.inverse(), a.inverse( a ) );
   strictEqual( a, aRef, 'does not allocate new a' );
+});
+
+module( 'Bump.Transform.invXform' );
+test( 'basic', function() {
+  // testBinaryOp( Bump.Transform.prototype.invXform, a, b, expected, {
+  //   destType: Bump.Vector3
+  // });
 });
 
 module( 'Bump.Transform.inverseTimes' );

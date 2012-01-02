@@ -112,6 +112,11 @@
 
       // ### Math operators
 
+      equal: function( other ) {
+        return ( this.basis.equal( other.basis ) &&
+                 this.origin.equal( other.origin ) );
+      },
+
       // Port of `btTransform::operator()`.
       transform: function( vec, dest ) {
         dest = dest || Bump.Vector3.create();
@@ -120,6 +125,14 @@
           this.basis.m_el1.dot( vec ) + this.origin.y,
           this.basis.m_el2.dot( vec ) + this.origin.z
         );
+      },
+
+      // Sets `this` to be the value of the product of two transforms `t1` and
+      // `t2`
+      mult: function( t1, t2 ) {
+        t1.basis.multiplyMatrix( t2.basis, this.basis );
+        t1.transform( t2.origin, this.origin );
+        return this;
       },
 
       multiplyTransform: function( t, dest ) {
@@ -157,6 +170,14 @@
         dest.setBasis( inv );
         inv.multiplyVector( this.origin.negate( tmpV1 ), dest.origin );
         return dest;
+      },
+
+      invXform: function( vec, dest ) {
+        dest = dest || Bump.Vector3.create();
+
+        var v = vec.subtract( this.origin, tmpV1 ),
+            basisTranspose = this.basis.transpose( tmpM1 );
+        return basisTranspose.multiplyVector( v, dest );
       },
 
       inverseTimes: function( t, dest ) {
