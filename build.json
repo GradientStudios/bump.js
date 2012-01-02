@@ -5,7 +5,8 @@
         "src/bump.js",
 	"src/LinearMath/vector3.js",
 	"src/LinearMath/Quaternion.js",
-	"src/LinearMath/Matrix3x3.js"
+	"src/LinearMath/Matrix3x3.js",
+	"src/LinearMath/Transform.js"
       ],
       "prehint": true,
       "posthint": true,
