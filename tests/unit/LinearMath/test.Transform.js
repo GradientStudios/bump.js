@@ -17,9 +17,13 @@ var testBinaryOp = function( op, a, b, expected, options ) {
       aClone = a.clone();
 
   for ( var i = 0; i < b.length; ++i ) {
-    var bRef = b[i],
-        bClone = b[i].clone(),
-        c;
+    var bRef = b[i], bClone, c;
+
+    if ( bRef.clone ) {
+      bClone = b[i].clone();
+    } else {
+      bClone = b[i];
+    }
 
     deepEqual( op.apply( a, [ b[i] ] ), expected[i] );
     if ( options.modifiesSelf ) {
@@ -279,13 +283,13 @@ test( 'basic', function() {
         Bump.Vector3.create( -1, -1, -1 )
       ),
       aRef = a,
-      aClone = a.clone();
+      aClone = a.clone(),
       b = Bump.Transform.create(
         Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, 1, 1 ), Math.PI ),
         Bump.Vector3.create( 1, 1, 1 )
       ),
       bRef = b,
-      bClone = b.clone();
+      bClone = b.clone(),
       expected = Bump.Transform.create(
         Bump.Matrix3x3.create(
           -0.8888888888888891, 0.4444444444444444, 0.1111111111111114,
