@@ -199,6 +199,20 @@ test( 'setIdentity', function() {
   deepEqual( a, b, 'getIdentity and setIdentity produce the same matrix' );
 });
 
+test( 'setRotation', function() {
+  ok( Bump.Matrix3x3.prototype.setRotation, 'setRotation exists' );
+
+  var a = Bump.Matrix3x3.create(),
+      aRef = a,
+      aExpected = Bump.Matrix3x3.getIdentity();
+
+  notDeepEqual( a, aExpected );
+  a.setRotation( Bump.Quaternion.getIdentity() );
+  deepEqual( a, aExpected, 'identity rotation is identity' );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+});
+
 test( 'setEulerZYX', function() {
   ok( Bump.Matrix3x3.prototype.setEulerZYX, 'setEulerZYX exists' );
 
@@ -248,6 +262,20 @@ test( 'setEulerZYX', function() {
       Math.abs( answer.m_el2.z - newARef.m_el2.z ) < EPSILON );
 
   strictEqual( newARef, aRef, 'does not allocate new a' );
+});
+
+test( 'getRotation', function() {
+  ok( Bump.Matrix3x3.prototype.getRotation, 'getRotation exists' );
+
+  var a = Bump.Matrix3x3.getIdentity(),
+      aRef = a,
+      aClone = a.clone(),
+      aExpected = Bump.Quaternion.getIdentity();
+
+  deepEqual( a.getRotation(), aExpected, 'identity is identity rotation' );
+
+  strictEqual( a, aRef, 'does not allocate new a' );
+  deepEqual( a, aClone, 'does not modify a' );
 });
 
 test( 'getEulerZYX', function() {
@@ -708,39 +736,34 @@ test( 'inverse', function() {
   deepEqual( a, aClone, 'does not modify a' );
 });
 
-// test( 'diagonalize', function() {
-//   ok( Bump.Matrix3x3.prototype.diagonalize, 'diagonalize exists' );
+test( 'diagonalize', function() {
+  ok( Bump.Matrix3x3.prototype.diagonalize, 'diagonalize exists' );
 
-//   var EPSILON = Math.pow( 2, -48 );
+  var EPSILON = Math.pow( 2, -16 );
 
-//   deepEqual(
-//     Bump.Matrix3x3.getIdentity().diagonalize( undefined, EPSILON, Infinity ),
-//     Bump.Matrix3x3.getIdentity(),
-//     'identity diagonalizes to identity'
-//   );
+  deepEqual(
+    Bump.Matrix3x3.getIdentity().diagonalize( undefined, EPSILON, Infinity ),
+    Bump.Matrix3x3.getIdentity(),
+    'identity diagonalizes to identity'
+  );
 
-//   var a = Bump.Matrix3x3.create( 1, 1, 0, 1, 5, 0, 0, 0, 1 ),
-//       aRef = a,
-//       aClone = a.clone(),
-//       aDgn = Bump.Matrix3x3.create( 3 + Math.sqrt( 5 ), 0, 0, 0, 1, 0, 0, 0, 3 - Math.sqrt( 5 ) );
+  var a = Bump.Matrix3x3.create( 1, 1, 0, 1, 5, 0, 0, 0, 1 ),
+      aRef = a,
+      aClone = a.clone(),
+      // C++ version output
+      aDgn = Bump.Matrix3x3.create( 0.7639320225002103, 0, 0, 0, 5.23606797749979, 0, 0, 0, 1 );
 
-//   a.diagonalize( undefined, EPSILON, Infinity );
-//   equal( aDgn.m_el0.x, a.m_el0.x );
-//   equal( 1/(2*Math.sqrt(5))-1/2*Math.sqrt(5)*(-2-Math.sqrt(5))+(-2+Math.sqrt(5))*(1/(2*Math.sqrt(5))-(-2-Math.sqrt(5))/(2*Math.sqrt(5))), a.m_el0.x );
-//   equal( ((1+Math.sqrt(5))*(5+Math.sqrt(5)))/(2*Math.sqrt(5)), a.m_el0.x );
-//   equal( 1/2*(1+Math.sqrt(5)*(2+Math.sqrt(5))), a.m_el0.x );
-//   equal( aDgn.m_el0.y, a.m_el0.y );
-//   equal( aDgn.m_el0.z, a.m_el0.z );
-//   ok( Math.abs( aDgn.m_el0.x - a.m_el0.x ) < EPSILON &&
-//       Math.abs( aDgn.m_el0.y - a.m_el0.y ) < EPSILON &&
-//       Math.abs( aDgn.m_el0.z - a.m_el0.z ) < EPSILON &&
-//       Math.abs( aDgn.m_el1.x - a.m_el1.x ) < EPSILON &&
-//       Math.abs( aDgn.m_el1.y - a.m_el1.y ) < EPSILON &&
-//       Math.abs( aDgn.m_el1.z - a.m_el1.z ) < EPSILON &&
-//       Math.abs( aDgn.m_el2.x - a.m_el2.x ) < EPSILON &&
-//       Math.abs( aDgn.m_el2.y - a.m_el2.y ) < EPSILON &&
-//       Math.abs( aDgn.m_el2.z - a.m_el2.z ) < EPSILON );
-// });
+  a.diagonalize( undefined, EPSILON, Infinity );
+  equal( a.m_el0.x, aDgn.m_el0.x );
+  equal( a.m_el0.y, aDgn.m_el0.y );
+  equal( a.m_el0.z, aDgn.m_el0.z );
+  equal( a.m_el1.x, aDgn.m_el1.x );
+  equal( a.m_el1.y, aDgn.m_el1.y );
+  equal( a.m_el1.z, aDgn.m_el1.z );
+  equal( a.m_el2.x, aDgn.m_el2.x );
+  equal( a.m_el2.y, aDgn.m_el2.y );
+  equal( a.m_el2.z, aDgn.m_el2.z );
+});
 
 test( 'cofac', function() {
   ok( Bump.Matrix3x3.prototype.cofac, 'cofac exists' );
@@ -758,13 +781,4 @@ test( 'cofac', function() {
   equal( a.cofac( 0, 1, 1, 2 ), 102 );
   equal( a.cofac( 0, 2, 1, 0 ), -204 );
   equal( a.cofac( 0, 0, 1, 1 ), 136 );
-});
-
-module( 'Bump.Matrix3x3 TODO' );
-
-test( 'incomplete', function() {
-  if ( ok( Bump.Quaternion, 'Matrix3x3 depends on Quaternion' ) ) {
-    ok( Bump.Matrix3x3.prototype.getRotation );
-    ok( Bump.Matrix3x3.prototype.setRotation );
-  }
 });
