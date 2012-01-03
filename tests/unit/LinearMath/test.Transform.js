@@ -5,6 +5,58 @@
 //
 // - a test for setting a destination, `create`d from given `destType`
 // - a test for setting `a` as the destination
+var testUnaryOp = function( objType, op, objs, expected, options ) {
+  if ( typeof op === 'string' ) {
+    ok( op in objType.prototype, op + ' exists' );
+    op = objType.prototype[ op ];
+  }
+
+  options = options || {};
+  options.modifiesSelf = options.modifiesSelf === undefined ? false : options.modifiesSelf;
+
+  objs = Array.isArray( objs ) ? objs : [ objs ];
+  expected = Array.isArray( expected ) ? expected : [ expected ];
+
+  for ( var i = 0; i < objs.length; ++i ) {
+    var o = objs[i],
+        oRef = o,
+        oClone = o.clone(),
+        c;
+
+    deepEqual( op.apply( objs[i], [] ), expected[i] );
+    if ( options.modifiesSelf ) {
+      deepEqual( objs[i], expected[i] );
+      oClone.clone( objs[i] );
+    } else {
+      deepEqual( o, oClone, 'does not modify object' );
+    }
+
+    if ( options.destType ) {
+      var d = options.destType.create(),
+          dRef = d;
+
+      c = op.apply( o, [ d ] );
+      strictEqual( c, dRef, 'answer is placed in specified destination' );
+      deepEqual( d, expected[i], 'setting destination works correctly' );
+
+      if ( !options.modifiesSelf ) {
+        deepEqual( o, oClone, 'does not modify object' );
+      }
+
+      if ( options.destType === objType ) {
+        c = op.apply( o, [ o ] );
+        strictEqual( c, oRef, 'answer is placed in specified destination' );
+        deepEqual( o, expected[i], 'setting yourself as destination works correctly' );
+
+        // reset o after done
+        oClone.clone( o );
+      }
+    }
+
+    strictEqual( o, oRef, 'does not allocate new object' );
+  }
+};
+
 var testBinaryOp = function( op, a, b, expected, options ) {
   options = options || {};
   options.selfDestination = options.selfDestination === undefined ? false : options.selfDestination;

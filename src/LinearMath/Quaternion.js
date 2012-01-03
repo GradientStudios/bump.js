@@ -337,7 +337,7 @@
       },
 
       divideScalarSelf: function( s ) {
-        // btAssert( s !== 0 );
+        // `btAssert( s !== 0 );`
         var i = 1 / s;
         return this.setValue( this.x * i, this.y * i, this.z * i, this.w * i );
       },
@@ -369,12 +369,12 @@
       angle: function( quat ) {
         var s = Math.sqrt( this.length2() * quat.length2() );
         // `btAssert( s !== 0 );`
-        return Math.acos( this.dot( quat ) / s );
+        return Bump.Acos( this.dot( quat ) / s );
       },
 
       // Get the angle of rotation represented by `this` quaternion.
       getAngle: function() {
-        return 2 * Math.acos( this.w );
+        return 2 * Bump.Acos( this.w );
       },
 
       // Get the axis of the rotation represented by `this` quaternion.
