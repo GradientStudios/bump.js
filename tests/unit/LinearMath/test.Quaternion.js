@@ -181,7 +181,7 @@ test( '[sg]et[XYZW]', function() {
   strictEqual( a, aRef, 'does not allocate new a' );
 });
 
-test( 'operator* property', function() {
+test( 'unary operator* property', function() {
   for ( var i = 0; i < 4; ++i ) {
     exist( i );
   }
@@ -400,100 +400,290 @@ test( 'setEulerZYX', function() {
 });
 
 test( 'negate', function() {
-  exist( 'negate' );
+  var objs = [
+        Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+        Bump.Quaternion.create( -1, -2, -3, -4 )
+      ],
+      expected = [
+        Bump.Quaternion.create( -0.5, 0, 0.5, 1 ),
+        Bump.Quaternion.create( 1, 2, 3, 4 )
+      ];
 
-  var a = Bump.Quaternion.create( 0.5, 0.5, 0.5, 0.5 ),
-      aRef = a,
-      aClone = a.clone(),
-      aExpected = Bump.Quaternion.create( -0.5, -0.5, -0.5, -0.5 ),
-      EPSILON = Math.pow( 2, -48 );
-
-  deepEqual( a.negate(), aExpected );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  deepEqual( a, aClone, 'does not modify a' );
+  testUnaryOp( Bump.Quaternion, 'negate', objs, expected );
 });
 
 test( 'add', function() {
   exist( 'add' );
 
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
-      aRef = a,
-      aClone = a.clone(),
-      aExpected = Bump.Quaternion.create( 1.5, 2, 2.5, 3 ),
       b = Bump.Quaternion.create( 1, 2, 3, 4 ),
-      bRef = b,
-      bClone = b.clone();
+      expected = Bump.Quaternion.create( 1.5, 2, 2.5, 3 );
 
-  deepEqual( a.add( b ), aExpected );
-  deepEqual( b, bClone, 'does not modify b' );
-
-  var newBRef = a.add( b, b );
-  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
-  deepEqual( b, aExpected );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  deepEqual( a, aClone, 'does not modify a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
+  testBinaryOp( Bump.Quaternion.prototype.add, a, b, expected, {
+    selfDestination: true,
+    destType: Bump.Quaternion
+  });
 });
 
 test( 'addSelf', function() {
   exist( 'addSelf' );
 
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
-      aRef = a,
-      aExpected = Bump.Quaternion.create( 1.5, 2, 2.5, 3 ),
       b = Bump.Quaternion.create( 1, 2, 3, 4 ),
-      bRef = b,
-      bClone = b.clone();
+      expected = Bump.Quaternion.create( 1.5, 2, 2.5, 3 );
 
-  var newAref = a.addSelf( b );
-  strictEqual( newAref, aRef, 'returns a' );
-  deepEqual( a, aExpected );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( b, bClone, 'does not modify b' );
+  testBinaryOp( Bump.Quaternion.prototype.addSelf, a, b, expected, {
+    modifiesSelf: true
+  });
 });
 
 test( 'subtract', function() {
   exist( 'subtract' );
 
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
-      aRef = a,
-      aClone = a.clone(),
-      aExpected = Bump.Quaternion.create( 1.5, 2, 2.5, 3 ),
       b = Bump.Quaternion.create( -1, -2, -3, -4 ),
-      bRef = b,
-      bClone = b.clone();
+      expected = Bump.Quaternion.create( 1.5, 2, 2.5, 3 );
 
-  deepEqual( a.subtract( b ), aExpected );
-  deepEqual( b, bClone, 'does not modify b' );
-
-  var newBRef = a.subtract( b, b );
-  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
-  deepEqual( b, aExpected );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  deepEqual( a, aClone, 'does not modify a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
+  testBinaryOp( Bump.Quaternion.prototype.subtract, a, b, expected, {
+    selfDestination: true,
+    destType: Bump.Quaternion
+  });
 });
 
 test( 'subtractSelf', function() {
   exist( 'subtractSelf' );
 
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
-      aRef = a,
-      aExpected = Bump.Quaternion.create( 1.5, 2, 2.5, 3 ),
       b = Bump.Quaternion.create( -1, -2, -3, -4 ),
-      bRef = b,
-      bClone = b.clone();
+      expected = Bump.Quaternion.create( 1.5, 2, 2.5, 3 );
 
-  var newAref = a.subtractSelf( b );
-  strictEqual( newAref, aRef, 'returns a' );
-  deepEqual( a, aExpected );
+  testBinaryOp( Bump.Quaternion.prototype.subtractSelf, a, b, expected, {
+    modifiesSelf: true
+  });
+});
 
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( b, bClone, 'does not modify b' );
+test( 'multiplyQuaternion', function() {
+  exist( 'multiplyQuaternion' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      b = Bump.Quaternion.create( -1, -2, -3, -4 ),
+      expected = Bump.Quaternion.create( -2, 4, 4, 3 );
+
+  testBinaryOp( Bump.Quaternion.prototype.multiplyQuaternion, a, b, expected, {
+    selfDestination: true,
+    destType: Bump.Quaternion
+  });
+});
+
+test( 'multiplyQuaternionSelf', function() {
+  exist( 'multiplyQuaternionSelf' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      b = Bump.Quaternion.create( -1, -2, -3, -4 ),
+      expected = Bump.Quaternion.create( -2, 4, 4, 3 );
+
+  testBinaryOp( Bump.Quaternion.prototype.multiplyQuaternionSelf, a, b, expected, {
+    modifiesSelf: true
+  });
+});
+
+test( 'multiplyVector', function() {
+  exist( 'multiplyVector' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      b = Bump.Vector3.create( 1, -2, 3 ),
+      expected = Bump.Quaternion.create( -2, 0, -4, 1 );
+
+  testBinaryOp( Bump.Quaternion.prototype.multiplyVector, a, b, expected, {
+    selfDestination: true,
+    destType: Bump.Quaternion
+  });
+});
+
+test( 'vectorMultiply', function() {
+  exist( 'vectorMultiply' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      b = Bump.Vector3.create( 1, -2, 3 ),
+      expected = Bump.Quaternion.create( 0, 4, -2, 1 );
+
+  testBinaryOp( Bump.Quaternion.prototype.vectorMultiply, a, b, expected, {
+    selfDestination: true,
+    destType: Bump.Quaternion
+  });
+});
+
+test( 'multiplyScalar', function() {
+  exist( 'multiplyScalar' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      b = [ 1, -2 ],
+      expected = [
+        Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+        Bump.Quaternion.create( -1, 0, 1, 2 )
+      ];
+
+  testBinaryOp( Bump.Quaternion.prototype.multiplyScalar, a, b, expected, {
+    selfDestination: true,
+    destType: Bump.Quaternion
+  });
+});
+
+test( 'multiplyScalarSelf', function() {
+  exist( 'multiplyScalarSelf' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      b = [ 1, -2 ],
+      expected = [
+        Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+        Bump.Quaternion.create( -1, 0, 1, 2 )
+      ];
+
+  testBinaryOp( Bump.Quaternion.prototype.multiplyScalarSelf, a, b, expected, {
+    modifiesSelf: true
+  });
+});
+
+test( 'divideScalar', function() {
+  exist( 'divideScalar' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      b = [ 1, -2 ],
+      expected = [
+        Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+        Bump.Quaternion.create( -0.25, 0, 0.25, 0.5 )
+      ];
+
+  testBinaryOp( Bump.Quaternion.prototype.divideScalar, a, b, expected, {
+    selfDestination: true,
+    destType: Bump.Quaternion
+  });
+});
+
+test( 'divideScalarSelf', function() {
+  exist( 'divideScalarSelf' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      b = [ 1, -2 ],
+      expected = [
+        Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+        Bump.Quaternion.create( -0.25, 0, 0.25, 0.5 )
+      ];
+
+  testBinaryOp( Bump.Quaternion.prototype.divideScalarSelf, a, b, expected, {
+    modifiesSelf: true
+  });
+});
+
+test( 'dot', function() {
+  exist( 'dot' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      b = Bump.Quaternion.create( -1, -2, -3, -4 ),
+      expected = 5;
+
+  testBinaryOp( Bump.Quaternion.prototype.dot, a, b, expected );
+});
+
+test( 'length', function() {
+  var objs = [
+        Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+        Bump.Quaternion.create( -1, -2, -3, -4 )
+      ],
+      expected = [ Math.sqrt( 1.5 ), Math.sqrt( 30 ) ],
+      expected2 = [ 1.5, 30 ];
+
+  testUnaryOp( Bump.Quaternion, 'length', objs, expected );
+  testUnaryOp( Bump.Quaternion, 'length2', objs, expected2 );
+});
+
+test( 'normalized', function() {
+  var objs = [
+        Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+        Bump.Quaternion.create( -1, -2, -3, -4 )
+      ],
+      expected = [
+        Bump.Quaternion.create( 0.4082482904638631, 0, -0.4082482904638631, -0.8164965809277261 ),
+        Bump.Quaternion.create( -0.18257418583505536, -0.3651483716701107, -0.5477225575051661, -0.7302967433402214 )
+      ];
+
+  testUnaryOp( Bump.Quaternion, 'normalized', objs, expected, {
+    destType: Bump.Quaternion
+  });
+});
+
+test( 'normalize', function() {
+  var objs = [
+        Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+        Bump.Quaternion.create( -1, -2, -3, -4 )
+      ],
+      expected = [
+        Bump.Quaternion.create( 0.4082482904638631, 0, -0.4082482904638631, -0.8164965809277261 ),
+        Bump.Quaternion.create( -0.18257418583505536, -0.3651483716701107, -0.5477225575051661, -0.7302967433402214 )
+      ];
+
+  testUnaryOp( Bump.Quaternion, 'normalize', objs, expected, {
+    modifiesSelf: true
+  });
+});
+
+test( 'angle', function() {
+  exist( 'angle' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      b = Bump.Quaternion.create( -1, -2, -3, -4 ),
+      expected = 0.7297276562269663;
+
+  testBinaryOp( Bump.Quaternion.prototype.angle, a, b, expected );
+});
+
+test( 'getAngle', function() {
+  var objs = [
+        Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+        Bump.Quaternion.create( -1, -2, -3, -4 )
+      ],
+      expected = [ 6.283185307179586, 6.283185307179586 ];
+
+  testUnaryOp( Bump.Quaternion, 'getAngle', objs, expected );
+});
+
+test( 'getAxis', function() {
+  var objs = [
+        Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+        Bump.Quaternion.create( -1, -2, -3, -4 )
+      ],
+      expected = [
+        Bump.Vector3.create( 1, 0, 0 ),
+        Bump.Vector3.create( 1, 0, 0 )
+      ];
+
+  testUnaryOp( Bump.Quaternion, 'getAxis', objs, expected, {
+    destType: Bump.Vector3
+  });
+});
+
+test( 'farthest', function() {
+  exist( 'farthest' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      b = Bump.Quaternion.create( -1, -2, -3, -4 ),
+      expected = Bump.Quaternion.create( 1, 2, 3, 4 );
+
+  testBinaryOp( Bump.Quaternion.prototype.farthest, a, b, expected, {
+    selfDestination: true,
+    destType: Bump.Quaternion
+  });
+});
+
+test( 'nearest', function() {
+  exist( 'nearest' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      b = Bump.Quaternion.create( -1, -2, -3, -4 ),
+      expected = Bump.Quaternion.create( -1, -2, -3, -4 );
+
+  testBinaryOp( Bump.Quaternion.prototype.nearest, a, b, expected, {
+    selfDestination: true,
+    destType: Bump.Quaternion
+  });
 });
