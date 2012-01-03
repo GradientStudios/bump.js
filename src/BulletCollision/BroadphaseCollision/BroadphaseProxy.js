@@ -87,7 +87,7 @@
       this.m_collisionFilterMask = collisionFilterMask;
 
       this.m_multiSapParentProxy = multiSapParentProxy;
-      this.m_uniqueID = null;
+      this.m_uniqueId = 0;
 
       this.m_aabbMin = aabbMin.clone();
       this.m_aabbMax = aabbMax.clone();
@@ -154,7 +154,7 @@
         newProxy.m_collisionFilterGroup = 0;
         newProxy.m_collisionFilterMask = 0;
         newProxy.m_multiSapParentProxy = null;
-        newProxy.m_uniqueID = 0;
+        newProxy.m_uniqueId = 0;
         newProxy.m_aabbMin = Bump.Vector3.create();
         newProxy.m_aabbMax = Bump.Vector3.create();
 
@@ -203,9 +203,14 @@
     },
 
     members: {
-      // The `equal` function replaces the operator== for `btBroadphasePair` objects.
+      // The `equal` function replaces the operator== for `btBroadphasePair` objects, which previously was
+      // not a member funcion.
+      // Also note that this function compares proxies *with* consideration of order.
+      // Consider 2 different proxies, p0 and p1. If p0 and p1 somehow both recieve the same uid,
+      // then `create( p0, p1 )` and `create( p1, p0 )` will return results that are *not* considered
+      // equal. If uids are managed correctly, this should never happen.
       equal: function( other ) {
-        return (this.m_pProxy0 == other.m_pProxy0) && (this.m_pProxy0 == other.m_pProxy0);
+        return (this.m_pProxy0 == other.m_pProxy0) && (this.m_pProxy1 == other.m_pProxy1);
       }
     },
 
@@ -219,6 +224,7 @@
         newPair.m_pProxy1 = other.m_pProxy1;
         newPair.m_algorithm = other.m_algorithm;
         newPair.m_internalInfo1 = other.m_internalInfo1;
+        newPair.m_internalTmpValue = other.m_internalTmpValue;
 
         return newPair;
       },
@@ -232,6 +238,7 @@
         newPair.m_pProxy1 = null;
         newPair.m_algorithm = null;
         newPair.m_internalInfo1 = null;
+        newPair.m_internalTmpValue = 0;
 
         return newPair;
       }

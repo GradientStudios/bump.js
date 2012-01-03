@@ -94,7 +94,7 @@ test( 'BroadphaseProxy exists', function() {
 module( 'Bump.BroadphaseProxy basic' );
 
 test( 'createEmpty', function() {
-  ok( Bump.BroadphaseProxy.createEmpty, 'createExists' );
+  ok( Bump.BroadphaseProxy.createEmpty, 'createEmpty exists' );
   ok( typeof Bump.BroadphaseProxy.createEmpty() === 'object', 'creates an object' );
 
   var a = Bump.BroadphaseProxy.createEmpty(),
@@ -125,6 +125,14 @@ test( 'create', function() {
   strictEqual( proxy.m_multiSapParentProxy, multiSapParentProxy,
                'm_multiSapParentProxy set correctly' );
 
+} );
+
+test( 'getUid', function() {
+  var proxy = Bump.BroadphaseProxy.createEmpty();
+  ok( proxy.getUid, 'getUid member function exists' );
+  equal( proxy.getUid(), 0, 'getUid returns correct value after initialization' );
+  proxy.m_uniqueId = 10;
+  equal( proxy.getUid(), 10, 'getUid returns correct value after being set' );
 } );
 
 test( 'CollisionFilterGroups enum', function() {
@@ -227,4 +235,97 @@ test('isConvex2d typeMember', function() {
     'BOX_2D_SHAPE_PROXYTYPE',
     'CONVEX_2D_SHAPE_PROXYTYPE'
   ] );
+} );
+
+
+/*** BroadphasePair tests ***/
+
+module( 'Bump.BroadphasePair' );
+
+test( 'BroadphasePair exists', function() {
+  ok( Bump.BroadphasePair );
+} );
+
+module( 'Bump.BroadphasePair basic' );
+
+test( 'createEmpty', function(){
+  ok( Bump.BroadphasePair.createEmpty, 'createEmpty exists' );
+  ok( typeof Bump.BroadphasePair.createEmpty() === 'object', 'creates an object' );
+
+  var a = Bump.BroadphasePair.createEmpty(),
+      b = Bump.BroadphasePair.createEmpty();
+
+  ok( a !== b, 'creates different objects' );
+  deepEqual( a, b, 'creates similar objects' );
+
+  strictEqual( a.m_pProxy0, null, 'm_pProxy0 correctly initialized' );
+  strictEqual( a.m_pProxy1, null, 'm_pProxy1 correctly initialized' );
+  strictEqual( a.m_algorithm, null, 'm_algorithm correctly initialized' );
+  strictEqual( a.m_internalInfo1, null, 'm_internalInfo1 correctly initialized' );
+  strictEqual( a.m_internalTmpValue, 0, 'm_internalTmpValue correctly initialized' );
+
+} );
+
+test( 'create', function(){
+  ok( Bump.BroadphasePair.create, 'create exists' );
+
+  var p0 = Bump.BroadphaseProxy.createEmpty(),
+  p1 = Bump.BroadphaseProxy.createEmpty();
+  a = Bump.BroadphasePair.create( p0, p1 ),
+  b = Bump.BroadphasePair.create( p0, p1 );
+
+  ok( typeof a == 'object', 'creates and object' );
+  ok( a !== b, 'creates different objects' );
+  deepEqual( a, b, 'creates similar objects' );
+
+  strictEqual( a.m_pProxy0, p1, 'm_pProxy0 correctly initialized' );
+  strictEqual( a.m_pProxy1, p0, 'm_pProxy1 correctly initialized' );
+  strictEqual( a.m_algorithm, null, 'm_algorithm correctly initialized' );
+  strictEqual( a.m_internalInfo1, null, 'm_internalInfo1 correctly initialized' );
+  strictEqual( a.m_internalTmpValue, 0, 'm_internalTmpValue correctly initialized' );
+
+  p1.m_uniqueId = 10;
+
+  var c = Bump.BroadphasePair.create( p0, p1 );
+  strictEqual( c.m_pProxy0, p0, 'm_pProxy0 correctly stored based on uid' );
+  strictEqual( c.m_pProxy1, p1, 'm_pProxy1 correctly stored based on uid' );
+
+} );
+
+test( 'clone', function() {
+  ok( Bump.BroadphasePair.clone, 'clone exists' );
+  var p0 = Bump.BroadphaseProxy.createEmpty(),
+  p1 = Bump.BroadphaseProxy.createEmpty();
+  a = Bump.BroadphasePair.create( p0, p1 ),
+  b = Bump.BroadphasePair.clone( a );
+
+  ok( typeof b === 'object', 'returns an object' );
+  ok( a !== b, 'creates a new object' );
+  deepEqual( a, b, 'new object is a correct copy' );
+} );
+
+test( 'equal', function() {
+  var p0 = Bump.BroadphaseProxy.createEmpty(),
+  p1 = Bump.BroadphaseProxy.createEmpty(),
+  p2 = Bump.BroadphaseProxy.createEmpty(),
+  a = Bump.BroadphasePair.create( p0, p1 ),
+  b = Bump.BroadphasePair.create( p0, p1 ),
+  c = Bump.BroadphasePair.create( p1, p2 );
+
+  ok( a.equal, 'equal member function exists' );
+  ok( a.equal( b ), 'pairs made from the same proxies are equal' );
+  ok( !a.equal( c ), 'pairs made from different proxies are not equal' );
+} );
+
+module( 'BroadphasePairSortPredicate' );
+
+test( 'create', function() {
+  var pred = Bump.BroadphasePairSortPredicate.create(),
+      a = Bump.BroadphasePair.createEmpty(),
+      b = Bump.BroadphasePair.createEmpty();
+
+  ok( pred === Bump.BroadphasePairSortPredicate._functor, 'correctly returns functor' );
+  ok(! pred( a, b ), 'predicate returns expected result for identical pairs' );
+
+  // TODO : Add a test for pairs with realistic values.
 } );
