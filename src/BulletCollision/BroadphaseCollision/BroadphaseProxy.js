@@ -89,8 +89,8 @@
       this.m_multiSapParentProxy = multiSapParentProxy;
       this.m_uniqueID = null;
 
-      this.m_aabbMin = aabbMin;
-      this.m_aabbMax = aabbMax;
+      this.m_aabbMin = aabbMin.clone();
+      this.m_aabbMax = aabbMax.clone();
 
     },
 
@@ -242,17 +242,19 @@
   // is a functor, while remaining faithful to Bump's style of object creation.
   Bump.BroadphasePairSortPredicate = Bump.type( {
     typeMembers : {
-      create: function( ) {
-        return function( a, b ){
-          var uidA0 = a.m_pProxy0 ? a.m_pProxy0.m_uniqueId : -1,
-              uidB0 = b.m_pProxy0 ? b.m_pProxy0.m_uniqueId : -1,
-              uidA1 = a.m_pProxy1 ? a.m_pProxy1.m_uniqueId : -1,
-              uidB1 = b.m_pProxy1 ? b.m_pProxy1.m_uniqueId : -1;
+      _functor: function( a, b ) {
+        var uidA0 = a.m_pProxy0 ? a.m_pProxy0.m_uniqueId : -1,
+            uidB0 = b.m_pProxy0 ? b.m_pProxy0.m_uniqueId : -1,
+            uidA1 = a.m_pProxy1 ? a.m_pProxy1.m_uniqueId : -1,
+            uidB1 = b.m_pProxy1 ? b.m_pProxy1.m_uniqueId : -1;
 
-          return uidA0 > uidB0 ||
-            (a.m_pProxy0 == b.m_pProxy0 && uidA1 > uidB1) ||
-            (a.m_pProxy0 == b.m_pProxy0 && a.m_pProxy1 == b.m_pProxy1 && a.m_algorithm > b.m_algorithm);
-        };
+        return uidA0 > uidB0 ||
+          (a.m_pProxy0 == b.m_pProxy0 && uidA1 > uidB1) ||
+          (a.m_pProxy0 == b.m_pProxy0 && a.m_pProxy1 == b.m_pProxy1 && a.m_algorithm > b.m_algorithm);
+      },
+
+      create: function() {
+        return this._functor;
       }
     }
   } );
