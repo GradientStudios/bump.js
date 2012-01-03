@@ -400,18 +400,16 @@ test( 'setEulerZYX', function() {
 });
 
 test( 'negate', function() {
-  exist( 'negate' );
+  var objs = [
+        Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+        Bump.Quaternion.create( -1, -2, -3, -4 )
+      ],
+      expected = [
+        Bump.Quaternion.create( -0.5, 0, 0.5, 1 ),
+        Bump.Quaternion.create( 1, 2, 3, 4 )
+      ];
 
-  var a = Bump.Quaternion.create( 0.5, 0.5, 0.5, 0.5 ),
-      aRef = a,
-      aClone = a.clone(),
-      aExpected = Bump.Quaternion.create( -0.5, -0.5, -0.5, -0.5 ),
-      EPSILON = Math.pow( 2, -48 );
-
-  deepEqual( a.negate(), aExpected );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  deepEqual( a, aClone, 'does not modify a' );
+  testUnaryOp( Bump.Quaternion, 'negate', objs, expected );
 });
 
 test( 'add', function() {
@@ -577,6 +575,58 @@ test( 'divideScalarSelf', function() {
   });
 });
 
+test( 'dot', function() {
+  exist( 'dot' );
+
+  var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+      b = Bump.Quaternion.create( -1, -2, -3, -4 ),
+      expected = 5;
+
+  testBinaryOp( Bump.Quaternion.prototype.dot, a, b, expected );
+});
+
+test( 'length', function() {
+  var objs = [
+        Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+        Bump.Quaternion.create( -1, -2, -3, -4 )
+      ],
+      expected = [ Math.sqrt( 1.5 ), Math.sqrt( 30 ) ],
+      expected2 = [ 1.5, 30 ];
+
+  testUnaryOp( Bump.Quaternion, 'length', objs, expected );
+  testUnaryOp( Bump.Quaternion, 'length2', objs, expected2 );
+});
+
+test( 'normalized', function() {
+  var objs = [
+        Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+        Bump.Quaternion.create( -1, -2, -3, -4 )
+      ],
+      expected = [
+        Bump.Quaternion.create( 0.4082482904638631, 0, -0.4082482904638631, -0.8164965809277261 ),
+        Bump.Quaternion.create( -0.18257418583505536, -0.3651483716701107, -0.5477225575051661, -0.7302967433402214 )
+      ];
+
+  testUnaryOp( Bump.Quaternion, 'normalized', objs, expected, {
+    destType: Bump.Quaternion
+  });
+});
+
+test( 'normalize', function() {
+  var objs = [
+        Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+        Bump.Quaternion.create( -1, -2, -3, -4 )
+      ],
+      expected = [
+        Bump.Quaternion.create( 0.4082482904638631, 0, -0.4082482904638631, -0.8164965809277261 ),
+        Bump.Quaternion.create( -0.18257418583505536, -0.3651483716701107, -0.5477225575051661, -0.7302967433402214 )
+      ];
+
+  testUnaryOp( Bump.Quaternion, 'normalize', objs, expected, {
+    modifiesSelf: true
+  });
+});
+
 test( 'angle', function() {
   exist( 'angle' );
 
@@ -585,6 +635,31 @@ test( 'angle', function() {
       expected = 0.7297276562269663;
 
   testBinaryOp( Bump.Quaternion.prototype.angle, a, b, expected );
+});
+
+test( 'getAngle', function() {
+  var objs = [
+        Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+        Bump.Quaternion.create( -1, -2, -3, -4 )
+      ],
+      expected = [ 6.283185307179586, 6.283185307179586 ];
+
+  testUnaryOp( Bump.Quaternion, 'getAngle', objs, expected );
+});
+
+test( 'getAxis', function() {
+  var objs = [
+        Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
+        Bump.Quaternion.create( -1, -2, -3, -4 )
+      ],
+      expected = [
+        Bump.Vector3.create( 1, 0, 0 ),
+        Bump.Vector3.create( 1, 0, 0 )
+      ];
+
+  testUnaryOp( Bump.Quaternion, 'getAxis', objs, expected, {
+    destType: Bump.Vector3
+  });
 });
 
 test( 'farthest', function() {
