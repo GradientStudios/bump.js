@@ -112,6 +112,23 @@
                               0, 0, 1 );
       },
 
+      // Set `this` matrix to be a rotation matrix from `quat` quaternion.
+      setRotation: function( quat ) {
+        var d = quat.length2();
+        // `btFullAssert( d !== 0 );`
+        var s = 2 / d,
+            xs = quat.x * s,  ys = quat.y * s,  zs = quat.z * s,
+            wx = quat.w * xs, wy = quat.w * ys, wz = quat.w * zs,
+            xx = quat.x * xs, xy = quat.x * ys, xz = quat.x * zs,
+            yy = quat.y * ys, yz = quat.y * zs, zz = quat.z * zs;
+
+        return this.setValue(
+          1 - ( yy + zz ), xy - wz, xz + wy,
+          xy + wz, 1.0 - (xx + zz), yz - wx,
+          xz - wy, yz + wx, 1 - ( xx + yy )
+        );
+      },
+
       // Set `this` matrix to be a rotation matrix calculated from the given
       // yaw, pitch, and roll.
       setEulerYPR: function( yaw, pitch, roll ) {
@@ -136,6 +153,42 @@
           cj * ch, sj * sc - cs, sj * cc + ss,
           cj * sh, sj * ss + cc, sj * cs - sc,
           -sj,     cj * si,      cj * ci
+        );
+      },
+
+      getRotation: function( dest ) {
+        dest = dest || Bump.Quaternion.create();
+
+        var trace = this.m_el0.x + this.m_el1.y + this.m_el2.z,
+            temp = new Array(4),
+            s;
+
+        if ( trace > 0 ) {
+          s = Math.sqrt( trace + 1 );
+          temp[3] = ( s * 0.5 );
+          s = 0.5 / s;
+
+          temp[0] = ( ( this.m_el2.y - this.m_el1.z ) * s );
+          temp[1] = ( ( this.m_el0.z - this.m_el2.x ) * s );
+          temp[2] = ( ( this.m_el1.x - this.m_el0.y ) * s );
+        } else {
+          var i = this.m_el0.x < this.m_el1.y ?
+                ( this.m_el1.y < this.m_el2.z ? 2 : 1 ) :
+                ( this.m_el0.x < this.m_el2.z ? 2 : 0 ),
+              j = ( i + 1 ) % 3,
+              k = ( i + 2 ) % 3;
+
+          s = Math.sqrt( this[i][i] - this[j][j] - this[k][k] + 1 );
+          temp[i] = s * 0.5;
+          s = 0.5 / s;
+
+          temp[3] = ( this[k][j] - this[j][k] ) * s;
+          temp[j] = ( this[j][i] + this[i][j] ) * s;
+          temp[k] = ( this[k][i] + this[i][k] ) * s;
+        }
+
+        return dest.setValue(
+          temp[0], temp[1], temp[2], temp[3]
         );
       },
 
@@ -522,7 +575,7 @@
           // Apply rotation to `rot` (`rot = rot * J`)
           var i, row;
           for ( i = 0; i < 3; ++i ) {
-            row = this[i];
+            row = rot[i];
             mrp = row[p];
             mrq = row[q];
             row[p] = cos * mrp - sin * mrq;
@@ -585,6 +638,13 @@
         mat.init( xx || 0, xy || 0, xz || 0,
                   yx || 0, yy || 0, yz || 0,
                   zx || 0, zy || 0, zz || 0 );
+        return mat;
+      },
+
+      createFromQuaternion: function( quat ) {
+        var mat = Object.create( Bump.Matrix3x3.prototype );
+        mat.init( 0, 0, 0, 0, 0, 0, 0, 0, 0 );
+        mat.setRotation( quat );
         return mat;
       },
 

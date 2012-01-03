@@ -117,6 +117,18 @@ test( 'properties', 2, function() {
   equal( a.name, 'b', 'name == "b"' );
 } );
 
+test( 'typeProperties', 2, function() {
+  var A = Bump.type( {
+        typeProperties: {
+          me: { value: 1 }
+        }
+      } ),
+      a = A.create();
+  
+  equal( A.me, 1, 'typeProperty works' );
+  notEqual( a.me, 1, 'typeProperty does not appear on instance' );
+} );
+
 test( '_super init', 3, function() {
   var A = Bump.type( { 
         init: function() {

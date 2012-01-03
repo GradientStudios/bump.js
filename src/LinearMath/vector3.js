@@ -285,6 +285,20 @@
         return Math.acos( this.dot( v ) / s );
       },
 
+      // Negates the elements of `this` vector and returns it. Corresponds to
+      // the unary operator `operator-`.
+      negate: function( dest ) {
+        if ( dest ) {
+          dest.x = -this.x;
+          dest.y = -this.y;
+          dest.z = -this.z;
+
+          return dest;
+        }
+
+        return Bump.Vector3.create( -this.x, -this.y, -this.z );
+      },
+
       // Returns a Vector3 with the absolute values of `this` vector's elements.
       // Stores the result in `dest` if provided. If not, a new Vector3 is
       // created and returned.
@@ -420,7 +434,7 @@
 
       // Linearly interpolate between the vectors `vec` and `vec2`, using `rt`
       // as the weight of `vec`. The result is stored in `this`.
-      setInterpolate3 : function( vec, vec2, rt ) {
+      setInterpolate3: function( vec, vec2, rt ) {
         var s = 1 - rt;
         this.x = s * vec.x + rt * vec2.x;
         this.y = s * vec.y + rt * vec2.y;
@@ -432,7 +446,7 @@
       // Linearly interpolates between `this` and `vec`, using t as the weight
       // of 'vec'. Stores the result in dest if provided. If not, a new Vector3
       // is created and returned.
-      lerp : function( vec, t, dest ) {
+      lerp: function( vec, t, dest ) {
         if( dest ) {
           dest.x = this.x + ( vec.x - this.x ) * t;
           dest.y = this.y + ( vec.y - this.y ) * t;
@@ -450,7 +464,7 @@
       // This function is analogous to `btVector3`'s `operator==`.
       // Note that values are compared directly, with no consideration of floating point
       // rounding errors. Also note that the comparison ignores w values.
-      equal : function( vec ) {
+      equal: function( vec ) {
         return ( this.x == vec.x ) && ( this.y == vec.y ) && ( this.z == vec.z );
       },
 
@@ -459,13 +473,13 @@
       // This function is analogous to `btVector3`'s `operator!=`.
       // Note that values are compared directly, with no consideration of floating point
       // rounding errors. Also note that the comparison ignores w values.
-      notEqual : function( vec ) {
+      notEqual: function( vec ) {
         return ( this.x != vec.x ) || ( this.y != vec.y ) || ( this.z != vec.z );
       },
 
       // Clamp each value of `this` to be less than or equal to the maximum value
       // specified by the corresponding element of `vec`.
-      setMax : function( vec ) {
+      setMax: function( vec ) {
         this.x = Math.max( this.x, vec.x );
         this.y = Math.max( this.y, vec.y );
         this.z = Math.max( this.z, vec.z );
@@ -476,7 +490,7 @@
 
       // Clamp each value of `this` to be greater than or equal to the minimum
       // value specified by the corresponding element of `vec`.
-      setMin : function( vec ) {
+      setMin: function( vec ) {
         this.x = Math.min( this.x, vec.x );
         this.y = Math.min( this.y, vec.y );
         this.z = Math.min( this.z, vec.z );
@@ -487,7 +501,7 @@
 
       // Set the elements of `this` equal to the specified `x`, `y`, `z` values.
       // Note that this also sets `this.w` to 0.
-      setValue : function( x, y, z ) {
+      setValue: function( x, y, z ) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -497,7 +511,7 @@
       },
 
       // Set the column vectors `v0`, `v1`, and `v2` equal to the columns of
-      // the skew symmetric matrix defined by `this` as follows :
+      // the skew symmetric matrix defined by `this` as follows:
       //
       //     ┌                ┐    ┌                           ┐
       //     │ v0.x v1.x v2.x │    │ 0        this.z   -this.y │
@@ -505,14 +519,14 @@
       //     │ v0.z v1.z v2.z │    │ this.y   -this.x  0       │
       //     └                ┘    └                           ┘
       //
-      getSkewSymmetricMatrix : function( v0, v1, v2 ) {
+      getSkewSymmetricMatrix: function( v0, v1, v2 ) {
         v0.setValue( 0, -this.z, this.y );
         v1.setValue( this.z, 0, -this.x );
         v2.setValue( -this.y, this.x, 0 );
       },
 
       // Set the values of `this` matrix to 0, including w.
-      setZero : function() {
+      setZero: function() {
         this.x = 0;
         this.y = 0;
         this.z = 0;
@@ -523,13 +537,13 @@
 
       // Return true if all elements of `this` matrix are 0.
       // Note that this does not include w.
-      isZero : function() {
+      isZero: function() {
         return ( this.x === 0 ) && ( this.y === 0 ) && ( this.z === 0 );
       },
 
       // Return true if `this` vector is "close" to zero, meaning that
       // its squared magnitude is less than `Bump.SIMD_EPSILON`.
-      fuzzyZero : function() {
+      fuzzyZero: function() {
         return this.length2() < Bump.SIMD_EPSILON;
       }
     },
@@ -542,6 +556,6 @@
         return this.create( vec.x, vec.y, vec.z );
       }
     }
-  } );
+  });
 
-} )( this, this.Bump );
+})( this, this.Bump );
