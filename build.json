@@ -3,6 +3,7 @@
     "dist/bump": {
       "src": [
         "src/bump.js",
+	"src/LinearMath/Math.js",
 	"src/LinearMath/vector3.js",
 	"src/LinearMath/Quaternion.js",
 	"src/LinearMath/Matrix3x3.js",
