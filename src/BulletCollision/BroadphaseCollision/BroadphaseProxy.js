@@ -80,7 +80,6 @@
     // `multiSapParentProxy` : ???
     init: function BroadphaseProxy( aabbMin, aabbMax, userPtr, collisionFilterGroup,
                                     collisionFilterMask, multiSapParentProxy ) {
-
       // Usually the client CollisionObject or Rigidbody class
       this.m_clientObject = userPtr;
 
@@ -92,6 +91,7 @@
 
       this.m_aabbMin = aabbMin;
       this.m_aabbMax = aabbMax;
+
     },
 
     // ## Properties
@@ -161,7 +161,7 @@
         return newProxy;
       },
 
-      // Emulates the `CollisionFilterGroup` "enum" from `btBroadphaseProxy`.
+      // Emulates the `CollisionFilterGroup` enum from `btBroadphaseProxy`.
       CollisionFilterGroups: {
         DefaultFilter: 1,
         StaticFilter: 2,
@@ -181,7 +181,7 @@
   // detection on the actual collision shapes.
 
   Bump.BroadphasePair = Bump.type( {
-    init : function BroadphasePair( proxy0, proxy1 ) {
+    init: function BroadphasePair( proxy0, proxy1 ) {
       if( proxy0.m_uniqueId < proxy1.m_uniqueId ) {
         this.m_pProxy0 = proxy0;
         this.m_pProxy1 = proxy1;
@@ -192,10 +192,21 @@
       }
 
       this.m_algorithm = null;
+
+      // Note: The original btBroadphaseProxy source has m_internalInfo1 and m_internalTmpValue
+      // lumped into a union, meaning that only one value can be used at a time. However, comments
+      // suggest that these values should not be used.
+
+      //don't use this data, it will be removed in future version.
       this.m_internalInfo1 = null;
+      this.m_internalTmpValue = 0;
     },
 
     members: {
+      // The `equal` function replaces the operator== for `btBroadphasePair` objects.
+      equal: function( other ) {
+        return (this.m_pProxy0 == other.m_pProxy0) && (this.m_pProxy0 == other.m_pProxy0);
+      }
     },
 
     typeMembers: {
@@ -223,6 +234,25 @@
         newPair.m_internalInfo1 = null;
 
         return newPair;
+      }
+    }
+  } );
+
+  // BroadphasePairSortPredicate attempts to emulate btBroadphasePairSortPredicate, which
+  // is a functor, while remaining faithful to Bump's style of object creation.
+  Bump.BroadphasePairSortPredicate = Bump.type( {
+    typeMembers : {
+      create: function( ) {
+        return function( a, b ){
+          var uidA0 = a.m_pProxy0 ? a.m_pProxy0.m_uniqueId : -1,
+              uidB0 = b.m_pProxy0 ? b.m_pProxy0.m_uniqueId : -1,
+              uidA1 = a.m_pProxy1 ? a.m_pProxy1.m_uniqueId : -1,
+              uidB1 = b.m_pProxy1 ? b.m_pProxy1.m_uniqueId : -1;
+
+          return uidA0 > uidB0 ||
+            (a.m_pProxy0 == b.m_pProxy0 && uidA1 > uidB1) ||
+            (a.m_pProxy0 == b.m_pProxy0 && a.m_pProxy1 == b.m_pProxy1 && a.m_algorithm > b.m_algorithm);
+        };
       }
     }
   } );
