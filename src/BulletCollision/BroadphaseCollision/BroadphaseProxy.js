@@ -61,7 +61,7 @@
 
     Bump.BroadphaseNativeTypes = {};
     for( var i = 0; i < _broadphaseNativeTypes.length; i++) {
-      Bump.BroadphaseNativeTypes[ _broadphaseNativeTypes ] = i;
+      Bump.BroadphaseNativeTypes[ _broadphaseNativeTypes[ i ] ] = i;
     }
   } )( Bump );
 
