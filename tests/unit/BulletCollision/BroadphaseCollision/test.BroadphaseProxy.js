@@ -1,6 +1,12 @@
+module( 'Bump.BroadphaseNativeTypes' );
+
+test( 'native types exist', function() {
+  ok( Bump.BroadphaseNativeTypes );
+} );
+
 module( 'Bump.BroadphaseProxy' );
 
-test( 'BroadphaseProxy exists' function() {
+test( 'BroadphaseProxy exists', function() {
   ok( Bump.BroadphaseProxy );
 } );
 
