@@ -1,20 +1,20 @@
-module( 'Bump.AabbUtil2' );
+module( 'AabbUtil2' );
 
 test( 'AabbUtil2 exists', function() {
-  var aabb = Bump.AabbUtil2 || {};
+  var aabb = Bump || {};
 
-  ok( aabb.aabbExpand, 'Bump.AabbUtil2.aabbExpand' );
-  ok( aabb.testPointAgainstAabb2, 'Bump.AabbUtil2.testPointAgainstAabb2' );
-  ok( aabb.testAabbAgainstAabb2, 'Bump.AabbUtil2.testAabbAgainstAabb2' );
-  ok( aabb.testTriangleAgainstAabb2, 'Bump.AabbUtil2.testTriangleAgainstAabb2' );
-  ok( aabb.outcode, 'Bump.AabbUtil2.outcode' );
-  ok( aabb.rayAabb2, 'Bump.AabbUtil2.rayAabb2' );
-  ok( aabb.rayAabb, 'Bump.AabbUtil2.rayAabb' );
-  ok( aabb.transformAabb, 'Bump.AabbUtil2.transformAabb' );
-  ok( aabb.testQuantizedAabbAgainstQuantizedAabb, 'Bump.AabbUtil2.testQuantizedAabbAgainstQuantizedAabb' );
+  ok( aabb.aabbExpand, 'Bump.aabbExpand' );
+  ok( aabb.testPointAgainstAabb2, 'Bump.testPointAgainstAabb2' );
+  ok( aabb.testAabbAgainstAabb2, 'Bump.testAabbAgainstAabb2' );
+  ok( aabb.testTriangleAgainstAabb2, 'Bump.testTriangleAgainstAabb2' );
+  ok( aabb.outcode, 'Bump.outcode' );
+  ok( aabb.rayAabb2, 'Bump.rayAabb2' );
+  ok( aabb.rayAabb, 'Bump.rayAabb' );
+  ok( aabb.transformAabb, 'Bump.transformAabb' );
+  ok( aabb.testQuantizedAabbAgainstQuantizedAabb, 'Bump.testQuantizedAabbAgainstQuantizedAabb' );
 });
 
-module( 'Bump.AabbUtil2.aabbExpand' );
+module( 'AabbUtil2.aabbExpand' );
 
 test( 'basic', function() {
   var aabbMin = Bump.Vector3.create( 1, 2, 3 ),
@@ -28,7 +28,7 @@ test( 'basic', function() {
       expansionMaxRef = expansionMax,
       expansionMaxClone = expansionMax.clone();
 
-  Bump.AabbUtil2.aabbExpand( aabbMin, aabbMax, expansionMin, expansionMax );
+  Bump.aabbExpand( aabbMin, aabbMax, expansionMin, expansionMax );
 
   strictEqual( aabbMin, aabbMinRef, 'aabbMin is not reallocated' );
   strictEqual( aabbMax, aabbMaxRef, 'aabbMax is not reallocated' );
@@ -38,7 +38,7 @@ test( 'basic', function() {
   deepEqual( expansionMax, expansionMaxClone, 'expansionMax is not changed' );
 });
 
-module( 'Bump.AabbUtil2.testPointAgainstAabb2' );
+module( 'AabbUtil2.testPointAgainstAabb2' );
 
 test( 'basic', function() {
   var aabbMin = Bump.Vector3.create( 1, 2, 3 ),
@@ -54,8 +54,8 @@ test( 'basic', function() {
       bRef = b,
       bClone = b.clone();
 
-  equal( Bump.AabbUtil2.testPointAgainstAabb2( aabbMin, aabbMax, a ), false );
-  equal( Bump.AabbUtil2.testPointAgainstAabb2( aabbMin, aabbMax, b ), true );
+  equal( Bump.testPointAgainstAabb2( aabbMin, aabbMax, a ), false );
+  equal( Bump.testPointAgainstAabb2( aabbMin, aabbMax, b ), true );
 
   strictEqual( aabbMin, aabbMinRef, 'aabbMin is not reallocated' );
   strictEqual( aabbMax, aabbMaxRef, 'aabbMax is not reallocated' );
@@ -68,7 +68,7 @@ test( 'basic', function() {
   deepEqual( b, bClone, 'b is not changed' );
 });
 
-module( 'Bump.AabbUtil2.testAabbAgainstAabb2' );
+module( 'AabbUtil2.testAabbAgainstAabb2' );
 
 test( 'basic', function() {
   var aMin = Bump.Vector3.create( 0, 0, 0 ),
@@ -90,12 +90,12 @@ test( 'basic', function() {
       cMaxRef = cMax,
       cMaxClone = cMax.clone();
 
-  equal( Bump.AabbUtil2.testAabbAgainstAabb2( aMin, aMax, bMin, bMax ), true );
-  equal( Bump.AabbUtil2.testAabbAgainstAabb2( aMin, aMax, cMin, cMax ), false );
-  equal( Bump.AabbUtil2.testAabbAgainstAabb2( bMin, bMax, cMin, cMax ), true );
-  equal( Bump.AabbUtil2.testAabbAgainstAabb2( bMin, bMax, aMin, aMax ), true );
-  equal( Bump.AabbUtil2.testAabbAgainstAabb2( cMin, cMax, aMin, aMax ), false );
-  equal( Bump.AabbUtil2.testAabbAgainstAabb2( cMin, cMax, bMin, bMax ), true );
+  equal( Bump.testAabbAgainstAabb2( aMin, aMax, bMin, bMax ), true );
+  equal( Bump.testAabbAgainstAabb2( aMin, aMax, cMin, cMax ), false );
+  equal( Bump.testAabbAgainstAabb2( bMin, bMax, cMin, cMax ), true );
+  equal( Bump.testAabbAgainstAabb2( bMin, bMax, aMin, aMax ), true );
+  equal( Bump.testAabbAgainstAabb2( cMin, cMax, aMin, aMax ), false );
+  equal( Bump.testAabbAgainstAabb2( cMin, cMax, bMin, bMax ), true );
 
   strictEqual( aMin, aMinRef, 'aMin is not reallocated' );
   strictEqual( aMax, aMaxRef, 'aMax is not reallocated' );
@@ -112,38 +112,26 @@ test( 'basic', function() {
   deepEqual( cMax, cMaxClone, 'cMax is not changed' );
 });
 
-module( 'Bump.AabbUtil2.testTriangleAgainstAabb2' );
+module( 'AabbUtil2.testTriangleAgainstAabb2' );
 
-test( 'basic', function() {
-  ok( true, 'test skipped' );
-});
+test( 'test skipped', function() {});
 
-module( 'Bump.AabbUtil2.outcode' );
+module( 'AabbUtil2.outcode' );
 
-test( 'basic', function() {
-  ok( true, 'test skipped' );
-});
+test( 'test skipped', function() {});
 
-module( 'Bump.AabbUtil2.rayAabb2' );
+module( 'AabbUtil2.rayAabb2' );
 
-test( 'basic', function() {
-  ok( true, 'test skipped' );
-});
+test( 'test skipped', function() {});
 
-module( 'Bump.AabbUtil2.rayAabb' );
+module( 'AabbUtil2.rayAabb' );
 
-test( 'basic', function() {
-  ok( true, 'test skipped' );
-});
+test( 'test skipped', function() {});
 
-module( 'Bump.AabbUtil2.transformAabb' );
+module( 'AabbUtil2.transformAabb' );
 
-test( 'basic', function() {
-  ok( true, 'test skipped' );
-});
+test( 'test skipped', function() {});
 
-module( 'Bump.AabbUtil2.testQuantizedAabbAgainstQuantizedAabb' );
+module( 'AabbUtil2.testQuantizedAabbAgainstQuantizedAabb' );
 
-test( 'basic', function() {
-  ok( true, 'test skipped' );
-});
+test( 'test skipped', function() {});

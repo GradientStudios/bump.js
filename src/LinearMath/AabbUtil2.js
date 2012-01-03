@@ -1,6 +1,5 @@
 (function( window, Bump ) {
-  Bump.AabbUtil2 = {};
-  var AabbUtil2 = Bump.AabbUtil2,
+  var AabbUtil2 = Bump,
       tmpV1 = Bump.Vector3.create(),
       tmpV2 = Bump.Vector3.create(),
       tmpV3 = Bump.Vector3.create(),
