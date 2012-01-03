@@ -317,7 +317,11 @@ test( 'equal', function() {
   ok( !a.equal( c ), 'pairs made from different proxies are not equal' );
 } );
 
-module( 'BroadphasePairSortPredicate' );
+module( 'Bump.BroadphasePairSortPredicate' );
+
+test( 'BroadphasePairSortPredicate exists', function() {
+  ok( Bump.BroadphasePairSortPredicate );
+} );
 
 test( 'create', function() {
   var pred = Bump.BroadphasePairSortPredicate.create(),
