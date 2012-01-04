@@ -118,7 +118,23 @@ test( 'test skipped', function() {});
 
 module( 'AabbUtil2.outcode' );
 
-test( 'test skipped', function() {});
+test( 'basic', function() {
+  var aabbMin = Bump.Vector3.create( 0, 0, 0 ),
+      aabbMax = Bump.Vector3.create( 2, 4, 6 ),
+      halfExtent = aabbMax.subtract( aabbMin ).multiply( 0.5 ),
+      halfExtentRef = halfExtent,
+      halfExtentClone = halfExtent.clone(),
+      source = Bump.Vector3.create( 6, 3, 5 ),
+      sourceRef = source,
+      sourceClone = source.clone(),
+      outcode = Bump.outcode( source, halfExtent );
+
+  equal( outcode, 56 );
+  strictEqual( halfExtent, halfExtentRef, 'does not reallocate halfExtent' );
+  deepEqual( halfExtent, halfExtentClone, 'does not modify halfExtent' );
+  strictEqual( source, sourceRef, 'does not reallocate p' );
+  deepEqual( source, sourceClone, 'does not modify p' );
+});
 
 module( 'AabbUtil2.rayAabb2' );
 
