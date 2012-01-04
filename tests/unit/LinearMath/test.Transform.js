@@ -57,10 +57,14 @@ var testUnaryOp = function( objType, op, objs, expected, options ) {
   }
 };
 
-var testBinaryOp = function( op, a, b, expected, options ) {
+var testBinaryOp = function( objType, op, a, b, expected, options ) {
   options = options || {};
-  options.selfDestination = options.selfDestination === undefined ? false : options.selfDestination;
   options.modifiesSelf = options.modifiesSelf === undefined ? false : options.modifiesSelf;
+
+  if ( typeof op === 'string' ) {
+    ok( op in objType.prototype, op + ' exists' );
+    op = objType.prototype[ op ];
+  }
 
   b = Array.isArray( b ) ? b : [ b ];
   expected = Array.isArray( expected ) ? expected : [ expected ];
@@ -96,16 +100,29 @@ var testBinaryOp = function( op, a, b, expected, options ) {
       if ( !options.modifiesSelf ) {
         deepEqual( a, aClone, 'does not modify a' );
       }
-    }
 
-    // self destination test modifies a
-    if ( options.selfDestination ) {
-      c = op.apply( a, [ b[i], a ] );
-      strictEqual( c, aRef, 'answer is placed in specified destination' );
-      deepEqual( a, expected[i], 'setting yourself as destination works correctly' );
+      // self destination test modifies a
+      if ( options.destType === objType ) {
+        deepEqual( a, aClone, 'ensure a starts off the same' );
 
-      // reset a after done
-      aClone.clone( a );
+        c = op.apply( a, [ b[i], a ] );
+        strictEqual( c, aRef, 'answer is placed in specified destination' );
+        deepEqual( a, expected[i], 'setting yourself as destination works correctly' );
+
+        // reset a after done
+        aClone.clone( a );
+      }
+
+      if ( bRef.constructor.prototype === options.destType.prototype ) {
+        deepEqual( b[i], bClone, 'ensure b starts off the same' );
+
+        c = op.apply( a, [ b[i], b[i] ] );
+        strictEqual( c, bRef, 'answer is placed in specified destination' );
+        deepEqual( b[i], expected[i], 'setting yourself as destination works correctly' );
+
+        // reset b after done
+        bClone.clone( b[i] );
+      }
     }
 
     strictEqual( a, aRef, 'does not allocate new a' );
@@ -278,56 +295,6 @@ test( 'basic', function() {
   strictEqual( b, bRef, 'b is not reallocated' );
 });
 
-module( 'Bump.Transform.multiplyTransform' );
-test( 'basic', function() {
-  var a = Bump.Transform.create(
-        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, -1, 1 ), Math.PI / 3 ),
-        Bump.Vector3.create( -1, -1, -1 )
-      ),
-      b = Bump.Transform.create(
-        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, 1, 1 ), Math.PI ),
-        Bump.Vector3.create( 1, 1, 1 )
-      ),
-      expected = Bump.Transform.create(
-        Bump.Matrix3x3.create(
-          -0.8888888888888891, 0.4444444444444444, 0.1111111111111114,
-          -0.11111111111111094, -0.44444444444444464, 0.8888888888888891,
-          0.4444444444444445, 0.7777777777777779, 0.4444444444444444
-        ),
-        Bump.Vector3.create( -1.3333333333333333, -0.6666666666666666, 0.6666666666666667 )
-      );
-
-  testBinaryOp( Bump.Transform.prototype.multiplyTransform, a, b, expected, {
-    selfDestination: true,
-    destType: Bump.Transform
-  });
-});
-
-module( 'Bump.Transform.multiplyTransform' );
-test( 'basic', function() {
-  var a = Bump.Transform.create(
-        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, -1, 1 ), Math.PI / 3 ),
-        Bump.Vector3.create( -1, -1, -1 )
-      ),
-      b = Bump.Transform.create(
-        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, 1, 1 ), Math.PI ),
-        Bump.Vector3.create( 1, 1, 1 )
-      ),
-      expected = Bump.Transform.create(
-        Bump.Matrix3x3.create(
-          -0.8888888888888891, 0.4444444444444444, 0.1111111111111114,
-          -0.11111111111111094, -0.44444444444444464, 0.8888888888888891,
-          0.4444444444444445, 0.7777777777777779, 0.4444444444444444
-        ),
-        Bump.Vector3.create( -1.3333333333333333, -0.6666666666666666, 0.6666666666666667 )
-      );
-
-  testBinaryOp( Bump.Transform.prototype.multiplyTransform, a, b, expected, {
-    selfDestination: true,
-    destType: Bump.Transform
-  });
-});
-
 module( 'Bump.Transform.mult' );
 test( 'basic', function() {
   var a = Bump.Transform.create(
@@ -361,6 +328,30 @@ test( 'basic', function() {
   strictEqual( b, bRef, 'does not reallocate b' );
 });
 
+module( 'Bump.Transform.multiplyTransform' );
+test( 'basic', function() {
+  var a = Bump.Transform.create(
+        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, -1, 1 ), Math.PI / 3 ),
+        Bump.Vector3.create( -1, -1, -1 )
+      ),
+      b = Bump.Transform.create(
+        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, 1, 1 ), Math.PI ),
+        Bump.Vector3.create( 1, 1, 1 )
+      ),
+      expected = Bump.Transform.create(
+        Bump.Matrix3x3.create(
+          -0.8888888888888891, 0.4444444444444444, 0.1111111111111114,
+          -0.11111111111111094, -0.44444444444444464, 0.8888888888888891,
+          0.4444444444444445, 0.7777777777777779, 0.4444444444444444
+        ),
+        Bump.Vector3.create( -1.3333333333333333, -0.6666666666666666, 0.6666666666666667 )
+      );
+
+  testBinaryOp( Bump.Transform, "multiplyTransform", a, b, expected, {
+    destType: Bump.Transform
+  });
+});
+
 module( 'Bump.Transform.multiplyTransformSelf' );
 test( 'basic', function() {
   var a = Bump.Transform.create(
@@ -380,8 +371,7 @@ test( 'basic', function() {
         Bump.Vector3.create( -1.3333333333333333, -0.6666666666666666, 0.6666666666666667 )
       );
 
-  testBinaryOp( Bump.Transform.prototype.multiplyTransformSelf, a, b, expected, {
-    selfDestination: false,
+  testBinaryOp( Bump.Transform, "multiplyTransformSelf", a, b, expected, {
     modifiesSelf: true
   });
 });
@@ -395,7 +385,7 @@ test( 'basic', function() {
       b = Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, 1, 1 ), Math.PI ),
       expected = Bump.Quaternion.create( 0.16666666666666655, 0.5, 0.8333333333333335, -0.16666666666666666 );
 
-  testBinaryOp( Bump.Transform.prototype.multiplyQuaternion, a, b, expected, {
+  testBinaryOp( Bump.Transform, "multiplyQuaternion", a, b, expected, {
     destType: Bump.Quaternion
   });
 });
@@ -409,7 +399,7 @@ test( 'basic', function() {
       b = Bump.Vector3.create( 1, 1, 1 ),
       expected = Bump.Vector3.create( -1.3333333333333333, -0.6666666666666666, 0.6666666666666667 );
 
-  testBinaryOp( Bump.Transform.prototype.multiplyVector, a, b, expected, {
+  testBinaryOp( Bump.Transform, "multiplyVector", a, b, expected, {
     destType: Bump.Vector3
   });
 });
@@ -440,7 +430,7 @@ test( 'basic', function() {
 
 module( 'Bump.Transform.invXform' );
 test( 'basic', function() {
-  // testBinaryOp( Bump.Transform.prototype.invXform, a, b, expected, {
+  // testBinaryOp( Bump.Transform, "invXform", a, b, expected, {
   //   destType: Bump.Vector3
   // });
 });
@@ -464,8 +454,7 @@ test( 'basic', function() {
         Bump.Vector3.create( 3.333333333333333, 0.666666666666667, -0.6666666666666665 )
       );
 
-  testBinaryOp( Bump.Transform.prototype.inverseTimes, a, b, expected, {
-    selfDestination: true,
+  testBinaryOp( Bump.Transform, "inverseTimes", a, b, expected, {
     destType: Bump.Transform
   });
 });
