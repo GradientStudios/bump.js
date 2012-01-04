@@ -203,14 +203,11 @@ test( 'setRotation', function() {
   ok( Bump.Matrix3x3.prototype.setRotation, 'setRotation exists' );
 
   var a = Bump.Matrix3x3.create(),
-      aRef = a,
-      aExpected = Bump.Matrix3x3.getIdentity();
+      expected = Bump.Matrix3x3.getIdentity();
 
-  notDeepEqual( a, aExpected );
+  notDeepEqual( a, expected );
   a.setRotation( Bump.Quaternion.getIdentity() );
-  deepEqual( a, aExpected, 'identity rotation is identity' );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
+  deepEqual( a, expected, 'identity rotation is identity' );
 });
 
 test( 'setEulerZYX', function() {
@@ -268,13 +265,11 @@ test( 'getRotation', function() {
   ok( Bump.Matrix3x3.prototype.getRotation, 'getRotation exists' );
 
   var a = Bump.Matrix3x3.getIdentity(),
-      aRef = a,
       aClone = a.clone(),
       aExpected = Bump.Quaternion.getIdentity();
 
   deepEqual( a.getRotation(), aExpected, 'identity is identity rotation' );
 
-  strictEqual( a, aRef, 'does not allocate new a' );
   deepEqual( a, aClone, 'does not modify a' );
 });
 
@@ -286,7 +281,6 @@ test( 'getEulerZYX', function() {
         1/4*(1-Math.sqrt(3)), -1/(2*Math.sqrt(2))-1/8*Math.sqrt(3)*(1+Math.sqrt(3)), 1/8*(1+Math.sqrt(3))-Math.sqrt(3/2)/2,
         -(1+Math.sqrt(3))/(2*Math.sqrt(2)), 1/4*Math.sqrt(3/2)*(Math.sqrt(3)-1), -(Math.sqrt(3)-1)/(4*Math.sqrt(2))
       ),
-      aRef = a,
       aClone = a.clone(),
       answer = {
         yaw: -Math.PI / 4,
@@ -300,7 +294,6 @@ test( 'getEulerZYX', function() {
       Math.abs( answer.pitch - results.pitch ) < EPSILON &&
       Math.abs( answer.roll  - results.roll  ) < EPSILON );
 
-  strictEqual( a, aRef, 'does not allocate new a' );
   deepEqual( a, aClone, 'does not modify a' );
 });
 
@@ -679,61 +672,19 @@ test( 'transpose', function() {
 });
 
 test( 'inverse', function() {
-  ok( Bump.Matrix3x3.prototype.inverse, 'inverse exists' );
+  var objs = [
+        Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+        Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 )
+      ],
+      expected = [
+        Bump.Matrix3x3.create( -7 / 136, 117 / 136, -102 / 136, 34 / 136, -238 / 136, 204 / 136, -24 / 136, 168 / 136, -1 ),
+        Bump.Matrix3x3.create( -20 / 210, 50 / 210, 0, 11 / 210, 4 / 210, -21 / 210, 35 / 210, -140 / 210, 105 / 210 )
+      ];
 
-  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      aRef = a,
-      aClone = Bump.Matrix3x3.clone( a ),
-      aInv = Bump.Matrix3x3.create( -7 / 136, 117 / 136, -102 / 136, 34 / 136, -238 / 136, 204 / 136, -24 / 136, 168 / 136, -1 ),
-      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
-      bRef = b,
-      bClone = Bump.Matrix3x3.clone( b ),
-      bInv = Bump.Matrix3x3.create( -20 / 210, 50 / 210, 0, 11 / 210, 4 / 210, -21 / 210, 35 / 210, -140 / 210, 105 / 210 ),
-      EPSILON = Math.pow( 2, -48 ),
-      result = Bump.Matrix3x3.create();
-
-  a.inverse( result );
-
-  ok( Math.abs( aInv.m_el0.x - result.m_el0.x ) < EPSILON &&
-      Math.abs( aInv.m_el0.y - result.m_el0.y ) < EPSILON &&
-      Math.abs( aInv.m_el0.z - result.m_el0.z ) < EPSILON &&
-      Math.abs( aInv.m_el1.x - result.m_el1.x ) < EPSILON &&
-      Math.abs( aInv.m_el1.y - result.m_el1.y ) < EPSILON &&
-      Math.abs( aInv.m_el1.z - result.m_el1.z ) < EPSILON &&
-      Math.abs( aInv.m_el2.x - result.m_el2.x ) < EPSILON &&
-      Math.abs( aInv.m_el2.y - result.m_el2.y ) < EPSILON &&
-      Math.abs( aInv.m_el2.z - result.m_el2.z ) < EPSILON );
-
-  b.inverse( result );
-
-  ok( Math.abs( bInv.m_el0.x - result.m_el0.x ) < EPSILON &&
-      Math.abs( bInv.m_el0.y - result.m_el0.y ) < EPSILON &&
-      Math.abs( bInv.m_el0.z - result.m_el0.z ) < EPSILON &&
-      Math.abs( bInv.m_el1.x - result.m_el1.x ) < EPSILON &&
-      Math.abs( bInv.m_el1.y - result.m_el1.y ) < EPSILON &&
-      Math.abs( bInv.m_el1.z - result.m_el1.z ) < EPSILON &&
-      Math.abs( bInv.m_el2.x - result.m_el2.x ) < EPSILON &&
-      Math.abs( bInv.m_el2.y - result.m_el2.y ) < EPSILON &&
-      Math.abs( bInv.m_el2.z - result.m_el2.z ) < EPSILON );
-
-  deepEqual( b, bClone, 'does not modify b' );
-
-  var newBRef = b.inverse( b );
-  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
-
-  ok( Math.abs( bInv.m_el0.x - b.m_el0.x ) < EPSILON &&
-      Math.abs( bInv.m_el0.y - b.m_el0.y ) < EPSILON &&
-      Math.abs( bInv.m_el0.z - b.m_el0.z ) < EPSILON &&
-      Math.abs( bInv.m_el1.x - b.m_el1.x ) < EPSILON &&
-      Math.abs( bInv.m_el1.y - b.m_el1.y ) < EPSILON &&
-      Math.abs( bInv.m_el1.z - b.m_el1.z ) < EPSILON &&
-      Math.abs( bInv.m_el2.x - b.m_el2.x ) < EPSILON &&
-      Math.abs( bInv.m_el2.y - b.m_el2.y ) < EPSILON &&
-      Math.abs( bInv.m_el2.z - b.m_el2.z ) < EPSILON );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( a, aClone, 'does not modify a' );
+  testUnaryOp( Bump.Matrix3x3, 'inverse', objs, expected, {
+    epsilon: Math.pow( 2, -52 ),
+    destType: Bump.Matrix3x3
+  });
 });
 
 test( 'diagonalize', function() {

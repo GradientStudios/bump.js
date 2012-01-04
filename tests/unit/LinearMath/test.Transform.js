@@ -1,3 +1,47 @@
+// Checks `result` against `expected` in a way similar to `deepEqual` but only
+// checks equality of numbers, and does this with a given `epsilon`.
+var epsilonNumberCheck = function( result, expected, epsilon, message ) {
+  message = message !== undefined ? message + ': ' : '';
+
+  var key, expectedKeys = [], checkedObjects = [ expected ];
+  for ( key in expected ) {
+    if ( expected.hasOwnProperty( key ) ) {
+      expectedKeys.push( [ key, expected, result, [ key ] ] );
+    }
+  }
+
+  while ( expectedKeys.length ) {
+    key = expectedKeys.shift();
+    var eProp = key[1][ key[0] ];
+    var rProp = key[2][ key[0] ];
+    var path  = key[3].join( '.' );
+
+    if ( checkedObjects.indexOf( eProp ) === -1 ) {
+
+      if ( typeof eProp === 'number' ) {
+        var expectedValue = ( Math.abs( rProp - eProp ) < epsilon
+                              ? rProp
+                              : eProp );
+        equal( rProp, expectedValue, message + path );
+      } else if ( Array.isArray( eProp ) ) {
+        checkedObjects.push( eProp );
+        for ( key in eProp ) {
+          if ( eProp.hasOwnProperty( key ) ) {
+            expectedKeys.push( [ key, eProp, rProp, [ path, key ] ] );
+          }
+        }
+      } else if ( typeof eProp === 'object' ) {
+        checkedObjects.push( eProp );
+        for ( key in eProp ) {
+          if ( eProp.hasOwnProperty( key ) ) {
+            expectedKeys.push( [ key, eProp, rProp, [ path, key ] ] );
+          }
+        }
+      }
+    }
+  }
+};
+
 // Assuming that clone works, tests `op` on `a` with a list of arguments `b` and
 // expected values `expected`.
 //
@@ -6,13 +50,22 @@
 // - a test for setting a destination, `create`d from given `destType`
 // - a test for setting `a` as the destination
 var testUnaryOp = function( objType, op, objs, expected, options ) {
+  options = options || {};
+  options.epsilon = options.epsilon || 0;
+  options.modifiesSelf = options.modifiesSelf === undefined ? false : options.modifiesSelf;
+
   if ( typeof op === 'string' ) {
     ok( op in objType.prototype, op + ' exists' );
     op = objType.prototype[ op ];
   }
 
-  options = options || {};
-  options.modifiesSelf = options.modifiesSelf === undefined ? false : options.modifiesSelf;
+  var epsilonDeepEqual = deepEqual;
+  if ( options.epsilon > 0 ) {
+    // Using epsilon to test numeric values instead of the normal deepEqual
+    epsilonDeepEqual = function( result, expected, message ) {
+      epsilonNumberCheck( result, expected, options.epsilon, message );
+    };
+  }
 
   objs = Array.isArray( objs ) ? objs : [ objs ];
   expected = Array.isArray( expected ) ? expected : [ expected ];
@@ -23,9 +76,9 @@ var testUnaryOp = function( objType, op, objs, expected, options ) {
         oClone = o.clone(),
         c;
 
-    deepEqual( op.apply( objs[i], [] ), expected[i] );
+    epsilonDeepEqual( op.apply( objs[i], [] ), expected[i], 'basic equality' );
     if ( options.modifiesSelf ) {
-      deepEqual( objs[i], expected[i] );
+      epsilonDeepEqual( objs[i], expected[i], 'self modification check' );
       oClone.clone( objs[i] );
     } else {
       deepEqual( o, oClone, 'does not modify object' );
@@ -37,7 +90,7 @@ var testUnaryOp = function( objType, op, objs, expected, options ) {
 
       c = op.apply( o, [ d ] );
       strictEqual( c, dRef, 'answer is placed in specified destination' );
-      deepEqual( d, expected[i], 'setting destination works correctly' );
+      epsilonDeepEqual( d, expected[i], 'setting destination works correctly' );
 
       if ( !options.modifiesSelf ) {
         deepEqual( o, oClone, 'does not modify object' );
@@ -46,7 +99,7 @@ var testUnaryOp = function( objType, op, objs, expected, options ) {
       if ( options.destType === objType ) {
         c = op.apply( o, [ o ] );
         strictEqual( c, oRef, 'answer is placed in specified destination' );
-        deepEqual( o, expected[i], 'setting yourself as destination works correctly' );
+        epsilonDeepEqual( o, expected[i], 'setting yourself as destination works correctly' );
 
         // reset o after done
         oClone.clone( o );
@@ -59,11 +112,20 @@ var testUnaryOp = function( objType, op, objs, expected, options ) {
 
 var testBinaryOp = function( objType, op, a, b, expected, options ) {
   options = options || {};
+  options.epsilon = options.epsilon || 0;
   options.modifiesSelf = options.modifiesSelf === undefined ? false : options.modifiesSelf;
 
   if ( typeof op === 'string' ) {
     ok( op in objType.prototype, op + ' exists' );
     op = objType.prototype[ op ];
+  }
+
+  var epsilonDeepEqual = deepEqual;
+  if ( options.epsilon > 0 ) {
+    // Using epsilon to test numeric values instead of the normal deepEqual
+    epsilonDeepEqual = function( result, expected, message ) {
+      epsilonNumberCheck( result, expected, options.epsilon, message );
+    };
   }
 
   b = Array.isArray( b ) ? b : [ b ];
@@ -81,9 +143,9 @@ var testBinaryOp = function( objType, op, a, b, expected, options ) {
       bClone = b[i];
     }
 
-    deepEqual( op.apply( a, [ b[i] ] ), expected[i] );
+    epsilonDeepEqual( op.apply( a, [ b[i] ] ), expected[i], 'basic equality' );
     if ( options.modifiesSelf ) {
-      deepEqual( a, expected[i] );
+      epsilonDeepEqual( a, expected[i], 'self modification check' );
       aClone.clone( a );
     } else {
       deepEqual( a, aClone, 'does not modify a' );
@@ -95,9 +157,12 @@ var testBinaryOp = function( objType, op, a, b, expected, options ) {
 
       c = op.apply( a, [ b[i], d ] );
       strictEqual( c, dRef, 'answer is placed in specified destination' );
-      deepEqual( d, expected[i], 'setting destination works correctly' );
+      epsilonDeepEqual( d, expected[i], 'setting destination works correctly' );
 
-      if ( !options.modifiesSelf ) {
+      if ( options.modifiesSelf ) {
+        // reset a
+        aClone.clone( a );
+      } else {
         deepEqual( a, aClone, 'does not modify a' );
       }
 
@@ -107,7 +172,7 @@ var testBinaryOp = function( objType, op, a, b, expected, options ) {
 
         c = op.apply( a, [ b[i], a ] );
         strictEqual( c, aRef, 'answer is placed in specified destination' );
-        deepEqual( a, expected[i], 'setting yourself as destination works correctly' );
+        epsilonDeepEqual( a, expected[i], 'setting yourself as destination works correctly' );
 
         // reset a after done
         aClone.clone( a );
@@ -118,7 +183,7 @@ var testBinaryOp = function( objType, op, a, b, expected, options ) {
 
         c = op.apply( a, [ b[i], b[i] ] );
         strictEqual( c, bRef, 'answer is placed in specified destination' );
-        deepEqual( b[i], expected[i], 'setting yourself as destination works correctly' );
+        epsilonDeepEqual( b[i], expected[i], 'setting yourself as destination works correctly' );
 
         // reset b after done
         bClone.clone( b[i] );
