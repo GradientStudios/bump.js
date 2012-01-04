@@ -1,11 +1,18 @@
 NODE_ENGINE ?= `which node nodejs`
 NPM_ENGINE ?= `which npm`
-DOCCO ?= `which docco`
+DOCCO=docco
+
+DIST_DIR=dist
+
+SRC_FILES=$(shell find src -type f -name '*.js' | xargs -L 1 basename)
+SRC_DIRS=$(shell find src -type f -name '*.js' | tr ' ' '\n' | xargs -L 1 dirname | uniq)
+DOC_FILES=$(patsubst %.js, docs/%.html, $(SRC_FILES))
+
+VPATH=$(SRC_DIRS)
 
 all: build
 
-setup:
-	mkdir -p dist
+setup: | $(DIST_DIR)
 	@@if test ! -z ${NODE_ENGINE}; then \
 		if test ! -z ${NPM_ENGINE}; then \
 			npm install; \
@@ -16,8 +23,18 @@ setup:
 		echo "You must have NodeJS installed in order to build Bump"; \
 	fi
 
-build:
-	@@jake
-	@@if test ! -z ${DOCCO}; then find src -name "*.js" | xargs ${DOCCO}; fi;
+build: | $(DIST_DIR)
+	@jake
 
-.PHONY: all setup build
+docs: $(DOC_FILES)
+
+docs/%.html: %.js
+	@$(DOCCO) "$<"
+
+clean:
+	rm -rf dist docs node_modules
+
+$(DIST_DIR):
+	mkdir -p $(DIST_DIR)
+
+.PHONY: all setup build docs clean
