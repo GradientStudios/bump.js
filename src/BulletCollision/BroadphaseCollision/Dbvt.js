@@ -10,15 +10,17 @@
 
     members: {
       Center: function() {
-        return ( ( this.mi + this.mx ) / 2 );
+        var res = Bump.Vector3.create();
+        return this.mi.add(this.mx, res ).divide( 2, res );
       },
 
       Lengths: function() {
-        return this.mx - this.mi;
+        return this.mx.subtract( this.mi );
       },
 
       Extents: function() {
-        return ( this.mx - this.mi ) / 2;
+        var res = Bump.Vector3.create();
+        return this.mx.subtract( this.mi, res ).divide( 2, res );
       },
 
       Mins: function() {
@@ -156,13 +158,65 @@
         return p.dot( v );
       },
 
-      AddSpan: function( d, smi, smx ){},
-      Intersect: function( a, b ) {}, // note that there are two of these... need to combine or rename?
-      Proximity: function( a, b ) {},
-      Select: function( o, a, b ) {},
-      Merge: function( a, b ) {},
-      NotEqual: function( a, b ) {}
+      AddSpan: function( d, smi, smx ){
+        for( var i = 0; i < 3; ++i ) {
+          if( d[ i ] < 0 ){
+            smi += this.mx[ i ] * d [ i ];
+            smx += this.mi[ i ] * d [ i ];
+          }
+          else{
+            smi += this.mi[ i ] * d [ i ];
+            smx += this.mx[ i ] * d [ i ];
+          }
+        }
+      }
     }
   } );
+
+
+  Bump.Intersect = {}; // object to hold global intersect functions
+  Bump.Intersect.DbvtAabbMm = {}; // intersect tests for DbvtAabbMm
+
+  // Intersect test for 2 `DbvtAabbMm`s
+  Bump.Intersect.DbvtAabbMm2 = function( a, b ) {
+    /*#if	DBVT_INT0_IMPL == DBVT_IMPL_SSE
+	const __m128	rt(_mm_or_ps(	_mm_cmplt_ps(_mm_load_ps(b.mx),_mm_load_ps(a.mi)),
+		_mm_cmplt_ps(_mm_load_ps(a.mx),_mm_load_ps(b.mi))));
+	const __int32*	pu((const __int32*)&rt);
+	return((pu[0]|pu[1]|pu[2])==0);
+    #else*/
+    return( ( a.mi.x() <= b.mx.x() ) &&
+            ( a.mx.x() >= b.mi.x() ) &&
+            ( a.mi.y() <= b.mx.y() ) &&
+            ( a.mx.y() >= b.mi.y() ) &&
+            ( a.mi.z() <= b.mx.z() ) &&
+            ( a.mx.z() >= b.mi.z() ) );
+    //#endif
+  };
+
+  // Intersect test for `DbvtAabbMm` `a` and `Vector3` `b`
+  Bump.Intersect.DbvtAabbMm.Vector3 = function( a, b ) {
+    return( ( b.x() >= a.mi.x() ) &&
+            ( b.y() >= a.mi.y() ) &&
+            ( b.z() >= a.mi.z() ) &&
+            ( b.x() <= a.mx.x() ) &&
+            ( b.y() <= a.mx.y() ) &&
+            ( b.z() <= a.mx.z() ) );
+  };
+
+  Bump.Proximity = {}; // proximity tests
+
+  // Proximity test for 2 `DbvtAabbMm`s
+  Bump.Proximity.DbvtAabbMm2 = function( a, b ) {
+    var d = a.mi.add( a.mx );
+    d = d.subtractSelf( b.mi.subtract( b.mx ) );
+
+    return ( Math.Abs( d.x() ) + Math.Abs( d.y() ) + Math.Abs( d.z() ) );
+  };
+
+  // TODO
+  //Select: function( o, a, b ) {};
+  //Merge: function( a, b ) {};
+  //NotEqual: function( a, b ) {};
 
 } )( this, this.Bump );
