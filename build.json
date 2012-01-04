@@ -3,11 +3,11 @@
     "dist/bump": {
       "src": [
         "src/bump.js",
-	"src/LinearMath/Math.js",
-	"src/LinearMath/Vector3.js",
-	"src/LinearMath/Quaternion.js",
-	"src/LinearMath/Matrix3x3.js",
-	"src/LinearMath/Transform.js",
+        "src/LinearMath/Math.js",
+        "src/LinearMath/Vector3.js",
+        "src/LinearMath/Quaternion.js",
+        "src/LinearMath/Matrix3x3.js",
+        "src/LinearMath/Transform.js",
         "src/BulletCollision/BroadphaseCollision/BroadphaseProxy.js",
         "src/BulletCollision/CollisionShapes/CollisionShape.js"
       ],
