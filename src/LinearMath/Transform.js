@@ -2,7 +2,7 @@
 // [Bullet](http://bulletphysics.org).
 
 (function( window, Bump ) {
-  var tmpV1, tmpM1;
+  var tmpV1, tmpM1, tmpQ1;
 
   Bump.Transform = Bump.type({
 
@@ -154,7 +154,7 @@
 
       multiplyQuaternion: function( quat, dest ) {
         dest = dest || Bump.Quaternion.create();
-        return this.getRotation( dest ).multiplyQuaternion( quat, dest );
+        return this.getRotation( tmpQ1 ).multiplyQuaternion( quat, dest );
       },
 
       multiplyVector: function( vec, dest ) {
@@ -193,4 +193,5 @@
 
   tmpV1 = Bump.Vector3.create();
   tmpM1 = Bump.Matrix3x3.create();
+  tmpQ1 = Bump.Quaternion.create();
 })( this, this.Bump );
