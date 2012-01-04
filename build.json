@@ -9,7 +9,11 @@
         "src/LinearMath/Matrix3x3.js",
         "src/LinearMath/Transform.js",
         "src/BulletCollision/BroadphaseCollision/BroadphaseProxy.js",
-        "src/BulletCollision/CollisionShapes/CollisionShape.js"
+        "src/BulletCollision/CollisionShapes/CollisionShape.js",
+        "src/BulletCollision/CollisionShapes/ConvexShape.js",
+        "src/BulletCollision/CollisionShapes/ConvexInternalShape.js",
+        "src/BulletCollision/CollisionShapes/PolyhedralConvexShape.js",
+        "src/BulletCollision/CollisionShapes/BoxShape.js"
       ],
       "prehint": true,
       "posthint": true,
