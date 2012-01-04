@@ -71,10 +71,7 @@ var testUnaryOp = function( objType, op, objs, expected, options ) {
   expected = Array.isArray( expected ) ? expected : [ expected ];
 
   for ( var i = 0; i < objs.length; ++i ) {
-    var o = objs[i],
-        oRef = o,
-        oClone = o.clone(),
-        c;
+    var c, o = objs[i], oClone = o.clone();
 
     epsilonDeepEqual( op.apply( objs[i], [] ), expected[i], 'basic equality' );
     if ( options.modifiesSelf ) {
@@ -85,8 +82,7 @@ var testUnaryOp = function( objType, op, objs, expected, options ) {
     }
 
     if ( options.destType ) {
-      var d = options.destType.create(),
-          dRef = d;
+      var d = options.destType.create(), dRef = d;
 
       c = op.apply( o, [ d ] );
       strictEqual( c, dRef, 'answer is placed in specified destination' );
@@ -98,15 +94,13 @@ var testUnaryOp = function( objType, op, objs, expected, options ) {
 
       if ( options.destType === objType ) {
         c = op.apply( o, [ o ] );
-        strictEqual( c, oRef, 'answer is placed in specified destination' );
+        strictEqual( c, o, 'answer is placed in specified destination' );
         epsilonDeepEqual( o, expected[i], 'setting yourself as destination works correctly' );
 
         // reset o after done
         oClone.clone( o );
       }
     }
-
-    strictEqual( o, oRef, 'does not allocate new object' );
   }
 };
 
@@ -131,8 +125,7 @@ var testBinaryOp = function( objType, op, a, b, expected, options ) {
   b = Array.isArray( b ) ? b : [ b ];
   expected = Array.isArray( expected ) ? expected : [ expected ];
 
-  var aRef = a,
-      aClone = a.clone();
+  var aClone = a.clone();
 
   for ( var i = 0; i < b.length; ++i ) {
     var bRef = b[i], bClone, c;
@@ -171,7 +164,7 @@ var testBinaryOp = function( objType, op, a, b, expected, options ) {
         deepEqual( a, aClone, 'ensure a starts off the same' );
 
         c = op.apply( a, [ b[i], a ] );
-        strictEqual( c, aRef, 'answer is placed in specified destination' );
+        strictEqual( c, a, 'answer is placed in specified self-destination' );
         epsilonDeepEqual( a, expected[i], 'setting yourself as destination works correctly' );
 
         // reset a after done
@@ -182,16 +175,14 @@ var testBinaryOp = function( objType, op, a, b, expected, options ) {
         deepEqual( b[i], bClone, 'ensure b starts off the same' );
 
         c = op.apply( a, [ b[i], b[i] ] );
-        strictEqual( c, bRef, 'answer is placed in specified destination' );
-        epsilonDeepEqual( b[i], expected[i], 'setting yourself as destination works correctly' );
+        strictEqual( c, bRef, 'answer is placed in specified arg-destination' );
+        epsilonDeepEqual( b[i], expected[i], 'setting arg as destination works correctly' );
 
         // reset b after done
         bClone.clone( b[i] );
       }
     }
 
-    strictEqual( a, aRef, 'does not allocate new a' );
-    strictEqual( b[i], bRef, 'does not allocate new b' );
     deepEqual( b[i], bClone, 'does not modify b' );
 
     aClone.clone( a );
