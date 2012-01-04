@@ -8,7 +8,8 @@
 	"src/LinearMath/Quaternion.js",
 	"src/LinearMath/Matrix3x3.js",
 	"src/LinearMath/Transform.js",
-        "src/BulletCollision/BroadphaseCollision/BroadphaseProxy.js"
+        "src/BulletCollision/BroadphaseCollision/BroadphaseProxy.js",
+        "src/BulletCollision/BroadphaseCollision/Dbvt.js"
       ],
       "prehint": true,
       "posthint": true,
