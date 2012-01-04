@@ -71,33 +71,33 @@
       },
 
       SignedExpand: function( e ) {
-        if( e.x() > 0 ) {
-          this.mx.setX( this.mx.x() + e[ 0 ] );
+        if( e.x > 0 ) {
+          this.mx.setX( this.mx.x + e[ 0 ] );
         }
         else{
-          this.mi.setX( this.mi.x() + e[ 0 ] );
+          this.mi.setX( this.mi.x + e[ 0 ] );
         }
-        if( e.y() > 0 ) {
-          this.mx.setY( this.mx.y() + e[ 1 ] );
-        }
-        else{
-          this.mi.setY( this.mi.y() + e[ 1 ] );
-        }
-        if( e.z() > 0 ) {
-          this.mx.setZ( this.mx.z() + e[ 2 ] );
+        if( e.y > 0 ) {
+          this.mx.setY( this.mx.y + e[ 1 ] );
         }
         else{
-          this.mi.setZ( this.mi.z() + e[ 2 ] );
+          this.mi.setY( this.mi.y + e[ 1 ] );
+        }
+        if( e.z > 0 ) {
+          this.mx.setZ( this.mx.z + e[ 2 ] );
+        }
+        else{
+          this.mi.setZ( this.mi.z + e[ 2 ] );
         }
       },
 
       Contain: function( a ) {
-        return(	( this.mi.x() <= a.mi.x() ) &&
-		( this.mi.y() <= a.mi.y() ) &&
-		( this.mi.z() <= a.mi.z() ) &&
-		( this.mx.x() >= a.mx.x() ) &&
-		( this.mx.y() >= a.mx.y() ) &&
-		( this.mx.z() >= a.mx.z() ) );
+        return(	( this.mi.x <= a.mi.x ) &&
+		( this.mi.y <= a.mi.y ) &&
+		( this.mi.z <= a.mi.z ) &&
+		( this.mx.x >= a.mx.x ) &&
+		( this.mx.y >= a.mx.y ) &&
+		( this.mx.z >= a.mx.z ) );
       },
 
       Classify: function( n, o, s ) {
@@ -106,36 +106,36 @@
 
         switch( s ) {
         case (0+0+0):
-          px = Bump.Vector3.create( this.mi.x(), this.mi.y(), this.mi.z() );
-          pi = Bump.Vector3.create( this.mx.x(), this.mx.y(), this.mx.z() );
+          px = Bump.Vector3.create( this.mi.x, this.mi.y, this.mi.z );
+          pi = Bump.Vector3.create( this.mx.x, this.mx.y, this.mx.z );
           break;
         case (1+0+0):
-          px = Bump.Vector3.create( this.mx.x(), this.mi.y(), this.mi.z() );
-          pi = Bump.Vector3.create( this.mi.x(), this.mx.y(), this.mx.z() );
+          px = Bump.Vector3.create( this.mx.x, this.mi.y, this.mi.z );
+          pi = Bump.Vector3.create( this.mi.x, this.mx.y, this.mx.z );
           break;
         case (0+2+0):
-          px = Bump.Vector3.create( this.mi.x(), this.mx.y(), this.mi.z() );
-          pi = Bump.Vector3.create( this.mx.x(), this.mi.y(), this.mx.z() );
+          px = Bump.Vector3.create( this.mi.x, this.mx.y, this.mi.z );
+          pi = Bump.Vector3.create( this.mx.x, this.mi.y, this.mx.z );
           break;
         case (1+2+0):
-          px = Bump.Vector3.create( this.mx.x(), this.mx.y(), this.mi.z() );
-          pi = Bump.Vector3.create( this.mi.x(), this.mi.y(), this.mx.z() );
+          px = Bump.Vector3.create( this.mx.x, this.mx.y, this.mi.z );
+          pi = Bump.Vector3.create( this.mi.x, this.mi.y, this.mx.z );
           break;
         case (0+0+4):
-          px = Bump.Vector3.create( this.mi.x(), this.mi.y(), this.mx.z() );
-          pi = Bump.Vector3.create( this.mx.x(), this.mx.y(), this.mi.z() );
+          px = Bump.Vector3.create( this.mi.x, this.mi.y, this.mx.z );
+          pi = Bump.Vector3.create( this.mx.x, this.mx.y, this.mi.z );
           break;
         case (1+0+4):
-          px = Bump.Vector3.create( this.mx.x(), this.mi.y(), this.mx.z() );
-          pi = Bump.Vector3.create( this.mi.x(), this.mx.y(), this.mi.z() );
+          px = Bump.Vector3.create( this.mx.x, this.mi.y, this.mx.z );
+          pi = Bump.Vector3.create( this.mi.x, this.mx.y, this.mi.z );
           break;
         case (0+2+4):
-          px = Bump.Vector3.create( this.mi.x(), this.mx.y(), this.mx.z() );
-          pi = Bump.Vector3.create( this.mx.x(), this.mi.y(), this.mi.z() );
+          px = Bump.Vector3.create( this.mi.x, this.mx.y, this.mx.z );
+          pi = Bump.Vector3.create( this.mx.x, this.mi.y, this.mi.z );
           break;
         case (1+2+4):
-          px = Bump.Vector3.create( this.mx.x(), this.mx.y(), this.mx.z() );
-          pi = Bump.Vector3.create( this.mi.x(), this.mi.y(), this.mi.z() );
+          px = Bump.Vector3.create( this.mx.x, this.mx.y, this.mx.z );
+          pi = Bump.Vector3.create( this.mi.x, this.mi.y, this.mi.z );
           break;
         }
 
@@ -152,9 +152,9 @@
 
       ProjectMinimum: function( v, signs ) {
         var b = [ this.mx, this.mi ],
-        p = Bump.Vector3.create( b[ (signs >> 0) & 1 ].x(),
-                                 b[ (signs >> 1) & 1 ].y(),
-                                 b[ (signs >> 2) & 1 ].z() );
+        p = Bump.Vector3.create( b[ (signs >> 0) & 1 ].x,
+                                 b[ (signs >> 1) & 1 ].y,
+                                 b[ (signs >> 2) & 1 ].z );
         return p.dot( v );
       },
 
@@ -185,23 +185,23 @@
 	const __int32*	pu((const __int32*)&rt);
 	return((pu[0]|pu[1]|pu[2])==0);
     #else*/
-    return( ( a.mi.x() <= b.mx.x() ) &&
-            ( a.mx.x() >= b.mi.x() ) &&
-            ( a.mi.y() <= b.mx.y() ) &&
-            ( a.mx.y() >= b.mi.y() ) &&
-            ( a.mi.z() <= b.mx.z() ) &&
-            ( a.mx.z() >= b.mi.z() ) );
+    return( ( a.mi.x <= b.mx.x ) &&
+            ( a.mx.x >= b.mi.x ) &&
+            ( a.mi.y <= b.mx.y ) &&
+            ( a.mx.y >= b.mi.y ) &&
+            ( a.mi.z <= b.mx.z ) &&
+            ( a.mx.z >= b.mi.z ) );
     //#endif
   };
 
   // Intersect test for `DbvtAabbMm` `a` and `Vector3` `b`
   Bump.Intersect.DbvtAabbMm.Vector3 = function( a, b ) {
-    return( ( b.x() >= a.mi.x() ) &&
-            ( b.y() >= a.mi.y() ) &&
-            ( b.z() >= a.mi.z() ) &&
-            ( b.x() <= a.mx.x() ) &&
-            ( b.y() <= a.mx.y() ) &&
-            ( b.z() <= a.mx.z() ) );
+    return( ( b.x >= a.mi.x ) &&
+            ( b.y >= a.mi.y ) &&
+            ( b.z >= a.mi.z ) &&
+            ( b.x <= a.mx.x ) &&
+            ( b.y <= a.mx.y ) &&
+            ( b.z <= a.mx.z ) );
   };
 
   Bump.Proximity = {}; // proximity tests
@@ -211,12 +211,46 @@
     var d = a.mi.add( a.mx );
     d = d.subtractSelf( b.mi.subtract( b.mx ) );
 
-    return ( Math.Abs( d.x() ) + Math.Abs( d.y() ) + Math.Abs( d.z() ) );
+    return ( Math.Abs( d.x ) + Math.Abs( d.y ) + Math.Abs( d.z ) );
   };
 
-  // TODO
-  //Select: function( o, a, b ) {};
-  //Merge: function( a, b ) {};
-  //NotEqual: function( a, b ) {};
+  Bump.Select = {};
+  Bump.Select.DbvtAabbMm3 = function( o, a, b ) {
+    return ( Bump.Proximity.DbvtAabbMm2( o, a ) <
+             Bump.Proximity.DbvtAabbMm2( o, b ) ) ? 0 : 1;
+  };
+
+  Bump.Merge = {};
+  Bump.Merge.DbvtAabbMm3 = function( a, b, r ) {
+    // unrolled for to avoid array-like vector access (for speed)
+    if( a.mi.x < b.mi.x ) {
+      r.mi.x = a.mi.x;
+    }
+    else {
+      r.mi.x = b.mi.x;
+    }
+    if( a.mi.y < b.mi.y ) {
+      r.mi.y = a.mi.y;
+    }
+    else {
+      r.mi.y = b.mi.y;
+    }
+    if( a.mi.z < b.mi.z ) {
+      r.mi.z = a.mi.z;
+    }
+    else {
+      r.mi.z = b.mi.z;
+    }
+  };
+
+  Bump.NotEqual = {};
+  Bump.NotEqual.DbvtAabbMm = function( a, b ) {
+    return( (a.mi.x != b.mi.x ) ||
+            (a.mi.y != b.mi.y ) ||
+            (a.mi.z != b.mi.z ) ||
+            (a.mx.x != b.mx.x ) ||
+            (a.mx.y != b.mx.y ) ||
+            (a.mx.z != b.mx.z ) );
+  };
 
 } )( this, this.Bump );
