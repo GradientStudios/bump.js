@@ -173,9 +173,12 @@
     }
   } );
 
+  // emulates typedef btDbvtAabbMm btDbvtVolume
+  Bump.DbvtVolume = Bump.AdvtAabbMm;
 
   Bump.Intersect = {}; // object to hold global intersect functions
   Bump.Intersect.DbvtAabbMm = {}; // intersect tests for DbvtAabbMm
+  Bump.Intersect.DbvtVolume = Bump.Intersect.DbvtAabbMm; // typedef consistency
 
   // Intersect test for 2 `DbvtAabbMm`s
   Bump.Intersect.DbvtAabbMm2 = function( a, b ) {
@@ -193,6 +196,7 @@
             ( a.mx.z >= b.mi.z ) );
     //#endif
   };
+  Bump.Intersect.DbvtVolume2 = Bump.Intersect.DbvtAabbMm2; // typedef consistency
 
   // Intersect test for `DbvtAabbMm` `a` and `Vector3` `b`
   Bump.Intersect.DbvtAabbMm.Vector3 = function( a, b ) {
@@ -213,12 +217,14 @@
 
     return ( Math.Abs( d.x ) + Math.Abs( d.y ) + Math.Abs( d.z ) );
   };
+  Bump.Proximity.DbvtVolume2 = Bump.Proximity.DbvtAabbMm2; // typedef consistency
 
   Bump.Select = {};
   Bump.Select.DbvtAabbMm3 = function( o, a, b ) {
     return ( Bump.Proximity.DbvtAabbMm2( o, a ) <
              Bump.Proximity.DbvtAabbMm2( o, b ) ) ? 0 : 1;
   };
+  Bump.Select.DbvtVolume3 = Bump.Select.DbvtAabbMm3; // typedef consistency
 
   Bump.Merge = {};
   Bump.Merge.DbvtAabbMm3 = function( a, b, r ) {
@@ -242,6 +248,7 @@
       r.mi.z = b.mi.z;
     }
   };
+  Bump.Merge.DbvtVolume3 = Bump.Merge.DbvtAabbMm3; // typedef consistency
 
   Bump.NotEqual = {};
   Bump.NotEqual.DbvtAabbMm = function( a, b ) {
@@ -252,5 +259,6 @@
             (a.mx.y != b.mx.y ) ||
             (a.mx.z != b.mx.z ) );
   };
+  Bump.NotEqual.DbvtVolume = Bump.NotEqual.DbvtAabbMm; // typedef consistency
 
 } )( this, this.Bump );
