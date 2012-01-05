@@ -9,16 +9,34 @@
     },
 
     members: {
-      Center: function() {
+
+      // Creates a deep copy of `this` DbvtAabbMm, storing the result in `dest` if
+      // provided. Otherwise creates and returns a new DbvtAabbMm.
+      // The original `btDbvtAabbMm` does not have a clone function or explicit
+      // copy constructor, but this is needed for the current unit test code.
+      clone: function( dest ) {
+        var box = dest || Bump.DbvtAabbMm.create();
+        this.mi.clone( box.mi );
+        this.mx.clone( box.mx );
+        return box;
+      },
+
+      Center: function( dest ) {
+        if( dest ){
+          return this.mi.add( this.mx, dest ).divide( 2, dest );
+        }
         var res = Bump.Vector3.create();
         return this.mi.add(this.mx, res ).divide( 2, res );
       },
 
-      Lengths: function() {
-        return this.mx.subtract( this.mi );
+      Lengths: function( dest ) {
+        return this.mx.subtract( this.mi, dest );
       },
 
-      Extents: function() {
+      Extents: function( dest ) {
+        if( dest ){
+          return this.mx.subtract( this.mi, dest ).divide( 2, dest );
+        }
         var res = Bump.Vector3.create();
         return this.mx.subtract( this.mi, res ).divide( 2, res );
       },
@@ -29,40 +47,6 @@
 
       Maxs: function() {
         return this.mx;
-      },
-
-      FromCE: function( c, e ) {
-        var box = Bump.DbvtAabbMm.create();
-        box.mi = c;
-        box.mx = c + e;
-        return box;
-      },
-
-      FromCR: function( c, r ) {
-        // unrolled instead of calling CE
-        var box = Bump.DbvtAabbMm.create();
-        box.mi = c;
-        box.mx = Bump.Vector3.create( r, r, r );
-        return box;
-      },
-
-      FromMM: function( mi, mx ) {
-        var box = Bump.DbvtAabbMm.create();
-        box.mi = mi;
-        box.mx = mx;
-        return box;
-      },
-
-      // note that there were two of these, for pts as type btVector3* and btVector3**
-      FromPoints: function( pts, n ) {
-        var box = Bump.DbvtAabbMm.create();
-        n = n || pts.length; // added this, since pts is now an array object with stored length
-        box.mi = box.mx = pts[ 0 ];
-        for( var i = 1; i < n; ++i ) {
-          box.mi.setMin( pts[ i ] );
-          box.mx.setMax( pts[ i ] );
-        }
-        return box;
       },
 
       Expand: function( e ) {
@@ -169,6 +153,43 @@
             smx += this.mx[ i ] * d [ i ];
           }
         }
+      }
+    },
+
+    typeMembers: {
+      // static functions that handle construction
+      FromCE: function( c, e ) {
+        var box = Bump.DbvtAabbMm.create();
+        box.mi = c;
+        box.mx = c.add( e, box.mi );
+        return box;
+      },
+
+      FromCR: function( c, r ) {
+        // unrolled instead of calling CE
+        var box = Bump.DbvtAabbMm.create();
+        box.mi = c;
+        box.mx = c.add( Bump.Vector3.create( r, r, r ), box.mx );
+        return box;
+      },
+
+      FromMM: function( mi, mx ) {
+        var box = Bump.DbvtAabbMm.create();
+        box.mi = mi;
+        box.mx = mx;
+        return box;
+      },
+
+      // note that there were two of these, for pts as type btVector3* and btVector3**
+      FromPoints: function( pts, n ) {
+        var box = Bump.DbvtAabbMm.create();
+        n = n || pts.length; // added this, since pts is now an array object with stored length
+        box.mi = box.mx = pts[ 0 ];
+        for( var i = 1; i < n; ++i ) {
+          box.mi.setMin( pts[ i ] );
+          box.mx.setMax( pts[ i ] );
+        }
+        return box;
       }
     }
   } );
