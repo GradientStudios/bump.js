@@ -197,7 +197,7 @@
   } );
 
   // emulates typedef btDbvtAabbMm btDbvtVolume
-  Bump.DbvtVolume = Bump.AdvtAabbMm;
+  Bump.DbvtVolume = Bump.DbvtAabbMm;
 
   Bump.Intersect = {}; // object to hold global intersect functions
   Bump.Intersect.DbvtAabbMm = {}; // intersect tests for DbvtAabbMm
@@ -231,18 +231,20 @@
             ( b.z <= a.mx.z ) );
   };
 
-  Bump.Proximity = {}; // proximity tests
+  Bump.Proximity = {};
 
-  // Proximity test for 2 `DbvtAabbMm`s
+  // Given `DbvtAabbMm`s `a` and `b`, compute the "proximity", which is twice the
+  // Manhattan distance between the centers
   Bump.Proximity.DbvtAabbMm2 = function( a, b ) {
-    var d = a.mi.add( a.mx );
-    d = d.subtractSelf( b.mi.subtract( b.mx ) );
+    var d = a.mi.add( a.mx ).subtractSelf( b.mi.add( b.mx ) );
 
-    return ( Math.Abs( d.x ) + Math.Abs( d.y ) + Math.Abs( d.z ) );
+    return ( Math.abs( d.x ) + Math.abs( d.y ) + Math.abs( d.z ) );
   };
   Bump.Proximity.DbvtVolume2 = Bump.Proximity.DbvtAabbMm2; // typedef consistency
 
   Bump.Select = {};
+  // Given `DbvtAabbMm`s `o`, `a`, and `b`, returns 0 if `o` is closer to `a` than to `b`,
+  // else returns 1. Distance is measured using `Proximity`.
   Bump.Select.DbvtAabbMm3 = function( o, a, b ) {
     return ( Bump.Proximity.DbvtAabbMm2( o, a ) <
              Bump.Proximity.DbvtAabbMm2( o, b ) ) ? 0 : 1;
@@ -251,30 +253,50 @@
 
   Bump.Merge = {};
   Bump.Merge.DbvtAabbMm3 = function( a, b, r ) {
-    // unrolled for to avoid array-like vector access (for speed)
+    // unrolled to avoid array-like vector access (for speed)
     if( a.mi.x < b.mi.x ) {
       r.mi.x = a.mi.x;
     }
     else {
       r.mi.x = b.mi.x;
     }
+    if( a.mx.x > b.mx.x ) {
+      r.mx.x = a.mx.x;
+    }
+    else {
+      r.mx.x = b.mx.x;
+    }
+
     if( a.mi.y < b.mi.y ) {
       r.mi.y = a.mi.y;
     }
     else {
       r.mi.y = b.mi.y;
     }
+    if( a.mx.y > b.mx.y ) {
+      r.mx.y = a.mx.y;
+    }
+    else {
+      r.mx.y = b.mx.y;
+    }
+
     if( a.mi.z < b.mi.z ) {
       r.mi.z = a.mi.z;
     }
     else {
       r.mi.z = b.mi.z;
     }
+    if( a.mx.z > b.mx.z ) {
+      r.mx.z = a.mx.z;
+    }
+    else {
+      r.mx.z = b.mx.z;
+    }
   };
   Bump.Merge.DbvtVolume3 = Bump.Merge.DbvtAabbMm3; // typedef consistency
 
   Bump.NotEqual = {};
-  Bump.NotEqual.DbvtAabbMm = function( a, b ) {
+  Bump.NotEqual.DbvtAabbMm2 = function( a, b ) {
     return( (a.mi.x != b.mi.x ) ||
             (a.mi.y != b.mi.y ) ||
             (a.mi.z != b.mi.z ) ||
@@ -282,6 +304,6 @@
             (a.mx.y != b.mx.y ) ||
             (a.mx.z != b.mx.z ) );
   };
-  Bump.NotEqual.DbvtVolume = Bump.NotEqual.DbvtAabbMm; // typedef consistency
+  Bump.NotEqual.DbvtVolume2 = Bump.NotEqual.DbvtAabbMm2; // typedef consistency
 
 } )( this, this.Bump );
