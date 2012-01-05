@@ -108,6 +108,8 @@
 		( this.mx.z >= a.mx.z ) );
       },
 
+      // expects `Vector3` `n`, float `o`, int `s`
+      // TODO : better description of use
       Classify: function( n, o, s ) {
         var pi = Bump.Vector3.create(),
         px = Bump.Vector3.create();
@@ -158,6 +160,8 @@
         return 0;
       },
 
+      // Expects `Vector3` `v`, unsigned int signs.
+      // TODO : Better description of use.
       ProjectMinimum: function( v, signs ) {
         var b = [ this.mx, this.mi ],
         p = Bump.Vector3.create( b[ (signs >> 0) & 1 ].x,
@@ -166,16 +170,36 @@
         return p.dot( v );
       },
 
-      AddSpan: function( d, smi, smx ){
-        for( var i = 0; i < 3; ++i ) {
-          if( d[ i ] < 0 ){
-            smi += this.mx[ i ] * d [ i ];
-            smx += this.mi[ i ] * d [ i ];
-          }
-          else{
-            smi += this.mi[ i ] * d [ i ];
-            smx += this.mx[ i ] * d [ i ];
-          }
+      // Note that the original parameters `smi` and `smx` are wrapped
+      // inside an object `span`, because the original function passes
+      // them by reference.
+      // TODO : Better description of use.
+      AddSpan: function( d, span ){
+        // unrolled to avoid array-like access of Vector3
+        // properties, which is slow
+        if( d.x < 0 ){
+          span.smi += this.mx.x * d.x;
+          span.smx += this.mi.x * d.x;
+        }
+        else{
+          span.smi += this.mi.x * d.x;
+          span.smx += this.mx.x * d.x;
+        }
+        if( d.y < 0 ){
+          span.smi += this.mx.y * d.y;
+          span.smx += this.mi.y * d.y;
+        }
+        else{
+          span.smi += this.mi.y * d.y;
+          span.smx += this.mx.y * d.y;
+        }
+        if( d.z < 0 ){
+          span.smi += this.mx.z * d.z;
+          span.smx += this.mi.z * d.z;
+        }
+        else{
+          span.smi += this.mi.z * d.z;
+          span.smx += this.mx.z * d.z;
         }
       }
     },
