@@ -160,23 +160,24 @@
       // static functions that handle construction
       FromCE: function( c, e ) {
         var box = Bump.DbvtAabbMm.create();
-        box.mi = c;
-        box.mx = c.add( e, box.mi );
+        c.subtract( e, box.mi );
+        c.add( e, box.mx );
         return box;
       },
 
       FromCR: function( c, r ) {
         // unrolled instead of calling CE
-        var box = Bump.DbvtAabbMm.create();
-        box.mi = c;
-        box.mx = c.add( Bump.Vector3.create( r, r, r ), box.mx );
+        var box = Bump.DbvtAabbMm.create(),
+        e = Bump.Vector3.create( r, r, r );
+        c.subtract( e, box.mi );
+        c.add( e, box.mx );
         return box;
       },
 
       FromMM: function( mi, mx ) {
         var box = Bump.DbvtAabbMm.create();
-        box.mi = mi;
-        box.mx = mx;
+        mi.clone( box.mi );
+        mx.clone( box.mx );
         return box;
       },
 
