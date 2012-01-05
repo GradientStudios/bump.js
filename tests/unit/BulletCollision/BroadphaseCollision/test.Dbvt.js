@@ -43,7 +43,7 @@ test( 'FromCR', function() {
 } );
 
 test( 'FromMM', function() {
-  strictEqual( typeof Bump.DbvtAabbMm.FromMM, 'function', 'FromCR exists' );
+  strictEqual( typeof Bump.DbvtAabbMm.FromMM, 'function', 'FromMM exists' );
 
   var min = Bump.Vector3.create( -5, -10, -20 ),
       max = Bump.Vector3.create( 5, 10, 20 ),
@@ -53,6 +53,22 @@ test( 'FromMM', function() {
   deepEqual( box.mi, min, 'mi value correct' );
   ok( box.mx !== max, 'mx copied' );
   deepEqual( box.mx, max, 'mx value correct' );
+} );
+
+test( 'FromPoints', function() {
+  strictEqual( typeof Bump.DbvtAabbMm.FromPoints, 'function', 'FromPoints exists' );
+
+  var pts = [
+        Bump.Vector3.create( -5, -2, 0 ),
+        Bump.Vector3.create(),
+        Bump.Vector3.create( -12, -2, 0 ),
+        Bump.Vector3.create( 8, 10, 0 ),
+        Bump.Vector3.create( 4, 12, -10 ),
+      ],
+      box = Bump.DbvtAabbMm.FromPoints( pts );
+
+  deepEqual( box.mi, Bump.Vector3.create( -12, -2, -10 ), 'mi value correct' );
+  deepEqual( box.mx, Bump.Vector3.create( 8, 12, 0 ), 'mx value correct' );
 } );
 
 module( 'Bump.DbvtAabbMm member functions' );

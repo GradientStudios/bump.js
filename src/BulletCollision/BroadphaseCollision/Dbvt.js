@@ -185,7 +185,8 @@
       FromPoints: function( pts, n ) {
         var box = Bump.DbvtAabbMm.create();
         n = n || pts.length; // added this, since pts is now an array object with stored length
-        box.mi = box.mx = pts[ 0 ];
+        pts[ 0 ].clone( box.mi );
+        pts[ 0 ].clone( box.mx );
         for( var i = 1; i < n; ++i ) {
           box.mi.setMin( pts[ i ] );
           box.mx.setMax( pts[ i ] );
