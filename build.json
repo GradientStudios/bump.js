@@ -11,6 +11,7 @@
         "src/LinearMath/TransformUtil.js",
         "src/LinearMath/AabbUtil2.js",
         "src/BulletCollision/BroadphaseCollision/BroadphaseProxy.js",
+        "src/BulletCollision/BroadphaseCollision/Dbvt.js",
         "src/BulletCollision/CollisionShapes/CollisionShape.js"
       ],
       "prehint": true,
