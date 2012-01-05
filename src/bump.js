@@ -36,7 +36,7 @@ this.Bump = {};
     return ret || prototype && walkProtoChain( Object.getPrototypeOf( prototype ), func );
   }
 
-  var superTest = /xyz/.test( function() { 'var xyz'; } ) ? /\b_super\b/ : /.*/;
+  var superTest = /xyz/.test( function() { return 'var xyz'; } ) ? /\b_super\b/ : /.*/;
 
   // all objects created by Bump.type
   function Type() {}
