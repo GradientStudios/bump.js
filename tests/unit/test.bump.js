@@ -128,7 +128,7 @@ test( 'typeProperties', 2, function() {
   notEqual( a.me, 1, 'typeProperty does not appear on instance' );
 });
 
-test( '_super init', 3, function() {
+test( '_super init', 4, function() {
   var A = Bump.type({
         init: function() {
           this.a = 1;
@@ -146,6 +146,7 @@ test( '_super init', 3, function() {
       b = B.create();
 
   equal( b.a, a.a, 'B instance initialized with A values' );
+  equal( b.b, 2, 'B instance initialized with B values' );
 
   raises(function() {
     Bump.type({

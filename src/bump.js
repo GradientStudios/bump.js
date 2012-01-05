@@ -15,11 +15,10 @@ this.Bump = {};
       };
     }
 
-    return function() {
-      var tmp = this._super,
-          ret;
-      this._super = superFunc;
+    return function superWrappedFunc() {
+      var ret, tmp = this._super;
 
+      this._super = superFunc;
       ret = newFunc.apply( this, arguments );
       this._super = tmp;
 
@@ -44,12 +43,12 @@ this.Bump = {};
   // The type function will be used for object inheritance.
   // Objects are instantiated with Object.create()
   Bump.type = function type( options ) {
-    options = options || {};
-    options.init = options.init || function(){};
+    var defaultInit = function defaultInit() {};
 
-    var exports = Object.create(
-          Type.prototype,
-          options.typeProperties || {} ),
+    options = options || {};
+    options.init = options.init || defaultInit;
+
+    var exports = Object.create( Type.prototype, options.typeProperties || {} ),
         parent = ( options.parent || {} ).prototype || {},
         members = options.members || {},
         properties = options.properties || {},
@@ -74,7 +73,8 @@ this.Bump = {};
         if ( properties[ key ][ getset ] && superTest.test( properties[ key ][ getset ] ) ) {
           properties[ key ][ getset ] = superWrap(
             walkProtoChain( parent, getDescriptor.bind( null, key, getset ) ),
-             properties[ key ][ getset ] );
+            properties[ key ][ getset ]
+          );
         }
       }
     }
@@ -83,10 +83,7 @@ this.Bump = {};
       options.init = superWrap( parent.init, options.init );
     }
 
-    exports.prototype = Object.create(
-      parent,
-      properties );
-
+    exports.prototype = Object.create( parent, properties );
     exports.prototype.constructor = options.init;
     exports.prototype.constructor.prototype = exports.prototype;
 
@@ -98,8 +95,13 @@ this.Bump = {};
       exports.prototype[ key ] = members[ key ];
     }
 
-    if ( !exports.prototype.init ) {
-      exports.prototype.init = options.init;
+    // If `init` is not specified within the `members` object…
+    if ( !exports.prototype.hasOwnProperty( 'init' ) ) {
+      // …but is defined separately, or no parent has an `init`…
+      if ( options.init !== defaultInit || !exports.prototype.init ) {
+        // …then assign the `init`.
+        exports.prototype.init = options.init;
+      }
     }
 
     for ( key in typeMembers ) {
@@ -107,7 +109,7 @@ this.Bump = {};
     }
 
     if ( !exports.create ) {
-      exports.create = function() {
+      exports.create = function defaultCreate() {
         var o = Object.create( exports.prototype );
         o.init.apply( o, arguments );
         return o;
