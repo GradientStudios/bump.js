@@ -151,6 +151,29 @@ module( 'Bump.DbvtAabbMm member functions' );
 
   } );
 
+  test( 'Expand', function() {
+    ok( true, 'TODO' );
+  } );
+
+  test( 'SignedExpand', function() {
+    ok( true, 'TODO' );
+  } );
+
+  test( 'Contain', function() {
+    ok( true, 'TODO' );
+  } );
+
+  test( 'Classify', function() {
+    ok( true, 'TODO' );
+  } );
+
+  test( 'ProjectMinimum', function() {
+    ok( true, 'TODO' );
+  } );
+
+  test( 'AddSpan', function() {
+    ok( true, 'TODO' );
+  } );
 
   module( 'Bump.DbvtAabbMm associated global functions' );
 

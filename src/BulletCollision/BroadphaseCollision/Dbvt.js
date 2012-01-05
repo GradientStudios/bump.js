@@ -1,8 +1,16 @@
-/// original btDbvt implementation by Nathanael Presson
+// **Bump.Dbvt** is the port of the `btDbvt` class in
+// [Bullet](http://bulletphysics.org).
+// Original btDbvt implementation by Nathanael Presson.
 
 (function( window, Bump ) {
 
+  // **Bump.DbvtAabbMm** is the port of the `btDbvtAabbMm` class.
+  // "DbvtAabbMm" stands for "Dynamic Bounding Volume Tree Axis-Aligned
+  // Bounding Box Minimum/Maximum," meaning that it represents an AABB
+  // from 2 `Vector3`s, the minimum `mi` bounds, and the maximum `mx`
+  // bounds.
   Bump.DbvtAabbMm = Bump.type( {
+    // Default constructor, sets mi and mx to zeroed `Vector3`s
     init: function DbvtAabbMm() {
       this.mi = Bump.Vector3.create();
       this.mx = Bump.Vector3.create();
@@ -12,8 +20,6 @@
 
       // Creates a deep copy of `this` DbvtAabbMm, storing the result in `dest` if
       // provided. Otherwise creates and returns a new DbvtAabbMm.
-      // The original `btDbvtAabbMm` does not have a clone function or explicit
-      // copy constructor, but this is needed for the current unit test code.
       clone: function( dest ) {
         var box = dest || Bump.DbvtAabbMm.create();
         this.mi.clone( box.mi );
@@ -21,6 +27,8 @@
         return box;
       },
 
+      // Compute the center of `this` bounding box. The result is stored in the
+      // the `Vector3` `dest` if provided. Otherwise a new `Vector3` is created.
       Center: function( dest ) {
         if( dest ){
           return this.mi.add( this.mx, dest ).divide( 2, dest );
@@ -29,10 +37,15 @@
         return this.mi.add(this.mx, res ).divide( 2, res );
       },
 
+      // Compute the XYZ lengths of the bounding box. The result is stored in the
+      // the `Vector3` `dest` if provided. Otherwise a new `Vector3` is created.
       Lengths: function( dest ) {
         return this.mx.subtract( this.mi, dest );
       },
 
+      // Compute the half-lengths of the bounding box, that is, how far it extends
+      // in on each axis from its center. The result is stored in the
+      // the `Vector3` `dest` if provided. Otherwise a new `Vector3` is created.
       Extents: function( dest ) {
         if( dest ){
           return this.mx.subtract( this.mi, dest ).divide( 2, dest );
@@ -41,40 +54,51 @@
         return this.mx.subtract( this.mi, res ).divide( 2, res );
       },
 
+      // Return a reference to the minimum `Vector3` bounds of the bounding box.
+      // Note that modifying this value directly affects `mi`.
       Mins: function() {
         return this.mi;
       },
 
+      // Return a reference to the maximum `Vector3` bounds of the bounding box.
+      // Note that modifying this value directly affects `mx`.
       Maxs: function() {
         return this.mx;
       },
 
+      // Expand the bounding box by the values of `Vector3` `e` in *both*
+      // directions along each axis. Note that negative values are not expected.
       Expand: function( e ) {
-        this.mi -= e;
-        this.mx += e;
+        this.mi.subtractSelf( e );
+        this.mx.addSelf( e );
       },
 
+      // Expand the bounding box by the values of `Vector3` `e`, expanding only
+      // in the positive direction for positive values, and only in the negative
+      // direction for negative values.
       SignedExpand: function( e ) {
         if( e.x > 0 ) {
-          this.mx.setX( this.mx.x + e[ 0 ] );
+          this.mx.x += e.x;
         }
         else{
-          this.mi.setX( this.mi.x + e[ 0 ] );
+          this.mi.x += e.x;
         }
         if( e.y > 0 ) {
-          this.mx.setY( this.mx.y + e[ 1 ] );
+          this.mx.y += e.y;
         }
         else{
-          this.mi.setY( this.mi.y + e[ 1 ] );
+          this.mi.y += e.y;
         }
         if( e.z > 0 ) {
-          this.mx.setZ( this.mx.z + e[ 2 ] );
+          this.mx.z += e.z;
         }
         else{
-          this.mi.setZ( this.mi.z + e[ 2 ] );
+          this.mi.z += e.z;
         }
       },
 
+      // Given `DbvtAabbMm` `a`, return true if `a`s bounding box is contained
+      // within `this` bounding box.
       Contain: function( a ) {
         return(	( this.mi.x <= a.mi.x ) &&
 		( this.mi.y <= a.mi.y ) &&
@@ -90,36 +114,36 @@
 
         switch( s ) {
         case (0+0+0):
-          px = Bump.Vector3.create( this.mi.x, this.mi.y, this.mi.z );
-          pi = Bump.Vector3.create( this.mx.x, this.mx.y, this.mx.z );
+          px.setValue( this.mi.x, this.mi.y, this.mi.z );
+          pi.setValue( this.mx.x, this.mx.y, this.mx.z );
           break;
         case (1+0+0):
-          px = Bump.Vector3.create( this.mx.x, this.mi.y, this.mi.z );
-          pi = Bump.Vector3.create( this.mi.x, this.mx.y, this.mx.z );
+          px.setValue( this.mx.x, this.mi.y, this.mi.z );
+          pi.setValue( this.mi.x, this.mx.y, this.mx.z );
           break;
         case (0+2+0):
-          px = Bump.Vector3.create( this.mi.x, this.mx.y, this.mi.z );
-          pi = Bump.Vector3.create( this.mx.x, this.mi.y, this.mx.z );
+          px.setValue( this.mi.x, this.mx.y, this.mi.z );
+          pi.setValue( this.mx.x, this.mi.y, this.mx.z );
           break;
         case (1+2+0):
-          px = Bump.Vector3.create( this.mx.x, this.mx.y, this.mi.z );
-          pi = Bump.Vector3.create( this.mi.x, this.mi.y, this.mx.z );
+          px.setValue( this.mx.x, this.mx.y, this.mi.z );
+          pi.setValue( this.mi.x, this.mi.y, this.mx.z );
           break;
         case (0+0+4):
-          px = Bump.Vector3.create( this.mi.x, this.mi.y, this.mx.z );
-          pi = Bump.Vector3.create( this.mx.x, this.mx.y, this.mi.z );
+          px.setValue( this.mi.x, this.mi.y, this.mx.z );
+          pi.setValue( this.mx.x, this.mx.y, this.mi.z );
           break;
         case (1+0+4):
-          px = Bump.Vector3.create( this.mx.x, this.mi.y, this.mx.z );
-          pi = Bump.Vector3.create( this.mi.x, this.mx.y, this.mi.z );
+          px.setValue( this.mx.x, this.mi.y, this.mx.z );
+          pi.setValue( this.mi.x, this.mx.y, this.mi.z );
           break;
         case (0+2+4):
-          px = Bump.Vector3.create( this.mi.x, this.mx.y, this.mx.z );
-          pi = Bump.Vector3.create( this.mx.x, this.mi.y, this.mi.z );
+          px.setValue( this.mi.x, this.mx.y, this.mx.z );
+          pi.setValue( this.mx.x, this.mi.y, this.mi.z );
           break;
         case (1+2+4):
-          px = Bump.Vector3.create( this.mx.x, this.mx.y, this.mx.z );
-          pi = Bump.Vector3.create( this.mi.x, this.mi.y, this.mi.z );
+          px.setValue( this.mx.x, this.mx.y, this.mx.z );
+          pi.setValue( this.mi.x, this.mi.y, this.mi.z );
           break;
         }
 
