@@ -21,4 +21,10 @@
     };
   }
 
+  if ( !Bump.Fsels ) {
+    Bump.Fsels = function btFsels( a, b, c ) {
+      return a >= 0 ? b : c;
+    };
+  }
+
 })( this, this.Bump );
