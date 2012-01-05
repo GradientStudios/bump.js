@@ -10,7 +10,7 @@
   });
 
   Bump.CollisionShape = Bump.type({
-    init: function() {
+    init: function CollisionShape() {
       this.shapeType = Bump.BroadphaseNativeTypes.INVALID_SHAPE_PROXYTYPE;
       this.userPointer = null;
     },
