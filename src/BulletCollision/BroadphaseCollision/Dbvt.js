@@ -71,6 +71,7 @@
       Expand: function( e ) {
         this.mi.subtractSelf( e );
         this.mx.addSelf( e );
+        return this;
       },
 
       // Expand the bounding box by the values of `Vector3` `e`, expanding only
@@ -95,6 +96,7 @@
         else{
           this.mi.z += e.z;
         }
+        return this;
       },
 
       // Given `DbvtAabbMm` `a`, return true if `a`s bounding box is contained
@@ -108,7 +110,10 @@
 		( this.mx.z >= a.mx.z ) );
       },
 
-      // expects `Vector3` `n`, float `o`, int `s`
+      // Expects `Vector3` `n`, float `o`, int `s`;
+      // `Vector3` `n` is a normal vector.
+      // Scalar `o` is an offset.
+      // Usigned integer `s` represents `signs`.
       // TODO : better description of use
       Classify: function( n, o, s ) {
         var pi = Bump.Vector3.create(),

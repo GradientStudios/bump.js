@@ -152,15 +152,59 @@ module( 'Bump.DbvtAabbMm member functions' );
   } );
 
   test( 'Expand', function() {
-    ok( true, 'TODO' );
+    var box = make( -1, -2, -3, 3, 2, 1 ),
+        e = Bump.Vector3.create( 2, 2, 2 ),
+        mi = box.mi,
+        mx = box.mx,
+        expected = make( -3, -4, -5, 5, 4, 3 );
+
+    testBinaryOp( Bump.DbvtAabbMm, 'Expand', box, e, expected, {
+      modifiesSelf: true
+    } );
+    ok( mi === box.mi, 'mi modified in place' );
+    ok( mx === box.mx, 'mx modified in place' );
   } );
 
   test( 'SignedExpand', function() {
-    ok( true, 'TODO' );
+    var box = make( -1, -2, -3, 3, 2, 1 ),
+        e = Bump.Vector3.create( -2, 2, 0 ),
+        mi = box.mi,
+        mx = box.mx,
+        expected = make( -3, -2, -3, 3, 4, 1 );
+
+    testBinaryOp( Bump.DbvtAabbMm, 'SignedExpand', box, e, expected, {
+      modifiesSelf: true
+    } );
+    ok( mi === box.mi, 'mi modified in place' );
+    ok( mx === box.mx, 'mx modified in place' );
   } );
 
   test( 'Contain', function() {
-    ok( true, 'TODO' );
+    var boxA = make( -1, -2, -3, 3, 2, 1 ),
+        boxBs = [
+          make( -1, -1, -1, 1, 1, 1 ),
+          make( -1, -2, -3, 3, 2, 1 ),
+          make( 0, -2, -3, 4, 2, 1 ),
+          make( -2, -2, -3, 2, 2, 1 ),
+          make( -1, -1, -3, 3, 3, 1 ),
+          make( -1, -3, -3, 3, 1, 1 ),
+          make( -1, -2, -2, 3, 2, 2 ),
+          make( -1, -2, -4, 3, 2, 0 ),
+          make( -3, -3, -3, 3, 3, 3 ),
+        ],
+        expected = [
+          true,
+          true,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ];
+
+    testBinaryOp( Bump.DbvtAabbMm, 'Contain', boxA, boxBs, expected );
   } );
 
   test( 'Classify', function() {
