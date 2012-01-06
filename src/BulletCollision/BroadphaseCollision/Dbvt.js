@@ -370,4 +370,50 @@
   };
   Bump.NotEqual.DbvtVolume2 = Bump.NotEqual.DbvtAabbMm2; // typedef consistency
 
+
+  // **Bump.DbvtNode** is the port of the `btDbvtNode` struct.
+  Bump.DbvtNode = Bump.type( {
+    init: function DbvtNode(){
+      this.volume = Bump.DbvtVolume.create();
+      this.parent = 0;
+      /* _unionValue should not be modified directly by outside code */
+      this._unionValue = [ 0, 0 ];
+    },
+
+    // Properties to mimic c++ union behavior as much as possible.
+    properties: {
+      // Originally a static array `btDbvtNode*[2]`
+      childs: {
+        get: function() { return this._unionValue; },
+        set: function( v ) { this._unionValue = v; }
+      },
+      // Originally of type `void*`
+      data: {
+        get: function() { return this._unionValue[ 0 ]; },
+        set: function( v ) { this._unionValue[ 0 ] = v; }
+      },
+      // Originally of type `int`. Note that attempting to interpret an object's
+      // pointer value as an integer is not possible...
+      dataAsInt: {
+        get: function() { return this._unionValue[ 0 ]; },
+        set: function( v ) { this._unionValue[ 0 ] = v; }
+      }
+    },
+
+    members: {
+      isleaf: function() {
+        /* unrolled to avoid property access, which is slower
+           return(childs[1]==0); */
+        return this._unionValue[ 1 ] === 0;
+      },
+
+      isinternal: function() {
+        /* unrolled to avoid extra function call
+           return(!isleaf()); */
+        return this._unionValue[ 1 ] !== 0;
+      }
+    }
+  } );
+
+
 } )( this, this.Bump );
