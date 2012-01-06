@@ -208,7 +208,26 @@ module( 'Bump.DbvtAabbMm member functions' );
   } );
 
   test( 'Classify', function() {
-    ok( true, 'TODO' );
+    ok( Bump.DbvtAabbMm.prototype.Classify, 'Classify exists' );
+
+    var sqrt3 = Math.sqrt( 3 ),
+        box = make( 2/sqrt3, 2/sqrt3, 2/sqrt3, 3/sqrt3, 3/sqrt3, 3/sqrt3 ),
+        box2 = make( -1/sqrt3, -1/sqrt3, -1/sqrt3, 1/sqrt3, 1/sqrt3, 1/sqrt3 );
+    equal( box.Classify( Bump.Vector3.create( 1, 1, 1 ).normalize(),
+                         0, 7 ), 1, 'returns 1' );
+    equal( box.Classify( Bump.Vector3.create( 1, 1, 1 ).normalize(),
+                         2, 7 ), 1, 'returns 1' );
+    ok( true, 'TODO : Decide what to do about bug and then finish tests.' );
+    /*
+    equal( box2.Classify( Bump.Vector3.create( 1, 1, 1 ).normalize(),
+                          0, 7 ), 0, 'returns 0' );
+    equal( box.Classify( Bump.Vector3.create( 1, 1, 1 ).normalize(),
+                         2.5, 7 ), 0, 'returns 0' );
+    equal( box.Classify( Bump.Vector3.create( 1, 1, 1 ).normalize(),
+                         3, 7 ), 0, 'returns 0' );
+    equal( box.Classify( Bump.Vector3.create( 1, 1, 1 ).normalize(),
+                         4, 7 ), 0, 'returns -1' );
+    */
   } );
 
   test( 'ProjectMinimum', function() {

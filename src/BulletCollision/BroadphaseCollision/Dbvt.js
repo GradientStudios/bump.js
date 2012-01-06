@@ -110,11 +110,22 @@
 		( this.mx.z >= a.mx.z ) );
       },
 
-      // Expects `Vector3` `n`, float `o`, int `s`;
-      // `Vector3` `n` is a normal vector.
-      // Scalar `o` is an offset.
-      // Usigned integer `s` represents `signs`.
-      // TODO : better description of use
+      // Classify `this` DbvtAabbMm based on which side of a specified plane it
+      // lies. The plane is specified by normal `Vector3` `n`, and the offset
+      // `o` along that normal from the origin. The `s` parameter should be an
+      // integer 0-7 such that its bits correspond to the signs of the components of
+      // the normal vector (0 for negative, 1 otherwise). For example, normal
+      // vector <0.707106781, -0.707106781, 0 > would correspond to `s` = 1+0+4
+      // = 5. Returns 1 if the bounding box is 'in front' of the plane (direction
+      // of normal), -1 if 'behind' the plane (opposite of normal), or 0 for
+      // neither (plane intersects the AABB).
+
+      // Note: Not sure why `s` needs to be passed in separately, since it can
+      // be computed from the value of `n`. Leaving it for now in case there is
+      // a situation where `s` should differ from the signs of `n`.
+
+      // Note: There seems to be a bug here, in which intersections are not
+      // reliably detected...
       Classify: function( n, o, s ) {
         var pi = Bump.Vector3.create(),
         px = Bump.Vector3.create();
