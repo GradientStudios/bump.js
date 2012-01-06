@@ -207,7 +207,7 @@ module( 'Bump.DbvtAabbMm member functions' );
     testBinaryOp( Bump.DbvtAabbMm, 'Contain', boxA, boxBs, expected );
   } );
 
-  test( 'Classify', function() {
+  test( 'Classify (TODO)', function() {
     ok( Bump.DbvtAabbMm.prototype.Classify, 'Classify exists' );
 
     var sqrt3 = Math.sqrt( 3 ),
@@ -230,11 +230,11 @@ module( 'Bump.DbvtAabbMm member functions' );
     */
   } );
 
-  test( 'ProjectMinimum', function() {
+  test( 'ProjectMinimum (TODO)', function() {
     ok( true, 'TODO' );
   } );
 
-  test( 'AddSpan', function() {
+  test( 'AddSpan (TODO)', function() {
     ok( true, 'TODO' );
   } );
 
