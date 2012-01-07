@@ -15,6 +15,7 @@
         "src/BulletCollision/CollisionShapes/CollisionShape.js",
         "src/BulletCollision/CollisionShapes/ConvexShape.js",
         "src/BulletCollision/CollisionShapes/ConvexInternalShape.js",
+        "src/BulletCollision/CollisionShapes/ConvexPolyhedron.js",
         "src/BulletCollision/CollisionShapes/PolyhedralConvexShape.js",
         "src/BulletCollision/CollisionShapes/BoxShape.js"
       ],
