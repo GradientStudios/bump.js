@@ -7,10 +7,11 @@ test( 'AabbUtil2 exists', function() {
   ok( aabb.testPointAgainstAabb2, 'Bump.testPointAgainstAabb2' );
   ok( aabb.testAabbAgainstAabb2, 'Bump.testAabbAgainstAabb2' );
   ok( aabb.testTriangleAgainstAabb2, 'Bump.testTriangleAgainstAabb2' );
-  ok( aabb.outcode, 'Bump.outcode' );
-  ok( aabb.rayAabb2, 'Bump.rayAabb2' );
-  ok( aabb.rayAabb, 'Bump.rayAabb' );
-  ok( aabb.transformAabb, 'Bump.transformAabb' );
+  ok( aabb.Outcode, 'Bump.Outcode' );
+  ok( aabb.RayAabb2, 'Bump.RayAabb2' );
+  ok( aabb.RayAabb, 'Bump.RayAabb' );
+  ok( aabb.TransformAabbWithExtents, 'Bump.TransformAabbWithExtents' );
+  ok( aabb.TransformAabb, 'Bump.TransformAabb' );
   ok( aabb.testQuantizedAabbAgainstQuantizedAabb, 'Bump.testQuantizedAabbAgainstQuantizedAabb' );
 });
 
@@ -89,7 +90,7 @@ module( 'AabbUtil2.testTriangleAgainstAabb2' );
 
 test( 'test skipped', function() {});
 
-module( 'AabbUtil2.outcode' );
+module( 'AabbUtil2.Outcode' );
 
 test( 'basic', function() {
   var aabbMin = Bump.Vector3.create( 0, 0, 0 ),
@@ -98,7 +99,7 @@ test( 'basic', function() {
       halfExtentClone = halfExtent.clone(),
       source = Bump.Vector3.create( 6, 3, 5 ),
       sourceClone = source.clone(),
-      outcode = Bump.outcode( source, halfExtent );
+      outcode = Bump.Outcode( source, halfExtent );
 
   equal( outcode, 56 );
   deepEqual( halfExtent, halfExtentClone, 'does not modify halfExtent' );
@@ -113,7 +114,11 @@ module( 'AabbUtil2.rayAabb' );
 
 test( 'test skipped', function() {});
 
-module( 'AabbUtil2.transformAabb' );
+module( 'AabbUtil2.TransformAabbWithExtents' );
+
+test( 'test skipped', function() {});
+
+module( 'AabbUtil2.TransformAabb' );
 
 test( 'test skipped', function() {});
 
