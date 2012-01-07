@@ -27,4 +27,12 @@
     };
   }
 
+  if ( !Bump.Assert ) {
+    Bump.Assert = function btAssert( expression ) {
+      if ( !expression ) {
+        undefined.error();
+      }
+    };
+  }
+
 })( this, this.Bump );

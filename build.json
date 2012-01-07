@@ -10,6 +10,7 @@
         "src/LinearMath/Transform.js",
         "src/LinearMath/TransformUtil.js",
         "src/LinearMath/AabbUtil2.js",
+        "src/LinearMath/HashMap.js",
         "src/BulletCollision/BroadphaseCollision/BroadphaseProxy.js",
         "src/BulletCollision/CollisionShapes/CollisionShape.js",
         "src/BulletCollision/CollisionShapes/ConvexShape.js",
