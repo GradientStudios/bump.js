@@ -216,17 +216,31 @@ test( 'divideSelf', 2, function() {
   deepEqual( v0, Bump.Vector3.create( 0.5, 1, 1.5 ), 'correctResult' );
 });
 
-test( 'inverseScale', 4, function() {
-  var v0 = Bump.Vector3.create( 1, 2, 3 ),
-  v1 = Bump.Vector3.create( 2, 1, -3 ),
-  v2 = Bump.Vector3.create(),
-  ret;
+test( 'inverseScale', 15, function() {
+  // var v0 = Bump.Vector3.create( 1, 2, 3 ),
+  // v1 = Bump.Vector3.create( 2, 1, -3 ),
+  // v2 = Bump.Vector3.create(),
+  // ret;
 
-  ret = v0.inverseScale( v1, v2 );
-  ok( ret === v2, 'return value references correct vector' );
-  deepEqual( v0, Bump.Vector3.create( 1, 2, 3 ), 'input vector unchanged' );
-  deepEqual( v1, Bump.Vector3.create( 2, 1, -3 ), 'input vector unchanged' );
-  deepEqual( v2, Bump.Vector3.create( 0.5, 2, -1 ), 'correct result' );
+  // ret = v0.inverseScale( v1, v2 );
+  // ok( ret === v2, 'return value references correct vector' );
+  // deepEqual( v0, Bump.Vector3.create( 1, 2, 3 ), 'input vector unchanged' );
+  // deepEqual( v1, Bump.Vector3.create( 2, 1, -3 ), 'input vector unchanged' );
+  // deepEqual( v2, Bump.Vector3.create( 0.5, 2, -1 ), 'correct result' );
+
+  testFunc( Bump.Vector3, 'inverseScale', {
+    objects: Bump.Vector3.create( 1, 2, 3 ),
+
+    args: [
+      [ Bump.Vector3.create( 2, 1, -3 ) ]
+    ],
+
+    expected: [
+      Bump.Vector3.create( 0.5, 2, -1 )
+    ],
+
+    destType: Bump.Vector3
+  });
 });
 
 test( 'inverseScaleSelf', 3, function() {
@@ -553,22 +567,42 @@ test( 'closestAxis', 7, function() {
   equal( Bump.Vector3.create( -2, -3, -1 ).closestAxis(), 1 );
 });
 
-test( 'closest', 7, function() {
-  equal( Bump.Vector3.create().closest(), 0 );
-  equal( Bump.Vector3.create( 0, 1, 1 ).closest(), 1 );
-  equal( Bump.Vector3.create( 1, 0, 1 ).closest(), 1 );
-  equal( Bump.Vector3.create( 1, 1, 0 ).closest(), 1 );
-  equal( Bump.Vector3.create( 0, 2, 3 ).closest(), 3 );
-  equal( Bump.Vector3.create( 4, 1, -3 ).closest(), 4 );
-  equal( Bump.Vector3.create( -2, -3, -1 ).closest(), 3 );
+test( 'closest', 13, function() {
+  // equal( Bump.Vector3.create().closest(), 0 );
+  // equal( Bump.Vector3.create( 0, 1, 1 ).closest(), 1 );
+  // equal( Bump.Vector3.create( 1, 0, 1 ).closest(), 1 );
+  // equal( Bump.Vector3.create( 1, 1, 0 ).closest(), 1 );
+  // equal( Bump.Vector3.create( 0, 2, 3 ).closest(), 3 );
+  // equal( Bump.Vector3.create( 4, 1, -3 ).closest(), 4 );
+  // equal( Bump.Vector3.create( -2, -3, -1 ).closest(), 3 );
+
+  testFunc( Bump.Vector3, 'closest', {
+    objects: [
+      Bump.Vector3.create( 0, 1, 1 ),
+      Bump.Vector3.create( 1, 0, 1 ),
+      Bump.Vector3.create( 1, 1, 0 ),
+      Bump.Vector3.create( 0, 2, 3 ),
+      Bump.Vector3.create( 4, 1, -3 ),
+      Bump.Vector3.create( -2, -3, -1 )
+    ],
+
+    expected: [
+      1,
+      1,
+      1,
+      3,
+      4,
+      3
+    ]
+  });
 });
 
 test( 'setInterpolate3', 5, function() {
   var right = Bump.Vector3.create( 1, 0, 0 ),
-  up = Bump.Vector3.create( 0, 1, 0 ),
-  forward = Bump.Vector3.create( 0, 0, 1 ),
-  lerped = Bump.Vector3.create(),
-  ret;
+      up = Bump.Vector3.create( 0, 1, 0 ),
+      forward = Bump.Vector3.create( 0, 0, 1 ),
+      lerped = Bump.Vector3.create(),
+      ret;
 
   ret = lerped.setInterpolate3( right, up, 0.5 );
   ok( ret === lerped, "return value references correct vector" );
