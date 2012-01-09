@@ -415,5 +415,92 @@
     }
   } );
 
+  // ***Bump.Dbvt*** is the port of the `btDbvt` struct.
+  Bump.Dbvt = Bump.type( {
+    init: function(){
+      this.m_root = 0; // DbvtNode
+      this.m_free = 0; // DbvtNode
+      this.m_lkhd = 0; // int
+      this.m_leaves = 0; // int
+      this.m_opath = 0; // unsigned
+      this.m_stkStack = []; // array of `Dbvt.sStkNN`
+    },
+
+    members: {
+    }
+  } );
+
+  // Stack element structs
+
+  Bump.Dbvt.sStkNN = Bump.type( {
+    // initialize from two `DbvtNode`s
+    init: function( na, nb ) {
+      this.a = na || 0;
+      this.b = nb || 0;
+    }
+  } );
+
+  Bump.Dbvt.sStkNP = Bump.type( {
+    // initialize from `DbvtNode` `n` and int mask `m`
+    init: function( n, m ) {
+      this.node = n || 0;
+      this.mask = m || 0;
+    }
+  } );
+
+  Bump.Dbvt.sStkNPS = Bump.type( {
+    // initialize from `DbvtNode` `n`, int mask `m`, and float `v`
+    init: function( n, m, v ) {
+      this.node = n || 0;
+      this.mask = m || 0;
+      this.value = v || 0;
+    }
+  } );
+
+  Bump.Dbvt.sStkCLN = Bump.type( {
+    // initialize from two `DbvtNode`s
+    init: function( n, p ) {
+      this.node = n || 0;
+      this.parent = p || 0;
+    }
+  } );
+
+  // Policies/Interfaces
+
+  Bump.Dbvt.ICollide = Bump.type( {
+    members: {
+      // originally ICollide specified 3 overloaded Process functions, which have
+      // been renamed here based on their expected arguments
+      ProcessNode2: function( node1, node2 ){},
+      ProcessNode: function( node ){},
+      ProcessNodeFloat: function( n, s ) {
+        this.ProcessNode( n );
+      },
+      Descent: function( node ){
+        return true;
+      },
+      AllLeaves: function( node ){
+        return true;
+      }
+    }
+  } );
+
+  Bump.Dbvt.IWriter = Bump.type( {
+    members: {
+      Prepare: function( root, numnodes ){},
+      WriteNode: function( node, index, parent, child0, child1){},
+      WriteLeaf: function( node, index, parent){}
+    }
+  } );
+
+  Bump.Dbvt.IClone = Bump.type( {
+    members: {
+      CloneLeaf: function( node ) {}
+    }
+  } );
+
+  // Constants
+  Bump.Dbvt.SIMPLE_STACKSIZE = 64;
+  Bump.Dbvt.DOUBLE_STACKSIZE = Bump.Dbvt.SIMPLE_STACKSIZE * 2;
 
 } )( this, this.Bump );
