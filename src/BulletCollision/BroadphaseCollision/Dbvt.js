@@ -415,7 +415,10 @@
     }
   } );
 
-  // ***Bump.Dbvt*** is the port of the `btDbvt` struct.
+  // ***Bump.Dbvt*** is the port of the `btDbvt` struct. Original documenation as follows:
+  // The btDbvt class implements a fast dynamic bounding volume tree based on axis aligned bounding boxes (aabb tree).
+  // This btDbvt is used for soft body collision detection and for the btDbvtBroadphase. It has a fast insert, remove and update of nodes.
+  // Unlike the btQuantizedBvh, nodes can be dynamically moved around, which allows for change in topology of the underlying data structure.
   Bump.Dbvt = Bump.type( {
     init: function(){
       this.m_root = 0; // DbvtNode
@@ -427,6 +430,166 @@
     },
 
     members: {
+      clear: function() {},        // TODO
+
+      empty: function() { return (0 === this.m_root); },
+
+      optimizeBottomUp: function() {},        // TODO
+
+      optimizeTopDown: function( bu_threshold ) {
+        bu_threshold = bu_threshold || 128;
+        // TODO
+      },
+
+      optimizeIncremental: function( passes ) {},        // TODO
+
+      insert: function( box, data ) {},        // TODO
+
+      updateLeafLookahead: function( leaf, lookahead ){
+        lookahead = lookahead === undefined ? -1 : lookahead;
+        // TODO
+      },
+
+      updateLeafVolume: function( leaf, volume ) {},        // TODO
+
+      updateLeafVolumeVelocityMargin: function( leaf, volumeRef, velocity, margin ) {},        // TODO
+
+      updateLeafVolumeVelocity: function( leaf, volumeRef, velocity ) {},        // TODO
+
+      updateLeafVolumeMargin: function( leaf, volumeRef, margin ) {},        // TODO
+
+      remove: function( leaf ) {},        // TODO
+
+      write: function( iwriter ) {},        // TODO
+
+      clone: function( dest, iclone ) {
+        iclone = iclone || 0;
+        // TODO
+      },
+
+      // Note that `policyRef` is a by-reference `iCollide`, that is, an
+      // object with an expected property named 'value' set to an `iCollide`.
+      // TODO : Add description of use.
+      collideTT: function( root0, root1, policyRef ) {
+        if( root0 && root1 ) {
+          var depth = 1,
+              threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 4,
+              stkStack = [];
+          stkStack[ Bump.Dbvt.DOUBE_STACKSIZE - 1 ] = undefined; /* stkStack.resize( DOUBLE_STACKSIZE ); */
+          stkStack[ 0 ] = Bump.Dbvt.sStkNN.create( root0, root1 );
+
+          do {
+            var p = stkStack[ --depth ];
+            if( depth > threshold ) {
+              stkStack[ stkStack.length() * 2 - 1 ] = undefined; /* stkStack.resize( stkStack.size() * 2 ); */
+              threshold = stkStack.length() - 4;
+            }
+            if( p.a === p.b ) {
+              if( p.a.isinternal() ) {
+                stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.a.childs[ 0 ] );
+                stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.a.childs[ 1 ] );
+                stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.a.childs[ 1 ] );
+              }
+            }
+            else if( Bump.Intersect.DbvtVolume2( p.a.volume, p.b.volume ) ) {
+              if( p.a.isinternal() ) {
+                if( p.b.isinternal() ) {
+                  stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b.childs[ 0 ] );
+                  stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b.childs[ 0 ] );
+                  stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b.childs[ 1 ] );
+                  stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b.childs[ 1 ] );
+                }
+                else {
+                  stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b );
+                  stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b );
+                }
+              }
+              else {
+                if( p.b.isinternal() ) {
+                  stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 0 ] );
+                  stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 1 ] );
+                }
+                else {
+                  policyRef.value.ProcessNode2( p.a, p.b );
+                }
+              }
+            }
+          } while( depth );
+        }
+      },
+
+      collideTTpersistentStack: function( root0, root1, policyRef ) {}, //TODO
+
+      collideTV: function( root, volume, policyRef ) {}, // TODO
+
+      rayTestInternal: function( root,
+                                 rayFrom,
+                                 rayTo,
+                                 rayDirectionInverse,
+                                 signs,
+                                 lambda_max,
+                                 aabbMin,
+                                 aabbMax,
+                                 policyRef ) {} // TODO
+    },
+
+    typeMembers: {
+      maxdepth: function( node ) {}, // TODO
+      countLeaves: function( node ) {}, // TODO
+      extractLeaves: function( node, leavesRef ) {}, // TODO
+      benchmark: function() {},
+      // Note that policyRef is a by-reference icollide
+
+      // iterate over all nodes and process according to the given policy
+      enumNodes: function( root, policyRef ) {
+        policyRef.value.ProcessNode( root );
+        if( root.isinternal() ) {
+          Bump.Dbvt.enumNodes( root.childs[ 0 ], policyRef );
+          Bump.Dbvt.enumNodes( root.childs[ 1 ], policyRef );
+        }
+      },
+
+      // iterate over only the leaf nodes and process according to the given policy
+      enumLeaves: function( root, policyRef ) {
+        if( root.isinternal() ) {
+          Bump.Dbvt.enumLeaves( root.childs[ 0 ], policyRef );
+          Bump.Dbvt.enumLeaves( root.childs[ 1 ], policyRef );
+        }
+        else {
+          policyRef.value.ProcessNode( root );
+        }
+      },
+
+      rayTest: function( root, rayFrom, rayTo, policyRef ) {}, // TODO
+      collideKDOP: function( root, normals, offsets, count, policyRef ) {}, // TODO
+      collideOCL: function( root, normals, offsets, sortaxis, count, iPolicy, fullsort) {
+        fullsort = (fullsort === undefined) || fullsort;
+        // TODO
+      },
+      collideTU: function( root, policyRef ) {}, // TODO
+
+      // i: array of integers,
+      // a: array of `sStkNPS`,
+      // v: float,
+      // l: integer,
+      // h: integer,
+      nearest: function( i, a, v, l, h ) {
+        var m = 0;
+        while( l < h ) {
+          m = ( l + h ) >> 1;
+          if( a[ i[ m ] ].value >= v ) {
+            l = m + 1;
+          }
+          else {
+            h = m;
+          }
+        }
+        return h;
+      },
+
+      allocate: function( ifree, stockRef ) {
+        // TODO ?
+      }
     }
   } );
 
@@ -473,7 +636,7 @@
       // been renamed here based on their expected arguments
       ProcessNode2: function( node1, node2 ){},
       ProcessNode: function( node ){},
-      ProcessNodeFloat: function( n, s ) {
+      ProcessNodeScalar: function( n, s ) {
         this.ProcessNode( n );
       },
       Descent: function( node ){
