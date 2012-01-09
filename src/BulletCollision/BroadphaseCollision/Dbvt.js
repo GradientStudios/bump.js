@@ -518,7 +518,51 @@
         }
       },
 
-      collideTTpersistentStack: function( root0, root1, policyRef ) {}, //TODO
+      collideTTpersistentStack: function( root0, root1, policyRef ) {
+        if( root0 && root1 ) {
+          var depth = 1,
+              threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 4;
+          this.m_stkStack[ Bump.Dbvt.DOUBE_STACKSIZE - 1 ] = undefined; /* m_stkStack.resize( DOUBLE_STACKSIZE ); */
+          this.m_stkStack[ 0 ] = Bump.Dbvt.sStkNN.create( root0, root1 );
+          do {
+            var p = this.m_stkStack[ --depth ];
+            if( depth > threshold ) {
+              this.m_stkStack[ this.m_stkStack.length() * 2 - 1 ] = undefined; /* m_stkStack.resize( this.m_stkStack.size() * 2 ); */
+              threshold = this.m_stkStack.length() - 4;
+            }
+            if( p.a === p.b ) {
+              if( p.a.isinternal() ) {
+                this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.a.childs[ 0 ] );
+                this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.a.childs[ 1 ] );
+                this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.a.childs[ 1 ] );
+              }
+            }
+            else if( Bump.Intersect.DbvtVolume2( p.a.volume, p.b.volume ) ) {
+              if( p.a.isinternal() ) {
+                if( p.b.isinternal() ) {
+                  this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b.childs[ 0 ] );
+                  this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b.childs[ 0 ] );
+                  this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b.childs[ 1 ] );
+                  this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b.childs[ 1 ] );
+                }
+                else {
+                  this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b );
+                  this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b );
+                }
+              }
+              else {
+                if( p.b.isinternal() ) {
+                  this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 0 ] );
+                  this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 1 ] );
+                }
+                else {
+                  policyRef.value.ProcessNode2( p.a, p.b );
+                }
+              }
+            }
+          } while( depth );
+        }
+      },
 
       collideTV: function( root, volume, policyRef ) {}, // TODO
 
