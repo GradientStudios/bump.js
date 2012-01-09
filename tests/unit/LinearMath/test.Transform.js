@@ -190,7 +190,7 @@ var testBinaryOp = function( objType, op, a, b, expected, options ) {
 };
 
 var testFunc = function( objType, func, options ) {
-  var i, j;
+  var i, j, epsilonDeepEqual = deepEqual;
 
   // A ton of utility functions
   var check = function( expression, message ) {
@@ -217,7 +217,7 @@ var testFunc = function( objType, func, options ) {
       return function() {};
     } else {
       return function() {
-        deepEqual( a, aClone, message );
+        epsilonDeepEqual( a, aClone, message );
       };
     }
   })();
@@ -237,7 +237,7 @@ var testFunc = function( objType, func, options ) {
   var postFuncObjCheck = (function() {
     if ( options.modifiesSelf ) {
       return function() {
-        deepEqual( a, expected, 'modifies itself to be expected value' );
+        epsilonDeepEqual( a, expected, 'modifies itself to be expected value' );
         a.clone( a );
       };
     } else {
@@ -255,12 +255,12 @@ var testFunc = function( objType, func, options ) {
         if ( !arg.param.clone ) {
           strictEqual( args[argIndex], argsClone[argIndex], 'const arg ' + argIndex + ' is not modified' );
         } else {
-          deepEqual( args[argIndex], argsClone[argIndex], 'const arg ' + argIndex + ' is not modified' );
+          epsilonDeepEqual( args[argIndex], argsClone[argIndex], 'const arg ' + argIndex + ' is not modified' );
         }
       }
 
       if ( arg.expected !== undefined ) {
-        deepEqual( args[argIndex], arg.expected, 'reference arg ' + argIndex + ' has correct expected value' );
+        epsilonDeepEqual( args[argIndex], arg.expected, 'reference arg ' + argIndex + ' has correct expected value' );
         if ( argsClone[argIndex].clone ) {
           argsClone[argIndex].clone( args[argIndex] );
         } else {
@@ -284,7 +284,15 @@ var testFunc = function( objType, func, options ) {
 
   options = options || {};
   options.isStaticFunc = options.isStaticFunc || false;
+  options.epsilon = options.epsilon || 0;
   options.modifiesSelf = options.modifiesSelf || false;
+
+  if ( options.epsilon > 0 ) {
+    // Using epsilon to test numeric values instead of the normal deepEqual
+    epsilonDeepEqual = function( result, expected, message ) {
+      epsilonNumberCheck( result, expected, options.epsilon, message );
+    };
+  }
 
   check( !( options.modifiesSelf && options.isStaticFunc ), 'cannot be static and modify self' );
 
@@ -367,7 +375,7 @@ var testFunc = function( objType, func, options ) {
       aClone = a.clone();
     }
 
-    deepEqual( func.apply( a, args ), expected, 'returns expected value' );
+    epsilonDeepEqual( func.apply( a, args ), expected, 'returns expected value' );
     postFuncCheck();
 
     if ( options.destType ) {
@@ -376,14 +384,14 @@ var testFunc = function( objType, func, options ) {
       ret = func.apply( a, addDestArg( dest ) );
 
       strictEqual( ret, dest, 'answer is placed in specified destination' );
-      deepEqual( dest, expected, 'setting destination works correctly' );
+      epsilonDeepEqual( dest, expected, 'setting destination works correctly' );
 
       postFuncCheck();
 
       if ( options.destType === objType ) {
         ret = func.apply( a, addDestArg( a ) );
         strictEqual( ret, a, 'answer is placed in specified destination' );
-        deepEqual( a, expected, 'setting yourself as destination works correctly' );
+        epsilonDeepEqual( a, expected, 'setting yourself as destination works correctly' );
 
         postFuncArgCheck();
         resetA();
@@ -392,11 +400,11 @@ var testFunc = function( objType, func, options ) {
       for ( j = 0; j < args.length; ++j ) {
         var argCorrectType = args[j].constructor.prototype === options.destType.prototype;
         if ( argCorrectType ) {
-          deepEqual( args[j], argsClone[j], 'arg is not modified' );
+          epsilonDeepEqual( args[j], argsClone[j], 'arg is not modified' );
 
           ret = func.apply( a, addDestArg( args[j] ) );
           strictEqual( ret, args[j], 'answer is placed in specified destination' );
-          deepEqual( args[j], expected, 'setting argument as destination works correctly' );
+          epsilonDeepEqual( args[j], expected, 'setting argument as destination works correctly' );
 
           postFuncObjCheck();
           postFuncArgCheck( j );
