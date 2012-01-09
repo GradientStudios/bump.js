@@ -396,19 +396,44 @@ test( 'Bump.DbvtNode creation', function() {
 
 module( 'Bump.DbvtNode properties' );
 
-test( 'childs property', function() {
+test( 'union properties', function() {
   var node = Bump.DbvtNode.create(),
       child1 = Bump.DbvtNode.create(),
-      child2 = Bump.DbvtNode.create();
+      child2 = Bump.DbvtNode.create(),
+      child3 = Bump.DbvtNode.create();
 
   strictEqual( typeof node.childs, 'object', 'childs exists' );
-  deepEqual( node.childs, [ 0, 0 ], 'childs initialized correctly' );
+  strictEqual( typeof node.data, 'number', 'data exists' );
+  strictEqual( typeof node.dataAsInt, 'number', 'dataAsInt exists' );
+
+  deepEqual( node.childs, [ 0, 0 ], 'node.childs initialized correctly' );
+  equal( node.data, 0, 'node.data initialized correctly' );
+  equal( node.dataAsInt, 0, 'node.dataAsInt initialized correctly' );
+
+  // assign to childs
   node.childs = [ child2, 0 ];
-  deepEqual( node.childs, [ child2, 0 ], 'array assignment works correctly' );
-  deepEqual( node._unionValue, node.childs, 'node.childs matches internal union data' );
+  deepEqual( node.childs, [ child2, 0 ], 'array assignment to node.childs works correctly' );
+  deepEqual( node._unionValue, node.childs, 'node.childs matches internal union value' );
+  deepEqual( node._unionValue[ 0 ], node.data, 'node.data matches internal union value [0]' );
+  deepEqual( node._unionValue[ 0 ], node.dataAsInt, 'node.dataAsInt matches internal union value [0]' );
   node.childs[ 0 ] = child1;
   node.childs[ 1 ] = child2;
   deepEqual( node.childs, [ child1, child2 ], 'index assignment works correctly' );
-  deepEqual( node._unionValue, node.childs, 'node.childs matches internal union data' );
+  deepEqual( node._unionValue, node.childs, 'node.childs matches internal union value' );
+  deepEqual( node._unionValue[ 0 ], node.data, 'node.data matches internal union value [0]' );
+  deepEqual( node._unionValue[ 0 ], node.dataAsInt, 'node.dataAsInt matches internal union value [0]' );
 
+  // assign to data
+  node.data = child3;
+  deepEqual( node.data, child3, 'assignment to data works correctly' );
+  deepEqual( node._unionValue, [child3, child2], 'union value set correctly' );
+  deepEqual( node._unionValue, node.childs, 'node.childs matches internal union value' );
+  deepEqual( node._unionValue[ 0 ], node.dataAsInt, 'node.dataAsInt matches internal union value [0]' );
+
+  // assign to dataAsInt
+  node.dataAsInt = 42;
+  deepEqual( node.dataAsInt, 42, 'assignment to data works correctly' );
+  deepEqual( node._unionValue, [ 42, child2 ], 'union value set correctly' );
+  deepEqual( node._unionValue, node.childs, 'node.childs matches internal union value' );
+  deepEqual( node._unionValue[ 0 ], node.data, 'node.data matches internal union value [0]' );
 } );
