@@ -19,7 +19,8 @@
       this.shapeType = Bump.BroadphaseNativeTypes.BOX_SHAPE_PROXYTYPE;
       this.setSafeMargin( boxHalfExtents );
 
-      var margin = tmpV1.setValue( this.getMargin(), this.getMargin(), this.getMargin() );
+      var myMargin = this.getMargin(),
+          margin = tmpV1.setValue( myMargin, myMargin, myMargin );
       this.implicitShapeDimensions = boxHalfExtents
         .scale( this.localScaling, this.implicitShapeDimensions )
         .subtract( margin, this.implicitShapeDimensions );
@@ -32,7 +33,8 @@
       getHalfExtentsWithMargin: function( dest ) {
         dest = dest || Bump.Vector3.create();
         var halfExtents = this.implicitShapeDimensions.clone( dest ),
-            margin = tmpV1.setValue( this.getMargin(), this.getMargin(), this.getMargin() );
+            myMargin = this.getMargin(),
+            margin = tmpV1.setValue( myMargin, myMargin, myMargin );
         halfExtents.addSelf( margin );
         return halfExtents;
       },
@@ -48,7 +50,8 @@
       localGetSupportingVertex: function( vec, dest ) {
         dest = dest || Bump.Vector3.create();
         var halfExtents = this.implicitShapeDimensions.clone( tmpV1 ),
-            margin = tmpV2.setValue( this.getMargin(), this.getMargin(), this.getMargin() );
+            myMargin = this.getMargin(),
+            margin = tmpV2.setValue( myMargin, myMargin, myMargin );
         halfExtents.addSelf( margin );
 
         return dest.setValue( Bump.Fsels( vec.x, halfExtents.x, -halfExtents.x ),
@@ -83,11 +86,12 @@
       // - `tmpV3`
       setMargin: function( collisionMargin ) {
         // Correct the `implicitShapeDimensions` for the margin
-        var oldMargin = tmpV1.setValue( this.getMargin(), this.getMargin(), this.getMargin() ),
+        var myMargin = this.getMargin(),
+            oldMargin = tmpV1.setValue( myMargin, myMargin, myMargin ),
             implicitShapeDimensionsWithMargin = this.implicitShapeDimensions.add( oldMargin, tmpV2 );
 
         this._super( collisionMargin );
-        var newMargin = tmpV3.setValue( this.getMargin(), this.getMargin(), this.getMargin() );
+        var newMargin = tmpV3.setValue( myMargin, myMargin, myMargin );
         this.implicitShapeDimensions = implicitShapeDimensionsWithMargin
           .subtract( newMargin, this.implicitShapeDimensions );
 
@@ -100,7 +104,8 @@
       // - `tmpV2`
       // - `tmpV3`
       setLocalScaling: function( scaling ) {
-        var oldMargin = tmpV1.setValue( this.getMargin(), this.getMargin(), this.getMargin() ),
+        var myMargin = this.getMargin(),
+            oldMargin = tmpV1.setValue( myMargin, myMargin, myMargin ),
             implicitShapeDimensionsWithMargin = this.implicitShapeDimensions.add( oldMargin, tmpV2 ),
             unScaledImplicitShapeDimensionsWithMargin = implicitShapeDimensionsWithMargin.divide( this.localScaling, tmpV3 );
 
