@@ -589,7 +589,7 @@
             }
           } while( stack.length > 0 );
         }
-      }, // TODO
+      },
 
       rayTestInternal: function( root,
                                  rayFrom,
@@ -599,7 +599,44 @@
                                  lambda_max,
                                  aabbMin,
                                  aabbMax,
-                                 policyRef ) {} // TODO
+                                 policyRef ) {
+        // TODO: Port btRayAabb2, then uncomment
+        /*
+        var rayTo;
+        if( root ) {
+          var resultNormal = Bump.Vector3.create(),
+              depth = 1,
+              threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 2,
+              stack = [],
+              bounds = [ Bump.Vector3.create(), Bump.Vector3.create() ];
+          stack[ Bump.Dbvt.DOUBE_STACKSIZE - 1 ] = undefined; / * stack.resize( DOUBLE_STACKSIZE ); * /
+          stack[ 0 ] = root;
+          do {
+            var node = stack[ --depth ];
+            node.volume.Mins().subtract( AabbMax, bounds[ 0 ] );
+            node.volume.Maxs().subtract( AabbMin, bounds[ 1 ] );
+            var tmin = 1,
+                lambda_min = 0,
+                result1 = false;
+            result1 = Bump.RayAabb2.create( rayFrom, rayDirectionInverse, signs, bounds,
+                                            tmin, lambda_min, lambda_max );
+            if( result1 ) {
+              if( node.isinternal() ) {
+                if( depth > threshold ) {
+                  stack[ stack.length * 2 - 1 ] = undefined; / * stack.resize( stack.size() * 2 ); * /
+                  threshold = stkStack.length - 2;
+                }
+                stack[ depth++ ] = node.childs[ 0 ];
+                stack[ depth++ ] = node.childs[ 1 ];
+              }
+              else {
+                policy.value.Process( node );
+              }
+            }
+          } while( depth );
+        }
+        */
+      }
     },
 
     typeMembers: {
