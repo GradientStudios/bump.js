@@ -437,3 +437,34 @@ test( 'union properties', function() {
   deepEqual( node._unionValue, node.childs, 'node.childs matches internal union value' );
   deepEqual( node._unionValue[ 0 ], node.data, 'node.data matches internal union value [0]' );
 } );
+
+module( 'Bump.DbvtNode member functions' );
+
+test( 'isleaf', function() {
+  var leaf1 = Bump.DbvtNode.create(),
+      leaf2 = Bump.DbvtNode.create(),
+      parent = Bump.DbvtNode.create();
+
+  parent.childs = [ leaf1, leaf2 ];
+
+  strictEqual( typeof leaf1.isleaf, 'function', 'isleaf exists' );
+  ok( leaf1.isleaf(), 'leaf node returns true' );
+  ok( leaf2.isleaf(), 'leaf node returns true' );
+  ok( !parent.isleaf(), 'internal node returns false' );
+
+} );
+
+
+test( 'isinternal', function() {
+  var leaf1 = Bump.DbvtNode.create(),
+      leaf2 = Bump.DbvtNode.create(),
+      parent = Bump.DbvtNode.create();
+
+  parent.childs = [ leaf1, leaf2 ];
+
+  strictEqual( typeof leaf1.isinternal, 'function', 'isinternal exists' );
+  ok( !leaf1.isinternal(), 'leaf node returns false' );
+  ok( !leaf2.isinternal(), 'leaf node returns false' );
+  ok( parent.isinternal(), 'internal node returns true' );
+
+} );
