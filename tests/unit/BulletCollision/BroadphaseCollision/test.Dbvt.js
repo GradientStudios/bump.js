@@ -10,7 +10,7 @@ test( 'DbvtAabbMm creation', function() {
   ok( t instanceof Bump.DbvtAabbMm.prototype.init, 'creation without `new` operator' );
 });
 
-module( 'Bump.DbvtAabbMm constructor' );
+module( 'Bump.DbvtAabbMm constructors' );
 
 test( 'empty', function() {
   var box = Bump.DbvtAabbMm.create();
@@ -377,4 +377,38 @@ test( 'DbvtVolume shares same associated functions', function() {
   strictEqual( Bump.Select.DbvtVolume3, Bump.Select.DbvtAabbMm3, 'Select' );
   strictEqual( Bump.Merge.DbvtVolume3, Bump.Merge.DbvtAabbMm3, 'Merge' );
   strictEqual( Bump.NotEqual.DbvtVolume2, Bump.NotEqual.DbvtAabbMm2, 'NotEqual' );
+} );
+
+module( 'Bump.DbvtNode' );
+
+test( 'Bump.DbvtNode exists', function() {
+  var dbvtnode = Bump.DbvtNode || {};
+  strictEqual( typeof dbvtnode.create, 'function', 'Bump.DbvtNode exists' );
+} );
+
+test( 'Bump.DbvtNode creation', function() {
+  var t = Bump.DbvtNode.create() || {};
+  ok( t instanceof Bump.DbvtNode.prototype.init, 'creation without `new` operator' );
+  deepEqual( t.volume, Bump.DbvtVolume.create(), 'volume initialized correctly' );
+  strictEqual( t.parent, 0, 'parent initialized correctly' );
+  deepEqual( t._unionValue, [ 0, 0 ], 'internal _unionValue initialized correctly' );
+} );
+
+module( 'Bump.DbvtNode properties' );
+
+test( 'childs property', function() {
+  var node = Bump.DbvtNode.create(),
+      child1 = Bump.DbvtNode.create(),
+      child2 = Bump.DbvtNode.create();
+
+  strictEqual( typeof node.childs, 'object', 'childs exists' );
+  deepEqual( node.childs, [ 0, 0 ], 'childs initialized correctly' );
+  node.childs = [ child2, 0 ];
+  deepEqual( node.childs, [ child2, 0 ], 'array assignment works correctly' );
+  deepEqual( node._unionValue, node.childs, 'node.childs matches internal union data' );
+  node.childs[ 0 ] = child1;
+  node.childs[ 1 ] = child2;
+  deepEqual( node.childs, [ child1, child2 ], 'index assignment works correctly' );
+  deepEqual( node._unionValue, node.childs, 'node.childs matches internal union data' );
+
 } );
