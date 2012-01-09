@@ -467,6 +467,8 @@
         // TODO
       },
 
+      // Process collision between two `Dbvt` trees with roots `root0` and `root1`, according
+      // to the given policy.
       // Note that `policyRef` is a by-reference `iCollide`, that is, an
       // object with an expected property named 'value' set to an `iCollide`.
       // TODO : Add description of use.
@@ -481,8 +483,8 @@
           do {
             var p = stkStack[ --depth ];
             if( depth > threshold ) {
-              stkStack[ stkStack.length() * 2 - 1 ] = undefined; /* stkStack.resize( stkStack.size() * 2 ); */
-              threshold = stkStack.length() - 4;
+              stkStack[ stkStack.length * 2 - 1 ] = undefined; /* stkStack.resize( stkStack.size() * 2 ); */
+              threshold = stkStack.length - 4;
             }
             if( p.a === p.b ) {
               if( p.a.isinternal() ) {
@@ -527,8 +529,8 @@
           do {
             var p = this.m_stkStack[ --depth ];
             if( depth > threshold ) {
-              this.m_stkStack[ this.m_stkStack.length() * 2 - 1 ] = undefined; /* m_stkStack.resize( this.m_stkStack.size() * 2 ); */
-              threshold = this.m_stkStack.length() - 4;
+              this.m_stkStack[ this.m_stkStack.length * 2 - 1 ] = undefined; /* m_stkStack.resize( this.m_stkStack.size() * 2 ); */
+              threshold = this.m_stkStack.length - 4;
             }
             if( p.a === p.b ) {
               if( p.a.isinternal() ) {
@@ -564,7 +566,30 @@
         }
       },
 
-      collideTV: function( root, volume, policyRef ) {}, // TODO
+      // Process collision between a `Dbvt` tree, starting at `root`, and `DbvtVolume` `vol` according
+      // to the given policy. ???
+      collideTV: function( root, vol, policyRef ) {
+        if( root ) {
+          var volume = vol.clone(),
+              stack = [];
+          /* stack.resize( 0 ); */
+          /* stack.reserve( SIMPLE_STACKSIZE ); */
+          stack.push( root );
+          do {
+            var n = stack[stack.length - 1];
+            stack.pop();
+            if ( Bump.Intersect.DbvtVolume2( n.volume, volume ) ) {
+              if( n.isinternal() ) {
+                stack.push( n.childs[ 0 ] );
+                stack.push( n.childs[ 1 ] );
+              }
+              else {
+                policyRef.value.Process( n );
+              }
+            }
+          } while( stack.length > 0 );
+        }
+      }, // TODO
 
       rayTestInternal: function( root,
                                  rayFrom,
