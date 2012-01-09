@@ -10,9 +10,15 @@
         "src/LinearMath/Transform.js",
         "src/LinearMath/TransformUtil.js",
         "src/LinearMath/AabbUtil2.js",
+        "src/LinearMath/HashMap.js",
         "src/BulletCollision/BroadphaseCollision/BroadphaseProxy.js",
         "src/BulletCollision/BroadphaseCollision/Dbvt.js",
-        "src/BulletCollision/CollisionShapes/CollisionShape.js"
+        "src/BulletCollision/CollisionShapes/CollisionShape.js",
+        "src/BulletCollision/CollisionShapes/ConvexShape.js",
+        "src/BulletCollision/CollisionShapes/ConvexInternalShape.js",
+        "src/BulletCollision/CollisionShapes/ConvexPolyhedron.js",
+        "src/BulletCollision/CollisionShapes/PolyhedralConvexShape.js",
+        "src/BulletCollision/CollisionShapes/BoxShape.js"
       ],
       "prehint": true,
       "posthint": true,

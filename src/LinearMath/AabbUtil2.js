@@ -48,7 +48,7 @@
     return true;
   };
 
-  AabbUtil2.outcode = function( p, halfExtent ) {
+  AabbUtil2.Outcode = function( p, halfExtent ) {
     return ( ( p.x < -halfExtent.x ? 0x01 : 0x0 ) |
              ( p.x >  halfExtent.x ? 0x08 : 0x0 ) |
              ( p.y < -halfExtent.y ? 0x02 : 0x0 ) |
@@ -57,7 +57,7 @@
              ( p.z >  halfExtent.z ? 0x20 : 0x0 ) );
   };
 
-  AabbUtil2.rayAabb2 = function( rayFrom, rayInvDirection, raySign, bounds, tmin, lambda_min, lambda_max ) {
+  AabbUtil2.RayAabb2 = function( rayFrom, rayInvDirection, raySign, bounds, tmin, lambda_min, lambda_max ) {
     var tmax, tymin, tymax, tzmin, tzmax;
 
     tmin = ( bounds[ raySign[0] ].x - rayFrom.x) * rayInvDirection.x;
@@ -95,7 +95,7 @@
     return ( (tmin < lambda_max) && (tmax > lambda_min) );
   };
 
-  AabbUtil2.rayAabb = function( rayFrom, rayTo, aabbMin, aabbMax, param, normal ) {
+  AabbUtil2.RayAabb = function( rayFrom, rayTo, aabbMin, aabbMax, param, normal ) {
     var aabbHalfExtent = aabbMax.subtract( aabbMin, tmpV1 ).multiply( 0.5, tmpV1 ),
         aabbCenter = aabbMax.add( aabbMin, tmpV2 ).multiply( 0.5, tmpV2 ),
         source = rayFrom.subtract( aabbCenter, tmpV3 ),
@@ -140,7 +140,7 @@
     return false;
   };
 
-  AabbUtil2.transformAabb = function( halfExtents, margin, t, aabbMinOut, aabbMaxOut ) {
+  AabbUtil2.TransformAabbWithExtents = function( halfExtents, margin, t, aabbMinOut, aabbMaxOut ) {
     var halfExtentsWithMargin = halfExtents.add( tmpV1.setValue( margin, margin, margin ), tmpV1 ),
         abs_b = t.basis.absolute( tmpM1 ),
         center = t.origin.clone( tmpV2 ),
@@ -148,6 +148,28 @@
                                  abs_b.m_el1.dot( halfExtentsWithMargin ),
                                  abs_b.m_el2.dot( halfExtentsWithMargin ) );
 
+    aabbMinOut = center.subtract( extent, aabbMinOut );
+    aabbMaxOut = center.add( extent, aabbMaxOut );
+  };
+
+  AabbUtil2.TransformAabb = function( localAabbMin, localAabbMax, margin, trans, aabbMinOut, aabbMaxOut ) {
+    Bump.Assert( localAabbMin.x <= localAabbMax.x );
+    Bump.Assert( localAabbMin.y <= localAabbMax.y );
+    Bump.Assert( localAabbMin.z <= localAabbMax.z );
+
+    var localHalfExtents = localAabbMax
+      .subtract( localAabbMin, tmpV1 )
+      .multiply( 0.5, tmpV1 );
+    localHalfExtents.addSelf( tmpV2.setValue( margin, margin, margin ) );
+
+    var localCenter = localAabbMax
+      .add( localAabbMin, tmpV2 )
+      .multiply( 0.5, tmpV2 );
+    var abs_b = trans.basis.absolute( tmpM1 );
+    var center = trans.transform( localCenter, tmpV3 );
+    var extent = tmpV4.setValue( abs_b.m_el0.dot( localHalfExtents ),
+                                 abs_b.m_el1.dot( localHalfExtents ),
+                                 abs_b.m_el2.dot( localHalfExtents ) );
     aabbMinOut = center.subtract( extent, aabbMinOut );
     aabbMaxOut = center.add( extent, aabbMaxOut );
   };
