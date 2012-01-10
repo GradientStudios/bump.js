@@ -871,7 +871,27 @@
         }
       },
 
-      collideTU: function( root, policy ) {}, // TODO
+      collideTU: function( root, policy ) {
+        if( root ){
+          var stack = [];
+          //stack.reserve(SIMPLE_STACKSIZE);
+          stack.push( root );
+          do {
+            var n = stack[ stack.length - 1 ];
+            stack.pop();
+            if( policy.Descent(n) ) {
+              if( n.isinternal() ) {
+                stack.push( n.childs[ 0 ] );
+                stack.push( n.childs[ 1 ] );
+              }
+              else {
+                policy.Process( n );
+              }
+            }
+          } while( stack.length > 0 );
+        }
+      },
+
 
       // i: array of integers,
       // a: array of `sStkNPS`,
