@@ -1136,6 +1136,66 @@
         pdbvt.m_root = node;
       }
     }
+  },
+
+  removeleaf = function( pdbvt, leaf ) {
+    if( leaf === pdbvt.m_root ) {
+                pdbvt.m_root = 0;
+                return 0;
+    }
+    else {
+      var parent = leaf.parent,
+      prev = parent.parent,
+      sibling = parent.childs[ 1 - indexof( leaf ) ];
+      if( prev ) {
+        prev.childs[ indexof( parent ) ] = sibling;
+        sibling.parent = prev;
+        deletenode( pdbvt, parent );
+        while( prev ) {
+          var pb = prev.volume;
+          Bump.Merge.DbvtVolume3( prev.childs[ 0 ].volume, prev.childs[ 1 ].volume, prev.volume);
+          if( Bump.NotEqualDbvtVolume2( pb, prev.volume ) ) {
+            prev = prev.parent;
+          }
+          else {
+            break;
+          }
+        }
+        return prev || pdbvt.m_root;
+      }
+      else {
+        pdbvt.m_root = sibling;
+        sibling.parent = 0;
+        deletenode( pdbvt, parent );
+        return pdbvt.m_root;
+      }
+    }
+  },
+
+  fetchleaves = function( pdbvt, root, leaves, depth ) {
+    depth = ( depth === undefined ) ? -1 : depth;
+    if( root.isinternal() && depth ) {
+      fetchleaves( pdbvt, root.childs[ 0 ], leaves, depth - 1 );
+      fetchleaves( pdbvt, root.childs[ 1 ], leaves, depth - 1 );
+      deletenode( pdbvt, root );
+    }
+    else {
+      leaves.push( root );
+    }
+  },
+
+  split = function( leaves, left, right, org, axis ) {
+    left.splice( 0 ); /* left.resize(0); */
+    right.splice( 0 ); /* right.resize(0); */
+    var tmpVector3 = Bump.Vector3.create();
+    for( var i = 0, ni = leaves.length; i < ni; ++i ) {
+      if( axis.dot( leaves[ i ].volume.Center().subract( org, tmpVector3 ) ) < 0 ) {
+        left.push( leaves[ i ] );
+      }
+      else {
+        right.push( leaves[ i ] );
+      }
+    }
   };
 
 } )( this, this.Bump );
