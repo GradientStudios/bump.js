@@ -20,7 +20,6 @@
     // - `localScaling`
     // - `implicitShapeDimensions`
     // - `collisionMargin`
-    // - `padding`
     // - `polyhedron`
     init: function BoxShape( boxHalfExtents ) {
       this._super();

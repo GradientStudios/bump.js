@@ -5,7 +5,6 @@
     init: function() {
       this.name = '';
       this.shapeType = 0;
-      this.padding = '';
     }
   });
 

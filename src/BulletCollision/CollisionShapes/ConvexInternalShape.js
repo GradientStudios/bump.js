@@ -18,7 +18,6 @@
       this.localScaling = Bump.Vector3.create( 1, 1, 1 );
       this.implicitShapeDimensions = Bump.Vector3.create();
       this.collisionMargin = Bump.CONVEX_DISTANCE_MARGIN;
-      this.padding = 0;
     },
 
     members: {
@@ -29,7 +28,6 @@
         this.localScaling.clone( dest.localScaling );
         this.implicitShapeDimensions.clone( dest.implicitShapeDimensions );
         dest.collisionMargin = this.collisionMargin;
-        dest.padding = this.padding;
 
         return dest;
       },
