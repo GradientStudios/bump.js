@@ -600,8 +600,6 @@
                                  aabbMin,
                                  aabbMax,
                                  policyRef ) {
-        // TODO: Port btRayAabb2, then uncomment
-        /*
         var rayTo;
         if( root ) {
           var resultNormal = Bump.Vector3.create(),
@@ -618,7 +616,7 @@
             var tmin = 1,
                 lambda_min = 0,
                 result1 = false;
-            result1 = Bump.RayAabb2.create( rayFrom, rayDirectionInverse, signs, bounds,
+            result1 = Bump.rayAabb2.create( rayFrom, rayDirectionInverse, signs, bounds,
                                             tmin, lambda_min, lambda_max );
             if( result1 ) {
               if( node.isinternal() ) {
@@ -635,7 +633,6 @@
             }
           } while( depth );
         }
-        */
       }
     },
 
@@ -666,8 +663,111 @@
         }
       },
 
-      rayTest: function( root, rayFrom, rayTo, policyRef ) {}, // TODO
-      collideKDOP: function( root, normals, offsets, count, policyRef ) {}, // TODO
+      rayTest: function( root, rayFrom, rayTo, policyRef ) {
+        if( root ) {
+          var diff = rayTo.subtract( rayFrom ),
+          rayDir = diff.normalized();
+
+          var rayDirectionInverse;
+          rayDirectionInverse.x = rayDir.x == 0 ? Bump.LARGE_FLOAT : 1 / rayDir.x;
+          rayDirectionInverse.y = rayDir.y == 0 ? Bump.LARGE_FLOAT : 1 / rayDir.y;
+          rayDirectionInverse.z = rayDir.z == 0 ? Bump.LARGE_FLOAT : 1 / rayDir.z;
+
+          var signs = [
+               rayDirectionInverse.x < 0,
+               rayDirectionInverse.y < 0,
+               rayDirectionInverse.z < 0
+             ],
+             lambda_max = rayDir.dot( diff ),
+             resultNormal,
+             stack = [],
+             depth = -1,
+             threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 2;
+
+          stack[ Bump.Dbvt.DOUBLE_STACKSIZE - 1 ] = undefined;
+          stack[ 0 ] = root;
+
+          var bounds = [];
+
+          do {
+            var node = stack[ --depth ];
+            bounds[ 0 ] = node.volume.Mins();
+            bounds[ 1 ] = node.volume.Maxs();
+
+            var tmin = 1,
+            lambda_min = 0,
+            result1 = Bump.rayAabb2( rayFrom, rayDirectionInverse, signs,
+                                     bounds, tmin, lambda_min, lambda_max);
+/*
+#ifdef COMPARE_BTRAY_AABB
+				btScalar param=1.f;
+				bool result2 = btRayAabb(rayFrom,rayTo,node->volume.Mins(),node->volume.Maxs(),param,resultNormal);
+				btAssert(result1 == result2);
+#endif //TEST_BTRAY_AABB2
+*/
+            if( result1 ) {
+              if( node.isinternal() ) {
+                if( depth > threshold ) {
+                  stack[ stack.length * 2 - 1] = undefined;
+                  threshold = stack.length - 2;
+                }
+                stack[ depth++ ] = node.childs[ 0 ];
+                stack[ depth++ ] = node.childs[ 1 ];
+              }
+              else {
+                policy.value.Process( node );
+              }
+            }
+          } while( depth );
+        }
+      },
+
+      collideKDOP: function( root, normals, offsets, count, policyRef ) {
+        if( root ) {
+          var inside = (1 << count) - 1,
+              stack = [],
+              signs = [];
+          /* btAssert(count<int (sizeof(signs)/sizeof(signs[0]))); */
+
+          for( var i = 0; i < count; i++ ) {
+            signs[ i ] = ( ( normals[ i ].x >= 0) ? 1 : 0 ) +
+              ( ( normals[ i ].y >= 0 ) ? 2 : 0 ) +
+              ( ( normals[ i ].z >= 0 ) ? 4 : 0 );
+          }
+
+          /* stack.reserve( SIMPLE_STACKSIZE ); */
+          stack.push( Bump.Dbvt.sStkNP.create( root, 0 ) );
+          do {
+            var se = stack[ stack.length() - 1 ],
+                out = false;
+            stack.pop();
+
+            for( var i = 0, j = 1; ( !out ) && ( i < count ); ++i, j <<= 1 ) {
+              if( 0 == ( se.mask & j ) ) {
+                var side = se.node.volume.Classify( normals[i], offsets[i], signs[i] );
+                switch(side) {
+                case -1:
+                  out=true; break;
+                case +1:
+                  se.mask |= j; break;
+                }
+              }
+            }
+            if( !out ) {
+              if( (se.mask != inside ) && ( se.node->isinternal() ) ) {
+                stack.push( Bump.Dbvt.sStkNP.create( se.node->childs[0],se.mask ) );
+                stack.push( Bump.Dbvt.sStkNP.create( se.node->childs[1],se.mask ) );
+              }
+              else {
+                if( policyRef.value.AllLeaves( se.node ) ) {
+                  enumLeaves( se.node, policy );
+                }
+              }
+            }
+          } while( stack.length );
+        }
+      },
+
       collideOCL: function( root, normals, offsets, sortaxis, count, iPolicy, fullsort) {
         fullsort = (fullsort === undefined) || fullsort;
         // TODO
