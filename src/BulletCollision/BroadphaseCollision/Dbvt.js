@@ -765,10 +765,112 @@
         }
       },
 
-      collideOCL: function( root, normals, offsets, sortaxis, count, iPolicy, fullsort) {
-        fullsort = (fullsort === undefined) || fullsort;
-        // TODO
+      collideOCL: function( root, normals, offsets, sortaxis, count, policy, fsort) {
+        fsort = (fsort === undefined) || fsort;
+
+        if( root ) {
+          var srtsgns = ( sortaxis.x >= 0 ? 1 : 0 ) +
+                        ( sortaxis.y >= 0 ? 2 : 0 ) +
+                        ( sortaxis.z >= 0 ? 4 : 0 ),
+              inside = (1 << count ) - 1,
+              stock = [],
+              ifree= [],
+              stack = [],
+              signs = [],
+              i, j, k;
+          /* btAssert(count<int (sizeof(signs)/sizeof(signs[0]))); */
+          for( i = 0; i < count; ++i ) {
+            signs[ i ] = ( ( normals[ i ].x >= 0) ? 1 : 0 ) +
+              ( ( normals[ i ].y >= 0 ) ? 2 : 0 ) +
+              ( ( normals[ i ].z >= 0 ) ? 4 : 0 );
+          }
+          /*stock.reserve(SIMPLE_STACKSIZE);
+          stack.reserve(SIMPLE_STACKSIZE);
+          ifree.reserve(SIMPLE_STACKSIZE);*/
+          stack.push( Bump.Dbvt.allocate( ifree,
+                                          stock,
+                                          Bump.Dbvt.sStkNPS.create( root,
+                                                                    0,
+                                                                    root.volume.ProjectMinimum(
+                                                                      sortaxis, srtsgns ) ) ) );
+          do {
+            var id = stack[ stack.length - 1 ],
+            se = stock[ id ];
+            stack.pop();
+            ifree.push(id);
+            if( se.mask != inside ) {
+              var out = false;
+              for( i=0, j=1; ( !out ) && ( i < count ); ++i, j <<= 1 ) {
+                if( 0 === ( se.mask & j ) ) {
+                  var side = se.node.volume.Classify( normals[i], offsets[i], signs[i] );
+                  switch( side ) {
+                  case -1:
+                    out = true; break;
+                  case +1:
+                    se.mask |= j; break;
+                  }
+                }
+              }
+              if( out ) {
+                continue;
+              }
+            }
+            if( policy.Descent( se.node ) ) {
+              if( se.node.isinternal() ) {
+                var pns = [ se.node.childs[ 0 ], se.node.childs[ 1 ] ],
+                    nes = [
+                      Bump.Dbvt.sStkNPS.create( pns[ 0 ],
+                                                se.mask,
+                                                pns[ 0 ].volume.ProjectMinimum( sortaxis,
+                                                                                srtsgns ) ),
+                      Bump.Dbvt.sStkNPS.create( pns[ 1 ],
+                                                se.mask,
+                                                pns[ 1 ].volume.ProjectMinimum( sortaxis,
+                                                                                srtsgns ) )
+                    ],
+                    q = nes[ 0 ].value < nes[ 1 ].value ? 1 : 0;
+
+                j = stack.length;
+
+                if( fsort && ( j > 0 ) ) {
+                  /* Insert 0   */
+                  j = Bump.Dbvt.nearest( stack[ 0 ], stock[ 0 ], nes[ q ].value, 0, stack.length );
+                  stack.push( 0 );
+/*
+#if DBVT_USE_MEMMOVE
+                  memmove(&stack[j+1],&stack[j],sizeof(int)*(stack.size()-j-1));
+#else */
+                  for( k = stack.length - 1; k > j; --k) {
+                    stack[ k ] = stack[ k - 1 ];
+                  }
+/* #endif */
+                  stack[ j ] = Bump.Dbvt.allocate( ifree, stock, nes[ q ] );
+                  /* Insert 1   */
+                  j = Bump.Dbvt.nearest( stack[0], stock[0], nes[ 1 - q ].value, j, stack.length );
+                  stack.push( 0 );
+/*
+#if DBVT_USE_MEMMOVE
+                                                        memmove(&stack[j+1],&stack[j],sizeof(int)*(stack.size()-j-1));
+#else */
+                  for( k = stack.length - 1; k > j; --k) {
+                    stack[ k ] = stack[ k - 1 ];
+                  }
+/* #endif */
+                  stack[ j ] = Bump.Dbvt.allocate( ifree, stock, nes[ 1 - q ] );
+                }
+                else {
+                  stack.push( Bump.Dbvt.allocate( ifree, stock, nes[ q ] ) );
+                  stack.push( Bump.Dbvt.allocate( ifree, stock, nes[ 1 - q ] ) );
+                }
+              }
+              else {
+                policy.Process( se.node, se.value );
+              }
+            }
+          } while( stack.length );
+        }
       },
+
       collideTU: function( root, policy ) {}, // TODO
 
       // i: array of integers,
@@ -790,8 +892,22 @@
         return h;
       },
 
-      allocate: function( ifree, stockRef ) {
-        // TODO ?
+      // Place `sStkNPS` `value` in array `stock`. The array `ifree` contains a list
+      // of indices in `stock` that are empty, so `value` is first placed in one and
+      // `ifree` is updated appropriately. If there is no such empty index, then
+      // `value` is pushed onto the end.
+      allocate: function( ifree, stock, value ) {
+        var i;
+        if( ifree.length > 0 ) {
+          i = ifree[ ifree.length - 1 ];
+          ifree.pop();
+          stock[ i ] = value;
+        }
+        else {
+          i = stock.length;
+          stock.push( value );
+        }
+        return i;
       }
     }
   } );
