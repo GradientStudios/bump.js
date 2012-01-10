@@ -1086,7 +1086,7 @@
 
   createnodeTreeParentVolumeData = function( pdbvt, parent, volume, data ) {
     var node = createnodeTreeParentData( pdbvt, parent, data );
-    node.volume = volume;
+    volume.clone( node.volume );
     return node;
   },
 
@@ -1195,6 +1195,46 @@
       else {
         right.push( leaves[ i ] );
       }
+    }
+  },
+
+  bounds = function( leaves ) {
+/* #if DBVT_MERGE_IMPL==DBVT_IMPL_SSE
+    ATTRIBUTE_ALIGNED16(char    locals[sizeof(btDbvtVolume)]);
+    btDbvtVolume&       volume=*(btDbvtVolume*)locals;
+    volume=leaves[0]->volume;
+#else */
+    var volume = leaves[0].volume.clone();
+/* #endif */
+    for( var i = 1, ni = leaves.length; i < ni; ++i ) {
+      Bump.Merge.DbvtVolume3( volume, leaves[i].volume, volume );
+    }
+    return volume;
+  },
+
+  bottomup = function( pdbvt, leaves ) {
+    while( leaves.length > 1 ) {
+      var minsize = Bump.SIMD_INFINITY,
+      minidx = [ -1, -1 ];
+      for(var i = 0; i < leaves.length; ++i ) {
+        for(var j = i + 1; j < leaves.length; ++j ) {
+          var sz = size( merge( leaves[ i ].volume, leaves[ j ].volume ) );
+          if( sz < minsize ) {
+            minsize = sz;
+            minidx[ 0 ] = i;
+            minidx[ 1 ] = j;
+          }
+        }
+      }
+      var n = [ leaves[ minidx[ 0 ] ], leaves[ minidx[ 1 ] ] ],
+          p = createnodeTreeParentVolume2Data( pdbvt, 0, n[ 0 ].volume, n[ 1 ].volume, 0);
+      p.childs[ 0 ] = n[ 0 ];
+      p.childs[ 1 ] = n[ 1 ];
+      n[ 0 ].parent = p;
+      n[ 1 ].parent = p;
+      leaves[ minidx[ 0 ] ] = p;
+      leaves.swap( minidx[ 1 ], leaves.length - 1 );
+      leaves.pop();
     }
   };
 
