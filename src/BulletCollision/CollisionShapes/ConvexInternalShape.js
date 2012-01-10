@@ -18,10 +18,19 @@
       this.localScaling = Bump.Vector3.create( 1, 1, 1 );
       this.implicitShapeDimensions = Bump.Vector3.create();
       this.collisionMargin = Bump.CONVEX_DISTANCE_MARGIN;
-      this.padding = 0;
     },
 
     members: {
+      clone: function( dest ) {
+        dest = dest || Bump.ConvexInternalShape.create();
+        dest = this._super( dest );
+
+        this.localScaling.clone( dest.localScaling );
+        this.implicitShapeDimensions.clone( dest.implicitShapeDimensions );
+        dest.collisionMargin = this.collisionMargin;
+
+        return dest;
+      },
 
       // Uses the following temporary variables:
       //

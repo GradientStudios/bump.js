@@ -12,12 +12,20 @@
     init: function PolyhedralConvexShape() {
       this._super();
 
-      this.polyhedron = Bump.ConvexPolyhedron.create();
+      this.polyhedron = null;
     },
 
     members: {
-      initializePolyhedralFeatures: function() {
+      clone: function( dest ) {
+        dest = dest || Bump.PolyhedralConvexShape.create();
+        dest = this._super( dest );
 
+        dest.polyhedron = this.polyhedron;
+        return dest;
+      },
+
+      initializePolyhedralFeatures: function() {
+        Bump.Assert( false );
       },
 
       getConvexPolyhedron: function() {

@@ -51,6 +51,33 @@
     },
 
     members: {
+      clone: function( dest ) {
+        dest = dest || Bump.ConvexPolyhedron.create();
+
+        dest.m_vertices.length = 0;
+        dest.m_faces.length = 0;
+        dest.m_uniqueEdges.length = 0;
+
+        var copyArray = function( from, to ) {
+          for ( var i = 0; i < from.length; ++i ) {
+            to.push( from[i].clone() );
+          }
+        };
+
+        copyArray( this.m_vertices,    dest.m_vertices    );
+        copyArray( this.m_faces,       dest.m_faces       );
+        copyArray( this.m_uniqueEdges, dest.m_uniqueEdges );
+
+        this.m_localCenter.clone( dest.m_localCenter );
+        this.m_extents.clone( dest.m_extents );
+        dest.m_radius = this.m_radius;
+
+        this.mC.clone( dest.mC );
+        this.mE.clone( dest.mE );
+
+        return dest;
+      },
+
       initialize: function() {
         var edges = Bump.HashMap.create();
         var TotalArea = 0;

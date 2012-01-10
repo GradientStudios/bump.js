@@ -8,6 +8,11 @@
     parent: Bump.CollisionShape,
 
     members: {
+      clone: function( dest ) {
+        dest = dest || Bump.ConvexShape.create();
+        return this._super( dest );
+      },
+
       localGetSupportVertexWithoutMarginNonVirtual: function( localDir, dest ) {
         dest = dest || Bump.Vector3.create();
 

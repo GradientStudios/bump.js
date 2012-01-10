@@ -13,6 +13,14 @@
   Bump.BoxShape = Bump.type({
     parent: Bump.PolyhedralConvexShape,
 
+    // Initializes the following:
+    //
+    // - `shapeType`
+    // - `userPointer`
+    // - `localScaling`
+    // - `implicitShapeDimensions`
+    // - `collisionMargin`
+    // - `polyhedron`
     init: function BoxShape( boxHalfExtents ) {
       this._super();
 
@@ -27,6 +35,11 @@
     },
 
     members: {
+      clone: function( dest ) {
+        dest = dest || Bump.BoxShape.create( tmpV1.setValue( 0, 0, 0 ) );
+        return this._super( dest );
+      },
+
       // Uses the following temporary variables:
       //
       // - `tmpV1`
@@ -107,12 +120,12 @@
         var myMargin = this.getMargin(),
             oldMargin = tmpV1.setValue( myMargin, myMargin, myMargin ),
             implicitShapeDimensionsWithMargin = this.implicitShapeDimensions.add( oldMargin, tmpV2 ),
-            unScaledImplicitShapeDimensionsWithMargin = implicitShapeDimensionsWithMargin.divide( this.localScaling, tmpV3 );
+            unScaledImplicitShapeDimensionsWithMargin = implicitShapeDimensionsWithMargin.inverseScale( this.localScaling, tmpV3 );
 
         this._super( scaling );
 
         this.implicitShapeDimensions = unScaledImplicitShapeDimensionsWithMargin
-          .multiply( this.localScaling, this.implicitShapeDimensions )
+          .scale( this.localScaling, this.implicitShapeDimensions )
           .subtract( oldMargin, this.implicitShapeDimensions );
 
         return this;
@@ -123,7 +136,7 @@
           this.implicitShapeDimensions,
           this.getMargin(), t, aabbMin, aabbMax
         );
-        return this;
+        //     return this;
         //     return { aabbMin: aabbMin, aabbMax: aabbMax };
       },
 
@@ -147,6 +160,7 @@
 
       // Uses the following temporary variables:
       //
+      // - `tmpV3`
       // - `tmpVec4`
       // - `tmpV1` ← `localGetSupportingVertex`
       // - `tmpV2` ← `localGetSupportingVertex`
@@ -155,11 +169,17 @@
         var plane = tmpVec4.setValue( 0, 0, 0, 0 );
         this.getPlaneEquation( plane, i );
         planeNormal = planeNormal.setValue( plane.x, plane.y, plane.z );
-        planeSupport = this.localGetSupportingVertex( -planeNormal, planeSupport );
+        planeSupport = this.localGetSupportingVertex( planeNormal.negate( tmpV3 ), planeSupport );
+
+        return this;
       },
 
       getNumPlanes: function() {
         return 6;
+      },
+
+      getNumVertices: function() {
+        return 8;
       },
 
       getNumEdges: function() {
@@ -180,7 +200,6 @@
         );
 
         return this;
-        //     return vtx;
       },
 
       getPlaneEquation: function( plane, i ) {
@@ -210,7 +229,6 @@
         }
 
         return this;
-        //     return plane;
       },
 
       // Uses the following temporary variables:
@@ -278,53 +296,53 @@
 
         this.getVertex( edgeVert0, pa );
         this.getVertex( edgeVert1, pb );
-      }
-    },
+      },
 
-    isInside: function( pt, tolerance ) {
-      var halfExtents = this.implicitShapeDimensions;
+      isInside: function( pt, tolerance ) {
+        var halfExtents = this.implicitShapeDimensions;
 
-      var result =
-        ( pt.x <= (  halfExtents.x + tolerance ) ) &&
-        ( pt.x >= ( -halfExtents.x - tolerance ) ) &&
-        ( pt.y <= (  halfExtents.y + tolerance ) ) &&
-        ( pt.y >= ( -halfExtents.y - tolerance ) ) &&
-        ( pt.z <= (  halfExtents.z + tolerance ) ) &&
-        ( pt.z >= ( -halfExtents.z - tolerance ) );
+        var result =
+          ( pt.x <= (  halfExtents.x + tolerance ) ) &&
+          ( pt.x >= ( -halfExtents.x - tolerance ) ) &&
+          ( pt.y <= (  halfExtents.y + tolerance ) ) &&
+          ( pt.y >= ( -halfExtents.y - tolerance ) ) &&
+          ( pt.z <= (  halfExtents.z + tolerance ) ) &&
+          ( pt.z >= ( -halfExtents.z - tolerance ) );
 
-      return result;
-    },
+        return result;
+      },
 
-    getName: function() {
-      return 'Box';
-    },
+      getName: function() {
+        return 'Box';
+      },
 
-    getNumPreferredPenetrationDirections: function() {
-      return 6;
-    },
+      getNumPreferredPenetrationDirections: function() {
+        return 6;
+      },
 
-    getPreferredPenetrationDirection: function( index, penetrationVector ) {
-      switch ( index ) {
-      case 0:
-        penetrationVector.setValue( 1, 0, 0 );
-        break;
-      case 1:
-        penetrationVector.setValue( -1, 0, 0 );
-        break;
-      case 2:
-        penetrationVector.setValue( 0, 1, 0 );
-        break;
-      case 3:
-        penetrationVector.setValue( 0, -1, 0 );
-        break;
-      case 4:
-        penetrationVector.setValue( 0, 0, 1 );
-        break;
-      case 5:
-        penetrationVector.setValue( 0, 0, -1 );
-        break;
-      default:
-        Bump.Assert( false );
+      getPreferredPenetrationDirection: function( index, penetrationVector ) {
+        switch ( index ) {
+        case 0:
+          penetrationVector.setValue( 1, 0, 0 );
+          break;
+        case 1:
+          penetrationVector.setValue( -1, 0, 0 );
+          break;
+        case 2:
+          penetrationVector.setValue( 0, 1, 0 );
+          break;
+        case 3:
+          penetrationVector.setValue( 0, -1, 0 );
+          break;
+        case 4:
+          penetrationVector.setValue( 0, 0, 1 );
+          break;
+        case 5:
+          penetrationVector.setValue( 0, 0, -1 );
+          break;
+        default:
+          Bump.Assert( false );
+        }
       }
     }
   });
