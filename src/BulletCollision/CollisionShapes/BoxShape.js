@@ -120,12 +120,12 @@
         var myMargin = this.getMargin(),
             oldMargin = tmpV1.setValue( myMargin, myMargin, myMargin ),
             implicitShapeDimensionsWithMargin = this.implicitShapeDimensions.add( oldMargin, tmpV2 ),
-            unScaledImplicitShapeDimensionsWithMargin = implicitShapeDimensionsWithMargin.divide( this.localScaling, tmpV3 );
+            unScaledImplicitShapeDimensionsWithMargin = implicitShapeDimensionsWithMargin.inverseScale( this.localScaling, tmpV3 );
 
         this._super( scaling );
 
         this.implicitShapeDimensions = unScaledImplicitShapeDimensionsWithMargin
-          .multiply( this.localScaling, this.implicitShapeDimensions )
+          .scale( this.localScaling, this.implicitShapeDimensions )
           .subtract( oldMargin, this.implicitShapeDimensions );
 
         return this;
@@ -160,6 +160,7 @@
 
       // Uses the following temporary variables:
       //
+      // - `tmpV3`
       // - `tmpVec4`
       // - `tmpV1` ← `localGetSupportingVertex`
       // - `tmpV2` ← `localGetSupportingVertex`
@@ -168,7 +169,9 @@
         var plane = tmpVec4.setValue( 0, 0, 0, 0 );
         this.getPlaneEquation( plane, i );
         planeNormal = planeNormal.setValue( plane.x, plane.y, plane.z );
-        planeSupport = this.localGetSupportingVertex( -planeNormal, planeSupport );
+        planeSupport = this.localGetSupportingVertex( planeNormal.negate( tmpV3 ), planeSupport );
+
+        return this;
       },
 
       getNumPlanes: function() {
@@ -197,7 +200,6 @@
         );
 
         return this;
-        //     return vtx;
       },
 
       getPlaneEquation: function( plane, i ) {
@@ -227,7 +229,6 @@
         }
 
         return this;
-        //     return plane;
       },
 
       // Uses the following temporary variables:

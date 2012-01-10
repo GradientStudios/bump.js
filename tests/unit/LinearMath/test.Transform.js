@@ -280,7 +280,7 @@ var testFunc = function( objType, func, options ) {
       }
 
       if ( arg.expected !== undefined ) {
-        epsilonDeepEqual( args[argIndex], arg.expected, 'reference arg ' + argIndex + ' has correct expected value' );
+        epsilonDeepEqual( args[argIndex], arg.expected, 'test index ' + i + ': reference arg ' + argIndex + ' has correct expected value' );
         if ( argsClone[argIndex].clone ) {
           argsClone[argIndex].clone( args[argIndex] );
         } else {
