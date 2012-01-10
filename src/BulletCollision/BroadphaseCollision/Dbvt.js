@@ -468,11 +468,9 @@
       },
 
       // Process collision between two `Dbvt` trees with roots `root0` and `root1`, according
-      // to the given policy.
-      // Note that `policyRef` is a by-reference `iCollide`, that is, an
-      // object with an expected property named 'value' set to an `iCollide`.
+      // to the given `iCollide` `policy`.
       // TODO : Add description of use.
-      collideTT: function( root0, root1, policyRef ) {
+      collideTT: function( root0, root1, policy ) {
         if( root0 && root1 ) {
           var depth = 1,
               threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 4,
@@ -512,7 +510,7 @@
                   stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 1 ] );
                 }
                 else {
-                  policyRef.value.ProcessNode2( p.a, p.b );
+                  policy.ProcessNode2( p.a, p.b );
                 }
               }
             }
@@ -520,7 +518,7 @@
         }
       },
 
-      collideTTpersistentStack: function( root0, root1, policyRef ) {
+      collideTTpersistentStack: function( root0, root1, policy ) {
         if( root0 && root1 ) {
           var depth = 1,
               threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 4;
@@ -558,7 +556,7 @@
                   this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 1 ] );
                 }
                 else {
-                  policyRef.value.ProcessNode2( p.a, p.b );
+                  policy.ProcessNode2( p.a, p.b );
                 }
               }
             }
@@ -568,7 +566,7 @@
 
       // Process collision between a `Dbvt` tree, starting at `root`, and `DbvtVolume` `vol` according
       // to the given policy. ???
-      collideTV: function( root, vol, policyRef ) {
+      collideTV: function( root, vol, policy ) {
         if( root ) {
           var volume = vol.clone(),
               stack = [];
@@ -584,7 +582,7 @@
                 stack.push( n.childs[ 1 ] );
               }
               else {
-                policyRef.value.Process( n );
+                policy.Process( n );
               }
             }
           } while( stack.length > 0 );
@@ -599,20 +597,19 @@
                                  lambda_max,
                                  aabbMin,
                                  aabbMax,
-                                 policyRef ) {
-        var rayTo;
+                                 policy ) {
         if( root ) {
           var resultNormal = Bump.Vector3.create(),
               depth = 1,
               threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 2,
               stack = [],
               bounds = [ Bump.Vector3.create(), Bump.Vector3.create() ];
-          stack[ Bump.Dbvt.DOUBE_STACKSIZE - 1 ] = undefined; / * stack.resize( DOUBLE_STACKSIZE ); * /
+          stack[ Bump.Dbvt.DOUBE_STACKSIZE - 1 ] = undefined; /* stack.resize( DOUBLE_STACKSIZE ); */
           stack[ 0 ] = root;
           do {
             var node = stack[ --depth ];
-            node.volume.Mins().subtract( AabbMax, bounds[ 0 ] );
-            node.volume.Maxs().subtract( AabbMin, bounds[ 1 ] );
+            node.volume.Mins().subtract( aabbMax, bounds[ 0 ] );
+            node.volume.Maxs().subtract( aabbMin, bounds[ 1 ] );
             var tmin = 1,
                 lambda_min = 0,
                 result1 = false;
@@ -621,14 +618,14 @@
             if( result1 ) {
               if( node.isinternal() ) {
                 if( depth > threshold ) {
-                  stack[ stack.length * 2 - 1 ] = undefined; / * stack.resize( stack.size() * 2 ); * /
-                  threshold = stkStack.length - 2;
+                  stack[ stack.length * 2 - 1 ] = undefined; /* stack.resize( stack.size() * 2 ); */
+                  threshold = stack.length - 2;
                 }
                 stack[ depth++ ] = node.childs[ 0 ];
                 stack[ depth++ ] = node.childs[ 1 ];
               }
               else {
-                policy.value.Process( node );
+                policy.Process( node );
               }
             }
           } while( depth );
@@ -641,37 +638,36 @@
       countLeaves: function( node ) {}, // TODO
       extractLeaves: function( node, leavesRef ) {}, // TODO
       benchmark: function() {},
-      // Note that policyRef is a by-reference icollide
 
       // iterate over all nodes and process according to the given policy
-      enumNodes: function( root, policyRef ) {
-        policyRef.value.ProcessNode( root );
+      enumNodes: function( root, policy ) {
+        policy.ProcessNode( root );
         if( root.isinternal() ) {
-          Bump.Dbvt.enumNodes( root.childs[ 0 ], policyRef );
-          Bump.Dbvt.enumNodes( root.childs[ 1 ], policyRef );
+          Bump.Dbvt.enumNodes( root.childs[ 0 ], policy );
+          Bump.Dbvt.enumNodes( root.childs[ 1 ], policy );
         }
       },
 
       // iterate over only the leaf nodes and process according to the given policy
-      enumLeaves: function( root, policyRef ) {
+      enumLeaves: function( root, policy ) {
         if( root.isinternal() ) {
-          Bump.Dbvt.enumLeaves( root.childs[ 0 ], policyRef );
-          Bump.Dbvt.enumLeaves( root.childs[ 1 ], policyRef );
+          Bump.Dbvt.enumLeaves( root.childs[ 0 ], policy );
+          Bump.Dbvt.enumLeaves( root.childs[ 1 ], policy );
         }
         else {
-          policyRef.value.ProcessNode( root );
+          policy.ProcessNode( root );
         }
       },
 
-      rayTest: function( root, rayFrom, rayTo, policyRef ) {
+      rayTest: function( root, rayFrom, rayTo, policy ) {
         if( root ) {
           var diff = rayTo.subtract( rayFrom ),
           rayDir = diff.normalized();
 
           var rayDirectionInverse;
-          rayDirectionInverse.x = rayDir.x == 0 ? Bump.LARGE_FLOAT : 1 / rayDir.x;
-          rayDirectionInverse.y = rayDir.y == 0 ? Bump.LARGE_FLOAT : 1 / rayDir.y;
-          rayDirectionInverse.z = rayDir.z == 0 ? Bump.LARGE_FLOAT : 1 / rayDir.z;
+          rayDirectionInverse.x = rayDir.x === 0 ? Bump.LARGE_FLOAT : 1 / rayDir.x;
+          rayDirectionInverse.y = rayDir.y === 0 ? Bump.LARGE_FLOAT : 1 / rayDir.y;
+          rayDirectionInverse.z = rayDir.z === 0 ? Bump.LARGE_FLOAT : 1 / rayDir.z;
 
           var signs = [
                rayDirectionInverse.x < 0,
@@ -715,21 +711,22 @@
                 stack[ depth++ ] = node.childs[ 1 ];
               }
               else {
-                policy.value.Process( node );
+                policy.Process( node );
               }
             }
           } while( depth );
         }
       },
 
-      collideKDOP: function( root, normals, offsets, count, policyRef ) {
+      collideKDOP: function( root, normals, offsets, count, policy ) {
         if( root ) {
           var inside = (1 << count) - 1,
               stack = [],
-              signs = [];
+              signs = [],
+              i, j;
           /* btAssert(count<int (sizeof(signs)/sizeof(signs[0]))); */
 
-          for( var i = 0; i < count; i++ ) {
+          for( i = 0; i < count; i++ ) {
             signs[ i ] = ( ( normals[ i ].x >= 0) ? 1 : 0 ) +
               ( ( normals[ i ].y >= 0 ) ? 2 : 0 ) +
               ( ( normals[ i ].z >= 0 ) ? 4 : 0 );
@@ -742,8 +739,8 @@
                 out = false;
             stack.pop();
 
-            for( var i = 0, j = 1; ( !out ) && ( i < count ); ++i, j <<= 1 ) {
-              if( 0 == ( se.mask & j ) ) {
+            for( i = 0, j = 1; ( !out ) && ( i < count ); ++i, j <<= 1 ) {
+              if( 0 === ( se.mask & j ) ) {
                 var side = se.node.volume.Classify( normals[i], offsets[i], signs[i] );
                 switch(side) {
                 case -1:
@@ -754,13 +751,13 @@
               }
             }
             if( !out ) {
-              if( (se.mask != inside ) && ( se.node->isinternal() ) ) {
-                stack.push( Bump.Dbvt.sStkNP.create( se.node->childs[0],se.mask ) );
-                stack.push( Bump.Dbvt.sStkNP.create( se.node->childs[1],se.mask ) );
+              if( (se.mask != inside ) && ( se.node.isinternal() ) ) {
+                stack.push( Bump.Dbvt.sStkNP.create( se.node.childs[0],se.mask ) );
+                stack.push( Bump.Dbvt.sStkNP.create( se.node.childs[1],se.mask ) );
               }
               else {
-                if( policyRef.value.AllLeaves( se.node ) ) {
-                  enumLeaves( se.node, policy );
+                if( policy.AllLeaves( se.node ) ) {
+                  Bump.Dbvt.enumLeaves( se.node, policy );
                 }
               }
             }
@@ -772,7 +769,7 @@
         fullsort = (fullsort === undefined) || fullsort;
         // TODO
       },
-      collideTU: function( root, policyRef ) {}, // TODO
+      collideTU: function( root, policy ) {}, // TODO
 
       // i: array of integers,
       // a: array of `sStkNPS`,
