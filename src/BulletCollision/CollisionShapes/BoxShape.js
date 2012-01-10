@@ -162,6 +162,10 @@
         return 6;
       },
 
+      getNumVertices: function() {
+        return 8;
+      },
+
       getNumEdges: function() {
         return 12;
       },
@@ -278,53 +282,53 @@
 
         this.getVertex( edgeVert0, pa );
         this.getVertex( edgeVert1, pb );
-      }
-    },
+      },
 
-    isInside: function( pt, tolerance ) {
-      var halfExtents = this.implicitShapeDimensions;
+      isInside: function( pt, tolerance ) {
+        var halfExtents = this.implicitShapeDimensions;
 
-      var result =
-        ( pt.x <= (  halfExtents.x + tolerance ) ) &&
-        ( pt.x >= ( -halfExtents.x - tolerance ) ) &&
-        ( pt.y <= (  halfExtents.y + tolerance ) ) &&
-        ( pt.y >= ( -halfExtents.y - tolerance ) ) &&
-        ( pt.z <= (  halfExtents.z + tolerance ) ) &&
-        ( pt.z >= ( -halfExtents.z - tolerance ) );
+        var result =
+          ( pt.x <= (  halfExtents.x + tolerance ) ) &&
+          ( pt.x >= ( -halfExtents.x - tolerance ) ) &&
+          ( pt.y <= (  halfExtents.y + tolerance ) ) &&
+          ( pt.y >= ( -halfExtents.y - tolerance ) ) &&
+          ( pt.z <= (  halfExtents.z + tolerance ) ) &&
+          ( pt.z >= ( -halfExtents.z - tolerance ) );
 
-      return result;
-    },
+        return result;
+      },
 
-    getName: function() {
-      return 'Box';
-    },
+      getName: function() {
+        return 'Box';
+      },
 
-    getNumPreferredPenetrationDirections: function() {
-      return 6;
-    },
+      getNumPreferredPenetrationDirections: function() {
+        return 6;
+      },
 
-    getPreferredPenetrationDirection: function( index, penetrationVector ) {
-      switch ( index ) {
-      case 0:
-        penetrationVector.setValue( 1, 0, 0 );
-        break;
-      case 1:
-        penetrationVector.setValue( -1, 0, 0 );
-        break;
-      case 2:
-        penetrationVector.setValue( 0, 1, 0 );
-        break;
-      case 3:
-        penetrationVector.setValue( 0, -1, 0 );
-        break;
-      case 4:
-        penetrationVector.setValue( 0, 0, 1 );
-        break;
-      case 5:
-        penetrationVector.setValue( 0, 0, -1 );
-        break;
-      default:
-        Bump.Assert( false );
+      getPreferredPenetrationDirection: function( index, penetrationVector ) {
+        switch ( index ) {
+        case 0:
+          penetrationVector.setValue( 1, 0, 0 );
+          break;
+        case 1:
+          penetrationVector.setValue( -1, 0, 0 );
+          break;
+        case 2:
+          penetrationVector.setValue( 0, 1, 0 );
+          break;
+        case 3:
+          penetrationVector.setValue( 0, -1, 0 );
+          break;
+        case 4:
+          penetrationVector.setValue( 0, 0, 1 );
+          break;
+        case 5:
+          penetrationVector.setValue( 0, 0, -1 );
+          break;
+        default:
+          Bump.Assert( false );
+        }
       }
     }
   });
