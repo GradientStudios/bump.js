@@ -117,7 +117,7 @@
     //         vec.setValue( 1, 0, 0 );
     //       } else {
     //         var rlen = 1 / Math.sqrt( lenSqr );
-    //         vec.multiplySelf( rlen );
+    //         vec.multiplyScalarSelf( rlen );
     //       }
 
     //       var vtx = Bump.Vector3.create();
@@ -127,8 +127,8 @@
 
     //       // vtx = pos + vec * (radius);
     //       vtx = pos
-    //         .add( vec.multiply( capsuleShape.getLocalScalingNV() * radius ) )
-    //         .subtract( vec.multiply( capsuleShape.getMarginNV() ) );
+    //         .add( vec.multiplyScalar( capsuleShape.getLocalScalingNV() * radius ) )
+    //         .subtract( vec.multiplyScalar( capsuleShape.getMarginNV() ) );
     //       newDot = vec.dot( vtx );
 
     //       if ( newDot > maxDot ) {
@@ -141,8 +141,8 @@
 
     //       // vtx = pos +vec*(radius);
     //       vtx = pos
-    //         .add( vec.multiply( capsuleShape.getLocalScalingNV() * radius ) )
-    //         .subtract( vec.multiply( capsuleShape.getMarginNV() ) );
+    //         .add( vec.multiplyScalar( capsuleShape.getLocalScalingNV() * radius ) )
+    //         .subtract( vec.multiplyScalar( capsuleShape.getMarginNV() ) );
     //       newDot = vec.dot( vtx );
     //       if ( newDot > maxDot ) {
     //         maxDot = newDot;
@@ -181,7 +181,7 @@
         localDirNorm.normalize();
 
         return this.localGetSupportVertexWithoutMarginNonVirtual( localDirNorm, dest )
-          .add( localDirNorm.multiply( this.getMarginNonVirtual(), tmpV2 ), dest );
+          .add( localDirNorm.multiplyScalar( this.getMarginNonVirtual(), tmpV2 ), dest );
       },
 
       getMarginNonVirtual: function() {

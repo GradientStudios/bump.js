@@ -42,7 +42,7 @@
         this.getAabb( tr, aabbMin, aabbMax );
 
         sphere.radius = aabbMax.subtract( aabbMin, tmpV3 ).length() * 0.5;
-        sphere.center = aabbMin.add( aabbMax, tmpV3 ).multiply( 0.5, sphere.center );
+        sphere.center = aabbMin.add( aabbMax, tmpV3 ).multiplyScalar( 0.5, sphere.center );
 
         return sphere;
       },
@@ -103,7 +103,7 @@
             temporalAabbMinz = temporalAabbMin.z;
 
         // Add linear motion.
-        var linMotion = linvel.multiply( timeStep, tmpV1 );
+        var linMotion = linvel.multiplyScalar( timeStep, tmpV1 );
 
         if ( linMotion.x > 0 ) {
           temporalAabbMaxx += linMotion.x;

@@ -111,7 +111,7 @@
       // Multiply `this` vector by the given `scalar`, storing result in `dest`
       // if provided. If not, a new Vector3 is created and returned.
       // This function is analogous to `btVector3`'s `operator*` for `btScalar`.
-      multiply: function( scalar, dest ) {
+      multiplyScalar: function( scalar, dest ) {
         if( dest ) {
           dest.x = this.x * scalar;
           dest.y = this.y * scalar;
@@ -125,7 +125,7 @@
 
       // Multiply `this` by the given `scalar`, storing the result in `this`.
       // This function is analogous to `btVector3`'s `operator*=` for `btScalar`.
-      multiplySelf: function( scalar ) {
+      multiplyScalarSelf: function( scalar ) {
         this.x *= scalar;
         this.y *= scalar;
         this.z *= scalar;
@@ -136,7 +136,7 @@
       // the corresponding elements of `vec`, and storing the result in `dest` if
       // provided. If not, a new Vector3 is created and returned.
       // This function is analogous to `btVector3`'s `operator*` for `btVector3`.
-      scale: function( vec, dest ) {
+      multiplyVector: function( vec, dest ) {
         if( dest ) {
           dest.x = this.x * vec.x;
           dest.y = this.y * vec.y;
@@ -152,7 +152,7 @@
       // `this` by the corresponding elements of `vec`, and storing the result
       // in `this`.
       // This function is analogous to `btVector3`'s `operator*=` for `btVector3`.
-      scaleSelf: function( vec ) {
+      multiplyVectorSelf: function( vec ) {
         this.x *= vec.x;
         this.y *= vec.y;
         this.z *= vec.z;
@@ -162,7 +162,7 @@
       // Divides `this` vector by the given `scalar`, storing the result in `dest`
       // if provided. If not, a new Vector3 is created and returned.
       // This function is analogous to `btVector3`'s `operator/` for `btScalar`.
-      divide: function( scalar, dest ) {
+      divideScalar: function( scalar, dest ) {
         if( dest ) {
           dest.x = this.x / scalar;
           dest.y = this.y / scalar;
@@ -176,7 +176,7 @@
 
       // Divides `this` vector by the given `scalar`, storing the result in `this`.
       // This function is analogous to `btVector3`'s `operator/=` for `btScalar`.
-      divideSelf: function( scalar ) {
+      divideScalarSelf: function( scalar ) {
         this.x /= scalar;
         this.y /= scalar;
         this.z /= scalar;
@@ -187,7 +187,7 @@
       // the corresponding elements of `vec`, and storing the result in `dest` if
       // provided. If not, a new Vector3 is created and returned.
       // This function is analogous to `btVector3`'s `operator/` for `btVector3`.
-      inverseScale: function( vec, dest ) {
+      divideVector: function( vec, dest ) {
         if( dest ) {
           dest.x = this.x / vec.x;
           dest.y = this.y / vec.y;
@@ -203,7 +203,7 @@
       // `this` by the corresponding elements of `vec`, and storing the result
       // in `this`.
       // This function is analogous to `btVector3`'s `operator/=` for `btVector3`.
-      inverseScaleSelf: function( vec ) {
+      divideVectorSelf: function( vec ) {
         this.x /= vec.x;
         this.y /= vec.y;
         this.z /= vec.z;
@@ -248,8 +248,8 @@
         var absMax = this.absolute().max();
 
         if( absMax > 0 ) {
-          this.divideSelf( absMax );
-          return this.divideSelf( this.length() );
+          this.divideScalarSelf( absMax );
+          return this.divideScalarSelf( this.length() );
         }
         this.setValue( 1, 0, 0 );
         return this;
@@ -257,23 +257,23 @@
 
       // Normalizes `this` vector in place.
       normalize: function( ) {
-        return this.divideSelf( this.length() );
+        return this.divideScalarSelf( this.length() );
       },
 
       // Computes normalized version of `this` vector, stores result in
       // `dest` if provided. If not, creates and returns new Vector3.
       normalized: function( dest ) {
         // divide function will check if dest is null
-        return this.divide( this.length(), dest );
+        return this.divideScalar( this.length(), dest );
       },
 
       // Returns a rotated version of `this` vector, rotating around `wAxis` by `angle`.
       // Stores result in `dest` if provided. If not, creates and returns a new Vector3.
       rotate: function( wAxis, angle, dest ) {
         // wAxis must be a unit length vector
-        var o = wAxis.multiply( wAxis.dot( this ), dest ), // new temp if dest unspecified
-        x = this.subtract( o ).multiplySelf( Math.cos( angle ) ), // new temp
-        y = wAxis.cross( this ).multiplySelf( Math.sin( angle ) ); // new temp
+        var o = wAxis.multiplyScalar( wAxis.dot( this ), dest ), // new temp if dest unspecified
+        x = this.subtract( o ).multiplyScalarSelf( Math.cos( angle ) ), // new temp
+        y = wAxis.cross( this ).multiplyScalarSelf( Math.sin( angle ) ); // new temp
 
         return o.addSelf( x.add( y ) );
       },

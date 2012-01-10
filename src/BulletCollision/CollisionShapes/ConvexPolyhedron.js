@@ -151,12 +151,12 @@
             var p1 = this.m_vertices[ this.m_faces[i].m_indices[j] ];
             var p2 = this.m_vertices[ this.m_faces[i].m_indices[k] ];
             var Area = (( p0.subtract(p1) ).cross( p0.subtract(p2) )).length() * 0.5,
-                Center = ( p0.add( p1 ).add( p2 ) ).divide( 3.0 );
-            this.m_localCenter.addSelf( Area.scale( Center ) );
+                Center = ( p0.add( p1 ).add( p2 ) ).divideScalar( 3.0 );
+            this.m_localCenter.addSelf( Area.multiplyVector( Center ) );
             TotalArea.addSelf( Area );
           }
         }
-        this.m_localCenter.divideSelf( TotalArea );
+        this.m_localCenter.divideScalarSelf( TotalArea );
 
 
 //     #ifdef TEST_INTERNAL_OBJECTS

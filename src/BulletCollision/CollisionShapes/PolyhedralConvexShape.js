@@ -49,7 +49,7 @@
           vec.setValue( 1, 0, 0 );
         } else {
           var rlen = 1 / Math.sqrt( lenSqr );
-          vec.multiplySelf( rlen );
+          vec.multiplyScalarSelf( rlen );
         }
 
         var vtx = tmpV3,
@@ -110,7 +110,7 @@
         this.getAabb( ident, aabbMin, aabbMax );
         var halfExtents = aabbMax
           .subtract( aabbMin, tmpV3 )
-          .multiply( 0.5, tmpV3 );
+          .multiplyScalar( 0.5, tmpV3 );
 
         var lx = 2 * ( halfExtents.x + margin ),
             ly = 2 * ( halfExtents.y + margin ),
@@ -123,7 +123,7 @@
         // inertia = scaledmass * ( btVector3( y2 + z2, x2 + z2, x2 + y2 ) );
         inertia = tmpV4
           .setValue( y2 + z2, x2 + z2, x2 + y2 )
-          .multiplySelf( scaledmass )
+          .multiplyScalarSelf( scaledmass )
           .clone( inertia );
       }
     }

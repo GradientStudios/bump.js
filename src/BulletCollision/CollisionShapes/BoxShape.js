@@ -30,7 +30,7 @@
       var myMargin = this.getMargin(),
           margin = tmpV1.setValue( myMargin, myMargin, myMargin );
       this.implicitShapeDimensions = boxHalfExtents
-        .scale( this.localScaling, this.implicitShapeDimensions )
+        .multiplyVector( this.localScaling, this.implicitShapeDimensions )
         .subtract( margin, this.implicitShapeDimensions );
     },
 
@@ -120,12 +120,12 @@
         var myMargin = this.getMargin(),
             oldMargin = tmpV1.setValue( myMargin, myMargin, myMargin ),
             implicitShapeDimensionsWithMargin = this.implicitShapeDimensions.add( oldMargin, tmpV2 ),
-            unScaledImplicitShapeDimensionsWithMargin = implicitShapeDimensionsWithMargin.inverseScale( this.localScaling, tmpV3 );
+            unScaledImplicitShapeDimensionsWithMargin = implicitShapeDimensionsWithMargin.divideVector( this.localScaling, tmpV3 );
 
         this._super( scaling );
 
         this.implicitShapeDimensions = unScaledImplicitShapeDimensionsWithMargin
-          .scale( this.localScaling, this.implicitShapeDimensions )
+          .multiplyVector( this.localScaling, this.implicitShapeDimensions )
           .subtract( oldMargin, this.implicitShapeDimensions );
 
         return this;

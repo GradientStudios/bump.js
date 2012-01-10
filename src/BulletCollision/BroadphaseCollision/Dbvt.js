@@ -31,10 +31,10 @@
       // the `Vector3` `dest` if provided. Otherwise a new `Vector3` is created.
       Center: function( dest ) {
         if( dest ){
-          return this.mi.add( this.mx, dest ).divide( 2, dest );
+          return this.mi.add( this.mx, dest ).divideScalar( 2, dest );
         }
         var res = Bump.Vector3.create();
-        return this.mi.add(this.mx, res ).divide( 2, res );
+        return this.mi.add( this.mx, res ).divideScalar( 2, res );
       },
 
       // Compute the XYZ lengths of the bounding box. The result is stored in the
@@ -48,10 +48,10 @@
       // the `Vector3` `dest` if provided. Otherwise a new `Vector3` is created.
       Extents: function( dest ) {
         if( dest ){
-          return this.mx.subtract( this.mi, dest ).divide( 2, dest );
+          return this.mx.subtract( this.mi, dest ).divideScalar( 2, dest );
         }
         var res = Bump.Vector3.create();
-        return this.mx.subtract( this.mi, res ).divide( 2, res );
+        return this.mx.subtract( this.mi, res ).divideScalar( 2, res );
       },
 
       // Return a reference to the minimum `Vector3` bounds of the bounding box.

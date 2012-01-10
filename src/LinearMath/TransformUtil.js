@@ -34,7 +34,7 @@
   // - `tmpQ2`
   TransformUtil.integrateTransform = function( curTrans, linvel, angvel, timeStep, predictedTransform ) {
     predictedTransform.setOrigin(
-      curTrans.origin.add( linvel.multiply( timeStep, tmpV1 ), tmpV1 )
+      curTrans.origin.add( linvel.multiplyScalar( timeStep, tmpV1 ), tmpV1 )
     );
 
     // Exponential map.
@@ -49,9 +49,9 @@
 
     if ( fAngle < 0.001 ) {
       // use Taylor's expansions of sync function
-      axis = angvel.multiply( 0.5 * timeStep - ( timeStep * timeStep * timeStep) * 0.020833333333 * fAngle * fAngle, tmpV2 );
+      axis = angvel.multiplyScalar( 0.5 * timeStep - ( timeStep * timeStep * timeStep) * 0.020833333333 * fAngle * fAngle, tmpV2 );
     } else {
-      axis = angvel.multiply( Math.sin( 0.5 * fAngle * timeStep ) / fAngle, tmpV2 );
+      axis = angvel.multiplyScalar( Math.sin( 0.5 * fAngle * timeStep ) / fAngle, tmpV2 );
     }
 
     var dorn = tmpQ1.setValue( axis.x, axis.y, axis.z, Math.cos( fAngle * timeStep * 0.5 ) ),
@@ -71,7 +71,7 @@
   TransformUtil.calculateVelocityQuaternion = function( pos0, pos1, orn0, orn1, timeStep, linVel, angVel ) {
     linVel = pos1
       .subtract( pos0, tmpV1 )
-      .divide( timeStep, tmpV1 )
+      .divideScalar( timeStep, tmpV1 )
       .clone( linVel );
 
     var axis = tmpV1, angle = { angle: 0 };
@@ -79,8 +79,8 @@
     if ( orn0.notEqual( orn1 ) ) {
       Bump.TransformUtil.calculateDiffAxisAngleQuaternion( orn0, orn1, axis, angle );
       angVel = axis
-        .multiply( angle.angle, tmpV2 )
-        .divide( timeStep, tmpV2 )
+        .multiplyScalar( angle.angle, tmpV2 )
+        .divideScalar( timeStep, tmpV2 )
         .clone( angVel );
     } else {
       angVel.setValue( 0, 0, 0 );
@@ -105,7 +105,7 @@
     if ( len < EPSILON * EPSILON ) {
       axis.setValue( 1, 0, 0 );
     } else {
-      axis.divideSelf( Math.sqrt( len ) );
+      axis.divideScalarSelf( Math.sqrt( len ) );
     }
   };
 
@@ -115,12 +115,12 @@
   // - `tmpM1` ← `calculateDiffAxisAngle`
   // - `tmpQ1` ← `calculateDiffAxisAngle`
   TransformUtil.calculateVelocity = function( transform0, transform1, timeStep, linVel, angVel ) {
-    linVel = transform1.origin.subtract( transform0.origin, tmpV1 ).divide( timeStep, tmpV1 ).clone( linVel );
+    linVel = transform1.origin.subtract( transform0.origin, tmpV1 ).divideScalar( timeStep, tmpV1 ).clone( linVel );
 
     var axis = tmpV1, angle = { angle: 0 };
 
     Bump.TransformUtil.calculateDiffAxisAngle( transform0, transform1, axis, angle );
-    angVel = axis.multiply( angle.angle, tmpV1 ).divide( timeStep, tmpV1 ).clone( angVel );
+    angVel = axis.multiplyScalar( angle.angle, tmpV1 ).divideScalar( timeStep, tmpV1 ).clone( angVel );
   };
 
   // Uses the following temporary variables:
@@ -146,7 +146,7 @@
     if ( len < EPSILON * EPSILON ) {
       axis.setValue( 1, 0, 0 );
     } else {
-      axis.divideSelf( Math.sqrt( len ) );
+      axis.divideScalarSelf( Math.sqrt( len ) );
     }
   };
 

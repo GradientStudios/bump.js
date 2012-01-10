@@ -47,7 +47,7 @@
             vecnorm.setValue( -1, -1, -1 );
           }
           vecnorm.normalize();
-          supVertex.addSelf( vecnorm.multiply( this.getMargin(), tmpV3 ) );
+          supVertex.addSelf( vecnorm.multiplyScalarSelf( this.getMargin(), tmpV3 ) );
         }
         return supVertex.clone( dest );
       },
