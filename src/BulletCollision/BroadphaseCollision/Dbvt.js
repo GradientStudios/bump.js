@@ -1293,6 +1293,43 @@
     }
 
     return(leaves[0]);
+  },
+
+  // `n` : `DbvtNode`,
+  // `rRef` : a "by-reference" `DbvtNode`
+  sort = function( n, rRef ) {
+    var p = n.parent;
+    //btAssert( n->isinternal() );
+    if( p > n ) {
+      var i = indexof( n ),
+      j = 1 - i,
+      s = p.childs[ j ],
+      q = p.parent;
+      //btAssert(n==p->childs[i]);
+
+      if( q ) {
+        q.childs[ indexof( p ) ] = n;
+      }
+      else {
+        rRef.value = n;
+      }
+      s.parent = n;
+      p.parent = n;
+      n.parent = q;
+      p.childs[ 0 ] = n.childs[ 0 ];
+      p.childs[ 1 ] = n.childs[ 1 ];
+      n.childs[ 0 ].parent = p;
+      n.childs[ 1 ].parent = p;
+      n.childs[ i ] = p;
+      n.childs[ j ] = s;
+      //btSwap(p->volume,n->volume);
+      var tmp = p.volume;
+      p.volume = n.volume;
+      n.volume = tmp;
+
+      return p;
+    }
+    return n;
   };
 
 } )( this, this.Bump );
