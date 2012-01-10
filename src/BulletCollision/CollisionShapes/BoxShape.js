@@ -13,6 +13,15 @@
   Bump.BoxShape = Bump.type({
     parent: Bump.PolyhedralConvexShape,
 
+    // Initializes the following:
+    //
+    // - `shapeType`
+    // - `userPointer`
+    // - `localScaling`
+    // - `implicitShapeDimensions`
+    // - `collisionMargin`
+    // - `padding`
+    // - `polyhedron`
     init: function BoxShape( boxHalfExtents ) {
       this._super();
 
@@ -27,6 +36,11 @@
     },
 
     members: {
+      clone: function( dest ) {
+        dest = dest || Bump.BoxShape.create( tmpV1.setValue( 0, 0, 0 ) );
+        return this._super( dest );
+      },
+
       // Uses the following temporary variables:
       //
       // - `tmpV1`
@@ -123,7 +137,7 @@
           this.implicitShapeDimensions,
           this.getMargin(), t, aabbMin, aabbMax
         );
-        return this;
+        //     return this;
         //     return { aabbMin: aabbMin, aabbMax: aabbMax };
       },
 

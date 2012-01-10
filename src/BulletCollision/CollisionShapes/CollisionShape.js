@@ -16,6 +16,15 @@
     },
 
     members: {
+      clone: function( dest ) {
+        dest = dest || Bump.CollisionShape.create();
+
+        dest.shapeType = this.shapeType;
+        dest.userPointer = this.userPointer;
+
+        return dest;
+      },
+
       // Returns the axis aligned bounding box in the coordinate frame of the
       // given transform `t`.
       getAabb: function( t, aabbMin, aabbMax ) { },

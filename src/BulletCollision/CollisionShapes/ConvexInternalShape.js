@@ -22,6 +22,17 @@
     },
 
     members: {
+      clone: function( dest ) {
+        dest = dest || Bump.ConvexInternalShape.create();
+        dest = this._super( dest );
+
+        this.localScaling.clone( dest.localScaling );
+        this.implicitShapeDimensions.clone( dest.implicitShapeDimensions );
+        dest.collisionMargin = this.collisionMargin;
+        dest.padding = this.padding;
+
+        return dest;
+      },
 
       // Uses the following temporary variables:
       //

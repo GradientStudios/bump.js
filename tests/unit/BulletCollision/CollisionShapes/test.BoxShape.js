@@ -38,3 +38,17 @@ test( 'PolyhedralConvexShape abstract methods', function() {
   strictEqual( typeof shape.getPlane, 'function', 'implements getPlane' );
   strictEqual( typeof shape.isInside, 'function', 'implements isInside' );
 });
+
+module( 'BoxShape.clone' );
+
+test( 'basic', function() {
+  var a = Bump.BoxShape.create( Bump.Vector3.create( 1, 1, 1 ) ),
+      b = a.clone();
+
+  deepEqual( a, b );
+  notStrictEqual( a, b );
+
+  notStrictEqual( a.localScaling, b.localScaling );
+  notStrictEqual( a.implicitShapeDimensions, b.implicitShapeDimensions );
+  strictEqual( a.polyhedron, b.polyhedron );
+});
