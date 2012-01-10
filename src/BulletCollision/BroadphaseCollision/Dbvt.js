@@ -1236,6 +1236,63 @@
       leaves.swap( minidx[ 1 ], leaves.length - 1 );
       leaves.pop();
     }
+  },
+
+  topdown = function( pdbvt, leaves, bu_threshold ) {
+    var axis = [ Bump.Vector3.create( 1, 0, 0 ),
+                 Bump.Vector3.create( 0, 1, 0 ),
+                 Bump.Vector3.create( 0, 0, 1 )
+               ];
+    if( leaves.length > 1 ) {
+      if(leaves.length > bu_threshold) {
+        var vol = bounds( leaves ),
+        org = vol.Center().clone(),
+        sets = [],
+        bestaxis = -1,
+        bestmidp = leaves.length,
+        splitcount = [ [ 0, 0 ], [ 0, 0 ], [ 0, 0 ] ],
+        i;
+        for( i = 0; i < leaves.length; ++i ) {
+          var x= leaves[i].volume.Center().subtract( org );
+          for( var j = 0; j < 3; ++j ) {
+            ++splitcount[ j ][ x.dot( axis[j] ) > 0 ? 1 : 0 ];
+          }
+        }
+        for( i = 0; i < 3; ++i ) {
+          if( ( splitcount[ i ][ 0 ] > 0 ) && ( splitcount[ i ][ 1 ] > 0 ) ) {
+            var midp = Math.abs( splitcount[ i ][ 0 ] - splitcount[ i ][ 1 ] );
+            if( midp < bestmidp ) {
+              bestaxis = i;
+              bestmidp = midp;
+            }
+          }
+        }
+        if( bestaxis >= 0 ) {
+          //sets[ 0 ].reserve( splitcount[ bestaxis ][ 0 ] );
+          //sets[ 1 ].reserve( splitcount[ bestaxis ][ 1 ] );
+          split( leaves, sets[ 0 ], sets[ 1 ], org, axis[ bestaxis ] );
+        }
+        else {
+          //sets[0].reserve(leaves.size()/2+1);
+          //sets[1].reserve(leaves.size()/2);
+          for(var k = 0, ni = leaves.length; k < ni; ++k) {
+            sets[ k & 1 ].push( leaves[k] );
+          }
+        }
+        var node = createnodeTreeParentVolumeData( pdbvt, 0, vol, 0);
+        node.childs[ 0 ] = topdown( pdbvt, sets[ 0 ], bu_threshold );
+        node.childs[ 1 ] = topdown( pdbvt, sets[ 1 ], bu_threshold );
+        node.childs[ 0 ].parent = node;
+        node.childs[ 1 ].parent = node;
+        return( node );
+      }
+      else{
+        bottomup( pdbvt, leaves );
+        return leaves[0];
+      }
+    }
+
+    return(leaves[0]);
   };
 
 } )( this, this.Bump );
