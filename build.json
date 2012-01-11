@@ -22,6 +22,8 @@
         "src/BulletCollision/BroadphaseCollision/BroadphaseProxy.js",
         "src/BulletCollision/BroadphaseCollision/Dbvt.js",
 
+        "src/BulletCollision/CollisionDispatch/CollisionObject.js",
+
         "src/BulletCollision/CollisionShapes/CollisionShape.js",
         "src/BulletCollision/CollisionShapes/ConvexShape.js",
         "src/BulletCollision/CollisionShapes/ConvexInternalShape.js",
