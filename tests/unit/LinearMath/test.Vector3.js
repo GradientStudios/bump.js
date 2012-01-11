@@ -732,3 +732,94 @@ test( 'fuzzyZero', 7, function() {
   ok( Bump.Vector3.create( 0, Bump.SIMD_EPSILON, 0 ).fuzzyZero() );
   ok( Bump.Vector3.create( 0, 0, Bump.SIMD_EPSILON).fuzzyZero() );
 });
+
+module( 'Vector4' );
+
+test( 'creation', function() {
+  var vecs = [
+    Bump.Vector4.create(),
+    Bump.Vector4.create(),
+    Bump.Vector4.create( 4 ),
+    Bump.Vector4.create( 3, 4 ),
+    Bump.Vector4.create( 2, 3, 4 ),
+    Bump.Vector4.create( 1, 2, 3, 4 )
+  ];
+
+  equal( vecs[0].x, 0 );
+  equal( vecs[0].y, 0 );
+  equal( vecs[0].z, 0 );
+  equal( vecs[0].w, 0 );
+
+  equal( vecs[1].x, 0 );
+  equal( vecs[1].y, 0 );
+  equal( vecs[1].z, 0 );
+  equal( vecs[1].w, 0 );
+
+  equal( vecs[2].x, 4 );
+  equal( vecs[2].y, 0 );
+  equal( vecs[2].z, 0 );
+  equal( vecs[2].w, 0 );
+
+  equal( vecs[3].x, 3 );
+  equal( vecs[3].y, 4 );
+  equal( vecs[3].z, 0 );
+  equal( vecs[3].w, 0 );
+
+  equal( vecs[4].x, 2 );
+  equal( vecs[4].y, 3 );
+  equal( vecs[4].z, 4 );
+  equal( vecs[4].w, 0 );
+
+  equal( vecs[5].x, 1 );
+  equal( vecs[5].y, 2 );
+  equal( vecs[5].z, 3 );
+  equal( vecs[5].w, 4 );
+
+  for ( var i = 0; i < vecs.length; ++i ) {
+    for ( var j = i + 1; j < vecs.length; ++j ) {
+      notStrictEqual( vecs[i], vecs[j] );
+    }
+  }
+});
+
+module( 'Vector4.setValue' );
+
+test( 'basic', function() {
+  var vec = Bump.Vector4.create();
+
+  testFunc( Bump.Vector4, 'setValue', {
+    modifiesSelf: true,
+    objects: vec,
+    args: [
+      [ 1, 2, 3, 4 ]
+    ],
+    expected: [
+      Bump.Vector4.create( 1, 2, 3, 4 )
+    ]
+  });
+});
+
+module( 'Vector4.absolute4' );
+
+test( 'basic', function() {
+  var vec = Bump.Vector4.create( 1, -2, 3, -4 );
+
+  testFunc( Bump.Vector4, 'absolute4', {
+    destType: Bump.Vector4,
+    objects: vec,
+    expected: [
+      Bump.Vector4.create( 1, 2, 3, 4 )
+    ]
+  });
+});
+
+module( 'Vector4.getW' );
+
+test( 'basic', function() {
+  var vec = Bump.Vector4.create( 1, 2, 3, 4 );
+
+  testFunc( Bump.Vector4, 'getW', {
+    objects: vec,
+    expected: [ 4 ]
+  });
+});

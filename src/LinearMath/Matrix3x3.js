@@ -641,7 +641,7 @@
         return mat;
       },
 
-      createFromQuaternion: function( quat ) {
+      createWithQuaternion: function( quat ) {
         var mat = Object.create( Bump.Matrix3x3.prototype );
         mat.init( 0, 0, 0, 0, 0, 0, 0, 0, 0 );
         mat.setRotation( quat );
