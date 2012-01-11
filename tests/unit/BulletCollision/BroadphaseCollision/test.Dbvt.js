@@ -284,7 +284,7 @@ module( 'Bump.DbvtAabbMm member functions' );
         vec4 = Bump.Vector3.create( 2, 1, 1 ),
         vec5 = Bump.Vector3.create( 1, 2, 1 ),
         vec6 = Bump.Vector3.create( 1, 1, 2 ),
-        vec7 = Bump.Vector3.create( 2, 2, 2 );
+        vec7 = Bump.Vector3.create( 2, 2, 2 ),
         vec8 = Bump.Vector3.create( -2, -1, -1 ),
         vec9 = Bump.Vector3.create( -1, -2, -1 ),
         vec10 = Bump.Vector3.create( -1, -1, -2 ),

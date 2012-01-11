@@ -270,7 +270,7 @@ test( 'create', function(){
   ok( Bump.BroadphasePair.create, 'create exists' );
 
   var p0 = Bump.BroadphaseProxy.createEmpty(),
-  p1 = Bump.BroadphaseProxy.createEmpty();
+  p1 = Bump.BroadphaseProxy.createEmpty(),
   a = Bump.BroadphasePair.create( p0, p1 ),
   b = Bump.BroadphasePair.create( p0, p1 );
 
@@ -295,7 +295,7 @@ test( 'create', function(){
 test( 'clone', function() {
   ok( Bump.BroadphasePair.clone, 'clone exists' );
   var p0 = Bump.BroadphaseProxy.createEmpty(),
-  p1 = Bump.BroadphaseProxy.createEmpty();
+  p1 = Bump.BroadphaseProxy.createEmpty(),
   a = Bump.BroadphasePair.create( p0, p1 ),
   b = Bump.BroadphasePair.clone( a );
 
