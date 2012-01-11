@@ -468,3 +468,188 @@ test( 'isinternal', function() {
   ok( parent.isinternal(), 'internal node returns true' );
 
 } );
+
+module( 'Bump.Dbvt' );
+
+test( 'Bump.Dbvt exists', function() {
+  var dbvt = Bump.Dbvt || {};
+  strictEqual( typeof dbvt.create, 'function', 'Bump.Dbvt exists' );
+} );
+
+test( 'Bump.Dbvt creation', function() {
+  var t = Bump.Dbvt.create() || {};
+  ok( t instanceof Bump.Dbvt.prototype.init, 'creation without `new` operator' );
+  equal( t.m_root, 0, 'm_root initialized correctly' );
+  equal( t.m_free, 0, 'm_free initialized correctly' );
+  equal( t.m_lkhd, -1, 'm_lkhd initialized correctly' );
+  equal( t.m_leaves, 0, 'm_leaves initialized correctly' );
+  equal( t.m_opath, 0, 'm_opath initialized correctly' );
+  deepEqual( t.m_stkStack, [], 'm_opath initialized correctly' );
+} );
+
+module( 'Dbvt.clear' );
+test('test skipped', function() {});
+
+module( 'Dbvt.empty' );
+test('test skipped', function() {});
+
+module( 'Dbvt.optimizeBottomUp' );
+test('test skipped', function() {});
+
+module( 'Dbvt.optimizeTopDown' );
+test('test skipped', function() {});
+
+module( 'Dbvt.optimizeIncremental' );
+test('test skipped', function() {});
+
+module( 'Dbvt.insert' );
+test('test skipped', function() {});
+
+module( 'Dbvt.updateLeafLookahead' );
+test('test skipped', function() {});
+
+module( 'Dbvt.updateLeafVolume' );
+test('test skipped', function() {});
+
+module( 'Dbvt.updateLeafVolumeVelocityMargin' );
+test('test skipped', function() {});
+
+module( 'Dbvt.updateLeafVolumeVelocity' );
+test('test skipped', function() {});
+
+module( 'Dbvt.updateLeafVolumeMargin' );
+test('test skipped', function() {});
+
+module( 'Dbvt.remove' );
+test('test skipped', function() {});
+
+module( 'Dbvt.write' );
+test('test skipped', function() {});
+
+module( 'Dbvt.clone' );
+test('test skipped', function() {});
+
+module( 'Dbvt.collideTT' );
+test('test skipped', function() {});
+
+module( 'Dbvt.collideTTpersistenStack' );
+test('test skipped', function() {});
+
+module( 'Dbvt.collideTV' );
+test('test skipped', function() {});
+
+module( 'Dbvt.rayTestInternal' );
+test('test skipped', function() {});
+
+module( 'Dbvt.maxdepth' );
+test('test skipped', function() {});
+
+module( 'Dbvt.countLeaves' );
+test('test skipped', function() {});
+
+module( 'Dbvt.extractLeaves' );
+test('test skipped', function() {});
+
+module( 'Dbvt.benchmark' );
+test('test skipped', function() {});
+
+module( 'Dbvt.enumNodes' );
+test('test skipped', function() {});
+
+module( 'Dbvt.enumLeaves' );
+test('test skipped', function() {});
+
+module( 'Dbvt.rayTest' );
+test('test skipped', function() {});
+
+module( 'Dbvt.collideKDOP' );
+test('test skipped', function() {});
+
+module( 'Dbvt.collideOCL' );
+test('test skipped', function() {});
+
+module( 'Dbvt.collideTU' );
+test('test skipped', function() {});
+
+module( 'Dbvt.allocate' );
+test('test skipped', function() {});
+
+module( 'Bump.Dbvt.sStkNN' );
+
+test( 'Bump.Dbvt.sStkNN exists', function() {
+  var s = Bump.Dbvt.sStkNN || {};
+  strictEqual( typeof s.create, 'function', 'Bump.Dbvt.sStkNN exists' );
+} );
+
+test( 'Bump.Dbvt.sStkNN creation', function() {
+  var t = Bump.Dbvt.sStkNN.create() || {},
+      na = Bump.DbvtNode.create(),
+      nb = Bump.DbvtNode.create(),
+      t2 = Bump.Dbvt.sStkNN.create( na, nb );
+  ok( t instanceof Bump.Dbvt.sStkNN.prototype.init, 'creation without `new` operator' );
+  ok( t2 instanceof Bump.Dbvt.sStkNN.prototype.init, 'creation without `new` operator' );
+  equal( t.a, 0, 'a initialized correctly to default' );
+  equal( t.b, 0, 'b initialized correctly to default' );
+  strictEqual( t2.a, na, 'a initialized correctly' );
+  strictEqual( t2.b, nb, 'b initialized correctly' );
+} );
+
+module( 'Bump.Dbvt.sStkNP' );
+
+test( 'Bump.Dbvt.sStkNP exists', function() {
+  var s = Bump.Dbvt.sStkNP || {};
+  strictEqual( typeof s.create, 'function', 'Bump.Dbvt.sStkNP exists' );
+} );
+
+test( 'Bump.Dbvt.sStkNP creation', function() {
+  var t = Bump.Dbvt.sStkNP.create() || {},
+      n = Bump.DbvtNode.create(),
+      t2 = Bump.Dbvt.sStkNP.create( n, 4 );
+  ok( t instanceof Bump.Dbvt.sStkNP.prototype.init, 'creation without `new` operator' );
+  ok( t2 instanceof Bump.Dbvt.sStkNP.prototype.init, 'creation without `new` operator' );
+  equal( t.node, 0, 'node initialized correctly to default' );
+  equal( t.mask, 0, 'mask initialized correctly to default' );
+  strictEqual( t2.node, n, 'node initialized correctly' );
+  equal( t2.mask, 4, 'mask initialized correctly' );
+} );
+
+module( 'Bump.Dbvt.sStkNPS' );
+
+test( 'Bump.Dbvt.sStkNPS exists', function() {
+  var s = Bump.Dbvt.sStkNPS || {};
+  strictEqual( typeof s.create, 'function', 'Bump.Dbvt.sStkNPS exists' );
+} );
+
+test( 'Bump.Dbvt.sStkNPS creation', function() {
+  var t = Bump.Dbvt.sStkNPS.create() || {},
+      n = Bump.DbvtNode.create(),
+      t2 = Bump.Dbvt.sStkNPS.create( n, 4, 1337 );
+  ok( t instanceof Bump.Dbvt.sStkNPS.prototype.init, 'creation without `new` operator' );
+  ok( t2 instanceof Bump.Dbvt.sStkNPS.prototype.init, 'creation without `new` operator' );
+  equal( t.node, 0, 'node initialized correctly to default' );
+  equal( t.mask, 0, 'mask initialized correctly to default' );
+  equal( t.value, 0, 'value initialized correctly to default' );
+  strictEqual( t2.node, n, 'node initialized correctly' );
+  equal( t2.mask, 4, 'mask initialized correctly' );
+  equal( t2.value, 1337, 'value initialized correctly' );
+} );
+
+module( 'Bump.Dbvt.sStkCLN' );
+
+test( 'Bump.Dbvt.sStkCLN exists', function() {
+  var s = Bump.Dbvt.sStkCLN || {};
+  strictEqual( typeof s.create, 'function', 'Bump.Dbvt.sStkCLN exists' );
+} );
+
+test( 'Bump.Dbvt.sStkCLN creation', function() {
+  var t = Bump.Dbvt.sStkCLN.create() || {},
+      n = Bump.DbvtNode.create(),
+      p = Bump.DbvtNode.create(),
+      t2 = Bump.Dbvt.sStkCLN.create( n, p );
+  ok( t instanceof Bump.Dbvt.sStkCLN.prototype.init, 'creation without `new` operator' );
+  ok( t2 instanceof Bump.Dbvt.sStkCLN.prototype.init, 'creation without `new` operator' );
+  equal( t.node, 0, 'node initialized correctly to default' );
+  equal( t.parent, 0, 'parent initialized correctly to default' );
+  strictEqual( t2.node, n, 'node initialized correctly' );
+  equal( t2.parent, p, 'parent initialized correctly' );
+} );
