@@ -324,7 +324,7 @@ var testFunc = function( objType, func, options ) {
 
   var objs = options.objects || {};
 
-  var argsLength = objs.length;
+  var argsLength = Array.isArray( objs ) ? objs.length : undefined;
   if ( options.args ) {
     argsLength = options.args.length;
     check( Array.isArray( options.args ), 'args is an array of args' );
@@ -344,7 +344,7 @@ var testFunc = function( objType, func, options ) {
     }
   }
 
-  var expectedLength = objs.length;
+  var expectedLength = Array.isArray( objs ) ? objs.length : undefined;
   if ( options.expected ) {
     expectedLength = options.expected.length;
     check( Array.isArray( options.expected ), 'expected is an array of results' );

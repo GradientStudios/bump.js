@@ -35,4 +35,18 @@
     };
   }
 
+  if ( !Bump.RecipSqrt ) {
+    Bump.RecipSqrt = function btRecipSqrt( x ) {
+      return 1 / Math.sqrt( x );
+    };
+  }
+
+  if ( Bump.SIMD_EPSILON === undefined ) {
+    Bump.SIMD_EPSILON = Math.pow( 2, -52 );
+  }
+
+  if ( Bump.SIMDSQRT12 === undefined ) {
+    Bump.SIMDSQRT12 = Math.sqrt( 1 / 2 );
+  }
+
 })( this, this.Bump );

@@ -5,9 +5,7 @@
  */
 (function( window, Bump ) {
 
-  Bump.SIMD_EPSILON = Math.pow(2, -52);
-
-  Bump.Vector3 = Bump.type( {
+  Bump.Vector3 = Bump.type({
 
     init: function( x, y, z, w ) {
       this.x = x || 0;
@@ -281,7 +279,7 @@
       // Returns angle between `this` vector and `vec`.
       angle: function( v ) {
         var s = Math.sqrt( this.length2() * v.length2() );
-        // btFullAssert( s != btScalar( 0.0 ) )
+        // btFullAssert( s != 0.0 )
         return Math.acos( this.dot( v ) / s );
       },
 
@@ -557,5 +555,127 @@
       }
     }
   });
+
+  var tmpVec41;
+
+  Bump.Vector4 = Bump.type({
+    parent: Bump.Vector3,
+
+    members: {
+      clone: function( dest ) {
+        dest = dest || Bump.Vector4.create();
+
+        return dest.setValue( this.x, this.y, this.z, this.w );
+      },
+
+      absolute4: function( dest ) {
+        dest = dest || Bump.Vector4.create();
+        return dest.setValue(
+          Math.abs( this.x ),
+          Math.abs( this.y ),
+          Math.abs( this.z ),
+          Math.abs( this.w )
+        );
+      },
+
+      getW: function() {
+        return this.w;
+      },
+
+      maxAxis4: function() {
+        var maxIndex = -1,
+            maxVal = -Infinity;
+
+        if ( this.x > maxVal ) {
+          maxIndex = 0;
+          maxVal = this.x;
+        }
+        if ( this.y > maxVal ) {
+          maxIndex = 1;
+          maxVal = this.y;
+        }
+        if ( this.z > maxVal ) {
+          maxIndex = 2;
+          maxVal =this.z;
+        }
+        if ( this.w > maxVal ) {
+          maxIndex = 3;
+          maxVal = this.w;
+        }
+        return maxIndex;
+      },
+
+      minAxis4: function() {
+        var minIndex = -1,
+            minVal = Infinity;
+
+        if ( this.x < minVal ) {
+          minIndex = 0;
+          minVal = this.x;
+        }
+        if ( this.y < minVal ) {
+          minIndex = 1;
+          minVal = this.y;
+        }
+        if ( this.z < minVal ) {
+          minIndex = 2;
+          minVal =this.z;
+        }
+        if ( this.w < minVal ) {
+          minIndex = 3;
+          minVal = this.w;
+        }
+
+        return minIndex;
+      },
+
+      // Uses the following temporary variables:
+      //
+      // - `tmpVec41`
+      closestAxis4: function() {
+        return this.absolute4( tmpVec41 ).maxAxis4();
+      },
+
+      setValue: function( x, y, z, w ) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.w = w;
+
+        return this;
+      }
+    }
+  });
+
+  tmpVec41 = Bump.Vector4.create();
+
+  Bump.PlaneSpace1 = function( n, p, q ) {
+    var a, k;
+
+    if ( Math.abs( n[2] ) > Bump.SIMDSQRT12 ) {
+      // Choose p in y-z plane.
+      a = n[1] * n[1] + n[2] * n[2];
+      k = Bump.RecipSqrt( a );
+
+      p[0] = 0;
+      p[1] = -n[2] * k;
+      p[2] = n[1] * k;
+      // Set `q = n x p`.
+      q[0] = a * k;
+      q[1] = -n[0] * p[2];
+      q[2] = n[0] * p[1];
+    } else {
+      // Choose p in x-y plane.
+      a = n[0] * n[0] + n[1] * n[1];
+      k = Bump.RecipSqrt( a );
+      p[0] = -n[1]*k;
+      p[1] = n[0]*k;
+      p[2] = 0;
+      // Set `q = n x p`.
+      q[0] = -n[2] * p[1];
+      q[1] = n[2] * p[0];
+      q[2] = a * k;
+    }
+  };
 
 })( this, this.Bump );
