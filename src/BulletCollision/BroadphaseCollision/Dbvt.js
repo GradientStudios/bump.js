@@ -796,14 +796,46 @@
         }
       },
 
-      insert: function( box, data ) {},        // TODO
-
-      updateLeafLookahead: function( leaf, lookahead ){
-        lookahead = lookahead === undefined ? -1 : lookahead;
-        // TODO
+      insert: function( volume, data ) {
+        var leaf = createnodeTreeParentVolumeData( this, 0, volume, data );
+        insertleaf( this, this.m_root, leaf );
+        ++this.m_leaves;
+        return leaf;
       },
 
-      updateLeafVolume: function( leaf, volume ) {},        // TODO
+      // The `updateLeafLookahead` and `updateLeafVolume` functions have been renamed from
+      // overloaded versions of `btDbvt`s `update` function.
+      updateLeafLookahead: function( leaf, lookahead ){
+        lookahead = lookahead === undefined ? -1 : lookahead;
+        var root = removeleaf( this, leaf );
+        if( root ) {
+          if( lookahead >= 0 ) {
+            for( var i = 0; (i < lookahead) && root.parent; ++i ) {
+              root = root.parent;
+            }
+          }
+          else {
+            root = this.m_root;
+          }
+        }
+        insertleaf( this, root, leaf );
+      },
+
+      updateLeafVolume: function( leaf, volume ) {
+        var root = removeleaf( this, leaf );
+        if( root ) {
+          if( this.m_lkhd >= 0 ) {
+            for( var i = 0; ( i < this.m_lkhd ) && root.parent; ++i ) {
+              root = root.parent;
+            }
+          }
+          else {
+            root = this.m_root;
+          }
+        }
+        leaf.volume = volume;
+        insertleaf( this, root, leaf );
+      },
 
       updateLeafVolumeVelocityMargin: function( leaf, volumeRef, velocity, margin ) {},        // TODO
 
