@@ -203,14 +203,11 @@ test( 'setRotation', function() {
   ok( Bump.Matrix3x3.prototype.setRotation, 'setRotation exists' );
 
   var a = Bump.Matrix3x3.create(),
-      aRef = a,
-      aExpected = Bump.Matrix3x3.getIdentity();
+      expected = Bump.Matrix3x3.getIdentity();
 
-  notDeepEqual( a, aExpected );
+  notDeepEqual( a, expected );
   a.setRotation( Bump.Quaternion.getIdentity() );
-  deepEqual( a, aExpected, 'identity rotation is identity' );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
+  deepEqual( a, expected, 'identity rotation is identity' );
 });
 
 test( 'setEulerZYX', function() {
@@ -219,7 +216,6 @@ test( 'setEulerZYX', function() {
   var a = Bump.Matrix3x3.create(),
       aRef = a,
       answer = Bump.Matrix3x3.getIdentity(),
-      EPSILON = Math.pow( 2, -48 ),
       newARef;
 
   a.setEulerZYX( 0, 0, 0 );
@@ -232,15 +228,7 @@ test( 'setEulerZYX', function() {
   );
 
   newARef = a.setEulerZYX( Math.PI / 6, Math.PI / 3, -Math.PI / 2 );
-  ok( Math.abs( answer.m_el0.x - newARef.m_el0.x ) < EPSILON &&
-      Math.abs( answer.m_el0.y - newARef.m_el0.y ) < EPSILON &&
-      Math.abs( answer.m_el0.z - newARef.m_el0.z ) < EPSILON &&
-      Math.abs( answer.m_el1.x - newARef.m_el1.x ) < EPSILON &&
-      Math.abs( answer.m_el1.y - newARef.m_el1.y ) < EPSILON &&
-      Math.abs( answer.m_el1.z - newARef.m_el1.z ) < EPSILON &&
-      Math.abs( answer.m_el2.x - newARef.m_el2.x ) < EPSILON &&
-      Math.abs( answer.m_el2.y - newARef.m_el2.y ) < EPSILON &&
-      Math.abs( answer.m_el2.z - newARef.m_el2.z ) < EPSILON );
+  epsilonNumberCheck( newARef, answer, Math.pow( 2, -52 ), 'simple rotation' );
 
   // Wolfram Alpha output
   answer.setValue(
@@ -250,58 +238,38 @@ test( 'setEulerZYX', function() {
   );
 
   newARef = a.setEulerZYX( 2 * Math.PI / 3, 5 * Math.PI / 12, -Math.PI / 4 );
-
-  ok( Math.abs( answer.m_el0.x - newARef.m_el0.x ) < EPSILON &&
-      Math.abs( answer.m_el0.y - newARef.m_el0.y ) < EPSILON &&
-      Math.abs( answer.m_el0.z - newARef.m_el0.z ) < EPSILON &&
-      Math.abs( answer.m_el1.x - newARef.m_el1.x ) < EPSILON &&
-      Math.abs( answer.m_el1.y - newARef.m_el1.y ) < EPSILON &&
-      Math.abs( answer.m_el1.z - newARef.m_el1.z ) < EPSILON &&
-      Math.abs( answer.m_el2.x - newARef.m_el2.x ) < EPSILON &&
-      Math.abs( answer.m_el2.y - newARef.m_el2.y ) < EPSILON &&
-      Math.abs( answer.m_el2.z - newARef.m_el2.z ) < EPSILON );
+  epsilonNumberCheck( newARef, answer, Math.pow( 2, -48 ), 'complex rotation' );
 
   strictEqual( newARef, aRef, 'does not allocate new a' );
 });
 
 test( 'getRotation', function() {
-  ok( Bump.Matrix3x3.prototype.getRotation, 'getRotation exists' );
-
   var a = Bump.Matrix3x3.getIdentity(),
-      aRef = a,
-      aClone = a.clone(),
-      aExpected = Bump.Quaternion.getIdentity();
+      answer = Bump.Quaternion.getIdentity();
 
-  deepEqual( a.getRotation(), aExpected, 'identity is identity rotation' );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  deepEqual( a, aClone, 'does not modify a' );
+  testUnaryOp( Bump.Matrix3x3, 'getRotation', a, answer, {
+    destType: Bump.Quaternion
+  });
 });
 
 test( 'getEulerZYX', function() {
-  ok( Bump.Matrix3x3.prototype.getEulerZYX, 'getEulerZYX exists' );
-
   var a = Bump.Matrix3x3.create(
         1/4*(Math.sqrt(3)-1), 1/8*Math.sqrt(3)*(1+Math.sqrt(3))-1/(2*Math.sqrt(2)), 1/8*(-1-Math.sqrt(3))-Math.sqrt(3/2)/2,
         1/4*(1-Math.sqrt(3)), -1/(2*Math.sqrt(2))-1/8*Math.sqrt(3)*(1+Math.sqrt(3)), 1/8*(1+Math.sqrt(3))-Math.sqrt(3/2)/2,
         -(1+Math.sqrt(3))/(2*Math.sqrt(2)), 1/4*Math.sqrt(3/2)*(Math.sqrt(3)-1), -(Math.sqrt(3)-1)/(4*Math.sqrt(2))
       ),
-      aRef = a,
-      aClone = a.clone(),
       answer = {
         yaw: -Math.PI / 4,
         pitch: 5 * Math.PI / 12,
         roll: 2 * Math.PI / 3
-      },
-      EPSILON = Math.pow( 2, -48 );
+      };
 
-  var results = a.getEulerZYX( {} );
-  ok( Math.abs( answer.yaw   - results.yaw   ) < EPSILON &&
-      Math.abs( answer.pitch - results.pitch ) < EPSILON &&
-      Math.abs( answer.roll  - results.roll  ) < EPSILON );
+  testUnaryOp( Bump.Matrix3x3, 'getEulerZYX', a, answer, {
+    epsilon: Math.pow( 2, -48 ),
 
-  strictEqual( a, aRef, 'does not allocate new a' );
-  deepEqual( a, aClone, 'does not modify a' );
+    // Emulates the functionality of Type that the test uses
+    destType: { create: function() { return {}; } }
+  });
 });
 
 test( 'member clone', function() {
@@ -324,213 +292,108 @@ test( 'member clone', function() {
 module( 'Bump.Matrix3x3 math' );
 
 test( 'add', function() {
-  ok( Bump.Matrix3x3.prototype.add, 'add exists' );
-
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      aRef = a,
-      aClone = Bump.Matrix3x3.clone( a ),
       b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
-      bRef = b,
-      bClone = Bump.Matrix3x3.clone( b ),
       answer = Bump.Matrix3x3.create( 26, 34, 8, 11, 21, 17, 8, 17, 20 ),
       Z = Bump.Matrix3x3.create();
 
-  deepEqual( aClone, a.add( Z ), 'zero serves as identity' );
-  deepEqual( answer, a.add( b ) );
-
-  deepEqual( b, bClone, 'does not modify b' );
-
-  var newBRef = a.add( b, b );
-  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
-  deepEqual( answer, b );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( a, aClone, 'does not modify a' );
+  testBinaryOp( Bump.Matrix3x3, 'add', a, [ Z, b ], [ a.clone(), answer ], {
+    destType: Bump.Matrix3x3
+  });
 });
 
 test( 'addSelf', function() {
-  ok( Bump.Matrix3x3.prototype.addSelf, 'addSelf exists' );
-
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      aRef = a,
-      aClone = Bump.Matrix3x3.clone( a ),
       b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
-      bRef = b,
-      bClone = Bump.Matrix3x3.clone( b ),
       answer = Bump.Matrix3x3.create( 26, 34, 8, 11, 21, 17, 8, 17, 20 ),
       Z = Bump.Matrix3x3.create();
 
-  deepEqual( aClone, a.addSelf( Z ), 'zero serves as identity' );
-  deepEqual( answer, a.addSelf( b ) );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( b, bClone, 'does not modify argument matrix' );
+  testBinaryOp( Bump.Matrix3x3, 'addSelf', a, [ Z, b ], [ a.clone(), answer ], {
+    modifiesSelf: true
+  });
 });
 
 test( 'subtract', function() {
-  ok( Bump.Matrix3x3.prototype.subtract, 'subtract exists' );
-
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      aRef = a,
-      aClone = Bump.Matrix3x3.clone( a ),
       b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
-      bRef = b,
-      bClone = Bump.Matrix3x3.clone( b ),
       answer = Bump.Matrix3x3.create( 2, -16, -2, -7, 1, 13, -8, 7, 14 ),
       Z = Bump.Matrix3x3.create();
 
-  deepEqual( aClone, a.subtract( Z ), 'zero serves as identity' );
-  deepEqual( answer, a.subtract( b ) );
-
-  deepEqual( b, bClone, 'does not modify b' );
-
-  var newBRef = a.subtract( b, b );
-  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
-  deepEqual( answer, b );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( a, aClone, 'does not modify a' );
+  testBinaryOp( Bump.Matrix3x3, 'subtract', a, [ Z, b ], [ a.clone(), answer ], {
+    destType: Bump.Matrix3x3
+  });
 });
 
 test( 'subtractSelf', function() {
-  ok( Bump.Matrix3x3.prototype.subtractSelf, 'subtractSelf exists' );
-
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      aRef = a,
-      aClone = Bump.Matrix3x3.clone( a ),
       b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
-      bRef = b,
-      bClone = Bump.Matrix3x3.clone( b ),
       answer = Bump.Matrix3x3.create( 2, -16, -2, -7, 1, 13, -8, 7, 14 ),
       Z = Bump.Matrix3x3.create();
 
-  deepEqual( aClone, a.subtractSelf( Z ), 'zero serves as identity' );
-  deepEqual( answer, a.subtractSelf( b ) );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( b, bClone, 'does not modify argument matrix' );
+  testBinaryOp( Bump.Matrix3x3, 'subtractSelf', a, [ Z, b ], [ a.clone(), answer ], {
+    modifiesSelf: true
+  });
 });
 
 test( 'multiplyMatrix', function() {
-  ok( Bump.Matrix3x3.prototype.multiplyMatrix, 'multiplyMatrix exists' );
-
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      aRef = a,
-      aClone = Bump.Matrix3x3.clone( a ),
       b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
-      bRef = b,
-      bClone = Bump.Matrix3x3.clone( b ),
       answer = Bump.Matrix3x3.create( 273, 455, 97, 243, 235, 77, 244, 205, 75 ),
       I = Bump.Matrix3x3.getIdentity();
 
-  deepEqual( aClone, a.multiplyMatrix( I ), 'identity serves as identity' );
-  deepEqual( answer, a.multiplyMatrix( b ) );
-
-  deepEqual( b, bClone, 'does not modify b' );
-
-  var newBRef = a.multiplyMatrix( b, b );
-  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
-  deepEqual( answer, b );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( a, aClone, 'does not modify a' );
+  testBinaryOp( Bump.Matrix3x3, 'multiplyMatrix', a, [ I, b ], [ a.clone(), answer ], {
+    destType: Bump.Matrix3x3
+  });
 });
 
 test( 'multiplyMatrixSelf', function() {
-  ok( Bump.Matrix3x3.prototype.multiplyMatrixSelf, 'multiplyMatrixSelf exists' );
-
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      aRef = a,
-      aClone = Bump.Matrix3x3.clone( a ),
       b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
-      bRef = b,
-      bClone = Bump.Matrix3x3.clone( b ),
       answer = Bump.Matrix3x3.create( 273, 455, 97, 243, 235, 77, 244, 205, 75 ),
       I = Bump.Matrix3x3.getIdentity();
 
-  deepEqual( aClone, a.multiplyMatrixSelf( I ), 'identity serves as identity' );
-  deepEqual( answer, a.multiplyMatrixSelf( b ) );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( b, bClone, 'does not modify argument matrix' );
+  testBinaryOp( Bump.Matrix3x3, 'multiplyMatrixSelf', a, [ I, b ], [ a.clone(), answer ], {
+    modifiesSelf: true
+  });
 });
 
 test( 'multiplyVector', function() {
-  ok( Bump.Matrix3x3.prototype.multiplyVector, 'multiplyVector exists' );
-
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      aRef = a,
-      aClone = Bump.Matrix3x3.clone( a ),
       b = Bump.Vector3.create( 12, 25, 5 ),
-      bRef = b,
-      bClone = Bump.Vector3.clone( b ),
       answer = Bump.Vector3.create( 408, 374, 385 ),
       I = Bump.Matrix3x3.getIdentity();
 
-  deepEqual( bClone, I.multiplyVector( b ), 'identity serves as identity' );
-  deepEqual( answer, a.multiplyVector( b ) );
+  testBinaryOp( Bump.Matrix3x3, 'multiplyVector', a, b, answer, {
+    destType: Bump.Vector3
+  });
 
-  deepEqual( b, bClone, 'does not modify b' );
-
-  var newBRef = a.multiplyVector( b, b );
-  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
-  deepEqual( answer, b );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( a, aClone, 'does not modify a' );
+  testBinaryOp( Bump.Matrix3x3, 'multiplyVector', I, b, b.clone(), {
+    destType: Bump.Vector3
+  });
 });
 
 test( 'vectorMultiply', function() {
-  ok( Bump.Matrix3x3.prototype.vectorMultiply, 'vectorMultiply exists' );
-
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      aRef = a,
-      aClone = Bump.Matrix3x3.clone( a ),
       b = Bump.Vector3.create( 12, 25, 5 ),
-      bRef = b,
-      bClone = Bump.Vector3.clone( b ),
       answer = Bump.Vector3.create( 218, 443, 496 ),
       I = Bump.Matrix3x3.getIdentity();
 
-  deepEqual( bClone, I.vectorMultiply( b ), 'identity serves as identity' );
-  deepEqual( answer, a.vectorMultiply( b ) );
+  testBinaryOp( Bump.Matrix3x3, 'vectorMultiply', a, b, answer, {
+    destType: Bump.Vector3
+  });
 
-  deepEqual( b, bClone, 'does not modify b' );
-
-  var newBRef = a.vectorMultiply( b, b );
-  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
-  deepEqual( answer, b );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( a, aClone, 'does not modify a' );
+  testBinaryOp( Bump.Matrix3x3, 'vectorMultiply', I, b, b.clone(), {
+    destType: Bump.Vector3
+  });
 });
 
 test( 'multiplyScalar', function() {
-  ok( Bump.Matrix3x3.prototype.multiplyScalar, 'multiplyScalar exists' );
-
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      aRef = a,
-      aClone = Bump.Matrix3x3.clone( a ),
-      answer = Bump.Matrix3x3.create( -42, -27, -9, -6, -33, -45, 0, -36, -51 ),
-      I = Bump.Matrix3x3.getIdentity();
+      answer = Bump.Matrix3x3.create( -42, -27, -9, -6, -33, -45, 0, -36, -51 );
 
-  deepEqual( aClone, a.multiplyScalar( 1 ), '1 serves as identity' );
-  deepEqual( answer, a.multiplyScalar( -3 ) );
-  deepEqual( a, aClone, 'does not modify a' );
-
-  var newARef = a.multiplyScalar( -3, a );
-  strictEqual( aRef, newARef, 'answer is placed in specified destination' );
-  deepEqual( answer, a );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
+  testBinaryOp( Bump.Matrix3x3, 'multiplyScalar', a, [ 1, -3 ], [ a.clone(), answer ], {
+    destType: Bump.Matrix3x3
+  });
 });
 
 test( 'scaled', function() {
@@ -538,202 +401,113 @@ test( 'scaled', function() {
 });
 
 test( 'transposeTimes', function() {
-  ok( Bump.Matrix3x3.prototype.transposeTimes, 'transposeTimes exists' );
-
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      aRef = a,
-      aClone = Bump.Matrix3x3.clone( a ),
       b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
-      bRef = b,
-      bClone = Bump.Matrix3x3.clone( b ),
       answer = Bump.Matrix3x3.create( 186, 370, 74, 303, 395, 103, 307, 310, 96 ),
       I = Bump.Matrix3x3.getIdentity();
 
-  deepEqual( aClone, I.transposeTimes( a ) );
-  deepEqual( answer, a.transposeTimes( b ) );
-  deepEqual( b, bClone, 'does not modify b' );
+  testBinaryOp( Bump.Matrix3x3, 'transposeTimes', a, b, answer, {
+    destType: Bump.Matrix3x3
+  });
 
-  var newBRef = a.transposeTimes( b, b );
-  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
-  deepEqual( answer, b );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( a, aClone, 'does not modify a' );
+  testBinaryOp(
+    Bump.Matrix3x3, 'transposeTimes', I,
+    [ a, b ],
+    [ a.clone(), b.clone() ], {
+      destType: Bump.Matrix3x3
+    }
+  );
 });
 
 test( 'timesTranspose', function() {
-  ok( Bump.Matrix3x3.prototype.timesTranspose, 'timesTranspose exists' );
-
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      aRef = a,
-      aClone = Bump.Matrix3x3.clone( a ),
       b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
-      bRef = b,
-      bClone = Bump.Matrix3x3.clone( b ),
       answer = Bump.Matrix3x3.create( 408, 222, 166, 374, 158, 116, 385, 154, 111 ),
       I = Bump.Matrix3x3.getIdentity();
 
-  deepEqual( aClone, a.timesTranspose( I ) );
-  deepEqual( answer, a.timesTranspose( b ) );
-  deepEqual( b, bClone, 'does not modify b' );
-
-  var newBRef = a.timesTranspose( b, b );
-  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
-  deepEqual( answer, b );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( a, aClone, 'does not modify a' );
+  testBinaryOp( Bump.Matrix3x3, 'timesTranspose', a, [ b, I ], [ answer, a.clone() ], {
+    destType: Bump.Matrix3x3
+  });
 });
 
 module( 'Bump.Matrix3x3 advanced utilities' );
 
 test( 'determinant', function() {
-  ok( Bump.Matrix3x3.prototype.determinant, 'determinant exists' );
+  var objs = [
+        Bump.Matrix3x3.create(),
+        Bump.Matrix3x3.getIdentity(),
+        Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+        Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 )
+      ],
+      expected = [
+        0,
+        1,
+        -136,
+        -210
+      ];
 
-  var Z = Bump.Matrix3x3.create(),
-      I = Bump.Matrix3x3.getIdentity(),
-      a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 );
-
-  equal( Z.determinant(), 0 );
-  equal( I.determinant(), 1 );
-  equal( a.determinant(), -136 );
-  equal( b.determinant(), -210 );
+  testUnaryOp( Bump.Matrix3x3, 'determinant', objs, expected );
 });
 
 test( 'adjoint', function() {
-  ok( Bump.Matrix3x3.prototype.adjoint, 'adjoint exists' );
+  var objs = [
+        Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+        Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 )
+      ],
+      expected = [
+        Bump.Matrix3x3.create( 7, -117, 102, -34, 238, -204, 24, -168, 136 ),
+        Bump.Matrix3x3.create( 20, -50, 0, -11, -4, 21, -35, 140, -105 )
+      ];
 
-  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      aRef = a,
-      aClone = Bump.Matrix3x3.clone( a ),
-      aAdj = Bump.Matrix3x3.create( 7, -117, 102, -34, 238, -204, 24, -168, 136 ),
-      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
-      bRef = b,
-      bClone = Bump.Matrix3x3.clone( b ),
-      bAdj = Bump.Matrix3x3.create( 20, -50, 0, -11, -4, 21, -35, 140, -105 );
-
-  deepEqual( a.adjoint(), aAdj );
-  deepEqual( b.adjoint(), bAdj );
-  deepEqual( b, bClone, 'does not modify b' );
-
-  var newBRef = b.adjoint( b );
-  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
-  deepEqual( b, bAdj );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( a, aClone, 'does not modify a' );
+  testUnaryOp( Bump.Matrix3x3, 'adjoint', objs, expected, {
+    destType: Bump.Matrix3x3
+  });
 });
 
 test( 'absolute', function() {
-  ok( Bump.Matrix3x3.prototype.absolute, 'absolute exists' );
+  var objs = [
+        Bump.Matrix3x3.create( -14, 9, -3, 2, -11, 15, -0, 12, -17 ),
+        Bump.Matrix3x3.create( 12, -25, 5, -9, 10, -2, 8, -5, 3 )
+      ],
+      expected = [
+        Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+        Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 )
+      ];
 
-  var a = Bump.Matrix3x3.create( -14, 9, -3, 2, -11, 15, -0, 12, -17 ),
-      aRef = a,
-      aClone = Bump.Matrix3x3.clone( a ),
-      aAbs = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      b = Bump.Matrix3x3.create( 12, -25, 5, -9, 10, -2, 8, -5, 3 ),
-      bRef = b,
-      bClone = Bump.Matrix3x3.clone( b ),
-      bAbs = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 );
-
-  deepEqual( a.absolute(), aAbs );
-  deepEqual( b.absolute(), bAbs );
-  deepEqual( b, bClone, 'does not modify b' );
-
-  var newBRef = b.absolute( b );
-  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
-  deepEqual( b, bAbs );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( a, aClone, 'does not modify a' );
+  testUnaryOp( Bump.Matrix3x3, 'absolute', objs, expected, {
+    destType: Bump.Matrix3x3
+  });
 });
 
 test( 'transpose', function() {
-  ok( Bump.Matrix3x3.prototype.transpose, 'transpose exists' );
+  var objs = [
+        Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+        Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 )
+      ],
+      expected = [
+        Bump.Matrix3x3.create( 14, 2, 0, 9, 11, 12, 3, 15, 17 ),
+        Bump.Matrix3x3.create( 12, 9, 8, 25, 10, 5, 5, 2, 3 )
+      ];
 
-  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      aRef = a,
-      aClone = Bump.Matrix3x3.clone( a ),
-      aTrp = Bump.Matrix3x3.create( 14, 2, 0, 9, 11, 12, 3, 15, 17 ),
-      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
-      bRef = b,
-      bClone = Bump.Matrix3x3.clone( b ),
-      bTrp = Bump.Matrix3x3.create( 12, 9, 8, 25, 10, 5, 5, 2, 3 );
-
-  deepEqual( a.transpose(), aTrp );
-  deepEqual( b.transpose(), bTrp );
-  deepEqual( b, bClone, 'does not modify b' );
-
-  var newBRef = b.transpose( b );
-  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
-  deepEqual( b, bTrp );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( a, aClone, 'does not modify a' );
+  testUnaryOp( Bump.Matrix3x3, 'transpose', objs, expected, {
+    destType: Bump.Matrix3x3
+  });
 });
 
 test( 'inverse', function() {
-  ok( Bump.Matrix3x3.prototype.inverse, 'inverse exists' );
+  var objs = [
+        Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
+        Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 )
+      ],
+      expected = [
+        Bump.Matrix3x3.create( -7 / 136, 117 / 136, -102 / 136, 34 / 136, -238 / 136, 204 / 136, -24 / 136, 168 / 136, -1 ),
+        Bump.Matrix3x3.create( -20 / 210, 50 / 210, 0, 11 / 210, 4 / 210, -21 / 210, 35 / 210, -140 / 210, 105 / 210 )
+      ];
 
-  var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
-      aRef = a,
-      aClone = Bump.Matrix3x3.clone( a ),
-      aInv = Bump.Matrix3x3.create( -7 / 136, 117 / 136, -102 / 136, 34 / 136, -238 / 136, 204 / 136, -24 / 136, 168 / 136, -1 ),
-      b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
-      bRef = b,
-      bClone = Bump.Matrix3x3.clone( b ),
-      bInv = Bump.Matrix3x3.create( -20 / 210, 50 / 210, 0, 11 / 210, 4 / 210, -21 / 210, 35 / 210, -140 / 210, 105 / 210 ),
-      EPSILON = Math.pow( 2, -48 ),
-      result = Bump.Matrix3x3.create();
-
-  a.inverse( result );
-
-  ok( Math.abs( aInv.m_el0.x - result.m_el0.x ) < EPSILON &&
-      Math.abs( aInv.m_el0.y - result.m_el0.y ) < EPSILON &&
-      Math.abs( aInv.m_el0.z - result.m_el0.z ) < EPSILON &&
-      Math.abs( aInv.m_el1.x - result.m_el1.x ) < EPSILON &&
-      Math.abs( aInv.m_el1.y - result.m_el1.y ) < EPSILON &&
-      Math.abs( aInv.m_el1.z - result.m_el1.z ) < EPSILON &&
-      Math.abs( aInv.m_el2.x - result.m_el2.x ) < EPSILON &&
-      Math.abs( aInv.m_el2.y - result.m_el2.y ) < EPSILON &&
-      Math.abs( aInv.m_el2.z - result.m_el2.z ) < EPSILON );
-
-  b.inverse( result );
-
-  ok( Math.abs( bInv.m_el0.x - result.m_el0.x ) < EPSILON &&
-      Math.abs( bInv.m_el0.y - result.m_el0.y ) < EPSILON &&
-      Math.abs( bInv.m_el0.z - result.m_el0.z ) < EPSILON &&
-      Math.abs( bInv.m_el1.x - result.m_el1.x ) < EPSILON &&
-      Math.abs( bInv.m_el1.y - result.m_el1.y ) < EPSILON &&
-      Math.abs( bInv.m_el1.z - result.m_el1.z ) < EPSILON &&
-      Math.abs( bInv.m_el2.x - result.m_el2.x ) < EPSILON &&
-      Math.abs( bInv.m_el2.y - result.m_el2.y ) < EPSILON &&
-      Math.abs( bInv.m_el2.z - result.m_el2.z ) < EPSILON );
-
-  deepEqual( b, bClone, 'does not modify b' );
-
-  var newBRef = b.inverse( b );
-  strictEqual( bRef, newBRef, 'answer is placed in specified destination' );
-
-  ok( Math.abs( bInv.m_el0.x - b.m_el0.x ) < EPSILON &&
-      Math.abs( bInv.m_el0.y - b.m_el0.y ) < EPSILON &&
-      Math.abs( bInv.m_el0.z - b.m_el0.z ) < EPSILON &&
-      Math.abs( bInv.m_el1.x - b.m_el1.x ) < EPSILON &&
-      Math.abs( bInv.m_el1.y - b.m_el1.y ) < EPSILON &&
-      Math.abs( bInv.m_el1.z - b.m_el1.z ) < EPSILON &&
-      Math.abs( bInv.m_el2.x - b.m_el2.x ) < EPSILON &&
-      Math.abs( bInv.m_el2.y - b.m_el2.y ) < EPSILON &&
-      Math.abs( bInv.m_el2.z - b.m_el2.z ) < EPSILON );
-
-  strictEqual( a, aRef, 'does not allocate new a' );
-  strictEqual( b, bRef, 'does not allocate new b' );
-  deepEqual( a, aClone, 'does not modify a' );
+  testUnaryOp( Bump.Matrix3x3, 'inverse', objs, expected, {
+    epsilon: Math.pow( 2, -52 ),
+    destType: Bump.Matrix3x3
+  });
 });
 
 test( 'diagonalize', function() {

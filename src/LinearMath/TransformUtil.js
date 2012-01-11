@@ -18,6 +18,8 @@
       tmpV5 = Bump.Vector3.create(),
       tmpV6 = Bump.Vector3.create(),
       tmpV7 = Bump.Vector3.create(),
+      tmpV8 = Bump.Vector3.create(),
+      tmpV9 = Bump.Vector3.create(),
       tmpM1 = Bump.Matrix3x3.create(),
       tmpQ1 = Bump.Quaternion.create(),
       tmpQ2 = Bump.Quaternion.create(),
@@ -32,7 +34,7 @@
   // - `tmpQ2`
   TransformUtil.integrateTransform = function( curTrans, linvel, angvel, timeStep, predictedTransform ) {
     predictedTransform.setOrigin(
-      curTrans.origin.add( linvel.multiply( timeStep, tmpV1 ), tmpV1 )
+      curTrans.origin.add( linvel.multiplyScalar( timeStep, tmpV1 ), tmpV1 )
     );
 
     // Exponential map.
@@ -47,9 +49,9 @@
 
     if ( fAngle < 0.001 ) {
       // use Taylor's expansions of sync function
-      axis = angvel.multiply( 0.5 * timeStep - ( timeStep * timeStep * timeStep) * 0.020833333333 * fAngle * fAngle, tmpV2 );
+      axis = angvel.multiplyScalar( 0.5 * timeStep - ( timeStep * timeStep * timeStep) * 0.020833333333 * fAngle * fAngle, tmpV2 );
     } else {
-      axis = angvel.multiply( Math.sin( 0.5 * fAngle * timeStep ) / fAngle, tmpV2 );
+      axis = angvel.multiplyScalar( Math.sin( 0.5 * fAngle * timeStep ) / fAngle, tmpV2 );
     }
 
     var dorn = tmpQ1.setValue( axis.x, axis.y, axis.z, Math.cos( fAngle * timeStep * 0.5 ) ),
@@ -63,21 +65,22 @@
   // Uses the following temporary variables:
   //
   // - `tmpV1`
+  // - `tmpV2`
   // - `tmpQ1` ← `calculateDiffAxisAngleQuaternion`
   // - `tmpQ2` ← `calculateDiffAxisAngleQuaternion`
   TransformUtil.calculateVelocityQuaternion = function( pos0, pos1, orn0, orn1, timeStep, linVel, angVel ) {
     linVel = pos1
       .subtract( pos0, tmpV1 )
-      .divide( timeStep, tmpV1 )
+      .divideScalar( timeStep, tmpV1 )
       .clone( linVel );
 
-    var axis, angle;
+    var axis = tmpV1, angle = { angle: 0 };
 
     if ( orn0.notEqual( orn1 ) ) {
       Bump.TransformUtil.calculateDiffAxisAngleQuaternion( orn0, orn1, axis, angle );
       angVel = axis
-        .multiply( angle, tmpV1 )
-        .divide( timeStep, tmpV1 )
+        .multiplyScalar( angle.angle, tmpV2 )
+        .divideScalar( timeStep, tmpV2 )
         .clone( angVel );
     } else {
       angVel.setValue( 0, 0, 0 );
@@ -102,7 +105,7 @@
     if ( len < EPSILON * EPSILON ) {
       axis.setValue( 1, 0, 0 );
     } else {
-      axis.divideSelf( Math.sqrt( len ) );
+      axis.divideScalarSelf( Math.sqrt( len ) );
     }
   };
 
@@ -112,12 +115,12 @@
   // - `tmpM1` ← `calculateDiffAxisAngle`
   // - `tmpQ1` ← `calculateDiffAxisAngle`
   TransformUtil.calculateVelocity = function( transform0, transform1, timeStep, linVel, angVel ) {
-    linVel = transform1.origin.subtract( transform0.origin, tmpV1 ).divide( timeStep, tmpV1 ).clone( linVel );
+    linVel = transform1.origin.subtract( transform0.origin, tmpV1 ).divideScalar( timeStep, tmpV1 ).clone( linVel );
 
-    var axis, angle;
+    var axis = tmpV1, angle = { angle: 0 };
 
     Bump.TransformUtil.calculateDiffAxisAngle( transform0, transform1, axis, angle );
-    angVel = axis .multiply( angle, tmpV1 ).divide( timeStep, tmpV1 ).clone( angVel );
+    angVel = axis.multiplyScalar( angle.angle, tmpV1 ).divideScalar( timeStep, tmpV1 ).clone( angVel );
   };
 
   // Uses the following temporary variables:
@@ -143,7 +146,7 @@
     if ( len < EPSILON * EPSILON ) {
       axis.setValue( 1, 0, 0 );
     } else {
-      axis.divideSelf( Math.sqrt( len ) );
+      axis.divideScalarSelf( Math.sqrt( len ) );
     }
   };
 
@@ -168,34 +171,36 @@
 
       // Uses the following temporary variables:
       //
-      // - `tmpV2`
       // - `tmpV3`
       // - `tmpV4`
       // - `tmpV5`
       // - `tmpV6`
       // - `tmpV7`
+      // - `tmpV8`
+      // - `tmpV9`
       // - `tmpQ3`
       // - `tmpQ4`
       // - `tmpV1` ← `calculateVelocityQuaternion`
+      // - `tmpV2` ← `calculateVelocityQuaternion`
       // - `tmpQ1` ← `calculateVelocityQuaternion`
       // - `tmpQ2` ← `calculateVelocityQuaternion`
       updateSeparatingDistance: function( transA, transB ) {
-        var toPosA = transA.origin.clone( tmpV2 ),
-            toPosB = transB.origin.clone( tmpV3 ),
+        var toPosA = transA.origin.clone( tmpV3 ),
+            toPosB = transB.origin.clone( tmpV4 ),
             toOrnA = transA.getRotation( tmpQ3 ),
             toOrnB = transB.getRotation( tmpQ4 );
 
         if ( this.separatingDistance > 0 ) {
-          var linVelA = tmpV4,
-              angVelA = tmpV5,
-              linVelB = tmpV6,
-              angVelB = tmpV7;
+          var linVelA = tmpV5,
+              angVelA = tmpV6,
+              linVelB = tmpV7,
+              angVelB = tmpV8;
 
           Bump.TransformUtil.calculateVelocityQuaternion( this.posA, toPosA, this.ornA, toOrnA, 1, linVelA, angVelA );
           Bump.TransformUtil.calculateVelocityQuaternion( this.posB, toPosB, this.ornB, toOrnB, 1, linVelB, angVelB );
 
           var maxAngularProjectedVelocity = angVelA.length() * this.boundingRadiusA + angVelB.length() * this.boundingRadiusB,
-              relLinVel = linVelB.subtract( linVelA, tmpV4 ),
+              relLinVel = linVelB.subtract( linVelA, tmpV9 ),
               relLinVelocLength = relLinVel.dot( this.separatingNormal );
           if ( relLinVelocLength < 0 ) {
             relLinVelocLength = 0;
@@ -205,10 +210,10 @@
           this.separatingDistance -= projectedMotion;
         }
 
-        this.posA = toPosA;
-        this.posB = toPosB;
-        this.ornA = toOrnA;
-        this.ornB = toOrnB;
+        this.posA = toPosA.clone( this.posA );
+        this.posB = toPosB.clone( this.posB );
+        this.ornA = toOrnA.clone( this.ornA );
+        this.ornB = toOrnB.clone( this.ornB );
       },
 
       // Uses the following temporary variables:
@@ -227,10 +232,10 @@
               toPosB = transB.origin.clone( tmpV2 ),
               toOrnA = transA.getRotation( tmpQ1 ),
               toOrnB = transB.getRotation( tmpQ2 );
-          this.posA = toPosA;
-          this.posB = toPosB;
-          this.ornA = toOrnA;
-          this.ornB = toOrnB;
+          this.posA = toPosA.clone( this.posA );
+          this.posB = toPosB.clone( this.posB );
+          this.ornA = toOrnA.clone( this.ornA );
+          this.ornB = toOrnB.clone( this.ornB );
         }
       }
     }

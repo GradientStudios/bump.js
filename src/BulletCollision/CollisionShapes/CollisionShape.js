@@ -5,20 +5,24 @@
     init: function() {
       this.name = '';
       this.shapeType = 0;
-      this.padding = '';
     }
   });
 
   Bump.CollisionShape = Bump.type({
-    init: function() {
+    init: function CollisionShape() {
       this.shapeType = Bump.BroadphaseNativeTypes.INVALID_SHAPE_PROXYTYPE;
       this.userPointer = null;
     },
 
     members: {
-      // Returns the axis aligned bounding box in the coordinate frame of the
-      // given transform `t`.
-      getAabb: function( t, aabbMin, aabbMax ) { },
+      clone: function( dest ) {
+        dest = dest || Bump.CollisionShape.create();
+
+        dest.shapeType = this.shapeType;
+        dest.userPointer = this.userPointer;
+
+        return dest;
+      },
 
       // Uses the following temporary variables:
       //
@@ -26,7 +30,7 @@
       // - `tmpV2`
       // - `tmpV3`
       // - `tmpT1`
-      getBoundingSphere: function( sphere ) {
+      getBoundingSphere: function( center, sphere ) {
         var tr = tmpT1;
         tr.setIdentity();
         var aabbMin = tmpV1, aabbMax = tmpV2;
@@ -34,9 +38,9 @@
         this.getAabb( tr, aabbMin, aabbMax );
 
         sphere.radius = aabbMax.subtract( aabbMin, tmpV3 ).length() * 0.5;
-        sphere.center = aabbMin.add( aabbMax, tmpV3 ).multiply( 0.5, sphere.center );
+        center = aabbMin.add( aabbMax, tmpV3 ).multiplyScalar( 0.5, sphere.center );
 
-        return sphere;
+        return this;
       },
 
       // Returns the maximum radius needed for Conservative Advancement to
@@ -52,14 +56,12 @@
       //
       // `TODO`: cache this value, to improve performance
       getAngularMotionDisc: function() {
-        var sphere = {
-          center: tmpV4,
-          radius: 0
-        };
+        var center = tmpV4;
+        var radius = { radius: 0 };
 
-        this.getBoundingSphere( sphere );
-        sphere.radius += ( sphere.center ).length();
-        return sphere.radius;
+        this.getBoundingSphere( center, radius );
+        radius.radius += ( center ).length();
+        return radius.radius;
       },
 
       // Uses the following temporary variables:
@@ -95,7 +97,7 @@
             temporalAabbMinz = temporalAabbMin.z;
 
         // Add linear motion.
-        var linMotion = linvel.multiply( timeStep, tmpV1 );
+        var linMotion = linvel.multiplyScalar( timeStep, tmpV1 );
 
         if ( linMotion.x > 0 ) {
           temporalAabbMaxx += linMotion.x;
@@ -124,6 +126,8 @@
 
         temporalAabbMin.subtractSelf( angularMotion3d );
         temporalAabbMax.addSelf( angularMotion3d );
+
+        return this;
       },
 
       isPolyhedral: function() {

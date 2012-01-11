@@ -23,17 +23,17 @@ test( 'member functions exist', 48, function() {
 
   ok( v0.clone, 'clone exists' );
   ok( v0.add, 'add exists' );
-  ok( v0.add, 'addSelf exists' );
+  ok( v0.addSelf, 'addSelf exists' );
   ok( v0.subtract, 'subtract exists' );
-  ok( v0.subtract, 'subtractSelf exists' );
-  ok( v0.multiply, 'multiply exists' );
-  ok( v0.multiply, 'multiplySelf exists' );
-  ok( v0.scale, 'scale exists' );
-  ok( v0.scale, 'scaleSelf exists' );
-  ok( v0.divide, 'divide exists' );
-  ok( v0.divide, 'divideSelf exists' );
-  ok( v0.inverseScale, 'inverseScale exists' );
-  ok( v0.inverseScale, 'inverseScaleSelf exists' );
+  ok( v0.subtractSelf, 'subtractSelf exists' );
+  ok( v0.multiplyScalar, 'multiplyScalar exists' );
+  ok( v0.multiplyScalarSelf, 'multiplyScalarSelf exists' );
+  ok( v0.multiplyVector, 'mulitplyVector exists' );
+  ok( v0.multiplyVectorSelf, 'multiplyVectorSelf exists' );
+  ok( v0.divideScalar, 'divideScalar exists' );
+  ok( v0.divideScalarSelf, 'divideScalarSelf exists' );
+  ok( v0.divideVector, 'divideVector exists' );
+  ok( v0.divideVectorSelf, 'divideVectorSelf exists' );
   ok( v0.dot, 'dot exists' );
   ok( v0.length2, 'length2 exists' );
   ok( v0.length, 'length exists' );
@@ -152,89 +152,103 @@ test( 'subtractSelf', 3, function() {
   deepEqual( v0, Bump.Vector3.create( 0, 4, 3), 'correctResult' );
 });
 
-test( 'multiply', 3, function() {
+test( 'multiplyScalar', 3, function() {
   var v0 = Bump.Vector3.create( 1, 2, 3 ),
   v1 = Bump.Vector3.create(),
   ret;
 
-  ret = v0.multiply( 2, v1 );
+  ret = v0.multiplyScalar( 2, v1 );
   ok( ret === v1, 'return value references correct vector' );
   deepEqual( v0, Bump.Vector3.create( 1, 2, 3), 'input vector unchanged' );
   deepEqual( v1, Bump.Vector3.create( 2, 4, 6 ), 'correct result' );
 });
 
-test( 'multiplySelf', 2, function() {
+test( 'multiplyScalarSelf', 2, function() {
   var v0 = Bump.Vector3.create( 1, 2, 3 ),
   ret;
 
-  ret = v0.multiplySelf( 2 );
+  ret = v0.multiplyScalarSelf( 2 );
   ok( ret === v0, 'return value references correct vector' );
   deepEqual( v0, Bump.Vector3.create( 2, 4, 6 ), 'correctResult' );
 });
 
-test( 'scale', 4, function() {
+test( 'multiplyVector', 4, function() {
   var v0 = Bump.Vector3.create( 1, 2, 3 ),
   v1 = Bump.Vector3.create( 2, -1, 0 ),
   v2 = Bump.Vector3.create(),
   ret;
 
-  ret = v0.scale( v1, v2 );
+  ret = v0.multiplyVector( v1, v2 );
   ok( ret === v2, 'return value references correct vector' );
   deepEqual( v0, Bump.Vector3.create( 1, 2, 3 ), 'input vector unchanged' );
   deepEqual( v1, Bump.Vector3.create( 2, -1, 0 ), 'input vector unchanged' );
   deepEqual( v2, Bump.Vector3.create( 2, -2, 0 ), 'correct result' );
 });
 
-test( 'scaleSelf', 3, function() {
+test( 'multiplyVectorSelf', 3, function() {
   var v0 = Bump.Vector3.create( 1, 2, 3 ),
   v1 = Bump.Vector3.create( 2, -1, 0 ),
   ret;
 
-  ret = v0.scaleSelf( v1 );
+  ret = v0.multiplyVectorSelf( v1 );
   ok( ret === v0, 'return value references correct vector' );
   deepEqual( v1, Bump.Vector3.create( 2, -1, 0 ), 'input vector unchanged' );
   deepEqual( v0, Bump.Vector3.create( 2, -2, 0 ), 'correctResult' );
 });
 
-test( 'divide', 3, function() {
+test( 'divideScalar', 3, function() {
   var v0 = Bump.Vector3.create( 1, 2, 3 ),
   v1 = Bump.Vector3.create(),
   ret;
 
-  ret = v0.divide( 2, v1 );
+  ret = v0.divideScalar( 2, v1 );
   ok( ret === v1, 'return value references correct vector' );
   deepEqual( v0, Bump.Vector3.create( 1, 2, 3 ), 'input vector unchanged' );
   deepEqual( v1, Bump.Vector3.create( 0.5, 1, 1.5 ), 'correct result' );
 });
 
-test( 'divideSelf', 2, function() {
+test( 'divideScalarSelf', 2, function() {
   var v0 = Bump.Vector3.create( 1, 2, 3 ),
   ret;
 
-  ret = v0.divideSelf( 2 );
+  ret = v0.divideScalarSelf( 2 );
   ok( ret === v0, 'return value references correct vector' );
   deepEqual( v0, Bump.Vector3.create( 0.5, 1, 1.5 ), 'correctResult' );
 });
 
-test( 'inverseScale', 4, function() {
-  var v0 = Bump.Vector3.create( 1, 2, 3 ),
-  v1 = Bump.Vector3.create( 2, 1, -3 ),
-  v2 = Bump.Vector3.create(),
-  ret;
+test( 'divideVector', 15, function() {
+  // var v0 = Bump.Vector3.create( 1, 2, 3 ),
+  // v1 = Bump.Vector3.create( 2, 1, -3 ),
+  // v2 = Bump.Vector3.create(),
+  // ret;
 
-  ret = v0.inverseScale( v1, v2 );
-  ok( ret === v2, 'return value references correct vector' );
-  deepEqual( v0, Bump.Vector3.create( 1, 2, 3 ), 'input vector unchanged' );
-  deepEqual( v1, Bump.Vector3.create( 2, 1, -3 ), 'input vector unchanged' );
-  deepEqual( v2, Bump.Vector3.create( 0.5, 2, -1 ), 'correct result' );
+  // ret = v0.inverseScale( v1, v2 );
+  // ok( ret === v2, 'return value references correct vector' );
+  // deepEqual( v0, Bump.Vector3.create( 1, 2, 3 ), 'input vector unchanged' );
+  // deepEqual( v1, Bump.Vector3.create( 2, 1, -3 ), 'input vector unchanged' );
+  // deepEqual( v2, Bump.Vector3.create( 0.5, 2, -1 ), 'correct result' );
+
+  testFunc( Bump.Vector3, 'divideVector', {
+    objects: Bump.Vector3.create( 1, 2, 3 ),
+
+    args: [
+      [ Bump.Vector3.create( 2, 1, -3 ) ]
+    ],
+
+    expected: [
+      Bump.Vector3.create( 0.5, 2, -1 )
+    ],
+
+    destType: Bump.Vector3
+  });
 });
 
-test( 'inverseScaleSelf', 3, function() {
+test( 'divideVectorSelf', 3, function() {
   var v0 = Bump.Vector3.create( 1, 2, 3 ),
   v1 = Bump.Vector3.create( 2, 1, -3 ),
   ret;
 
-  ret = v0.inverseScaleSelf( v1 );
+  ret = v0.divideVectorSelf( v1 );
   ok( ret === v0, 'return value references correct vector' );
   deepEqual( v1, Bump.Vector3.create( 2, 1, -3 ), 'input vector unchanged' );
   deepEqual( v0, Bump.Vector3.create( 0.5, 2, -1 ), 'correctResult' );
@@ -277,7 +291,7 @@ test( 'safeNormalize', 3, function() {
   v2.safeNormalize();
 
   deepEqual( v1, Bump.Vector3.create( 1, 0, 0 ) );
-  deepEqual( v2, Bump.Vector3.create( 0, 1/Math.sqrt( 2 ), -1/Math.sqrt( 2 ) ) );
+  deepEqual( v2, Bump.Vector3.create( 0, 1 / Math.sqrt( 2 ), -1 / Math.sqrt( 2 ) ) );
   deepEqual( v3, Bump.Vector3.create( 1, 0, 0 ) );
 });
 
@@ -553,22 +567,42 @@ test( 'closestAxis', 7, function() {
   equal( Bump.Vector3.create( -2, -3, -1 ).closestAxis(), 1 );
 });
 
-test( 'closest', 7, function() {
-  equal( Bump.Vector3.create().closest(), 0 );
-  equal( Bump.Vector3.create( 0, 1, 1 ).closest(), 1 );
-  equal( Bump.Vector3.create( 1, 0, 1 ).closest(), 1 );
-  equal( Bump.Vector3.create( 1, 1, 0 ).closest(), 1 );
-  equal( Bump.Vector3.create( 0, 2, 3 ).closest(), 3 );
-  equal( Bump.Vector3.create( 4, 1, -3 ).closest(), 4 );
-  equal( Bump.Vector3.create( -2, -3, -1 ).closest(), 3 );
+test( 'closest', 13, function() {
+  // equal( Bump.Vector3.create().closest(), 0 );
+  // equal( Bump.Vector3.create( 0, 1, 1 ).closest(), 1 );
+  // equal( Bump.Vector3.create( 1, 0, 1 ).closest(), 1 );
+  // equal( Bump.Vector3.create( 1, 1, 0 ).closest(), 1 );
+  // equal( Bump.Vector3.create( 0, 2, 3 ).closest(), 3 );
+  // equal( Bump.Vector3.create( 4, 1, -3 ).closest(), 4 );
+  // equal( Bump.Vector3.create( -2, -3, -1 ).closest(), 3 );
+
+  testFunc( Bump.Vector3, 'closest', {
+    objects: [
+      Bump.Vector3.create( 0, 1, 1 ),
+      Bump.Vector3.create( 1, 0, 1 ),
+      Bump.Vector3.create( 1, 1, 0 ),
+      Bump.Vector3.create( 0, 2, 3 ),
+      Bump.Vector3.create( 4, 1, -3 ),
+      Bump.Vector3.create( -2, -3, -1 )
+    ],
+
+    expected: [
+      1,
+      1,
+      1,
+      3,
+      4,
+      3
+    ]
+  });
 });
 
 test( 'setInterpolate3', 5, function() {
   var right = Bump.Vector3.create( 1, 0, 0 ),
-  up = Bump.Vector3.create( 0, 1, 0 ),
-  forward = Bump.Vector3.create( 0, 0, 1 ),
-  lerped = Bump.Vector3.create(),
-  ret;
+      up = Bump.Vector3.create( 0, 1, 0 ),
+      forward = Bump.Vector3.create( 0, 0, 1 ),
+      lerped = Bump.Vector3.create(),
+      ret;
 
   ret = lerped.setInterpolate3( right, up, 0.5 );
   ok( ret === lerped, "return value references correct vector" );

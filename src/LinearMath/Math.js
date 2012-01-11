@@ -21,4 +21,18 @@
     };
   }
 
+  if ( !Bump.Fsels ) {
+    Bump.Fsels = function btFsels( a, b, c ) {
+      return a >= 0 ? b : c;
+    };
+  }
+
+  if ( !Bump.Assert ) {
+    Bump.Assert = function btAssert( expression ) {
+      if ( !expression ) {
+        undefined.error();
+      }
+    };
+  }
+
 })( this, this.Bump );
