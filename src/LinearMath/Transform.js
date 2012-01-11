@@ -60,7 +60,7 @@
 
       // Initialize a transform with all zeros.
       _initWithQuaternion: function Transform( q, c ) {
-        this.basis = Bump.Matrix3x3.createFromQuaternion( q );
+        this.basis = Bump.Matrix3x3.createWithQuaternion( q );
         this.origin = ( c ? c.clone() : Bump.Vector3.create() );
         return this;
       },

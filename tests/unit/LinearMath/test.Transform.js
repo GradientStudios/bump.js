@@ -643,9 +643,16 @@ test( 'basic', function() {
         Bump.Vector3.create( -1.3333333333333333, -0.6666666666666666, 0.6666666666666667 )
       );
 
-  testBinaryOp( Bump.Transform, "multiplyTransform", a, b, expected, {
-    destType: Bump.Transform
+  testFunc( Bump.Transform, 'multiplyTransform', {
+    destType: Bump.Transform,
+    objects: a,
+    args: [ [ b ] ],
+    expected: [ expected ]
   });
+
+  // testBinaryOp( Bump.Transform, "multiplyTransform", a, b, expected, {
+  //   destType: Bump.Transform
+  // });
 });
 
 module( 'Bump.Transform.multiplyTransformSelf' );
