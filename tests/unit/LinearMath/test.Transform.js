@@ -12,9 +12,9 @@ var epsilonNumberCheck = function( result, expected, epsilon, message ) {
 
   while ( expectedKeys.length ) {
     key = expectedKeys.shift();
-    var eProp = key[1][ key[0] ];
-    var rProp = key[2][ key[0] ];
-    var path  = key[3].join( '.' );
+    var eProp = key[1][ key[0] ],
+        rProp = key[2][ key[0] ],
+        path  = key[3].join( '.' );
 
     if ( checkedObjects.indexOf( eProp ) === -1 ) {
 
@@ -503,6 +503,25 @@ test( 'member clone to destination', function() {
   ok( a.basis !== b.basis && a.origin !== b.origin, 'deep clones properties' );
   strictEqual( a, aRef, 'a is not reallocated' );
   strictEqual( b, bRef, 'b is not reallocated' );
+});
+
+module( 'Transform.assign' );
+test( 'basic', function() {
+  var a = Bump.Transform.create(
+        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, 1, 1 ), Math.PI ),
+        Bump.Vector3.create( 1, 2, 3 )
+      ),
+      b = Bump.Transform.getIdentity();
+
+  notDeepEqual( a, b );
+  a.assign( b );
+  deepEqual( a, b );
+
+  notStrictEqual( a.basis, b.basis );
+  notStrictEqual( a.basis.m_el0, b.basis.m_el0 );
+  notStrictEqual( a.basis.m_el1, b.basis.m_el1 );
+  notStrictEqual( a.basis.m_el2, b.basis.m_el2 );
+  notStrictEqual( a.origin, b.origin );
 });
 
 module( 'Bump.Transform.setOrigin' );

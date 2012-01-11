@@ -58,6 +58,15 @@
         return Bump.Vector3.create( this.x, this.y, this.z );
       },
 
+      // Assigns `other` vector into `this` vector.
+      assign: function( other ) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+        this.w = other.w;
+        return this;
+      },
+
       // Add `this` to `vec`, storing the result in `dest` if provided.
       // If not, a new Vector3 is created and returned.
       // This function is analogous to `btVector3`'s `operator+`.

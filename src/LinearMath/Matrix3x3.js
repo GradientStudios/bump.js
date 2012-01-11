@@ -59,6 +59,22 @@
         );
       },
 
+      assign: function( other ) {
+        this.m_el0.assign( other.m_el0 );
+        this.m_el1.assign( other.m_el1 );
+        this.m_el2.assign( other.m_el2 );
+
+        for ( var i = 0; i < 3; ++i ) {
+          this.m_el[i].assign( other.m_el[i] );
+        }
+
+        this.setValue( other.m11, other.m12, other.m13,
+                       other.m21, other.m22, other.m23,
+                       other.m31, other.m32, other.m33 );
+
+        return this;
+      },
+
       // Compares `this` to `that` and returns whether they are the same.
       equal: function( that ) {
         return (
