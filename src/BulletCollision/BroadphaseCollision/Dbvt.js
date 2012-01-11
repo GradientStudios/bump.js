@@ -1091,9 +1091,34 @@
     },
 
     typeMembers: {
-      maxdepth: function( node ) {}, // TODO
-      countLeaves: function( node ) {}, // TODO
-      extractLeaves: function( node, leavesRef ) {}, // TODO
+      maxdepth: function( node ) {
+        var depth = 0;
+        if( node ) {
+          getmaxdepth( node, 1, depth );
+        }
+      },
+
+      countLeaves: function( node ) {
+        if( node.isinternal() ) {
+          return( Bump.Dbvt.countLeaves( node.childs[ 0 ] ) +
+                  Bump.Dbvt.countLeaves( node.childs[ 1 ] ) );
+        }
+        else {
+          return 1;
+        }
+      },
+
+      extractLeaves: function( node, leaves ) {
+        if( node.isinternal() ) {
+          Bump.Dbvt.extractLeaves( node.childs[ 0 ], leaves );
+          Bump.Dbvt.extractLeaves( node.childs[ 1 ], leaves );
+        }
+        else {
+          leaves.push(node);
+        }
+      },
+
+      // omitting this function for now
       benchmark: function() {},
 
       // iterate over all nodes and process according to the given policy
