@@ -782,6 +782,15 @@ test( 'creation', function() {
   }
 });
 
+test( 'properties', function() {
+  var vec = Bump.Vector4.create( 1, 2, 3, 4 );
+
+  equal( vec[0], 1 );
+  equal( vec[1], 2 );
+  equal( vec[2], 3 );
+  equal( vec[3], 4 );
+});
+
 module( 'Vector4.setValue' );
 
 test( 'basic', function() {
