@@ -653,3 +653,85 @@ test( 'Bump.Dbvt.sStkCLN creation', function() {
   strictEqual( t2.node, n, 'node initialized correctly' );
   equal( t2.parent, p, 'parent initialized correctly' );
 } );
+
+module( 'Bump.Dbvt.ICollide' );
+
+test( 'Bump.Dbvt.ICollide exists', function() {
+  var s = Bump.Dbvt.ICollide || {};
+  strictEqual( typeof s.create, 'function', 'Bump.Dbvt.ICollide exists' );
+} );
+
+test( 'Bump.Dbvt.ICollide creation', function() {
+  var t = Bump.Dbvt.ICollide.create();
+  ok( t instanceof Bump.Dbvt.ICollide.prototype.init, 'creation without `new` operator' );
+  strictEqual( typeof t.ProcessNode2, 'function', 'ProcessNode exists' );
+  strictEqual( typeof t.ProcessNode, 'function', 'ProcessNode exists' );
+  strictEqual( typeof t.ProcessNodeScalar, 'function', 'ProcessNode exists' );
+  strictEqual( typeof t.Descent, 'function', 'ProcessNode exists' );
+  strictEqual( typeof t.AllLeaves, 'function', 'ProcessNode exists' );
+} );
+
+module( 'Bump.Dbvt.IWriter' );
+
+test( 'Bump.Dbvt.IWriter exists', function() {
+  var s = Bump.Dbvt.IWriter || {};
+  strictEqual( typeof s.create, 'function', 'Bump.Dbvt.IWriter exists' );
+} );
+
+test( 'Bump.Dbvt.IWriter creation', function() {
+  var t = Bump.Dbvt.IWriter.create();
+  ok( t instanceof Bump.Dbvt.IWriter.prototype.init, 'creation without `new` operator' );
+  strictEqual( typeof t.Prepare, 'function', 'Prepare exists' );
+  strictEqual( typeof t.WriteNode, 'function', 'WriteNode exists' );
+  strictEqual( typeof t.WriteLeaf, 'function', 'WriteLeaf exists' );
+} );
+
+module( 'Bump.Dbvt.IClone' );
+
+test( 'Bump.Dbvt.IClone exists', function() {
+  var s = Bump.Dbvt.IClone || {};
+  strictEqual( typeof s.create, 'function', 'Bump.Dbvt.IClone exists' );
+} );
+
+test( 'Bump.Dbvt.IClone creation', function() {
+  var t = Bump.Dbvt.IClone.create();
+  ok( t instanceof Bump.Dbvt.IClone.prototype.init, 'creation without `new` operator' );
+  strictEqual( typeof t.CloneLeaf, 'function', 'CloneLeaf exists' );
+} );
+
+module( 'Bump.DbvtNodeEnumerator' );
+
+test( 'Bump.DbvtNodeEnumerator exists', function() {
+  var s = Bump.DbvtNodeEnumerator || {};
+  strictEqual( typeof s.create, 'function', 'Bump.DbvtNodeEnumerator exists' );
+} );
+
+test( 'Bump.DbvtNodeEnumerator creation', function() {
+  var t = Bump.DbvtNodeEnumerator.create();
+  ok( t instanceof Bump.DbvtNodeEnumerator.prototype.init, 'creation without `new` operator' );
+
+  deepEqual( t.nodes, [], 'nodes initialized correctly' );
+  strictEqual( typeof t.ProcessNode2, 'function', 'ProcessNode exists' );
+  strictEqual( typeof t.ProcessNode, 'function', 'ProcessNode exists' );
+  strictEqual( typeof t.ProcessNodeScalar, 'function', 'ProcessNode exists' );
+  strictEqual( typeof t.Descent, 'function', 'ProcessNode exists' );
+  strictEqual( typeof t.AllLeaves, 'function', 'ProcessNode exists' );
+} );
+
+test( 'Bump.DbvtNodeEnumerator Process member function', function() {
+  var t = Bump.DbvtNodeEnumerator.create(),
+  n0 = Bump.DbvtNode.create(),
+  n1 = Bump.DbvtNode.create(),
+  n2 = Bump.DbvtNode.create();
+
+  n0.childs = [ n1, n2 ];
+  n1.parent = n0;
+  n2.parent = n0;
+
+  t.Process( n0 );
+  t.Process( n1 );
+  t.Process( n2 );
+
+  deepEqual( t.nodes, [ n0, n1, n2 ], 'Process function correctly adds to nodes' );
+
+} );
