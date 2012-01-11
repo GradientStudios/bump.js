@@ -324,7 +324,7 @@ var testFunc = function( objType, func, options ) {
 
   var objs = options.objects || {};
 
-  var argsLength = objs.length;
+  var argsLength = Array.isArray( objs ) ? objs.length : undefined;
   if ( options.args ) {
     argsLength = options.args.length;
     check( Array.isArray( options.args ), 'args is an array of args' );
@@ -344,7 +344,7 @@ var testFunc = function( objType, func, options ) {
     }
   }
 
-  var expectedLength = objs.length;
+  var expectedLength = Array.isArray( objs ) ? objs.length : undefined;
   if ( options.expected ) {
     expectedLength = options.expected.length;
     check( Array.isArray( options.expected ), 'expected is an array of results' );
@@ -643,9 +643,16 @@ test( 'basic', function() {
         Bump.Vector3.create( -1.3333333333333333, -0.6666666666666666, 0.6666666666666667 )
       );
 
-  testBinaryOp( Bump.Transform, "multiplyTransform", a, b, expected, {
-    destType: Bump.Transform
+  testFunc( Bump.Transform, 'multiplyTransform', {
+    destType: Bump.Transform,
+    objects: a,
+    args: [ [ b ] ],
+    expected: [ expected ]
   });
+
+  // testBinaryOp( Bump.Transform, "multiplyTransform", a, b, expected, {
+  //   destType: Bump.Transform
+  // });
 });
 
 module( 'Bump.Transform.multiplyTransformSelf' );
