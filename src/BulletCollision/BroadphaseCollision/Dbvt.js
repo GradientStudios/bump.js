@@ -790,7 +790,7 @@
               /* bit = ( bit + 1 ) & ( sizeof ( unsigned ) * 8 - 1 ); */
               bit = ( bit + 1 ) & 31;
             }
-            this.update( node );
+            this.updateLookahead( node );
             ++this.m_opath;
           } while( --passes );
         }
@@ -837,19 +837,91 @@
         insertleaf( this, root, leaf );
       },
 
-      updateLeafVolumeVelocityMargin: function( leaf, volumeRef, velocity, margin ) {},        // TODO
+      updateLeafVolumeVelocityMargin: function(  leaf, volume, velocity, margin  ) {
+        if( leaf.volume.Contain( volume ) ) {
+          return false;
+        }
+        volume.Expand( Bump.Vector3.create( margin, margin, margin ) );
+        volume.SignedExpand( velocity );
+        this.updateLeafVolume( leaf, volume );
+        return true;
 
-      updateLeafVolumeVelocity: function( leaf, volumeRef, velocity ) {},        // TODO
+      },
 
-      updateLeafVolumeMargin: function( leaf, volumeRef, margin ) {},        // TODO
+      updateLeafVolumeVelocity: function(  leaf, volume, velocity  ) {
+        if( leaf.volume.Contain( volume ) ) {
+          return false;
+        }
+        volume.SignedExpand( velocity );
+        this.updateLeafVolume( leaf,volume );
+        return true;
+      },
 
-      remove: function( leaf ) {},        // TODO
+      updateLeafVolumeMargin: function(  leaf, volume, margin  ) {
+        if( leaf.volume.Contain( volume ) ) {
+          return false;
+        }
+        volume.Expand( Bump.Vector3.create( margin,margin,margin ) );
+        this.updateLeafVolume( leaf,volume );
+        return true;
+      },
 
-      write: function( iwriter ) {},        // TODO
+      remove: function( leaf ) {
+        removeleaf( this, leaf );
+        deletenode( this, leaf );
+        --this.m_leaves;
+      },
+
+      write: function( iwriter ) {
+        var nodes = Bump.DbvtNodeEnumerator.create();
+        //nodes.nodes.reserve(m_leaves*2);
+        Bump.Dbvt.enumNodes( this.m_root, nodes );
+        iwriter.Prepare( this.m_root, nodes.nodes.length );
+        for( var i = 0; i < nodes.nodes.length; ++i ) {
+          var n = nodes.nodes[i],
+              p = -1;
+          if( n.parent ) {
+            p = nodes.nodes.findLinearSearch( n.parent );
+          }
+          if( n.isinternal() ) {
+            var c0 = nodes.nodes.findLinearSearch( n.childs[0] );
+            var c1 = nodes.nodes.findLinearSearch( n.childs[1] );
+            iwriter.WriteNode( n, i, p, c0, c1 );
+          }
+          else {
+            iwriter.WriteLeaf( n, i, p );
+          }
+        }
+      },
 
       clone: function( dest, iclone ) {
         iclone = iclone || 0;
-        // TODO
+
+        dest.clear();
+        if(this.m_root !== 0) {
+          var stack = [];
+          //stack.reserve(this.m_leaves);
+          stack.push( Bump.Dbvt.sStkCLN.create( this.m_root, 0 ) );
+          do {
+            var i = stack.length - 1,
+            e = stack[i],
+            n = createnodeTreeParentVolumeData( dest, e.parent, e.node.volume, e.node.data);
+            stack.pop();
+            if( e.parent !== 0 ) {
+              e.parent.childs[ i & 1 ] = n;
+            }
+            else {
+              dest.m_root = n;
+            }
+            if( e.node.isinternal() ) {
+              stack.push( Bump.Dbvt.sStkCLN.create(e.node.childs[0], n ) );
+              stack.push( Bump.Dbvt.sStkCLN.create(e.node.childs[1], n ) );
+            }
+            else {
+              iclone.CloneLeaf(n);
+            }
+          } while( stack.length > 0 );
+        }
       },
 
       // Process collision between two `Dbvt` trees with roots `root0` and `root1`, according
