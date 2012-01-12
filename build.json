@@ -25,6 +25,7 @@
         "src/BulletDynamics/ConstraintSolver/TypedConstraint.js",
 
         "src/BulletCollision/CollisionDispatch/CollisionObject.js",
+        "src/BulletDynamics/Dynamics/RigidBody.js",
 
         "src/BulletCollision/CollisionShapes/CollisionShape.js",
         "src/BulletCollision/CollisionShapes/ConvexShape.js",
