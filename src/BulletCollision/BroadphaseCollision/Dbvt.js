@@ -423,7 +423,7 @@
 
   // static DBVT_INLINE int indexof(const btDbvtNode* node)
   var indexof = function( node ) {
-    return node.parent.childs[ 1 ] === node;
+    return node.parent.childs[ 1 ] === node ? 1 : 0;
   },
 
   merge = function( a, b ) {
@@ -500,9 +500,9 @@
     else {
       if( !root.isleaf() ) {
         do {
-          root = root.childs[ Bump.Select.Volume3( leaf.volume,
-                                                   root.childs[0].volume,
-                                                   root.childs[1].volume) ];
+          root = root.childs[ Bump.Select.DbvtVolume3( leaf.volume,
+                                                       root.childs[0].volume,
+                                                       root.childs[1].volume) ];
         } while( !root.isleaf() );
       }
       var prev = root.parent;
@@ -878,14 +878,14 @@
         Bump.Dbvt.enumNodes( this.m_root, nodes );
         iwriter.Prepare( this.m_root, nodes.nodes.length );
         for( var i = 0; i < nodes.nodes.length; ++i ) {
-          var n = nodes.nodes[i],
+          var n = nodes.nodes[ i ],
               p = -1;
           if( n.parent ) {
-            p = nodes.nodes.findLinearSearch( n.parent );
+            p = nodes.nodes.indexOf( n.parent );
           }
           if( n.isinternal() ) {
-            var c0 = nodes.nodes.findLinearSearch( n.childs[0] );
-            var c1 = nodes.nodes.findLinearSearch( n.childs[1] );
+            var c0 = nodes.nodes.indexOf( n.childs[0] );
+            var c1 = nodes.nodes.indexOf( n.childs[1] );
             iwriter.WriteNode( n, i, p, c0, c1 );
           }
           else {
@@ -1496,10 +1496,11 @@
     init: function DbvtNodeEnumerator() {
       this._super();
       this.nodes = [];
+
     },
 
     members: {
-      Process: function( n ) {
+      ProcessNode: function( n ) {
         this.nodes.push( n );
       }
     }
