@@ -1,6 +1,6 @@
-module( 'CollisionObject' );
+module( 'CollisionObject.create' );
 
-test( 'creation', function() {
+test( 'basic', function() {
   ok( Bump.CollisionObject, 'CollisionObject exists' );
 
   if ( Bump.CollisionObject ) {
@@ -10,6 +10,8 @@ test( 'creation', function() {
     ok( true, 'test skipped' );
   }
 });
+
+module( 'CollisionObject enums' );
 
 test( 'enums', function() {
   equal( Bump.CollisionObject.CollisionFlags.CF_STATIC_OBJECT,                    1 << 0, 'CF_STATIC_OBJECT'                    );
@@ -26,4 +28,23 @@ test( 'enums', function() {
   equal( Bump.CollisionObject.CollisionObjectTypes.CO_SOFT_BODY,        1 << 3, 'CO_SOFT_BODY'        );
   equal( Bump.CollisionObject.CollisionObjectTypes.CO_HF_FLUID,         1 << 4, 'CO_HF_FLUID'         );
   equal( Bump.CollisionObject.CollisionObjectTypes.CO_USER_TYPE,        1 << 5, 'CO_USER_TYPE'        );
+});
+
+module( 'CollisionObject.clone' );
+
+var CollisionObjectDeepCopyCheck = function( a, b ) {
+  notStrictEqual( a.worldTransform, b.worldTransform );
+  notStrictEqual( a.interpolationWorldTransform, b.interpolationWorldTransform );
+  notStrictEqual( a.interpolationLinearVelocity, b.interpolationLinearVelocity );
+  notStrictEqual( a.interpolationAngularVelocity, b.interpolationAngularVelocity );
+  notStrictEqual( a.anisotropicFriction, b.anisotropicFriction );
+};
+
+test( 'basic', function() {
+  var a = Bump.CollisionObject.create();
+  var b = a.clone();
+
+  deepEqual( a, b );
+  notStrictEqual( a, b );
+  CollisionObjectDeepCopyCheck( a, b );
 });

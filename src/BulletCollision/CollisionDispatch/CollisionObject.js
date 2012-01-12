@@ -54,6 +54,66 @@
     },
 
     members: {
+      clone: function( dest ) {
+        dest = dest || Bump.CollisionObject.create();
+
+        dest.worldTransform = this.worldTransform.clone();
+        dest.interpolationWorldTransform = this.interpolationWorldTransform.clone();
+        dest.interpolationLinearVelocity = this.interpolationLinearVelocity.clone();
+        dest.interpolationAngularVelocity = this.interpolationAngularVelocity.clone();
+        dest.anisotropicFriction = this.anisotropicFriction.clone();
+        dest.hasAnisotropicFriction = this.hasAnisotropicFriction;
+        dest.contactProcessingThreshold = this.contactProcessingThreshold;
+        dest.broadphaseHandle = this.broadphaseHandle;
+        dest.collisionShape = this.collisionShape;
+        dest.extensionPointer = this.extensionPointer;
+        dest.rootCollisionShape = this.rootCollisionShape;
+        dest.collisionFlags = this.collisionFlags;
+        dest.islandTag1 = this.islandTag1;
+        dest.companionId = this.companionId;
+        dest.activationState1 = this.activationState1;
+        dest.deactivationTime = this.deactivationTime;
+        dest.friction = this.friction;
+        dest.restitution = this.restitution;
+        dest.internalType = this.internalType;
+        dest.userObjectPointer = this.userObjectPointer;
+        dest.hitFraction = this.hitFraction;
+        dest.ccdSweptSphereRadius = this.ccdSweptSphereRadius;
+        dest.ccdMotionThreshold = this.ccdMotionThreshold;
+        dest.checkCollideWith = this.checkCollideWith;
+
+        return dest;
+      },
+
+      assign: function( other ) {
+        this.worldTransform.assign( other.worldTransform );
+        this.interpolationWorldTransform.assign( other.interpolationWorldTransform );
+        this.interpolationLinearVelocity.assign( other.interpolationLinearVelocity );
+        this.interpolationAngularVelocity.assign( other.interpolationAngularVelocity );
+        this.anisotropicFriction.assign( other.anisotropicFriction );
+        this.hasAnisotropicFriction = other.hasAnisotropicFriction;
+        this.contactProcessingThreshold = other.contactProcessingThreshold;
+        this.broadphaseHandle = other.broadphaseHandle;
+        this.collisionShape = other.collisionShape;
+        this.extensionPointer = other.extensionPointer;
+        this.rootCollisionShape = other.rootCollisionShape;
+        this.collisionFlags = other.collisionFlags;
+        this.islandTag1 = other.islandTag1;
+        this.companionId = other.companionId;
+        this.activationState1 = other.activationState1;
+        this.deactivationTime = other.deactivationTime;
+        this.friction = other.friction;
+        this.restitution = other.restitution;
+        this.internalType = other.internalType;
+        this.userObjectPointer = other.userObjectPointer;
+        this.hitFraction = other.hitFraction;
+        this.ccdSweptSphereRadius = other.ccdSweptSphereRadius;
+        this.ccdMotionThreshold = other.ccdMotionThreshold;
+        this.checkCollideWith = other.checkCollideWith;
+
+        return this;
+      },
+
       checkCollideWithOverride: function() {
         return true;
       },
