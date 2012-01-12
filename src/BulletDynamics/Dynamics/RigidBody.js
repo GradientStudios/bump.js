@@ -2,6 +2,8 @@
   var RigidBodyConstructionInfo,
       tmpV1 = Bump.Vector3.create(),
       tmpV2 = Bump.Vector3.create(),
+      tmpM1 = Bump.Matrix3x3.create(),
+      tmpM2 = Bump.Matrix3x3.create(),
       uniqueId = 0;
 
   Bump.RigidBody = Bump.type({
@@ -67,6 +69,10 @@
 
     members: {
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpM1` ← `updateInertiaTensor`
+      // - `tmpM2` ← `updateInertiaTensor`
       setupRigidBody: function( constructionInfo ) {
         this.internalType = Bump.CollisionObject.CollisionObjectTypes.CO_RIGID_BODY;
 
@@ -115,7 +121,7 @@
 
         this.deltaLinearVelocity.setZero();
         this.deltaAngularVelocity.setZero();
-        this.invMass = this.inverseMass * this.linearFactor;
+        this.invMass = this.linearFactor.multiplyScalar( this.inverseMass );
         this.pushVelocity.setZero();
         this.turnVelocity.setZero();
       },
@@ -163,6 +169,9 @@
         }
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1` ← `applyCentralForce`
       applyGravity: function() {
         if ( this.isStaticOrKinematicObject() ) {
           return;
@@ -252,6 +261,214 @@
             }
           }
         }
+      },
+
+      getCollisionShape: function() {
+        return this.collisionShape;
+      },
+
+      setMassProps: function( mass, inertia ) {
+        if ( mass === 0 ) {
+          this.collisionFlags |= Bump.CollisionObject.CollisionFlags.CF_STATIC_OBJECT;
+          this.inverseMass = 0;
+        } else {
+          this.collisionFlags &= ( ~Bump.CollisionObject.CollisionFlags.CF_STATIC_OBJECT );
+          this.inverseMass = 1 / mass;
+        }
+
+        // Fg = m * a
+        this.gravity = mass * this.gravity_acceleration;
+
+        this.invInertiaLocal.setValue(
+          inertia.x !== 0 ? 1.0 / inertia.x: 0,
+          inertia.y !== 0 ? 1.0 / inertia.y: 0,
+          inertia.z !== 0 ? 1.0 / inertia.z: 0
+        );
+
+        this.invMass = this.linearFactor.multiplyScalar( this.inverseMass, this.invMass );
+      },
+
+      getLinearFactor: function() {
+        return this.linearFactor;
+      },
+
+      setLinearFactor: function( linearFactor ) {
+        this.linearFactor.assign( linearFactor );
+        this.invMass = this.linearFactor.multiplyScalar( this.inverseMass, this.invMass );
+      },
+
+      getInvMass: function() {
+        return this.inverseMass;
+      },
+
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      integrateVelocities: function( step ) {
+        if ( this.isStaticOrKinematicObject() ) {
+          return;
+        }
+
+        var MAX_ANGVEL = Math.PI / 2;
+
+        this.linearVelocity.addSelf( this.totalForce.multiplyScalar( this.inverseMass * step ), tmpV1 );
+        this.angularVelocity.addSelf(
+          this.invInertiaTensorWorld
+            .multiplyVector3( this.totalTorque, tmpV1 )
+            .multiplyScalar( step, tmpV1 )
+        );
+
+        // Clamp angular velocity. Collision calculations will fail on higher
+        // angular velocities.
+        var angvel = this.angularVelocity.length();
+        if ( angvel * step > MAX_ANGVEL ) {
+          this.angularVelocity.multiplyScalarSelf( ( MAX_ANGVEL / step ) / angvel );
+        }
+      },
+
+      // Uses the following temporary variables:
+      //
+      // - `tmpM1` ← `updateInertiaTensor`
+      // - `tmpM2` ← `updateInertiaTensor`
+      setCenterOfMassTransform: function( xform ) {
+        if ( this.isStaticOrKinematicObject() ) {
+          this.interpolationWorldTransform.assign( this.worldTransform );
+        } else {
+          this.interpolationWorldTransform.assign( xform );
+        }
+        this.interpolationLinearVelocity.assign( this.getLinearVelocity() );
+        this.interpolationAngularVelocity.assign( this.getAngularVelocity() );
+        this.worldTransform.assign( xform );
+        this.updateInertiaTensor();
+      },
+
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      applyCentralForce: function( force ) {
+        this.totalForce.addSelf( force.multiplyVector( this.linearFactor, tmpV1 ) );
+      },
+
+      getTotalForce: function() {
+        return this.totalForce;
+      },
+
+      getTotalTorque: function() {
+        return this.totalTorque;
+      },
+
+      getInvInertiaDiagLocal: function() {
+        return this.invInertiaLocal;
+      },
+
+      setInvInertiaDiagLocal: function( diagInvInertia ) {
+        this.invInertiaLocal.assign( diagInvInertia );
+      },
+
+      setSleepingThresholds: function( linear, angular ) {
+        this.linearSleepingThreshold = linear;
+        this.angularSleepingThreshold = angular;
+      },
+
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      applyTorque: function( torque ) {
+        this.totalTorque.addSelf( torque.multiplyScalar( this.angularFactor, tmpV1 ) );
+      },
+
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1` ← `applyTorque`
+      // - `tmpV2`
+      applyForce: function( force, rel_pos ) {
+        this.applyCentralForce( force );
+        this.applyTorque( rel_pos.cross( force.multiplyScalar( this.linearFactor, tmpV2 ), tmpV2 ) );
+      },
+
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      applyCentralImpulse: function( impulse ) {
+        this.linearVelocity.addSelf(
+          impulse
+            .multiplyScalar( this.linearFactor, tmpV1 )
+            .multiplyScalar( this.inverseMass, tmpV1 )
+        );
+      },
+
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      applyTorqueImpulse: function( torque ) {
+        this.angularVelocity.addSelf(
+          this.invInertiaTensorWorld
+            .multiplyVector( torque, tmpV1 )
+            .multiplyScalar( this.angularFactor, tmpV1 )
+        );
+      },
+
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1` ← `applyTorqueImpulse`
+      // - `tmpV2`
+      applyImpulse: function( impulse, rel_pos ) {
+        if ( this.inverseMass !== 0 ) {
+          this.applyCentralImpulse( impulse );
+
+          if ( this.angularFactor ) {
+            this.applyTorqueImpulse(
+              rel_pos.cross(
+                impulse.multiplyScalar( this.linearFactor, tmpV2 ), tmpV2 )
+            );
+          }
+
+        }
+      },
+
+      clearForces: function() {
+        this.totalForce.setValue( 0, 0, 0 );
+        this.totalTorque.setValue( 0, 0, 0 );
+      },
+
+      // Uses the following temporary variables:
+      //
+      // - `tmpM1`
+      // - `tmpM2`
+      updateInertiaTensor: function() {
+        this.invInertiaTensorWorld.assign(
+          this.worldTransform.basis
+            .scaled( this.invInertiaLocal, tmpM1 )
+            .multiplyMatrix( this.worldTransform.basis.transpose( tmpM2 ), tmpM1 )
+        );
+      },
+
+      getCenterOfMassPosition: function() {
+        return this.worldTransform.origin;
+      },
+
+      getOrientation: function( dest ) {
+        dest = dest || Bump.Quaternion.create();
+
+        var orn = dest;
+        this.worldTransform.basis.getRotation( orn );
+        return orn;
+      },
+
+      getCenterOfMassTransform: function() {
+        return this.worldTransform;
+      },
+
+      getLinearVelocity: function() {
+        return this.linearVelocity;
+      },
+
+      getAngularVelocity: function() {
+        return this.angularVelocity;
+      },
+
+      setLinearVelocity: function( lin_vel ) {
+        this.linearVelocity.assign( lin_vel );
       }
 
     }
