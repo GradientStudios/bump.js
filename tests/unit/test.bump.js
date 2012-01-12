@@ -272,3 +272,47 @@ test( 'typeMembers', 1, function() {
 
   equal( A.didYouGetThatThing(), 'i sent you?', 'Type has type members!' );
 });
+
+module( 'Bump.Enum' );
+
+test( 'basic', function() {
+  var a = Bump.Enum([
+        'ZERO',
+        'ONE',
+        'TWO',
+        'THREE'
+      ]),
+      b = Bump.Enum([
+        { id: 'NEGATIVE_ONE', value: -1 },
+        'ZERO',
+        'ONE',
+        'TWO',
+        'THREE'
+      ]),
+      c = Bump.Enum([
+        { id: 'NEGATIVE_ONE', value: -1 },
+        { id: 'ANOTHER_NEGATIVE_ONE', value: -1 },
+        'ZERO',
+        { id: 'FIVE', value: 5 },
+        'SIX',
+        'SEVEN'
+      ]);
+
+  strictEqual( a.ZERO, 0 );
+  strictEqual( a.ONE, 1 );
+  strictEqual( a.TWO, 2 );
+  strictEqual( a.THREE, 3 );
+
+  strictEqual( b.NEGATIVE_ONE, -1 );
+  strictEqual( b.ZERO, 0 );
+  strictEqual( b.ONE, 1 );
+  strictEqual( b.TWO, 2 );
+  strictEqual( b.THREE, 3 );
+
+  strictEqual( c.NEGATIVE_ONE, -1 );
+  strictEqual( c.ANOTHER_NEGATIVE_ONE, -1 );
+  strictEqual( c.ZERO, 0 );
+  strictEqual( c.FIVE, 5 );
+  strictEqual( c.SIX, 6 );
+  strictEqual( c.SEVEN, 7 );
+});
