@@ -121,4 +121,22 @@ this.Bump = {};
 
   Bump.TypedObject = Bump.type();
 
+  Bump.Enum = function( values ) {
+    var myEnum = {}, currentValue = 0;
+
+    for ( var i = 0; i < values.length; ++i ) {
+      if ( typeof values[i] === 'object' ) {
+        var id = values[i].id || values[i].name || values[i].string;
+        currentValue = Math.round( values[i].value ) || currentValue;
+        myEnum[id] = currentValue;
+      } else {
+        myEnum[ values[i] ] = currentValue;
+      }
+
+      ++currentValue;
+    }
+
+    return myEnum;
+  };
+
 })( this, this.Bump );
