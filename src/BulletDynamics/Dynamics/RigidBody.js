@@ -2,6 +2,7 @@
   var RigidBodyConstructionInfo,
       tmpV1 = Bump.Vector3.create(),
       tmpV2 = Bump.Vector3.create(),
+      tmpV3 = Bump.Vector3.create(),
       tmpM1 = Bump.Matrix3x3.create(),
       tmpM2 = Bump.Matrix3x3.create(),
       uniqueId = 0;
@@ -301,6 +302,10 @@
         return this.inverseMass;
       },
 
+      getInvInertiaTensorWorld: function() {
+        return this.invInertiaTensorWorld;
+      },
+
       // Uses the following temporary variables:
       //
       // - `tmpV1`
@@ -469,6 +474,71 @@
 
       setLinearVelocity: function( lin_vel ) {
         this.linearVelocity.assign( lin_vel );
+      },
+
+      setAngularVelocity: function( ang_vel ) {
+        this.angularVelocity.assign( ang_vel );
+      },
+
+      getVelocityInLocalPoint: function( rel_pos, dest ) {
+        dest = dest || Bump.Vector3.create();
+
+        // We also calculate lin/ang velocity for kinematic objects.
+        return this.linearVelocity
+          .add( this.angularVelocity.cross( rel_pos, dest ), dest );
+
+        // For kinematic objects, we could also use use:
+        //     return (this.worldTransform(rel_pos) - this.interpolationWorldTransform(rel_pos)) / this.kinematicTimeStep;
+      },
+
+      translate: function( v ) {
+        this.worldTransform.origin.addSelf( v );
+      },
+
+      getAabb: function( aabbMin, aabbMax ) {
+        this.getCollisionShape().getAabb( this.worldTransform, aabbMin, aabbMax );
+      },
+
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      // - `tmpV2`
+      // - `tmpV3`
+      computeImpulseDenominator: function( pos, normal ) {
+        var r0 = pos.subtract( this.getCenterOfMassPosition(), tmpV1 );
+        var c0 = r0.cross( normal, tmpV2 );
+        var vec = this.getInvInertiaTensorWorld()
+          .vectorMultiply( c0, tmpV3 )
+          .cross( r0, tmpV3 );
+
+        return this.inverseMass + normal.dot( vec );
+      },
+
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      computeAngularImpulseDenominator: function( axis ) {
+        var vec = this.getInvInertiaTensorWorld().vectorMultiply( axis, tmpV1 );
+        return axis.dot( vec );
+      },
+
+      updateDeactivation: function( timeStep ) {
+        if (
+          ( this.getActivationState() === Bump.CollisionObject.ISLAND_SLEEPING) ||
+            ( this.getActivationState() === Bump.CollisionObject.DISABLE_DEACTIVATION )
+        ) {
+          return;
+        }
+
+        if (
+          ( this.getLinearVelocity().length2() < this.linearSleepingThreshold * this.linearSleepingThreshold ) &&
+            ( this.getAngularVelocity().length2() < this.angularSleepingThreshold * this.angularSleepingThreshold )
+        ) {
+          this.deactivationTime += timeStep;
+        } else {
+          this.deactivationTime = 0;
+          this.setActivationState( 0 );
+        }
       }
 
     }
