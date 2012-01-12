@@ -7,7 +7,7 @@
 
   Bump.Vector3 = Bump.type({
 
-    init: function( x, y, z, w ) {
+    init: function Vector3( x, y, z, w ) {
       this.x = x || 0;
       this.y = y || 0;
       this.z = z || 0;

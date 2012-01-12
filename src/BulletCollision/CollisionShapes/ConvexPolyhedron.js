@@ -7,7 +7,7 @@
       tmpT1 = Bump.Transform.create();
 
   var InternalVertexPair = Bump.type({
-    init: function( v0, v1 ) {
+    init: function InternalVertexPair( v0, v1 ) {
       this.m_v0 = v0;
       this.m_v1 = v1;
     },
@@ -24,7 +24,7 @@
   });
 
   var InternalEdge = Bump.type({
-    init: function() {
+    init: function InternalEdge() {
       this.m_face0 = -1;
       this.m_face1 = -1;
     }

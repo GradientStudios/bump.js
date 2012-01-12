@@ -6,7 +6,7 @@
       CAPACITY     = 0x80000000;
 
   Bump.HashString = Bump.type({
-    init: function( name ) {
+    init: function HashString( name ) {
       this.string = name;
 
       // magic numbers from [here](http://www.isthe.com/chongo/tech/comp/fnv/)

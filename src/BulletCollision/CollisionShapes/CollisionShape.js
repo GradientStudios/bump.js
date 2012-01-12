@@ -2,7 +2,7 @@
   var tmpV1, tmpV2, tmpV3, tmpV4, tmpT1;
 
   Bump.CollisionShapeData = Bump.type({
-    init: function() {
+    init: function CollisionShapeData() {
       this.name = '';
       this.shapeType = 0;
     }
