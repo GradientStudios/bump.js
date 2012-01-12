@@ -11,6 +11,16 @@ test( 'basic', function() {
   }
 });
 
+test( 'is getters', function() {
+  var co = Bump.CollisionObject.create();
+
+  strictEqual( co.isStaticObject(), true );
+  strictEqual( co.isKinematicObject(), false );
+  strictEqual( co.mergesSimulationIslands(), false );
+  strictEqual( co.isStaticOrKinematicObject(), true );
+  strictEqual( co.hasContactResponse(), true );
+});
+
 module( 'CollisionObject enums' );
 
 test( 'enums', function() {
