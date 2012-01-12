@@ -804,11 +804,30 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
   });
 
-  module( 'Dbvt.clear' );
-  test('test skipped', function() {});
+  test('clear', function() {
+    var dbvt = makeTestTree();
+    strictEqual( typeof dbvt.clear, 'function', 'clear exists' );
 
-  module( 'Dbvt.empty' );
-  test('test skipped', function() {});
+    dbvt.clear();
+    equal( dbvt.m_root, 0, 'm_root cleared' );
+    equal( dbvt.m_free, 0, 'm_free cleared' );
+    equal( dbvt.m_lkhd, -1, 'm_lkhd cleared' );
+    equal( dbvt.m_leaves, 0, 'm_leaves cleared' );
+    deepEqual( dbvt.m_stkStack, [], 'm_stkStack cleared' );
+    equal( dbvt.m_opath, 0, 'm_opath cleared' );
+  });
+
+  test('empty', function() {
+    var dbvt = Bump.Dbvt.create();
+    strictEqual( typeof dbvt.empty, 'function', 'empty exists' );
+    ok( dbvt.empty(), 'default dbvt is empty' );
+
+    dbvt = makeTestTree();
+    ok( !dbvt.empty(), 'test dbvt not empty' );
+
+    dbvt.clear();
+    ok( dbvt.empty(), 'cleared dbvt is empty' );
+  } );
 
   module( 'Dbvt.optimizeBottomUp' );
   test('test skipped', function() {});

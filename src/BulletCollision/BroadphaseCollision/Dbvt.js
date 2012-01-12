@@ -746,8 +746,10 @@
     members: {
       clear: function() {
         if( this.m_root ) {
-          recursedeletenode( this, this.m_root );
-          //btAlignedFree(this.m_free);
+          /* recursedeletenode( this, this.m_root ); */
+          this.m_root = 0; /* added because this because recursedelete is no longer called */
+          this.m_leaves = 0; /* added because this because recursedelete is no longer called */
+          /* btAlignedFree(this.m_free); */
           this.m_free = 0;
           this.m_lkhd = -1;
           this.m_stkStack.splice( 0 );
