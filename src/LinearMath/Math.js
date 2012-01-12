@@ -30,6 +30,10 @@
     return x - i * y;
   };
 
+  Bump.Clamped = function btClamped( a, lb, ub ) {
+    return a < lb ? lb : ( ub < a ? ub : a );
+  };
+
   Bump.Assert = function btAssert( expression ) {
     if ( !expression ) {
       undefined.error();
