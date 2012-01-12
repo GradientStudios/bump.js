@@ -5,24 +5,6 @@
       DISABLE_DEACTIVATION = 4,
       DISABLE_SIMULATION = 5;
 
-  var declareEnum = function( values ) {
-    var myEnum = {}, currentValue = 0;
-
-    for ( var i = 0; i < values.length; ++i ) {
-      if ( typeof values[i] === 'object' ) {
-        var id = values[i].id || values[i].name || values[i].string;
-        currentValue = Math.round( values[i].value ) || currentValue;
-        myEnum[id] = currentValue;
-      } else {
-        myEnum[ values[i] ] = currentValue;
-      }
-
-      ++currentValue;
-    }
-
-    return myEnum;
-  };
-
   Bump.CollisionObject = Bump.type({
     init: function CollisionObject() {
       this.worldTransform = Bump.Transform.create();
@@ -392,7 +374,7 @@
     }
   });
 
-  Bump.CollisionObject.CollisionFlags = declareEnum([
+  Bump.CollisionObject.CollisionFlags = Bump.Enum([
     { id: 'CF_STATIC_OBJECT',                    value:  1 },
     { id: 'CF_KINEMATIC_OBJECT',                 value:  2 },
     { id: 'CF_NO_CONTACT_RESPONSE',              value:  4 },
@@ -402,7 +384,7 @@
     { id: 'CF_DISABLE_SPU_COLLISION_PROCESSING', value: 64 }  // Disable parallel/SPU processing
   ]);
 
-  Bump.CollisionObject.CollisionObjectTypes = declareEnum([
+  Bump.CollisionObject.CollisionObjectTypes = Bump.Enum([
     { id: 'CO_COLLISION_OBJECT', value:  1 },
     { id: 'CO_RIGID_BODY',       value:  2 },
     // `CO_GHOST_OBJECT` keeps track of all objects overlapping its AABB and
