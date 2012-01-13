@@ -5,7 +5,11 @@
       tmpV3 = Bump.Vector3.create(),
       tmpM1 = Bump.Matrix3x3.create(),
       tmpM2 = Bump.Matrix3x3.create(),
+      tmpT1 = Bump.Transform.create(),
       uniqueId = 0;
+
+  Bump.gDeactivationTime = 2;
+  Bump.gDisableDeactivation = false;
 
   Bump.RigidBody = Bump.type({
     parent: Bump.CollisionObject,
@@ -66,6 +70,15 @@
         this.setupRigidBody( constructionInfo );
       }
       return this;
+    },
+
+    typeMembers: {
+      upcast: function( colObj ) {
+        if ( colObj.getInternalType() & Bump.CollisionObject.CollisionObjectTypes.CO_RIGID_BODY ) {
+          return colObj;
+        }
+        return null;
+      }
     },
 
     members: {
@@ -505,11 +518,11 @@
       // - `tmpV2`
       // - `tmpV3`
       computeImpulseDenominator: function( pos, normal ) {
-        var r0 = pos.subtract( this.getCenterOfMassPosition(), tmpV1 );
-        var c0 = r0.cross( normal, tmpV2 );
-        var vec = this.getInvInertiaTensorWorld()
-          .vectorMultiply( c0, tmpV3 )
-          .cross( r0, tmpV3 );
+        var r0 = pos.subtract( this.getCenterOfMassPosition(), tmpV1 ),
+            c0 = r0.cross( normal, tmpV2 ),
+            vec = this.getInvInertiaTensorWorld()
+              .vectorMultiply( c0, tmpV3 )
+              .cross( r0, tmpV3 );
 
         return this.inverseMass + normal.dot( vec );
       },
@@ -538,6 +551,243 @@
         } else {
           this.deactivationTime = 0;
           this.setActivationState( 0 );
+        }
+      },
+
+      wantsSleeping: function() {
+        if ( this.getActivationState() === Bump.CollisionObject.DISABLE_DEACTIVATION ) {
+          return false;
+        }
+
+        // Disable deactivation.
+        if ( Bump.gDisableDeactivation || ( Bump.gDeactivationTime === 0 ) ) {
+          return false;
+        }
+
+        if (
+          ( this.getActivationState() === Bump.CollisionObject.ISLAND_SLEEPING) ||
+            ( this.getActivationState() === Bump.CollisionObject.WANTS_DEACTIVATION )
+        ) {
+          return true;
+        }
+
+        if ( this.deactivationTime > Bump.gDeactivationTime ) {
+          return true;
+        }
+
+        return false;
+      },
+
+      getBroadphaseProxy: function() {
+        return this.broadphaseHandle;
+      },
+
+      setNewBroadphaseProxy: function( broadphaseProxy ) {
+        this.broadphaseHandle = broadphaseProxy;
+      },
+
+      // `MotionState` allows to automatic synchronize the world transform for
+      // active objects.
+      getMotionState: function() {
+        return this.optionalMotionState;
+      },
+
+      setMotionState: function( motionState ) {
+        this.optionalMotionState = motionState;
+        if ( this.optionalMotionState !== null ) {
+          motionState.getWorldTransform( this.worldTransform );
+        }
+      },
+
+      setAngularFactor: function( angFac ) {
+        if ( typeof angFac === 'number' ) {
+          this.angularFactor.assign( tmpV1.setValue( angFac, angFac, angFac ) );
+        } else {
+          this.angularFactor.assign( angFac );
+        }
+      },
+
+      getAngularFactor: function() {
+        return this.angularFactor;
+      },
+
+      isInWorld: function() {
+        return ( this.getBroadphaseProxy() !== 0 );
+      },
+
+      checkCollideWithOverride: function( co ) {
+        var otherRb = Bump.RigidBody.upcast( co );
+        if ( otherRb === null ) {
+          return true;
+        }
+
+        for ( var i = 0; i < this.constraintRefs.length; ++i ) {
+          var c = this.constraintRefs[i];
+          if ( c.getRigidBodyA() === otherRb || c.getRigidBodyB() === otherRb ) {
+            return false;
+          }
+        }
+
+        return true;
+      },
+
+      addConstraintRef: function( c ) {
+        var index = this.constraintRefs.indexOf( c );
+        if ( index === -1 ) {
+          this.constraintRefs.push( c );
+        }
+
+        this.checkCollideWith = true;
+      },
+
+      removeConstraintRef: function( c ) {
+        //     this.constraintRefs.remove( c );
+        var idx = this.constraintRefs.indexOf( c );
+        if ( idx !== -1 ) {
+          var last = this.constraintRefs.pop();
+          if ( idx < this.constraintRefs.length ) {
+            this.constraintRefs[ idx ] = last;
+          }
+        }
+
+        this.checkCollideWith = this.constraintRefs.length > 0;
+      },
+
+      getConstraintRef: function( index ) {
+        return this.constraintRefs[ index ];
+      },
+
+      getNumConstraintRefs: function() {
+        return this.constraintRefs.length;
+      },
+
+      setFlags: function( flags ) {
+        this.rigidbodyFlags = flags;
+      },
+
+      getFlags: function() {
+        return this.rigidbodyFlags;
+      },
+
+      getDeltaLinearVelocity: function() {
+        return this.deltaLinearVelocity;
+      },
+
+      getDeltaAngularVelocity: function() {
+        return this.deltaAngularVelocity;
+      },
+
+      getPushVelocity: function() {
+        return this.pushVelocity;
+      },
+
+      getTurnVelocity: function() {
+        return this.turnVelocity;
+      },
+
+      // ### Internal methods
+      //
+      // Do not use.
+
+      internalGetDeltaLinearVelocity: function() {
+        return this.deltaLinearVelocity;
+      },
+
+      internalGetDeltaAngularVelocity: function() {
+        return this.deltaAngularVelocity;
+      },
+
+      internalGetAngularFactor: function() {
+        return this.angularFactor;
+      },
+
+      internalGetInvMass: function() {
+        return this.invMass;
+      },
+
+      internalGetPushVelocity: function() {
+        return this.pushVelocity;
+      },
+
+      internalGetTurnVelocity: function() {
+        return this.turnVelocity;
+      },
+
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      // - `tmpV2`
+      internalGetVelocityInLocalPointObsolete: function( rel_pos, velocity ) {
+        velocity.assign(
+          this.getLinearVelocity()
+            .add( this.deltaLinearVelocity, tmpV2 )
+            .add(
+              this.getAngularVelocity()
+                .add( this.deltaAngularVelocity, tmpV1 )
+                .cross( rel_pos, tmpV1 ),
+              tmpV1
+            )
+        );
+      },
+
+      internalGetAngularVelocity: function( angVel ) {
+        angVel.assign(
+          this.getAngularVelocity()
+            .add( this.deltaAngularVelocity, tmpV1 )
+        );
+      },
+
+      // Optimization for the iterative solver—avoid calculating constant terms
+      // involving inertia, normal, relative position.
+      //
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      internalApplyImpulse: function( linearComponent, angularComponent, impulseMagnitude ) {
+        if ( this.inverseMass ) {
+          this.deltaLinearVelocity.addSelf(
+            linearComponent.multiplyScalar( impulseMagnitude, tmpV1 )
+          );
+          this.deltaAngularVelocity.addSelf(
+            angularComponent
+              .multiplyScalar( impulseMagnitude * this.angularFactor, tmpV1 )
+          );
+        }
+      },
+
+      internalApplyPushImpulse: function( linearComponent, angularComponent, impulseMagnitude ) {
+        if ( this.inverseMass ) {
+          this.pushVelocity.addSelf(
+            linearComponent.multiplyScalar( impulseMagnitude, tmpV1 )
+          );
+          this.turnVelocity.addSelf(
+            angularComponent
+              .multiplyScalar( impulseMagnitude * this.angularFactor, tmpV1 )
+          );
+        }
+      },
+
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      // - `tmpV2`
+      internalWritebackVelocity: function( timeStep ) {
+        if ( this.inverseMass ) {
+          this.setLinearVelocity( this.getLinearVelocity().add( this.deltaLinearVelocity, tmpV1 ) );
+          this.setAngularVelocity( this.getAngularVelocity().add( this.deltaAngularVelocity, tmpV1 ) );
+
+          if ( timeStep !== undefined ) {
+            // Correct the position/orientation based on push/turn recovery.
+            var newTransform = tmpT1;
+            Bump.TransformUtil.integrateTransform(
+              this.getWorldTransform(),
+              this.pushVelocity,
+              this.turnVelocity,
+              timeStep,
+              newTransform
+            );
+            this.setWorldTransform( newTransform );
+          }
         }
       }
 
