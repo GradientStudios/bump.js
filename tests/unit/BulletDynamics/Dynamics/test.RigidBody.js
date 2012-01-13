@@ -55,35 +55,24 @@ test( 'correct types', function() {
     [ 'pushVelocity',          Bump.Vector3   ],
     [ 'turnVelocity',          Bump.Vector3   ],
 
-    [ 'optionalMotionState',                  null      ],
-    [ 'inverseMass',                          'number'  ],
-    [ 'linearDamping',                        'number'  ],
-    [ 'angularDamping',                       'number'  ],
-    [ 'additionalDamping',                    'boolean' ],
-    [ 'additionalDampingFactor',              'number'  ],
-    [ 'additionalLinearDampingThresholdSqr',  'number'  ],
-    [ 'additionalAngularDampingThresholdSqr', 'number'  ],
-    [ 'additionalAngularDampingFactor',       'number'  ],
-    [ 'linearSleepingThreshold',              'number'  ],
-    [ 'angularSleepingThreshold',             'number'  ],
-    [ 'constraintRefs',                       'array'   ],
-    [ 'rigidbodyFlags',                       'number'  ],
-    [ 'debugBodyId',                          'number'  ],
+    [ 'optionalMotionState',      null      ],
+    [ 'inverseMass',              'number'  ],
+    [ 'linearDamping',            'number'  ],
+    [ 'angularDamping',           'number'  ],
+    [ 'additionalDamping',        'boolean' ],
+    [ 'additionalDampingFactor',  'number'  ],
+    [ 'linearSleepingThreshold',  'number'  ],
+    [ 'angularSleepingThreshold', 'number'  ],
+    [ 'constraintRefs',           'array'   ],
+    [ 'rigidbodyFlags',           'number'  ],
+    [ 'debugBodyId',              'number'  ],
+    [ 'contactSolverType',        'number'  ],
+    [ 'frictionSolverType',       'number'  ],
+
+    [ 'additionalLinearDampingThresholdSqr',  'number' ],
+    [ 'additionalAngularDampingThresholdSqr', 'number' ],
+    [ 'additionalAngularDampingFactor',       'number' ],
   ];
 
-  for ( var i = 0; i < checks.length; ++i ) {
-    if ( typeof checks[i][1] === 'object' ) {
-      if ( checks[i][1] !== null ) {
-        ok( rb[ checks[i][0] ] instanceof checks[i][1].prototype.constructor, checks[i][0] );
-      } else {
-        strictEqual( rb[ checks[i][0] ], checks[i][1], checks[i][0] );
-      }
-    } else {
-      if ( checks[i][1] === 'array' ) {
-        ok( Array.isArray( rb[ checks[i][0] ] ), checks[i][0] );
-      } else {
-        strictEqual( typeof rb[ checks[i][0] ], checks[i][1], checks[i][0] );
-      }
-    }
-  }
+  checkTypes( rb, checks );
 });

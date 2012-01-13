@@ -1,3 +1,34 @@
+var checkTypes = function( obj, checks ) {
+  for ( var i = 0; i < checks.length; ++i ) {
+    if ( typeof checks[i][1] === 'object' ) {
+      if ( checks[i][1] !== null ) {
+        ok( obj[ checks[i][0] ] instanceof checks[i][1].prototype.constructor, checks[i][0] );
+      } else {
+        strictEqual( obj[ checks[i][0] ], checks[i][1], checks[i][0] );
+      }
+    } else {
+      if ( checks[i][1] === 'array' ) {
+        ok( Array.isArray( obj[ checks[i][0] ] ), checks[i][0] );
+      } else {
+        strictEqual( typeof obj[ checks[i][0] ], checks[i][1], checks[i][0] );
+      }
+    }
+  }
+
+  checks = checks.map(function( elem ) {
+    return elem[0];
+  });
+  checks.push( '_super' );
+
+  for ( var prop in obj ) {
+    if ( obj.hasOwnProperty( prop ) ) {
+      if ( checks.indexOf( prop ) === -1 ) {
+        ok( false, 'has no extra property "' + prop + '"' );
+      }
+    }
+  }
+};
+
 module( 'CollisionObject.create' );
 
 test( 'basic', function() {
@@ -39,17 +70,7 @@ test( 'correct types', function() {
     [ 'checkCollideWith',           'boolean' ]
   ];
 
-  for ( var i = 0; i < checks.length; ++i ) {
-    if ( typeof checks[i][1] === 'object' ) {
-      if ( checks[i][1] !== null ) {
-        ok( co[ checks[i][0] ] instanceof checks[i][1].prototype.constructor, checks[i][0] );
-      } else {
-        strictEqual( co[ checks[i][0] ], checks[i][1], checks[i][0] );
-      }
-    } else {
-      strictEqual( typeof co[ checks[i][0] ], checks[i][1], checks[i][0] );
-    }
-  }
+  checkTypes( co, checks );
 });
 
 test( 'is getters', function() {

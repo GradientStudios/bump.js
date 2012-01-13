@@ -16,6 +16,7 @@ test( 'correct types', function() {
     [ 'rbA', Bump.RigidBody ],
     [ 'rbB', Bump.RigidBody ],
 
+    [ 'objectType',               'number'  ],
     [ 'userConstraintType',       'number'  ],
     [ 'userConstraintId',         'number'  ],
     [ 'breakingImpulseThreshold', 'number'  ],
@@ -25,15 +26,5 @@ test( 'correct types', function() {
     [ 'dbgDrawSize',              'number'  ]
   ];
 
-  for ( var i = 0; i < checks.length; ++i ) {
-    if ( typeof checks[i][1] === 'object' ) {
-      if ( checks[i][1] !== null ) {
-        ok( tc[ checks[i][0] ] instanceof checks[i][1].prototype.constructor, checks[i][0] );
-      } else {
-        strictEqual( tc[ checks[i][0] ], checks[i][1], checks[i][0] );
-      }
-    } else {
-      strictEqual( typeof tc[ checks[i][0] ], checks[i][1], checks[i][0] );
-    }
-  }
+  checkTypes( tc, checks );
 });
