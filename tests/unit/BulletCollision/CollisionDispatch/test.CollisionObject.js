@@ -135,3 +135,28 @@ test( 'basic', function() {
   notStrictEqual( a, b );
   CollisionObjectDeepCopyCheck( a, b );
 });
+
+module( 'CollisionObject.setActivationState' );
+
+test( 'bare bones', function() {
+  var a = Bump.CollisionObject.create();
+
+  testFunc( Bump.CollisionObject, 'setActivationState', {
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: a,
+    args: [ [ Bump.CollisionObject.DISABLE_SIMULATION ] ]
+  });
+});
+
+module( 'CollisionObject.activate' );
+
+test( 'bare bones', function() {
+  var a = Bump.CollisionObject.create();
+
+  testFunc( Bump.CollisionObject, 'activate', {
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: a
+  });
+});
