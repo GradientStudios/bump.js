@@ -7,7 +7,7 @@
 
   Bump.Vector3 = Bump.type({
 
-    init: function( x, y, z, w ) {
+    init: function Vector3( x, y, z, w ) {
       this.x = x || 0;
       this.y = y || 0;
       this.z = z || 0;
@@ -56,6 +56,15 @@
           return dest;
         }
         return Bump.Vector3.create( this.x, this.y, this.z );
+      },
+
+      // Assigns `other` vector into `this` vector.
+      assign: function( other ) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+        this.w = other.w;
+        return this;
       },
 
       // Add `this` to `vec`, storing the result in `dest` if provided.

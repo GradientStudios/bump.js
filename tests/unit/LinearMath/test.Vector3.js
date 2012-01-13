@@ -71,9 +71,22 @@ test( 'member functions exist', 48, function() {
   ok( v0.fuzzyZero, 'fuzzyZero exists' );
 });
 
+module( 'Vector3.assign' );
+
+test( 'basic', function() {
+  var v0 = Bump.Vector3.create( 1, 2, 3 ),
+      v1 = Bump.Vector3.create();
+
+  notDeepEqual( v0, v1 );
+  v1.assign( v0 );
+  deepEqual( v0, v1 );
+});
+
+module( 'Bump.Vector3' );
+
 test( 'properties', 16, function() {
   var v0 = Bump.Vector3.create(),
-  v1 = Bump.Vector3.create( 1, 2, 3 );
+      v1 = Bump.Vector3.create( 1, 2, 3 );
 
   equal( v0.x, 0, 'initialization : x == 0' );
   equal( v0.y, 0, 'initialization : y == 0' );
@@ -106,9 +119,9 @@ module( 'Bump.Vector3 math functions' );
 
 test( 'add', 4, function() {
   var v0 = Bump.Vector3.create( 1, 2, 3 ),
-  v1 = Bump.Vector3.create( 1, -2, 0 ),
-  v2 = Bump.Vector3.create(),
-  ret;
+      v1 = Bump.Vector3.create( 1, -2, 0 ),
+      v2 = Bump.Vector3.create(),
+      ret;
 
   ret = v0.add( v1, v2 );
   ok( ret === v2, 'return value references correct vector' );
@@ -780,6 +793,15 @@ test( 'creation', function() {
       notStrictEqual( vecs[i], vecs[j] );
     }
   }
+});
+
+test( 'properties', function() {
+  var vec = Bump.Vector4.create( 1, 2, 3, 4 );
+
+  equal( vec[0], 1 );
+  equal( vec[1], 2 );
+  equal( vec[2], 3 );
+  equal( vec[3], 4 );
 });
 
 module( 'Vector4.setValue' );

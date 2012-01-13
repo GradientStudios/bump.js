@@ -139,7 +139,7 @@
       },
 
       setLocalScaling: function( scaling ) {
-        this.localScaling = scaling.absolute( this.scaling );
+        this.localScaling = scaling.absolute( this.localScaling );
         return this;
       },
 

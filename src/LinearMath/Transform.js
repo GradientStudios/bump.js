@@ -77,6 +77,12 @@
         return dest;
       },
 
+      assign: function( other ) {
+        this.basis.assign( other.basis );
+        this.origin.assign( other.origin );
+        return this;
+      },
+
       getOrigin: function() {
         return this.origin;
       },
