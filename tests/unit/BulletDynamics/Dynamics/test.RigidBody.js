@@ -121,3 +121,537 @@ test( 'basic', function() {
   deepEqual( rb, clone );
   RigidBodyDeepCopyCheck( rb, clone );
 });
+
+/////////////////////////////////////////
+// module( 'RigidBody.XXX' );
+//
+// test( 'bare bones', function() {
+//   var rb = Bump.RigidBody.create( 1, null, null );
+//   rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+//   rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+//
+//   testFunc( Bump.RigidBody, 'XXX', {
+//     pointerMembers: RigidBodyPointerMembers,
+//     ignoreExpected: true,
+//     objects: rb,
+//     args: [ [  ] ]
+//   });
+// });
+/////////////////////////////////////////
+
+module( 'RigidBody.proceedToTransform' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+
+  testFunc( Bump.RigidBody, 'proceedToTransform', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    objects: rb,
+    args: [ [ Bump.Transform.getIdentity() ] ]
+  });
+});
+
+module( 'RigidBody.predictIntegratedTransform' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'predictIntegratedTransform', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    objects: rb,
+    args: [ [
+      0.1, { param: Bump.Transform.create(), isConst: false } ] ]
+  });
+});
+
+module( 'RigidBody.saveKinematicState' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'saveKinematicState', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ 0.1 ] ]
+  });
+});
+
+module( 'RigidBody.applyGravity' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setGravity( Bump.Vector3.create( 0, -9.8, 0 ) );
+
+  testFunc( Bump.RigidBody, 'applyGravity', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb
+  });
+});
+
+module( 'RigidBody.setGravity' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'setGravity', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ Bump.Vector3.create( 0, -9.8, 0 ) ] ]
+  });
+});
+
+module( 'RigidBody.setDamping' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'setDamping', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ 0.5, 0.5 ] ]
+  });
+});
+
+module( 'RigidBody.applyDamping' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setGravity( Bump.Vector3.create( 0, -9.8, 0 ) );
+  rb.setDamping( 0.5, 0.5 );
+
+  testFunc( Bump.RigidBody, 'applyDamping', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ 0.1 ] ]
+  });
+});
+
+module( 'RigidBody.setMassProps' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'setMassProps', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ 1, Bump.Vector3.create( 1, 1, 1 ) ] ]
+  });
+});
+
+module( 'RigidBody.setLinearFactor' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'setLinearFactor', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ Bump.Vector3.create() ] ]
+  });
+});
+
+module( 'RigidBody.integrateVelocities' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'integrateVelocities', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ 0.1 ] ]
+  });
+});
+
+module( 'RigidBody.setCenterOfMassTransform' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'setCenterOfMassTransform', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ Bump.Transform.getIdentity() ] ]
+  });
+});
+
+module( 'RigidBody.applyCentralForce' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'applyCentralForce', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ Bump.Vector3.create( 1, 2, 3 ) ] ]
+  });
+});
+
+module( 'RigidBody.setInvInertiaDiagLocal' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'setInvInertiaDiagLocal', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    objects: rb,
+    args: [ [ Bump.Vector3.create() ] ]
+  });
+});
+
+module( 'RigidBody.setSleepingThresholds' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'setSleepingThresholds', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ 0.5, 0.5 ] ]
+  });
+});
+
+module( 'RigidBody.applyTorque' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'applyTorque', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ Bump.Vector3.create() ] ]
+  });
+});
+
+module( 'RigidBody.applyForce' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'applyForce', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ Bump.Vector3.create( 1, 1, 1 ), Bump.Vector3.create( 3, 2, 1 ) ] ]
+  });
+});
+
+module( 'RigidBody.applyCentralImpulse' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'applyCentralImpulse', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ Bump.Vector3.create( 1, 1, 1 ) ] ]
+  });
+});
+
+module( 'RigidBody.applyTorqueImpulse' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'applyTorqueImpulse', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ Bump.Vector3.create( 2, 2, 2 ) ] ]
+  });
+});
+
+module( 'RigidBody.applyImpulse' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'applyImpulse', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ Bump.Vector3.create( 3, 2, 1 ), Bump.Vector3.create( 1, 2, 3 ) ] ]
+  });
+});
+
+module( 'RigidBody.clearForces' );
+
+test( 'test skipped', function() {});
+
+module( 'RigidBody.updateInertiaTensor' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'updateInertiaTensor', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb
+  });
+});
+
+module( 'RigidBody.getVelocityInLocalPoint' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'getVelocityInLocalPoint', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    objects: rb,
+    args: [ [ Bump.Vector3.create( 1, 1, 1 ) ] ]
+  });
+});
+
+module( 'RigidBody.translate' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'translate', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ Bump.Vector3.create( 1, 1, 1 ) ] ]
+  });
+});
+
+module( 'RigidBody.getAabb' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setCollisionShape( Bump.BoxShape.create( Bump.Vector3.create( 1, 1, 1 ) ) );
+
+  testFunc( Bump.RigidBody, 'getAabb', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    objects: rb,
+    args: [
+      [
+        { param: Bump.Vector3.create(), isConst: false },
+        { param: Bump.Vector3.create(), isConst: false }
+      ]
+    ]
+  });
+});
+
+module( 'RigidBody.computeImpulseDenominator' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'computeImpulseDenominator', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    objects: rb,
+    args: [ [ Bump.Vector3.create(), Bump.Vector3.create( 1, 0, 0 ) ] ]
+  });
+});
+
+module( 'RigidBody.updateDeactivation' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'updateDeactivation', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ 0.1 ] ]
+  });
+});
+
+module( 'RigidBody.wantsSleeping' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'wantsSleeping', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    objects: rb
+  });
+});
+
+module( 'RigidBody.setMotionState' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'setMotionState', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ Bump.DefaultMotionState.create() ] ]
+  });
+});
+
+module( 'RigidBody.setAngularFactor' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'setAngularFactor', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ Bump.Vector3.create( 1, 2, 3 ) ] ]
+  });
+});
+
+module( 'RigidBody.checkCollideWithOverride' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'checkCollideWithOverride', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    objects: rb,
+    args: [ [ Bump.RigidBody.create( 1, null, null ) ] ]
+  });
+});
+
+module( 'RigidBody.addConstraintRef' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'addConstraintRef', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ Bump.TypedConstraint.create( 0, Bump.RigidBody.create( 1, null, null ) ) ] ]
+  });
+});
+
+module( 'RigidBody.removeConstraintRef' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  var c = Bump.TypedConstraint.create( 0, Bump.RigidBody.create( 1, null, null ) );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.addConstraintRef( c );
+
+  testFunc( Bump.RigidBody, 'removeConstraintRef', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ c ] ]
+  });
+
+  rb.removeConstraintRef( c );
+});
+
+module( 'RigidBody.internalWritebackVelocity' );
+
+test( 'bare bones', function() {
+  var rb = Bump.RigidBody.create( 1, null, null );
+  rb.setLinearVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+  rb.setAngularVelocity( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.RigidBody, 'internalWritebackVelocity', {
+    pointerMembers: RigidBodyPointerMembers,
+    ignoreExpected: true,
+    modifiesSelf: true,
+    objects: rb,
+    args: [ [ 0.1 ] ]
+  });
+});

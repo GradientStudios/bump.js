@@ -51,6 +51,8 @@
         dest.needsFeedback = this.needsFeedback;
         dest.appliedImpulse = this.appliedImpulse;
         dest.dbgDrawSize = this.dbgDrawSize;
+
+        return dest;
       },
 
       assign: function( other ) {

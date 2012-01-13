@@ -250,9 +250,9 @@
 
       setGravity: function( acceleration ) {
         if ( this.inverseMass !== 0 ) {
-          this.gravity = acceleration * ( 1 / this.inverseMass );
+          this.gravity = acceleration.multiplyScalar( 1 / this.inverseMass, this.gravity );
         }
-        this.gravity_acceleration = acceleration;
+        this.gravity_acceleration.assign( acceleration );
       },
 
       getGravity: function() {
@@ -389,7 +389,7 @@
         this.linearVelocity.addSelf( this.totalForce.multiplyScalar( this.inverseMass * step ), tmpV1 );
         this.angularVelocity.addSelf(
           this.invInertiaTensorWorld
-            .multiplyVector3( this.totalTorque, tmpV1 )
+            .multiplyVector( this.totalTorque, tmpV1 )
             .multiplyScalar( step, tmpV1 )
         );
 
