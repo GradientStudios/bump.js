@@ -76,3 +76,9 @@ test( 'correct types', function() {
 
   checkTypes( rb, checks );
 });
+
+module( 'RigidBodyFlags enum' );
+
+test( 'basic', function() {
+  strictEqual( Bump.RigidBodyFlags.BT_DISABLE_WORLD_GRAVITY, 1, 'BT_DISABLE_WORLD_GRAVITY' );
+});

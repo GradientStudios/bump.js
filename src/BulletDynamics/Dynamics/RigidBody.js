@@ -11,6 +11,10 @@
   Bump.gDeactivationTime = 2;
   Bump.gDisableDeactivation = false;
 
+  Bump.RigidBodyFlags = Bump.Enum([
+    { id: 'BT_DISABLE_WORLD_GRAVITY', value: 1 }
+  ]);
+
   Bump.RigidBody = Bump.type({
     parent: Bump.CollisionObject,
 
