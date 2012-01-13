@@ -45,6 +45,10 @@
     Bump.SIMD_EPSILON = Math.pow( 2, -52 );
   }
 
+  if ( Bump.SIMD_INFINITY === undefined ) {
+    Bump.SIMD_INFINITY = Infinity;
+  }
+
   if ( Bump.SIMDSQRT12 === undefined ) {
     Bump.SIMDSQRT12 = Math.sqrt( 1 / 2 );
   }
