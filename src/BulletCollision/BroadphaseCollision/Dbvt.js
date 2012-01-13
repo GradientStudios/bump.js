@@ -550,7 +550,7 @@
         while( prev ) {
           var pb = prev.volume;
           Bump.Merge.DbvtVolume3( prev.childs[ 0 ].volume, prev.childs[ 1 ].volume, prev.volume);
-          if( Bump.NotEqualDbvtVolume2( pb, prev.volume ) ) {
+          if( Bump.NotEqual.DbvtVolume2( pb, prev.volume ) ) {
             prev = prev.parent;
           }
           else {
@@ -792,7 +792,7 @@
               /* bit = ( bit + 1 ) & ( sizeof ( unsigned ) * 8 - 1 ); */
               bit = ( bit + 1 ) & 31;
             }
-            this.updateLookahead( node );
+            this.updateLeafLookahead( node );
             ++this.m_opath;
           } while( --passes );
         }

@@ -853,14 +853,36 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     insertAll( dbvt, vols );
     dbvt.optimizeBottomUp();
     dbvt.write( writer );
-    equal( writer.s, expected, 'result matches btDbvt.optimizeDown' );
+    equal( writer.s, expected, 'result matches btDbvt.optimizeBottomUp' );
   });
 
-  module( 'Dbvt.optimizeTopDown' );
-  test('test skipped', function() {});
+  test('optimizeTopDown', function() {
+    var vols = makeVolumeGrid( 3 ),
+        dbvt = Bump.Dbvt.create(),
+        writer = TestWriter.create(),
+        expected = ' { internal : 0 : children 1 30 } { internal : 1 : children 2 17 } { internal : 2 : children 3 14 } { internal : 3 : children 4 11 } { internal : 4 : children 5 8 } { internal : 5 : children 6 7 } { leaf : 6 : 0 } { leaf : 7 : 9 } { internal : 8 : children 9 10 } { leaf : 9 : 3 } { leaf : 10 : 12 } { internal : 11 : children 12 13 } { leaf : 12 : 18 } { leaf : 13 : 21 } { internal : 14 : children 15 16 } { leaf : 15 : 6 } { leaf : 16 : 15 } { internal : 17 : children 18 23 } { internal : 18 : children 19 22 } { internal : 19 : children 20 21 } { leaf : 20 : 26 } { leaf : 21 : 25 } { leaf : 22 : 24 } { internal : 23 : children 24 27 } { internal : 24 : children 25 26 } { leaf : 25 : 23 } { leaf : 26 : 22 } { internal : 27 : children 28 29 } { leaf : 28 : 20 } { leaf : 29 : 19 } { internal : 30 : children 31 38 } { internal : 31 : children 32 35 } { internal : 32 : children 33 34 } { leaf : 33 : 2 } { leaf : 34 : 11 } { internal : 35 : children 36 37 } { leaf : 36 : 1 } { leaf : 37 : 10 } { internal : 38 : children 39 50 } { internal : 39 : children 40 45 } { internal : 40 : children 41 42 } { leaf : 41 : 5 } { internal : 42 : children 43 44 } { leaf : 43 : 8 } { leaf : 44 : 7 } { internal : 45 : children 46 49 } { internal : 46 : children 47 48 } { leaf : 47 : 4 } { leaf : 48 : 13 } { leaf : 49 : 16 } { internal : 50 : children 51 52 } { leaf : 51 : 17 } { leaf : 52 : 14 }';
 
-  module( 'Dbvt.optimizeIncremental' );
-  test('test skipped', function() {});
+    strictEqual( typeof dbvt.optimizeTopDown, 'function', 'optimizeTopDown exists' );
+
+    insertAll( dbvt, vols );
+    dbvt.optimizeTopDown();
+    dbvt.write( writer );
+    equal( writer.s, expected, 'result matches btDbvt.optimizeTopDown' );
+  });
+
+  test('optimizeIncremental', function() {
+    var vols = makeVolumeGrid( 3 ),
+        dbvt = Bump.Dbvt.create(),
+        writer = TestWriter.create(),
+        expected = ' { internal : 0 : children 1 18 } { internal : 1 : children 2 7 } { internal : 2 : children 3 6 } { internal : 3 : children 4 5 } { leaf : 4 : 9 } { leaf : 5 : 18 } { leaf : 6 : 0 } { internal : 7 : children 8 13 } { internal : 8 : children 9 12 } { internal : 9 : children 10 11 } { leaf : 10 : 12 } { leaf : 11 : 3 } { leaf : 12 : 21 } { internal : 13 : children 14 17 } { internal : 14 : children 15 16 } { leaf : 15 : 15 } { leaf : 16 : 6 } { leaf : 17 : 24 } { internal : 18 : children 19 36 } { internal : 19 : children 20 25 } { internal : 20 : children 21 24 } { internal : 21 : children 22 23 } { leaf : 22 : 10 } { leaf : 23 : 19 } { leaf : 24 : 1 } { internal : 25 : children 26 31 } { internal : 26 : children 27 30 } { internal : 27 : children 28 29 } { leaf : 28 : 13 } { leaf : 29 : 4 } { leaf : 30 : 22 } { internal : 31 : children 32 33 } { leaf : 32 : 7 } { internal : 33 : children 34 35 } { leaf : 34 : 16 } { leaf : 35 : 25 } { internal : 36 : children 37 42 } { internal : 37 : children 38 41 } { internal : 38 : children 39 40 } { leaf : 39 : 11 } { leaf : 40 : 2 } { leaf : 41 : 20 } { internal : 42 : children 43 48 } { internal : 43 : children 44 47 } { internal : 44 : children 45 46 } { leaf : 45 : 14 } { leaf : 46 : 5 } { leaf : 47 : 23 } { internal : 48 : children 49 50 } { leaf : 49 : 8 } { internal : 50 : children 51 52 } { leaf : 51 : 17 } { leaf : 52 : 26 }';
+
+    strictEqual( typeof dbvt.optimizeIncremental, 'function', 'optimizeIncremental exists' );
+
+    insertAll( dbvt, vols );
+    dbvt.optimizeIncremental( 10 );
+    dbvt.write( writer );
+    equal( writer.s, expected, 'result matches btDbvt.optimizeIncremental' );
+  });
 
   module( 'Dbvt.updateLeafLookahead' );
   test('test skipped', function() {});
