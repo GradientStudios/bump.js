@@ -3,11 +3,52 @@ module( 'CollisionObject.create' );
 test( 'basic', function() {
   ok( Bump.CollisionObject, 'CollisionObject exists' );
 
-  if ( Bump.CollisionObject ) {
-    var co = Bump.CollisionObject.create();
-    ok( co, 'creates an object' );
-  } else {
-    ok( true, 'test skipped' );
+  var co = Bump.CollisionObject.create();
+  ok( co, 'creates an object' );
+  ok( co instanceof Bump.CollisionObject.prototype.constructor );
+});
+
+test( 'correct types', function() {
+  var co = Bump.CollisionObject.create();
+
+  var checks = [
+    [ 'worldTransform',               Bump.Transform ],
+    [ 'interpolationWorldTransform',  Bump.Transform ],
+    [ 'interpolationLinearVelocity',  Bump.Vector3   ],
+    [ 'interpolationAngularVelocity', Bump.Vector3   ],
+    [ 'anisotropicFriction',          Bump.Vector3   ],
+
+    [ 'hasAnisotropicFriction',     'boolean' ],
+    [ 'contactProcessingThreshold', 'number'  ],
+    [ 'broadphaseHandle',           null      ],
+    [ 'collisionShape',             null      ],
+    [ 'extensionPointer',           null      ],
+    [ 'rootCollisionShape',         null      ],
+    [ 'collisionFlags',             'number'  ],
+    [ 'islandTag1',                 'number'  ],
+    [ 'companionId',                'number'  ],
+    [ 'activationState1',           'number'  ],
+    [ 'deactivationTime',           'number'  ],
+    [ 'friction',                   'number'  ],
+    [ 'restitution',                'number'  ],
+    [ 'internalType',               'number'  ],
+    [ 'userObjectPointer',          null      ],
+    [ 'hitFraction',                'number'  ],
+    [ 'ccdSweptSphereRadius',       'number'  ],
+    [ 'ccdMotionThreshold',         'number'  ],
+    [ 'checkCollideWith',           'boolean' ]
+  ];
+
+  for ( var i = 0; i < checks.length; ++i ) {
+    if ( typeof checks[i][1] === 'object' ) {
+      if ( checks[i][1] !== null ) {
+        ok( co[ checks[i][0] ] instanceof checks[i][1].prototype.constructor, checks[i][0] );
+      } else {
+        strictEqual( co[ checks[i][0] ], checks[i][1], checks[i][0] );
+      }
+    } else {
+      strictEqual( typeof co[ checks[i][0] ], checks[i][1], checks[i][0] );
+    }
   }
 });
 
@@ -19,6 +60,7 @@ test( 'is getters', function() {
   strictEqual( co.mergesSimulationIslands(), false );
   strictEqual( co.isStaticOrKinematicObject(), true );
   strictEqual( co.hasContactResponse(), true );
+  strictEqual( co.isActive(), true );
 });
 
 module( 'CollisionObject enums' );
