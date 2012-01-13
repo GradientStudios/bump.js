@@ -1,3 +1,28 @@
+var RigidBodyDeepCopyCheck = function( a, b ) {
+  CollisionObjectDeepCopyCheck( a, b );
+
+  notStrictEqual( a.invInertiaTensorWorld, b.invInertiaTensorWorld );
+  notStrictEqual( a.linearVelocity, b.linearVelocity );
+  notStrictEqual( a.angularVelocity, b.angularVelocity );
+  notStrictEqual( a.linearFactor, b.linearFactor );
+  notStrictEqual( a.gravity, b.gravity );
+  notStrictEqual( a.gravity_acceleration, b.gravity_acceleration );
+  notStrictEqual( a.invInertiaLocal, b.invInertiaLocal );
+  notStrictEqual( a.totalForce, b.totalForce );
+  notStrictEqual( a.totalTorque, b.totalTorque );
+
+  strictEqual( a.optionalMotionState, b.optionalMotionState );
+  for ( var i = 0; i < a.constraintRefs.length; ++i ) {
+    strictEqual( a.constraintRefs[i], b.constraintRefs[i] );
+  }
+
+  notStrictEqual( a.deltaLinearVelocity, b.deltaLinearVelocity );
+  notStrictEqual( a.deltaAngularVelocity, b.deltaAngularVelocity );
+  notStrictEqual( a.invMass, b.invMass );
+  notStrictEqual( a.pushVelocity, b.pushVelocity );
+  notStrictEqual( a.turnVelocity, b.turnVelocity );
+};
+
 module( 'RigidBody.create' );
 
 test( 'basic', function() {
@@ -81,4 +106,14 @@ module( 'RigidBodyFlags enum' );
 
 test( 'basic', function() {
   strictEqual( Bump.RigidBodyFlags.BT_DISABLE_WORLD_GRAVITY, 1, 'BT_DISABLE_WORLD_GRAVITY' );
+});
+
+module( 'RigidBody.clone' );
+
+test( 'basic', function() {
+  var rb = Bump.RigidBody.create( 1, null, null ),
+      clone = rb.clone();
+
+  deepEqual( rb, clone );
+  RigidBodyDeepCopyCheck( rb, clone );
 });

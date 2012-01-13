@@ -111,6 +111,12 @@ var CollisionObjectDeepCopyCheck = function( a, b ) {
   notStrictEqual( a.interpolationLinearVelocity, b.interpolationLinearVelocity );
   notStrictEqual( a.interpolationAngularVelocity, b.interpolationAngularVelocity );
   notStrictEqual( a.anisotropicFriction, b.anisotropicFriction );
+
+  strictEqual( a.broadphaseHandle, b.broadphaseHandle );
+  strictEqual( a.collisionShape, b.collisionShape );
+  strictEqual( a.extensionPointer, b.extensionPointer );
+  strictEqual( a.rootCollisionShape, b.rootCollisionShape );
+  strictEqual( a.userObjectPointer, b.userObjectPointer );
 };
 
 test( 'basic', function() {

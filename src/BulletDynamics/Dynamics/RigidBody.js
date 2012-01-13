@@ -144,6 +144,56 @@
         this.turnVelocity.setZero();
       },
 
+      clone: function( dest ) {
+        dest = dest || Bump.RigidBody.create();
+
+        this._super( dest );
+
+        dest.invInertiaTensorWorld.assign( this.invInertiaTensorWorld );
+        dest.linearVelocity.assign( this.linearVelocity );
+        dest.angularVelocity.assign( this.angularVelocity );
+        dest.inverseMass = this.inverseMass;
+        dest.linearFactor.assign( this.linearFactor );
+
+        dest.gravity.assign( this.gravity );
+        dest.gravity_acceleration.assign( this.gravity_acceleration );
+        dest.invInertiaLocal.assign( this.invInertiaLocal );
+        dest.totalForce.assign( this.totalForce );
+        dest.totalTorque.assign( this.totalTorque );
+
+        dest.linearDamping = this.linearDamping;
+        dest.angularDamping = this.angularDamping;
+
+        dest.additionalDamping = this.additionalDamping;
+        dest.additionalDampingFactor = this.additionalDampingFactor;
+        dest.additionalLinearDampingThresholdSqr = this.additionalLinearDampingThresholdSqr;
+        dest.additionalAngularDampingThresholdSqr = this.additionalAngularDampingThresholdSqr;
+        dest.additionalAngularDampingFactor = this.additionalAngularDampingFactor;
+
+        dest.linearSleepingThreshold = this.linearSleepingThreshold;
+        dest.angularSleepingThreshold = this.angularSleepingThreshold;
+
+        dest.optionalMotionState = this.optionalMotionState;
+
+        dest.constraintRefs = this.constraintRefs.slice( 0 );
+
+        dest.rigidbodyFlags = this.rigidbodyFlags;
+
+        dest.debugBodyId = this.debugBodyId;
+
+        dest.deltaLinearVelocity.assign( this.deltaLinearVelocity );
+        dest.deltaAngularVelocity.assign( this.deltaAngularVelocity );
+        dest.angularFactor.assign( this.angularFactor );
+        dest.invMass.assign( this.invMass );
+        dest.pushVelocity.assign( this.pushVelocity );
+        dest.turnVelocity.assign( this.turnVelocity );
+
+        dest.contactSolverType = this.contactSolverType;
+        dest.frictionSolverType = this.frictionSolverType;
+
+        return dest;
+      },
+
       proceedToTransform: function( newTrans ) {
         this.setCenterOfMassTransform( newTrans );
       },
