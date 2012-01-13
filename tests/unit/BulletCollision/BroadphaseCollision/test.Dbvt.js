@@ -728,13 +728,11 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     }
   }
 
-  module( 'Dbvt.enumNodes typemember' );
+  module( 'Dbvt typemembers' );
 
-  test('enumNodes exists', function() {
+  test('enumNodes', function() {
     strictEqual( typeof Bump.Dbvt.enumNodes, 'function', 'exists' );
-  } );
 
-  test('enumNodes populates enumerator', function() {
     var enumerator = Bump.DbvtNodeEnumerator.create(),
     dbvt = makeTestTree(),
     expected = [ dbvt.m_root,
@@ -749,7 +747,34 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     Bump.Dbvt.enumNodes( dbvt.m_root, enumerator );
 
     //epsilonNumberCheck( enumerator.nodes, expected, Bump.SIMD_EPSILON );
-    deepEqual( enumerator.nodes, expected );
+    deepEqual( enumerator.nodes, expected, 'correctly populates enumerator' );
+  } );
+
+  test('enumLeaves', function() {
+    strictEqual( typeof Bump.Dbvt.enumLeaves, 'function', 'exists' );
+
+    var enumerator = Bump.DbvtNodeEnumerator.create(),
+    dbvt = makeTestTree(),
+    expected = [ dbvt.m_root.childs[ 0 ].childs[ 0 ],
+                 dbvt.m_root.childs[ 0 ].childs[ 1 ],
+                 dbvt.m_root.childs[ 1 ].childs[ 0 ],
+                 dbvt.m_root.childs[ 1 ].childs[ 1 ]
+               ];
+
+    Bump.Dbvt.enumLeaves( dbvt.m_root, enumerator );
+
+    //epsilonNumberCheck( enumerator.nodes, expected, Bump.SIMD_EPSILON );
+    deepEqual( enumerator.nodes, expected, 'correctly populates enumerator' );
+  } );
+
+  test('countLeaves', function() {
+    strictEqual( typeof Bump.Dbvt.countLeaves, 'function', 'exists' );
+
+    var dbvt = makeTestTree(),
+        expected = 4,
+        result = Bump.Dbvt.countLeaves( dbvt.m_root );
+
+    equal( result, expected, 'correctly counts leaves' );
   } );
 
   module( 'Dbvt members' );
@@ -1021,9 +1046,6 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
   test('test skipped', function() {});
 
   module( 'Dbvt.benchmark' );
-  test('test skipped', function() {});
-
-  module( 'Dbvt.enumLeaves' );
   test('test skipped', function() {});
 
   module( 'Dbvt.rayTest' );
