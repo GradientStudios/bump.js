@@ -281,6 +281,9 @@
         return this.collisionShape;
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
       setMassProps: function( mass, inertia ) {
         if ( mass === 0 ) {
           this.collisionFlags |= Bump.CollisionObject.CollisionFlags.CF_STATIC_OBJECT;
@@ -291,7 +294,7 @@
         }
 
         // Fg = m * a
-        this.gravity = mass * this.gravity_acceleration;
+        this.gravity.assign( this.gravity_acceleration.multiplyScalar( mass, tmpV1 ) );
 
         this.invInertiaLocal.setValue(
           inertia.x !== 0 ? 1.0 / inertia.x: 0,
@@ -299,7 +302,7 @@
           inertia.z !== 0 ? 1.0 / inertia.z: 0
         );
 
-        this.invMass = this.linearFactor.multiplyScalar( this.inverseMass, this.invMass );
+        this.invMass.assign( this.linearFactor.multiplyScalar( this.inverseMass, tmpV1 ) );
       },
 
       getLinearFactor: function() {
