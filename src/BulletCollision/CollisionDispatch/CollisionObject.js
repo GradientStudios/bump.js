@@ -374,6 +374,12 @@
     }
   });
 
+  Bump.CollisionObject.ACTIVE_TAG           = ACTIVE_TAG;
+  Bump.CollisionObject.ISLAND_SLEEPING      = ISLAND_SLEEPING;
+  Bump.CollisionObject.WANTS_DEACTIVATION   = WANTS_DEACTIVATION;
+  Bump.CollisionObject.DISABLE_DEACTIVATION = DISABLE_DEACTIVATION;
+  Bump.CollisionObject.DISABLE_SIMULATION   = DISABLE_SIMULATION;
+
   Bump.CollisionObject.CollisionFlags = Bump.Enum([
     { id: 'CF_STATIC_OBJECT',                    value:  1 },
     { id: 'CF_KINEMATIC_OBJECT',                 value:  2 },
