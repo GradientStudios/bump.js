@@ -29,6 +29,28 @@ var checkTypes = function( obj, checks ) {
   }
 };
 
+var CollisionObjectDeepCopyCheck = function( a, b ) {
+  notStrictEqual( a.worldTransform, b.worldTransform );
+  notStrictEqual( a.interpolationWorldTransform, b.interpolationWorldTransform );
+  notStrictEqual( a.interpolationLinearVelocity, b.interpolationLinearVelocity );
+  notStrictEqual( a.interpolationAngularVelocity, b.interpolationAngularVelocity );
+  notStrictEqual( a.anisotropicFriction, b.anisotropicFriction );
+
+  strictEqual( a.broadphaseHandle, b.broadphaseHandle );
+  strictEqual( a.collisionShape, b.collisionShape );
+  strictEqual( a.extensionPointer, b.extensionPointer );
+  strictEqual( a.rootCollisionShape, b.rootCollisionShape );
+  strictEqual( a.userObjectPointer, b.userObjectPointer );
+};
+
+var CollisionObjectPointerMembers = [
+  'broadphaseHandle',
+  'collisionShape',
+  'extensionPointer',
+  'rootCollisionShape',
+  'userObjectPointer'
+];
+
 module( 'CollisionObject.create' );
 
 test( 'basic', function() {
@@ -104,20 +126,6 @@ test( 'enums', function() {
 });
 
 module( 'CollisionObject.clone' );
-
-var CollisionObjectDeepCopyCheck = function( a, b ) {
-  notStrictEqual( a.worldTransform, b.worldTransform );
-  notStrictEqual( a.interpolationWorldTransform, b.interpolationWorldTransform );
-  notStrictEqual( a.interpolationLinearVelocity, b.interpolationLinearVelocity );
-  notStrictEqual( a.interpolationAngularVelocity, b.interpolationAngularVelocity );
-  notStrictEqual( a.anisotropicFriction, b.anisotropicFriction );
-
-  strictEqual( a.broadphaseHandle, b.broadphaseHandle );
-  strictEqual( a.collisionShape, b.collisionShape );
-  strictEqual( a.extensionPointer, b.extensionPointer );
-  strictEqual( a.rootCollisionShape, b.rootCollisionShape );
-  strictEqual( a.userObjectPointer, b.userObjectPointer );
-};
 
 test( 'basic', function() {
   var a = Bump.CollisionObject.create();

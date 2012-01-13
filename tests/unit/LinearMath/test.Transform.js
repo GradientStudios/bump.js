@@ -194,8 +194,10 @@ var testFunc = function( objType, func, options ) {
   options.isStaticFunc = options.isStaticFunc || false;
   options.epsilon = options.epsilon || 0;
   options.modifiesSelf = options.modifiesSelf || false;
+  options.pointerMembers = options.pointerMembers || [];
 
   var i, j, epsilonDeepEqual = deepEqual;
+  var savedReferences = {};
 
   if ( options.epsilon > 0 ) {
     // Using epsilon to test numeric values instead of the normal deepEqual
@@ -252,6 +254,33 @@ var testFunc = function( objType, func, options ) {
         func.apply( a, args );
       };
     }
+  })();
+
+  var preFuncSaveReferences = (function() {
+    return function() {
+      savedReferences = {};
+      for ( var prop in a ) {
+        if ( a.hasOwnProperty( prop ) ) {
+          if ( prop !== '_super' ) {
+            if ( typeof a[ prop ] === 'object' ) {
+              if ( options.pointerMembers.indexOf( prop ) === -1 ) {
+                savedReferences[ prop ] = a[ prop ];
+              }
+            }
+          }
+        }
+      }
+    };
+  })();
+
+  var postFuncCheckReferences = (function() {
+    return function() {
+      for ( var prop in savedReferences ) {
+        if ( savedReferences.hasOwnProperty( prop ) ) {
+          strictEqual( a[ prop ], savedReferences[ prop ], prop + ' reference not changed' );
+        }
+      }
+    };
   })();
 
   var postFuncObjCheck = (function() {
@@ -317,7 +346,7 @@ var testFunc = function( objType, func, options ) {
   }
 
   var addDestArg = function( dest ) {
-    var arr = args.slice(0);
+    var arr = args.slice( 0 );
     arr.push( dest );
     return arr;
   };
@@ -383,13 +412,17 @@ var testFunc = function( objType, func, options ) {
       aClone = a.clone();
     }
 
+    preFuncSaveReferences();
     checkExpected( func.apply( a, args ), expected, 'returns expected value' );
+    postFuncCheckReferences();
     postFuncCheck();
 
     if ( options.destType ) {
       var dest = options.destType.create(), destRef = dest;
 
+      preFuncSaveReferences();
       ret = func.apply( a, addDestArg( dest ) );
+      postFuncCheckReferences();
 
       strictEqual( ret, dest, 'answer is placed in specified destination' );
       checkExpected( dest, expected, 'setting destination works correctly' );
@@ -397,7 +430,9 @@ var testFunc = function( objType, func, options ) {
       postFuncCheck();
 
       if ( options.destType === objType ) {
+        preFuncSaveReferences();
         ret = func.apply( a, addDestArg( a ) );
+        postFuncCheckReferences();
         strictEqual( ret, a, 'answer is placed in specified destination' );
         checkExpected( a, expected, 'setting yourself as destination works correctly' );
 
@@ -410,7 +445,10 @@ var testFunc = function( objType, func, options ) {
         if ( argCorrectType ) {
           epsilonDeepEqual( args[j], argsClone[j], 'arg is not modified' );
 
+          preFuncSaveReferences();
           ret = func.apply( a, addDestArg( args[j] ) );
+          postFuncCheckReferences();
+
           strictEqual( ret, args[j], 'answer is placed in specified destination' );
           checkExpected( args[j], expected, 'setting argument as destination works correctly' );
 

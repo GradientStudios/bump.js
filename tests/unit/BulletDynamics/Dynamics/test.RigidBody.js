@@ -23,6 +23,10 @@ var RigidBodyDeepCopyCheck = function( a, b ) {
   notStrictEqual( a.turnVelocity, b.turnVelocity );
 };
 
+var RigidBodyPointerMembers = CollisionObjectPointerMembers.concat(
+  'optionalMotionState'
+);
+
 module( 'RigidBody.create' );
 
 test( 'basic', function() {
