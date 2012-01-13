@@ -2,7 +2,7 @@
   Bump.DefaultMotionState = Bump.type({
     parent: Bump.MotionState,
 
-    init: function( startTrans, centerOfMassOffset ) {
+    init: function DefaultMotionState( startTrans, centerOfMassOffset ) {
       this.graphicsWorldTrans =
         startTrans === undefined ?
         Bump.Transform.getIdentity() :
