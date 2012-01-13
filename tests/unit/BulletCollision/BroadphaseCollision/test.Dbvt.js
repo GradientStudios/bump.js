@@ -706,6 +706,28 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     return dbvt0;
   }
 
+  // make an n^3 grid of 0.5 x 0.5 x 0.5 bounding boxes, centered on the origin
+  var makeVolumeGrid = function( n ) {
+    var vols = [],
+        extents = Bump.Vector3.create( 0.25, 0.25, 0.25 );
+    n = (n-1) / 2;
+    for( var vi = -n; vi <= n; vi++ ) {
+      for( var vj = -n; vj <= n; vj++ ) {
+        for( var vk = -n; vk <= n; vk++ ) {
+          vols.push( Bump.DbvtVolume.FromCE( Bump.Vector3.create( vi, vj, vk ), extents ) );
+        }
+      }
+    }
+    return vols;
+  }
+
+  // insert all volumes into dbvt
+  var insertAll = function( dbvt, vols ) {
+    for( var i = 0; i < vols.length; i++ ) {
+      dbvt.insert( vols[ i ], i );
+    }
+  }
+
   module( 'Dbvt.enumNodes typemember' );
 
   test('enumNodes exists', function() {
@@ -750,19 +772,10 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
 
   test('insert', function() {
-    // generate a tree from a "grid" of nvolumes^3 volumes
-    var nvolumes = 1,
-        vols = [],
-        extents = Bump.Vector3.create( 0.5, 0.5, 0.5 );
-    for( var vi = -1; vi <= 1; vi++ ) {
-      for( var vj = -1; vj <= 1; vj++ ) {
-        for( var vk = -1; vk <= 1; vk++ ) {
-          vols.push( Bump.DbvtVolume.FromCE( Bump.Vector3.create( vi, vj, vk ), extents ) );
-        }
-      }
-    }
+    // generate a tree from a 3 x 3 x 3 "grid" of volumes
 
-    var dbvt = Bump.Dbvt.create();
+    var vols = makeVolumeGrid( 3 ),
+        dbvt = Bump.Dbvt.create();
     strictEqual( typeof dbvt.insert, 'function', 'insert exists' );
 
     var expected = [
@@ -829,8 +842,19 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     ok( dbvt.empty(), 'cleared dbvt is empty' );
   } );
 
-  module( 'Dbvt.optimizeBottomUp' );
-  test('test skipped', function() {});
+  test('optimizeBottomUp', function() {
+    var vols = makeVolumeGrid( 3 ),
+        dbvt = Bump.Dbvt.create(),
+        writer = TestWriter.create(),
+        expected = ' { internal : 0 : children 1 30 } { internal : 1 : children 2 17 } { internal : 2 : children 3 14 } { internal : 3 : children 4 11 } { internal : 4 : children 5 8 } { internal : 5 : children 6 7 } { leaf : 6 : 0 } { leaf : 7 : 9 } { internal : 8 : children 9 10 } { leaf : 9 : 3 } { leaf : 10 : 12 } { internal : 11 : children 12 13 } { leaf : 12 : 18 } { leaf : 13 : 21 } { internal : 14 : children 15 16 } { leaf : 15 : 6 } { leaf : 16 : 15 } { internal : 17 : children 18 23 } { internal : 18 : children 19 22 } { internal : 19 : children 20 21 } { leaf : 20 : 26 } { leaf : 21 : 25 } { leaf : 22 : 24 } { internal : 23 : children 24 27 } { internal : 24 : children 25 26 } { leaf : 25 : 23 } { leaf : 26 : 22 } { internal : 27 : children 28 29 } { leaf : 28 : 20 } { leaf : 29 : 19 } { internal : 30 : children 31 38 } { internal : 31 : children 32 35 } { internal : 32 : children 33 34 } { leaf : 33 : 2 } { leaf : 34 : 11 } { internal : 35 : children 36 37 } { leaf : 36 : 1 } { leaf : 37 : 10 } { internal : 38 : children 39 50 } { internal : 39 : children 40 45 } { internal : 40 : children 41 42 } { leaf : 41 : 5 } { internal : 42 : children 43 44 } { leaf : 43 : 8 } { leaf : 44 : 7 } { internal : 45 : children 46 49 } { internal : 46 : children 47 48 } { leaf : 47 : 4 } { leaf : 48 : 13 } { leaf : 49 : 16 } { internal : 50 : children 51 52 } { leaf : 51 : 17 } { leaf : 52 : 14 }';
+
+    strictEqual( typeof dbvt.optimizeBottomUp, 'function', 'optimizeBottomUp exists' );
+
+    insertAll( dbvt, vols );
+    dbvt.optimizeBottomUp();
+    dbvt.write( writer );
+    equal( writer.s, expected, 'result matches btDbvt.optimizeDown' );
+  });
 
   module( 'Dbvt.optimizeTopDown' );
   test('test skipped', function() {});

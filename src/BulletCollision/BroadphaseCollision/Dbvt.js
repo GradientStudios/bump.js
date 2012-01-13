@@ -629,7 +629,7 @@
       n[ 0 ].parent = p;
       n[ 1 ].parent = p;
       leaves[ minidx[ 0 ] ] = p;
-      leaves.swap( minidx[ 1 ], leaves.length - 1 );
+      leaves[ minidx[ 1 ] ] = leaves[ leaves.length - 1 ]; /* instead of swap */
       leaves.pop();
     }
   },
