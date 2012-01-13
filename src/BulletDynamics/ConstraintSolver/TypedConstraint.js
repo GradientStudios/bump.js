@@ -32,8 +32,8 @@
       this.breakingImpulseThreshold = Infinity;
       this.isEnabled = true;
       this.needsFeedback = false;
-      this.rbA = rbA.clone();
-      this.rbB = rbB.clone();
+      this.rbA = rbA;
+      this.rbB = rbB;
       this.appliedImpulse = 0;
       this.dbgDrawSize = DEFAULT_DEBUGDRAW_SIZE;
     },
