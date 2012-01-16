@@ -6,8 +6,8 @@
     init: function DbvtProxy( aabbMin, aabbMax, userPtr, collisionFilterGroup, collisionFilterMask ) {
       this._super( aabbMin, aabbMax, userPtr, collisionFilterGroup, collisionFilterMask );
 
-      this.leaf = 0;
-      this.links = [ 0, 0 ];
+      this.leaf = null;
+      this.links = [ null, null ];
       this.stage = 0;
     }
   } );
