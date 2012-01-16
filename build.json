@@ -17,6 +17,7 @@
         "src/LinearMath/MotionState.js",
         "src/LinearMath/DefaultMotionState.js",
 
+        "src/BulletCollision/NarrowPhaseCollision/DiscreteCollisionDetectorInterface.js",
         "src/BulletCollision/BroadphaseCollision/BroadphaseInterface.js",
 
         "src/BulletCollision/BroadphaseCollision/BroadphaseProxy.js",
