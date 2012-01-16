@@ -22,6 +22,7 @@
 
         "src/BulletCollision/BroadphaseCollision/BroadphaseProxy.js",
         "src/BulletCollision/BroadphaseCollision/Dbvt.js",
+        "src/BulletCollision/BroadphaseCollision/DbvtBroadphase.js",
 
         "src/BulletDynamics/ConstraintSolver/TypedConstraint.js",
 
