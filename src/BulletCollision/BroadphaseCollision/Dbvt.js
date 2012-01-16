@@ -912,7 +912,7 @@
             n = createnodeTreeParentVolumeData( dest, e.parent, e.node.volume, e.node.data);
             /* stack.pop(); */
             if( e.parent !== 0 ) {
-              //e.parent.childs[ i & 1 ] = n; // nice trick, but doesn't work if you want an exact clone
+              /*e.parent.childs[ i & 1 ] = n; */ /* nice trick, but doesn't work if you want an exact clone */
               e.parent.childs[ indexof( e.node ) ] = n;
             }
             else {
