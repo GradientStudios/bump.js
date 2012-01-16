@@ -1,15 +1,18 @@
 // Math stuff that bullet defines.
 (function( window, Bump ) {
+  Bump.SIMD_INFINITY = Infinity;
+  Bump.SIMD_EPSILON = Math.pow( 2, -52 );
+  Bump.SIMDSQRT12 = Math.sqrt( 1 / 2 );
+  Bump.SIMD_2_PI = 6.283185307179586232;
+  Bump.SIMD_PI = Math.PI;
 
   // Arccosine calculation with bounds checking.
   // Port of `btAcos` from `btScalar.h`.
-  if ( !Bump.Acos ) {
-    Bump.Acos = function btAcos( x ) {
-      if ( x < -1 ) { x = -1; }
-      if ( x >  1 ) { x =  1; }
-      return Math.acos( x );
-    };
-  }
+  Bump.Acos = function btAcos( x ) {
+    if ( x < -1 ) { x = -1; }
+    if ( x >  1 ) { x =  1; }
+    return Math.acos( x );
+  };
 
   // Arcsine calculation with bounds checking.
   // Port of `btAsin` from `btScalar.h`.
@@ -26,6 +29,10 @@
   Bump.Fmod = function btFmod( x, y ) {
     var i = ~~( x / y );
     return x - i * y;
+  };
+
+  Bump.Clamped = function btClamped( a, lb, ub ) {
+    return a < lb ? lb : ( ub < a ? ub : a );
   };
 
   Bump.Assert = function btAssert( expression ) {
@@ -69,21 +76,7 @@
       getObjectType: function() {
         return this.objectType;
       }
-    };
-  }
-
-  if ( !Bump.RecipSqrt ) {
-    Bump.RecipSqrt = function btRecipSqrt( x ) {
-      return 1 / Math.sqrt( x );
-    };
-  }
-
-  if ( Bump.SIMD_EPSILON === undefined ) {
-    Bump.SIMD_EPSILON = Math.pow( 2, -52 );
-  }
-
-  if ( Bump.SIMDSQRT12 === undefined ) {
-    Bump.SIMDSQRT12 = Math.sqrt( 1 / 2 );
-  }
+    }
+  });
 
 })( this, this.Bump );

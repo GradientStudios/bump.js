@@ -124,7 +124,7 @@ module( 'AabbUtil2.Outcode' );
 test( 'basic', function() {
   var aabbMin = Bump.Vector3.create( 0, 0, 0 ),
       aabbMax = Bump.Vector3.create( 2, 4, 6 ),
-      halfExtent = aabbMax.subtract( aabbMin ).multiply( 0.5 ),
+      halfExtent = aabbMax.subtract( aabbMin ).multiplyScalar( 0.5 ),
       source = Bump.Vector3.create( 6, 3, 5 );
 
   testFunc( Bump, 'Outcode', {

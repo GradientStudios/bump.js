@@ -292,9 +292,9 @@ test( 'basic', function() {
 
 module( 'BoxShape.isInside' );
 
-test( 'test skipped', function() {
-  var shape = Bump.BoxShape.create( Bump.Vector3.create( 1, 2, 3 ) );
-  var eps = Math.pow( 2, -32 );
+test( 'basic', function() {
+  var shape = Bump.BoxShape.create( Bump.Vector3.create( 1, 2, 3 ) ),
+      eps = Math.pow( 2, -32 );
 
   testFunc( Bump.BoxShape, 'isInside', {
     objects: shape,
@@ -311,4 +311,78 @@ test( 'test skipped', function() {
       false
     ]
   });
+});
+
+module( 'BoxShape.getBoundingSphere' );
+
+test( 'basic', function() {
+  var shape  = Bump.BoxShape.create( Bump.Vector3.create( 1, 1, 1 ) ),
+      center = Bump.Vector3.create(),
+      sphere = { radius: 0 };
+
+  testFunc( Bump.BoxShape, 'getBoundingSphere', {
+    objects: shape,
+    args: [
+      [
+        { param: center, expected: Bump.Vector3.create( 0, 0, 0 ) },
+        { param: sphere, expected: { radius: Math.sqrt( 3 ) } }
+      ]
+    ],
+    expected: [ shape.clone() ]
+  });
+});
+
+module( 'BoxShape.getAngularMotionDisc' );
+
+test( 'basic', function() {
+  var shape = Bump.BoxShape.create( Bump.Vector3.create( 1, 1, 1 ) );
+
+  testFunc( Bump.BoxShape, 'getAngularMotionDisc', {
+    objects: shape,
+    expected: [ Math.sqrt( 3 ) ]
+  });
+});
+
+module( 'BoxShape.getContactBreakingThreshold' );
+
+test( 'test skipped', function() {});
+
+module( 'BoxShape.calculateTemporalAabb' );
+
+test( 'basic', function() {
+  var shape = Bump.BoxShape.create( Bump.Vector3.create( 1, 1, 1 ) ),
+      curTrans = Bump.Transform.getIdentity(),
+      linVel = Bump.Vector3.create( 0, 0, 3 ),
+      angVel = Bump.Vector3.create( Math.PI / 6, 0, 0 ),
+      timeStep = 1 / 60,
+      aabbMin = Bump.Vector3.create(),
+      aabbMax = Bump.Vector3.create();
+
+  testFunc( Bump.BoxShape, 'calculateTemporalAabb', {
+    objects: shape,
+    epsilon: Math.pow( 2, -48 ),
+    args: [
+      [
+        curTrans, linVel, angVel, timeStep,
+        { param: aabbMin, expected: Bump.Vector3.create( -1.015114994701952, -1.015114994701952, -1.015114994701952 ) },
+        { param: aabbMax, expected: Bump.Vector3.create( 1.015114994701952, 1.015114994701952, 1.065114994701952 ) }
+      ]
+    ],
+    expected: [ shape.clone() ]
+  });
+});
+
+module( 'BoxShape miscellaneous' );
+
+test( 'isType', function() {
+  var shape = Bump.BoxShape.create( Bump.Vector3.create() );
+
+  testFunc( Bump.BoxShape, 'isPolyhedral', { objects: shape, expected: [ true  ] } );
+  testFunc( Bump.BoxShape, 'isConvex2d',   { objects: shape, expected: [ false ] } );
+  testFunc( Bump.BoxShape, 'isConvex',     { objects: shape, expected: [ true  ] } );
+  testFunc( Bump.BoxShape, 'isNonMoving',  { objects: shape, expected: [ false ] } );
+  testFunc( Bump.BoxShape, 'isConcave',    { objects: shape, expected: [ false ] } );
+  testFunc( Bump.BoxShape, 'isCompound',   { objects: shape, expected: [ false ] } );
+  testFunc( Bump.BoxShape, 'isSoftBody',   { objects: shape, expected: [ false ] } );
+  testFunc( Bump.BoxShape, 'isInfinite',   { objects: shape, expected: [ false ] } );
 });

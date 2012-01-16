@@ -98,8 +98,8 @@
   };
 
   AabbUtil2.RayAabb = function( rayFrom, rayTo, aabbMin, aabbMax, param, normal ) {
-    var aabbHalfExtent = aabbMax.subtract( aabbMin, tmpV1 ).multiply( 0.5, tmpV1 ),
-        aabbCenter = aabbMax.add( aabbMin, tmpV2 ).multiply( 0.5, tmpV2 ),
+    var aabbHalfExtent = aabbMax.subtract( aabbMin, tmpV1 ).multiplyScalar( 0.5, tmpV1 ),
+        aabbCenter = aabbMax.add( aabbMin, tmpV2 ).multiplyScalar( 0.5, tmpV2 ),
         source = rayFrom.subtract( aabbCenter, tmpV3 ),
         target = rayTo.subtract( aabbCenter, tmpV4 ),
         sourceOutcode = AabbUtil2.Outcode( source, aabbHalfExtent ),
@@ -162,12 +162,12 @@
 
     var localHalfExtents = localAabbMax
       .subtract( localAabbMin, tmpV1 )
-      .multiply( 0.5, tmpV1 );
+      .multiplyScalar( 0.5, tmpV1 );
     localHalfExtents.addSelf( tmpV2.setValue( margin, margin, margin ) );
 
     var localCenter = localAabbMax
       .add( localAabbMin, tmpV2 )
-      .multiply( 0.5, tmpV2 );
+      .multiplyScalar( 0.5, tmpV2 );
     var abs_b = trans.basis.absolute( tmpM1 );
     var center = trans.transform( localCenter, tmpV3 );
     var extent = tmpV4.setValue( abs_b.m_el0.dot( localHalfExtents ),

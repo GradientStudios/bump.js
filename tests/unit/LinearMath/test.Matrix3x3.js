@@ -4,9 +4,9 @@ test( 'Matrix3x3 exists', function() {
   ok( Bump.Matrix3x3 );
 });
 
-module( 'Bump.Matrix3x3 basic' );
+module( 'Bump.Matrix3x3.create' );
 
-test( 'create' , function() {
+test( 'basic' , function() {
   ok( Bump.Matrix3x3.create, 'create exists' );
   ok( typeof Bump.Matrix3x3.create() === 'object', 'creates an object' );
 
@@ -70,6 +70,36 @@ test( 'create' , function() {
         c.m31 === 7 && c.m32 === 8 && c.m33 === 0 );
   }
 });
+
+module( 'Matrix3x3.assign' );
+
+test( 'basic', function() {
+  var m0 = Bump.Matrix3x3.create( 1, 2, 3, 4, 5, 6, 7, 8, 9 ),
+      m1 = Bump.Matrix3x3.create();
+
+  notDeepEqual( m0, m1 );
+  m1.assign( m0 );
+  deepEqual( m0, m1 );
+
+  if ( m0.m_el0 ) {
+    notStrictEqual( m0.m_el0, m1.m_el0 );
+    notStrictEqual( m0.m_el1, m1.m_el1 );
+    notStrictEqual( m0.m_el2, m1.m_el2 );
+  }
+
+  if ( m0.m_el ) {
+    notStrictEqual( m0.m_el, m1.m_el );
+    notStrictEqual( m0.m_el[0], m1.m_el[0] );
+    notStrictEqual( m0.m_el[1], m1.m_el[1] );
+    notStrictEqual( m0.m_el[2], m1.m_el[2] );
+  }
+
+  if ( m0.m ) {
+    notStrictEqual( m0.m, m1.m );
+  }
+});
+
+module( 'Matrix3x3 basic' );
 
 test( 'getIdentity', function() {
   ok( Bump.Matrix3x3.getIdentity, 'getIdentity exists' );

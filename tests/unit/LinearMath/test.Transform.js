@@ -12,9 +12,9 @@ var epsilonNumberCheck = function( result, expected, epsilon, message ) {
 
   while ( expectedKeys.length ) {
     key = expectedKeys.shift();
-    var eProp = key[1][ key[0] ];
-    var rProp = key[2][ key[0] ];
-    var path  = key[3].join( '.' );
+    var eProp = key[1][ key[0] ],
+        rProp = key[2][ key[0] ],
+        path  = key[3].join( '.' );
 
     if ( checkedObjects.indexOf( eProp ) === -1 ) {
 
@@ -194,8 +194,10 @@ var testFunc = function( objType, func, options ) {
   options.isStaticFunc = options.isStaticFunc || false;
   options.epsilon = options.epsilon || 0;
   options.modifiesSelf = options.modifiesSelf || false;
+  options.pointerMembers = options.pointerMembers || [];
 
   var i, j, epsilonDeepEqual = deepEqual;
+  var savedReferences = {};
 
   if ( options.epsilon > 0 ) {
     // Using epsilon to test numeric values instead of the normal deepEqual
@@ -252,6 +254,33 @@ var testFunc = function( objType, func, options ) {
         func.apply( a, args );
       };
     }
+  })();
+
+  var preFuncSaveReferences = (function() {
+    return function() {
+      savedReferences = {};
+      for ( var prop in a ) {
+        if ( a.hasOwnProperty( prop ) ) {
+          if ( prop !== '_super' ) {
+            if ( typeof a[ prop ] === 'object' ) {
+              if ( options.pointerMembers.indexOf( prop ) === -1 ) {
+                savedReferences[ prop ] = a[ prop ];
+              }
+            }
+          }
+        }
+      }
+    };
+  })();
+
+  var postFuncCheckReferences = (function() {
+    return function() {
+      for ( var prop in savedReferences ) {
+        if ( savedReferences.hasOwnProperty( prop ) ) {
+          strictEqual( a[ prop ], savedReferences[ prop ], prop + ' reference not changed' );
+        }
+      }
+    };
   })();
 
   var postFuncObjCheck = (function() {
@@ -317,7 +346,7 @@ var testFunc = function( objType, func, options ) {
   }
 
   var addDestArg = function( dest ) {
-    var arr = args.slice(0);
+    var arr = args.slice( 0 );
     arr.push( dest );
     return arr;
   };
@@ -383,13 +412,17 @@ var testFunc = function( objType, func, options ) {
       aClone = a.clone();
     }
 
+    preFuncSaveReferences();
     checkExpected( func.apply( a, args ), expected, 'returns expected value' );
+    postFuncCheckReferences();
     postFuncCheck();
 
     if ( options.destType ) {
       var dest = options.destType.create(), destRef = dest;
 
+      preFuncSaveReferences();
       ret = func.apply( a, addDestArg( dest ) );
+      postFuncCheckReferences();
 
       strictEqual( ret, dest, 'answer is placed in specified destination' );
       checkExpected( dest, expected, 'setting destination works correctly' );
@@ -397,7 +430,9 @@ var testFunc = function( objType, func, options ) {
       postFuncCheck();
 
       if ( options.destType === objType ) {
+        preFuncSaveReferences();
         ret = func.apply( a, addDestArg( a ) );
+        postFuncCheckReferences();
         strictEqual( ret, a, 'answer is placed in specified destination' );
         checkExpected( a, expected, 'setting yourself as destination works correctly' );
 
@@ -410,7 +445,10 @@ var testFunc = function( objType, func, options ) {
         if ( argCorrectType ) {
           epsilonDeepEqual( args[j], argsClone[j], 'arg is not modified' );
 
+          preFuncSaveReferences();
           ret = func.apply( a, addDestArg( args[j] ) );
+          postFuncCheckReferences();
+
           strictEqual( ret, args[j], 'answer is placed in specified destination' );
           checkExpected( args[j], expected, 'setting argument as destination works correctly' );
 
@@ -503,6 +541,25 @@ test( 'member clone to destination', function() {
   ok( a.basis !== b.basis && a.origin !== b.origin, 'deep clones properties' );
   strictEqual( a, aRef, 'a is not reallocated' );
   strictEqual( b, bRef, 'b is not reallocated' );
+});
+
+module( 'Transform.assign' );
+test( 'basic', function() {
+  var a = Bump.Transform.create(
+        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, 1, 1 ), Math.PI ),
+        Bump.Vector3.create( 1, 2, 3 )
+      ),
+      b = Bump.Transform.getIdentity();
+
+  notDeepEqual( a, b );
+  a.assign( b );
+  deepEqual( a, b );
+
+  notStrictEqual( a.basis, b.basis );
+  notStrictEqual( a.basis.m_el0, b.basis.m_el0 );
+  notStrictEqual( a.basis.m_el1, b.basis.m_el1 );
+  notStrictEqual( a.basis.m_el2, b.basis.m_el2 );
+  notStrictEqual( a.origin, b.origin );
 });
 
 module( 'Bump.Transform.setOrigin' );
