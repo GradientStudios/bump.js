@@ -897,20 +897,23 @@
       },
 
       clone: function( dest, iclone ) {
-        iclone = iclone || 0;
-
         dest.clear();
         if(this.m_root !== 0) {
           var stack = [];
           //stack.reserve(this.m_leaves);
           stack.push( Bump.Dbvt.sStkCLN.create( this.m_root, 0 ) );
           do {
-            var i = stack.length - 1,
-            e = stack[i],
+            // Note that this was altered to ensure that the cloned tree is EXACTLY the same as the
+            // original. Previously there was an issue with children swapping indices, creating a
+            // copy that, while equivalent in tree structure, is techincally not identical.
+            /*var i = stack.length - 1,
+            /e = stack[i], */
+            var e = stack.pop(),
             n = createnodeTreeParentVolumeData( dest, e.parent, e.node.volume, e.node.data);
-            stack.pop();
+            /* stack.pop(); */
             if( e.parent !== 0 ) {
-              e.parent.childs[ i & 1 ] = n;
+              //e.parent.childs[ i & 1 ] = n; // nice trick, but doesn't work if you want an exact clone
+              e.parent.childs[ indexof( e.node ) ] = n;
             }
             else {
               dest.m_root = n;
@@ -919,7 +922,7 @@
               stack.push( Bump.Dbvt.sStkCLN.create(e.node.childs[0], n ) );
               stack.push( Bump.Dbvt.sStkCLN.create(e.node.childs[1], n ) );
             }
-            else {
+            else if( iclone ) { /* added if to make sure iclone is defined */
               iclone.CloneLeaf(n);
             }
           } while( stack.length > 0 );

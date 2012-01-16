@@ -835,7 +835,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     dbvt = makeTestTree();
     dbvt.clone( dest, iclone );
 
-    //notStrictEqual( dbvt, dest, 'clone creates new copy deep copy' );
+    notStrictEqual( dbvt, dest, 'clone creates new copy deep copy' );
     //deepEqual( dbvt, dest, 'cloned copy is identical' );
     epsilonNumberCheck( dbvt, dest, Bump.SIMD_EPSILON );
     equal( iclone.sum, 100, 'all leaves visited correctly' );
