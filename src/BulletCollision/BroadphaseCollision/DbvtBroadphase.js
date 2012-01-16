@@ -13,6 +13,17 @@
   } );
 
   Bump.DbvtBroadphase = Bump.type( {
-    parent: Bump.BroadphaseInterface
+    parent: Bump.BroadphaseInterface,
+
+    init: function() {
+    },
+
+    typeMembers: {
+      Stages: Bump.Enum( [
+        { id: 'DYNAMIC_SET' },
+        { id: 'FIXED_SET' },
+        { id: 'STAGECOUNT' }
+      ] )
+    }
   } );
 } )( this, this.Bump );
