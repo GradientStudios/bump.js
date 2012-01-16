@@ -734,7 +734,7 @@
   // This btDbvt is used for soft body collision detection and for the btDbvtBroadphase. It has a fast insert, remove and update of nodes.
   // Unlike the btQuantizedBvh, nodes can be dynamically moved around, which allows for change in topology of the underlying data structure.
   Bump.Dbvt = Bump.type( {
-    init: function(){
+    init: function Dbvt(){
       this.m_root = 0; // DbvtNode
       this.m_free = 0; // DbvtNode
       this.m_lkhd = -1; // int
@@ -1424,7 +1424,7 @@
 
   Bump.Dbvt.sStkNN = Bump.type( {
     // initialize from two `DbvtNode`s
-    init: function( na, nb ) {
+    init: function sStkNN( na, nb ) {
       this.a = na || 0;
       this.b = nb || 0;
     }
@@ -1432,7 +1432,7 @@
 
   Bump.Dbvt.sStkNP = Bump.type( {
     // initialize from `DbvtNode` `n` and int mask `m`
-    init: function( n, m ) {
+    init: function sStkNP( n, m ) {
       this.node = n || 0;
       this.mask = m || 0;
     }
@@ -1440,7 +1440,7 @@
 
   Bump.Dbvt.sStkNPS = Bump.type( {
     // initialize from `DbvtNode` `n`, int mask `m`, and float `v`
-    init: function( n, m, v ) {
+    init: function sStkNPS( n, m, v ) {
       this.node = n || 0;
       this.mask = m || 0;
       this.value = v || 0;
@@ -1449,7 +1449,7 @@
 
   Bump.Dbvt.sStkCLN = Bump.type( {
     // initialize from two `DbvtNode`s
-    init: function( n, p ) {
+    init: function sStkCLN( n, p ) {
       this.node = n || 0;
       this.parent = p || 0;
     }
