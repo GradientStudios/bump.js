@@ -777,7 +777,69 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     equal( result, expected, 'correctly counts leaves' );
   } );
 
+  test('maxdepth', function() {
+    strictEqual( typeof Bump.Dbvt.maxdepth, 'function', 'exists' );
+
+    var dbvt = makeTestTree();
+    equal( Bump.Dbvt.maxdepth( dbvt.m_root ), 3, 'correctly computes max depth' );
+
+    dbvt = Bump.Dbvt.create();
+    equal( Bump.Dbvt.maxdepth( dbvt.m_root ), 0, 'correctly computes max depth for empty tree' );
+
+  } );
+
+  test('extractLeaves', function() {
+    strictEqual( typeof Bump.Dbvt.extractLeaves, 'function', 'exists' );
+
+    var dbvt = makeTestTree(),
+    expected = [ dbvt.m_root.childs[ 0 ].childs[ 0 ],
+                 dbvt.m_root.childs[ 0 ].childs[ 1 ],
+                 dbvt.m_root.childs[ 1 ].childs[ 0 ],
+                 dbvt.m_root.childs[ 1 ].childs[ 1 ]
+               ],
+    leaves = [];
+
+    Bump.Dbvt.extractLeaves( dbvt.m_root, leaves );
+
+    //epsilonNumberCheck( extracterator.nodes, expected, Bump.SIMD_EPSILON );
+    deepEqual( leaves, expected, 'correctly extracts leaves' );
+  } );
+
   module( 'Dbvt members' );
+
+  test('clone', function() {
+    var dbvt = Bump.Dbvt.create(),
+        dest = Bump.Dbvt.create(),
+        //vols = makeVolumeGrid( 3 ),
+        writer = TestWriter.create(),
+        TestIClone = Bump.type( {
+          parent: Bump.Dbvt.IClone,
+          init: function TestIClone(){
+            this.sum = 0;
+          },
+          members: {
+            CloneLeaf: function( node ){
+              this.sum += node.dataAsInt;
+            }
+          }
+        }),
+        iclone = TestIClone.create();
+
+    strictEqual( typeof dbvt.clone, 'function', 'exists' );
+    dbvt.clone( dest, iclone );
+
+    strictEqual( dest.m_root, 0, 'cloning empty tree creates empty tree' );
+    equal( iclone.sum, 0, 'no leaves visited' );
+
+    //insertAll( dbvt, vols );
+    dbvt = makeTestTree();
+    dbvt.clone( dest, iclone );
+
+    //notStrictEqual( dbvt, dest, 'clone creates new copy deep copy' );
+    //deepEqual( dbvt, dest, 'cloned copy is identical' );
+    epsilonNumberCheck( dbvt, dest, Bump.SIMD_EPSILON );
+    equal( iclone.sum, 100, 'all leaves visited correctly' );
+  });
 
   test('write', function() {
     var writer = TestWriter.create(),
@@ -1021,9 +1083,6 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
   module( 'Dbvt.updateLeafVolumeMargin' );
   test('test skipped', function() {});
 
-  module( 'Dbvt.clone' );
-  test('test skipped', function() {});
-
   module( 'Dbvt.collideTT' );
   test('test skipped', function() {});
 
@@ -1034,15 +1093,6 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
   test('test skipped', function() {});
 
   module( 'Dbvt.rayTestInternal' );
-  test('test skipped', function() {});
-
-  module( 'Dbvt.maxdepth' );
-  test('test skipped', function() {});
-
-  module( 'Dbvt.countLeaves' );
-  test('test skipped', function() {});
-
-  module( 'Dbvt.extractLeaves' );
   test('test skipped', function() {});
 
   module( 'Dbvt.benchmark' );

@@ -1094,10 +1094,11 @@
 
     typeMembers: {
       maxdepth: function( node ) {
-        var depth = 0;
+        var depth = { value: 0 };
         if( node ) {
           getmaxdepth( node, 1, depth );
         }
+        return depth.value;
       },
 
       countLeaves: function( node ) {
