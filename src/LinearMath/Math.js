@@ -1,5 +1,6 @@
 // Math stuff that bullet defines.
 (function( window, Bump ) {
+  Bump.SIMD_INFINITY = Infinity;
   Bump.SIMD_EPSILON = Math.pow( 2, -52 );
   Bump.SIMDSQRT12 = Math.sqrt( 1 / 2 );
   Bump.SIMD_2_PI = 6.283185307179586232;
