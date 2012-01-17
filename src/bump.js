@@ -16,11 +16,11 @@ this.Bump = {};
     }
 
     return function superWrappedFunc() {
-      var ret, tmp = this._super;
+      var ret;
 
       this._super = superFunc;
       ret = newFunc.apply( this, arguments );
-      this._super = tmp;
+      delete this._super;
 
       return ret;
     };
