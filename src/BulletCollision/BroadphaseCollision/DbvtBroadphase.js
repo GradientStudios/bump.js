@@ -15,7 +15,7 @@
   Bump.DbvtBroadphase = Bump.type( {
     parent: Bump.BroadphaseInterface,
 
-    init: function() {
+    init: function( paircache ) {
       /* Fields */
       this.m_sets = [ Bump.Dbvt.create(), Bump.Dbvt.create() ]; // Dbvt sets
       this.m_stageRoots = new Array( Bump.DbvtBroadphase.Stages.STAGECOUNT + 1 ); // Stages list (btDbvtProxy*)
@@ -39,17 +39,80 @@
 
 /* omitting for now
 #if DBVT_BP_PROFILE
-	btClock	m_clock;
-	struct	{
-		unsigned long m_total;
-		unsigned long m_ddcollide;
-		unsigned long m_fdcollide;
-		unsigned long m_cleanup;
-		unsigned long m_jobcount;
-	} m_profiling;
+        btClock m_clock;
+        struct  {
+                unsigned long m_total;
+                unsigned long m_ddcollide;
+                unsigned long m_fdcollide;
+                unsigned long m_cleanup;
+                unsigned long m_jobcount;
+        } m_profiling;
 #endif
 */
 
+    },
+
+    members: {
+      collide: function( dispatched ) {
+      },
+
+      optimize: function() {
+      },
+
+      createProxy: function() {
+      },
+
+      destroyProxy: function( proxy, dispatcher ) {
+      },
+
+      setAabb: function( proxy, aabbMin, aabbMax, dispatcher ) {
+
+      },
+
+      rayTest: function( rayFrom, rayTo, rayCallback, aabbMin, aabbMax) {
+        aabbMin = aabbMin || Bump.Vector3.create();
+        aabbMax = aabbMin || Bump.Vector3.create();
+      },
+
+      aabbTest: function (aabbMin, aabbMax, callback ){
+      },
+
+      getAabb: function( proxy, aabbMin, aabbMax ) {
+      },
+
+      calculateOverlappingPairs: function( dispatcher ) {
+      },
+
+      getOverlappingPairCache: function() {
+      },
+
+      getBroadphaseAabb: function( aabbMin, aabbMax ) {
+      },
+
+      printStats: function() {
+      },
+
+      ///reset broadphase internal structures, to ensure determinism/reproducability
+      resetPool: function( dispatcher ) {
+      },
+
+      performDeferredRemoval: function( dispatcher ) {
+      },
+
+      setVelocityPrediction: function( prediction ) {
+        this.m_prediction = prediction;
+      },
+
+      getVelocityPrediction: function() {
+        return this.m_prediction;
+      },
+
+      ///this setAabbForceUpdate is similar to setAabb but always forces the aabb update.
+      ///it is not part of the btBroadphaseInterface but specific to btDbvtBroadphase.
+      ///it bypasses certain optimizations that prevent aabb updates (when the aabb shrinks), see
+      ///http://code.google.com/p/bullet/issues/detail?id=223
+      setAabbForceUpdate: function( absproxy, aabbMin, aabbMax, dispatcher ) {
+      }
     },
 
     typeMembers: {
@@ -57,7 +120,10 @@
         { id: 'DYNAMIC_SET' },
         { id: 'FIXED_SET' },
         { id: 'STAGECOUNT' }
-      ] )
+      ] ),
+
+      benchmark: function( broadphaseInterface ) {
+      }
     }
   } );
 } )( this, this.Bump );
