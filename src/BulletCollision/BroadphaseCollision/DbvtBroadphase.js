@@ -5,7 +5,6 @@
 
     init: function DbvtProxy( aabbMin, aabbMax, userPtr, collisionFilterGroup, collisionFilterMask ) {
       this._super( aabbMin, aabbMax, userPtr, collisionFilterGroup, collisionFilterMask );
-
       this.leaf = null;
       this.links = [ null, null ];
       this.stage = 0;
@@ -48,6 +47,40 @@
   clear = function( valueRef ) {
     valueRef.value = {}; // set to empty object?
   };
+
+  Bump.DbvtTreeCollider = Bump.type( {
+    parent: Bump.Dbvt.ICollide,
+
+    init: function( p ) {
+      this.pbp = p;
+      this.proxy = null;
+    },
+
+    members: {
+      ProcessNode2: function( na, nb ) {
+        /* this._super( na, nb ); */
+        if( na != nb ) {
+          var pa = na.data,
+              pb = nb.data;
+
+/* #if DBVT_BP_SORTPAIRS */
+          if( pa.m_uniqueId > pb.m_uniqueId ) {
+            //btSwap(pa,pb);
+            var tmp = pa;
+            pa = pb;
+            pb = pa;
+          }
+/* #endif */
+          this.pbp.m_paircache.addOverlappingPair( pa, pb );
+          ++this.pbp.m_newpairs;
+        }
+      },
+
+      ProcessNode: function( n ) {
+        this.ProcessNode2( n, this.proxy.leaf );
+      }
+    }
+  } );
 
   Bump.DbvtBroadphase = Bump.type( {
     parent: Bump.BroadphaseInterface,
