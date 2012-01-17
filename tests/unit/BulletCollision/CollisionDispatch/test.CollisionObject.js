@@ -1,16 +1,22 @@
 var checkTypes = function( obj, checks ) {
   for ( var i = 0; i < checks.length; ++i ) {
-    if ( typeof checks[i][1] === 'object' ) {
-      if ( checks[i][1] !== null ) {
-        ok( obj[ checks[i][0] ] instanceof checks[i][1].prototype.constructor, checks[i][0] );
+    var propName = checks[i][0];
+    var propType = checks[i][1];
+    if ( typeof propType === 'object' ) {
+      if ( propType !== null ) {
+        ok( obj[ propName ] instanceof propType.prototype.constructor, propName );
       } else {
-        strictEqual( obj[ checks[i][0] ], checks[i][1], checks[i][0] );
+        if ( obj[ propName ] === null ) {
+          strictEqual( obj[ propName ], propType, propName );
+        } else {
+          ok( typeof obj[ propName ] === 'object', propName );
+        }
       }
     } else {
-      if ( checks[i][1] === 'array' ) {
-        ok( Array.isArray( obj[ checks[i][0] ] ), checks[i][0] );
+      if ( propType === 'array' ) {
+        ok( Array.isArray( obj[ propName ] ), propName );
       } else {
-        strictEqual( typeof obj[ checks[i][0] ], checks[i][1], checks[i][0] );
+        strictEqual( typeof obj[ propName ], propType, propName );
       }
     }
   }
