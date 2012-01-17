@@ -63,14 +63,14 @@
           var pa = na.data,
               pb = nb.data;
 
-/* #if DBVT_BP_SORTPAIRS */
+/* #if DBVT_BP_SORTPAIRS
           if( pa.m_uniqueId > pb.m_uniqueId ) {
             //btSwap(pa,pb);
             var tmp = pa;
             pa = pb;
             pb = pa;
           }
-/* #endif */
+#endif */
           this.pbp.m_paircache.addOverlappingPair( pa, pb );
           ++this.pbp.m_newpairs;
         }
