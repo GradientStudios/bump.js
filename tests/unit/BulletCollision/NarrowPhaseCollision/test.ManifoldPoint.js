@@ -28,6 +28,19 @@ var manifoldPointTypes = [
   [ 'constraintRow',              'array'   ]
 ];
 
+var ManifoldPointDeepCopyCheck = function( a, b ) {
+  notStrictEqual( a.localPointA, b.localPointA );
+  notStrictEqual( a.localPointB, b.localPointB );
+  notStrictEqual( a.positionWorldOnB, b.positionWorldOnB );
+  notStrictEqual( a.positionWorldOnA, b.positionWorldOnA );
+  notStrictEqual( a.normalWorldOnB, b.normalWorldOnB );
+
+  strictEqual( a.userPersistentData, b.userPersistentData );
+  notStrictEqual( a.constraintRow[0], b.constraintRow[0] );
+  notStrictEqual( a.constraintRow[1], b.constraintRow[1] );
+  notStrictEqual( a.constraintRow[2], b.constraintRow[2] );
+};
+
 module( 'ManifoldPoint.create' );
 
 test( 'no args', function() {
@@ -49,4 +62,38 @@ test( 'with args', function() {
   checkTypes( mp, manifoldPointTypes );
 
   equal( mp.getDistance(), 42 );
+});
+
+module( 'ManifoldPoint.clone' );
+
+test( 'basic', function() {
+  var mp = Bump.ManifoldPoint.create(
+        Bump.Vector3.create( 1, 2, 3 ),
+        Bump.Vector3.create( 3, 2, 1 ),
+        Bump.Vector3.create( 4, 4, 4 ),
+        42
+      ),
+      clone = mp.clone();
+
+  deepEqual( mp, clone, 'clone works' );
+  ManifoldPointDeepCopyCheck( mp, clone );
+});
+
+module( 'ManifoldPoint.assign' );
+
+test( 'basic', function() {
+  var mp = Bump.ManifoldPoint.create(
+        Bump.Vector3.create( 1, 2, 3 ),
+        Bump.Vector3.create( 3, 2, 1 ),
+        Bump.Vector3.create( 4, 4, 4 ),
+        42
+      ),
+      other = Bump.ManifoldPoint.create();
+
+  notDeepEqual( mp, other );
+
+  other.assign( mp );
+  deepEqual( mp, other );
+
+  ManifoldPointDeepCopyCheck( mp, other );
 });
