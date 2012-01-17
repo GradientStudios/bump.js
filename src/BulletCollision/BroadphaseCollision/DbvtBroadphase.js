@@ -12,6 +12,43 @@
     }
   } );
 
+  ///
+  /// Helpers
+  ///
+  // There don't need to be publicly accessible outside of DbvtBroadphase.js
+
+  // listRef is an object with property `list` to simulate by-reference passing of pointer
+  var listappend = function( item, listRef ) {
+    item.links[ 0 ] = 0;
+    item.links[ 1 ] = listRef.list;
+    if( listRef.list ) {
+      listRef.list.links[ 0 ] = item;
+    }
+    listRef.list = item;
+  },
+  listremove = function( item, listRef ) {
+    if( item.links[ 0 ] ) {
+      item.links[ 0 ].links[ 1 ] = item.links[ 1 ];
+    }
+    else {
+      listRef.list = item.links[ 1 ];
+    }
+    if( item.links[ 1 ] ) {
+      item.links[ 1 ].links[ 0 ] = item.links[ 0 ];
+    }
+  },
+  listcount = function( root ) {
+    var n = 0;
+    while( root ) {
+      ++n;
+      root = root.links[ 1 ];
+    }
+    return n;
+  },
+  clear = function( valueRef ) {
+    valueRef.value = {}; // set to empty object?
+  };
+
   Bump.DbvtBroadphase = Bump.type( {
     parent: Bump.BroadphaseInterface,
 
