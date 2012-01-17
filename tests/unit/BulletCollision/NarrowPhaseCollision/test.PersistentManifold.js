@@ -91,6 +91,89 @@ test( 'basic', function() {
   });
 });
 
+module( 'PersistentManifold.setBodies' );
+
+test( 'test skipped', function() {});
+
+module( 'PersistentManifold.clearUserCache' );
+
+test( 'test skipped', function() {});
+
+module( 'PersistentManifold.getNumContacts' );
+
+test( 'test skipped', function() {});
+
+module( 'PersistentManifold.getContactPoint' );
+
+test( 'test skipped', function() {});
+
+module( 'PersistentManifold.getContactBreakingThreshold' );
+
+test( 'test skipped', function() {});
+
+module( 'PersistentManifold.getContactProcessingThreshold' );
+
+test( 'test skipped', function() {});
+
+module( 'PersistentManifold.getCacheEntry' );
+
+test( 'test skipped', function() {});
+
+module( 'PersistentManifold.addManifoldPoint' );
+
+test( 'test skipped', function() {});
+
+module( 'PersistentManifold.removeContact' );
+
+test( 'test skipped', function() {});
+
+module( 'PersistentManifold.replaceContactPoint' );
+
+test( 'test skipped', function() {});
+
+module( 'PersistentManifold.validContactDistance' );
+
+test( 'test skipped', function() {});
+
+module( 'PersistentManifold.refreshContactPoints' );
+
+test( 'test skipped', function() {});
+
+module( 'PersistentManifold.clearManifold' );
+
+test( 'test skipped', function() {});
+
 module( 'PersistentManifold.sortCachedPoints' );
 
 test( 'test skipped', function() {});
+
+module( 'PersistentManifold manifold cache manipulation' );
+
+test( 'basic', function() {
+  var body0 = Bump.RigidBody.create( 1, null, null ),
+      body1 = Bump.RigidBody.create( 1, null, null ),
+      pm = Bump.PersistentManifold.create( body0, body1, 0, 0.02, 0.02 ),
+      clone = pm.clone();
+
+  pm.addManifoldPoint( Bump.ManifoldPoint.create() );
+  strictEqual( pm.getNumContacts(), 1 );
+  pm.addManifoldPoint( Bump.ManifoldPoint.create() );
+  strictEqual( pm.getNumContacts(), 2 );
+  pm.addManifoldPoint( Bump.ManifoldPoint.create() );
+  strictEqual( pm.getNumContacts(), 3 );
+  pm.addManifoldPoint( Bump.ManifoldPoint.create() );
+  strictEqual( pm.getNumContacts(), 4 );
+  pm.addManifoldPoint( Bump.ManifoldPoint.create() );
+  strictEqual( pm.getNumContacts(), 4 );
+  pm.removeContactPoint( 2 );
+  strictEqual( pm.getNumContacts(), 3 );
+  pm.removeContactPoint( 2 );
+  strictEqual( pm.getNumContacts(), 2 );
+  pm.removeContactPoint( 2 );
+  strictEqual( pm.getNumContacts(), 1 );
+  pm.clearManifold();
+  strictEqual( pm.getNumContacts(), 0 );
+
+  deepEqual( pm, clone );
+  PersistentManifoldDeepCopyCheck( pm, clone );
+});
