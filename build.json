@@ -28,6 +28,7 @@
         "src/BulletCollision/BroadphaseCollision/Dbvt.js",
 
         "src/BulletDynamics/ConstraintSolver/TypedConstraint.js",
+        "src/BulletDynamics/ConstraintSolver/ConstraintSolver.js",
 
         "src/BulletCollision/CollisionDispatch/CollisionConfiguration.js",
         "src/BulletCollision/CollisionDispatch/CollisionDispatcher.js",
