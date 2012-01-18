@@ -155,6 +155,11 @@ test( 'basic', function() {
       pm = Bump.PersistentManifold.create( body0, body1, 0, 0.02, 0.02 ),
       clone = pm.clone();
 
+  var i, length = pm.pointCache.length, refs = [];
+  for ( i = 0; i < length; ++i ) {
+    refs.push( pm.pointCache[i] );
+  }
+
   pm.addManifoldPoint( Bump.ManifoldPoint.create() );
   strictEqual( pm.getNumContacts(), 1 );
   pm.addManifoldPoint( Bump.ManifoldPoint.create() );
@@ -165,6 +170,12 @@ test( 'basic', function() {
   strictEqual( pm.getNumContacts(), 4 );
   pm.addManifoldPoint( Bump.ManifoldPoint.create() );
   strictEqual( pm.getNumContacts(), 4 );
+
+  strictEqual( pm.pointCache.length, length, 'point cache remains the same length' );
+  for ( i = 0; i < pm.pointCache.length; ++i ) {
+    strictEqual( pm.pointCache[i], refs[i], 'reference ' + i + ' stays the same after adding points' );
+  }
+
   pm.removeContactPoint( 2 );
   strictEqual( pm.getNumContacts(), 3 );
   pm.removeContactPoint( 2 );
@@ -173,6 +184,11 @@ test( 'basic', function() {
   strictEqual( pm.getNumContacts(), 1 );
   pm.clearManifold();
   strictEqual( pm.getNumContacts(), 0 );
+
+  strictEqual( pm.pointCache.length, length, 'point cache remains the same length' );
+  for ( i = 0; i < pm.pointCache.length; ++i ) {
+    strictEqual( pm.pointCache[i], refs[i], 'reference ' + i + ' stays the same after removing points' );
+  }
 
   deepEqual( pm, clone );
   PersistentManifoldDeepCopyCheck( pm, clone );

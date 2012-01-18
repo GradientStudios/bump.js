@@ -24,7 +24,6 @@ var checkTypes = function( obj, checks ) {
   checks = checks.map(function( elem ) {
     return elem[0];
   });
-  checks.push( '_super' );
 
   for ( var prop in obj ) {
     if ( obj.hasOwnProperty( prop ) ) {
