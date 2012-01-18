@@ -261,11 +261,9 @@ var testFunc = function( objType, func, options ) {
       savedReferences = {};
       for ( var prop in a ) {
         if ( a.hasOwnProperty( prop ) ) {
-          if ( prop !== '_super' ) {
-            if ( typeof a[ prop ] === 'object' ) {
-              if ( options.pointerMembers.indexOf( prop ) === -1 ) {
-                savedReferences[ prop ] = a[ prop ];
-              }
+          if ( typeof a[ prop ] === 'object' ) {
+            if ( options.pointerMembers.indexOf( prop ) === -1 ) {
+              savedReferences[ prop ] = a[ prop ];
             }
           }
         }
