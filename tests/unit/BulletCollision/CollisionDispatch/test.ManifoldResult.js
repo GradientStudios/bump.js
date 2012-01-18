@@ -71,3 +71,11 @@ test( 'basic', function() {
 
   ManifoldResultDeepCopyCheck( mr, other );
 });
+
+module( 'ManifoldResult.addContactPoint' );
+
+test( 'test skipped', function() {});
+
+module( 'ManifoldResult.refreshContactPoints' );
+
+test( 'test skipped', function() {});
