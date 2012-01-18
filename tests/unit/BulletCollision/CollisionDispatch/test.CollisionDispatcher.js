@@ -78,3 +78,35 @@ test( 'basic', function() {
 module( 'CollisionDispatcher.assign' );
 
 test( 'test skipped', function() {});
+
+module( 'CollisionDispatcher.getNewManifold' );
+
+test( 'test skipped', function() {});
+
+module( 'CollisionDispatcher.releaseManifold' );
+
+test( 'test skipped', function() {});
+
+module( 'CollisionDispatcher.clearManifold' );
+
+test( 'test skipped', function() {});
+
+module( 'CollisionDispatcher.findAlgorithm' );
+
+test( 'test skipped', function() {});
+
+module( 'CollisionDispatcher.needsCollision' );
+
+test( 'test skipped', function() {});
+
+module( 'CollisionDispatcher.needsResponse' );
+
+test( 'test skipped', function() {});
+
+module( 'CollisionDispatcher.dispatchAllCollisionPairs' );
+
+test( 'test skipped', function() {});
+
+module( 'CollisionDispatcher.defaultNearCallback' );
+
+test( 'test skipped', function() {});
