@@ -188,7 +188,7 @@
         }
 
         Bump.Assert( this.pointCache[ insertIndex ].userPersistentData === null );
-        this.pointCache[ insertIndex ] = newPoint;
+        this.pointCache[ insertIndex ].assign( newPoint );
         return insertIndex;
       },
 
@@ -197,7 +197,7 @@
 
         var lastUsedIndex = this.getNumContacts() - 1;
         if ( index !== lastUsedIndex ) {
-          this.pointCache[index] = this.pointCache[lastUsedIndex];
+          this.pointCache[index].assign( this.pointCache[ lastUsedIndex ] );
           // Get rid of duplicated `userPersistentData` pointer.
           this.pointCache[ lastUsedIndex ].userPersistentData = null;
           this.pointCache[ lastUsedIndex ].constraintRow[0].accumImpulse = 0;
@@ -226,7 +226,7 @@
         Bump.Assert( lifeTime >= 0 );
         var cache = this.pointCache[ insertIndex ].userPersistentData;
 
-        this.pointCache[ insertIndex ] = newPoint;
+        this.pointCache[ insertIndex ].assign( newPoint );
 
         this.pointCache[ insertIndex ].userPersistentData = cache;
         this.pointCache[ insertIndex ].appliedImpulse = appliedImpulse;
