@@ -67,19 +67,19 @@
 
   Bump.Dispatcher = Bump.type({
     members: {
-      findAlgorithm: function() { Bump.Assert( false ); },
-      getNewManifold: function() { Bump.Assert( false ); },
-      releaseManifold: function() { Bump.Assert( false ); },
-      clearManifold: function() { Bump.Assert( false ); },
-      needsCollision: function() { Bump.Assert( false ); },
-      needsResponse: function() { Bump.Assert( false ); },
-      dispatchAllCollisionPairs: function() { Bump.Assert( false ); },
-      getNumManifolds: function() { Bump.Assert( false ); },
-      getManifoldByIndexInternal: function() { Bump.Assert( false ); },
-      getInternalManifoldPointer: function() { Bump.Assert( false ); },
-      getInternalManifoldPool: function() { Bump.Assert( false ); },
-      allocateCollisionAlgorithm: function() { Bump.Assert( false ); },
-      freeCollisionAlgorithm: function() { Bump.Assert( false ); }
+      findAlgorithm: Bump.abstract,
+      getNewManifold: Bump.abstract,
+      releaseManifold: Bump.abstract,
+      clearManifold: Bump.abstract,
+      needsCollision: Bump.abstract,
+      needsResponse: Bump.abstract,
+      dispatchAllCollisionPairs: Bump.abstract,
+      getNumManifolds: Bump.abstract,
+      getManifoldByIndexInternal: Bump.abstract,
+      getInternalManifoldPointer: Bump.abstract,
+      getInternalManifoldPool: Bump.abstract,
+      allocateCollisionAlgorithm: Bump.abstract,
+      freeCollisionAlgorithm: Bump.abstract
     }
   });
 

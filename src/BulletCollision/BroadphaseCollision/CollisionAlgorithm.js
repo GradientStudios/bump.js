@@ -52,17 +52,9 @@
         return this;
       },
 
-      processCollision: function() {
-        Bump.Assert( false );
-      },
-
-      calculateTimeOfImpact: function() {
-        Bump.Assert( false );
-      },
-
-      getAllContactManifolds: function() {
-        Bump.Assert( false );
-      }
+      processCollision: Bump.abstract,
+      calculateTimeOfImpact: Bump.abstract,
+      getAllContactManifolds: Bump.abstract
     },
 
     typeMembers: {

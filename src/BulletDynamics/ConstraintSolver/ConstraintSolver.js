@@ -2,10 +2,10 @@
 
   Bump.ConstraintSolver = Bump.type({
     members: {
-      prepareSolve: function() {},
-      solveGroup: function() { Bump.Assert( false ); },
-      allSolved: function() {},
-      reset: function() { Bump.Assert( false ); }
+      prepareSolve: Bump.noop,
+      solveGroup: Bump.abstract,
+      allSolved: Bump.noop,
+      reset: Bump.abstract
     }
   });
 

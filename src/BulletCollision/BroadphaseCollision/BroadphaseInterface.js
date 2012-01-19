@@ -2,47 +2,17 @@
 
   Bump.BroadphaseInterface = Bump.type({
     members: {
-      createProxy: function() {
-        Bump.Assert( false );
-      },
-
-      destroyProxy: function() {
-        Bump.Assert( false );
-      },
-
-      setAabb: function() {
-        Bump.Assert( false );
-      },
-
-      getAabb: function() {
-        Bump.Assert( false );
-      },
-
-      rayTest: function() {
-        Bump.Assert( false );
-      },
-
-      aabbTest: function() {
-        Bump.Assert( false );
-      },
-
-      calculateOverlappingPairs: function() {
-        Bump.Assert( false );
-      },
-
-      getOverlappingPairCache: function() {
-        Bump.Assert( false );
-      },
-
-      getBroadphaseAabb: function() {
-        Bump.Assert( false );
-      },
-
-      resetPool: function() {},
-
-      printStats: function() {
-        Bump.Assert( false );
-      }
+      createProxy: Bump.abstract,
+      destroyProxy: Bump.abstract,
+      setAabb: Bump.abstract,
+      getAabb: Bump.abstract,
+      rayTest: Bump.abstract,
+      aabbTest: Bump.abstract,
+      calculateOverlappingPairs: Bump.abstract,
+      getOverlappingPairCache: Bump.abstract,
+      getBroadphaseAabb: Bump.abstract,
+      resetPool: Bump.noop,
+      printStats: Bump.abstract
     }
   });
 })( this, this.Bump );

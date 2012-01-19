@@ -6,6 +6,9 @@ this.Bump = {};
 (function( window, Bump ) {
 
   Bump.noop = function noop() {};
+  Bump.abstract = function abstract() {
+    Bump.Assert( false );
+  };
 
   function superWrap( superFunc, newFunc ) {
     if ( superFunc == null ) {

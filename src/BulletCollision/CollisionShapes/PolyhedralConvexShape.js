@@ -25,7 +25,7 @@
       },
 
       initializePolyhedralFeatures: function() {
-        Bump.Assert( false );
+        Bump.Assert( 'Not implemented' && false );
       },
 
       getConvexPolyhedron: function() {

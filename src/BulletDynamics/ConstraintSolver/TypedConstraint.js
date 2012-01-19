@@ -110,14 +110,10 @@
       setupSolverConstraint: function() {},
 
       // Internal method used by the constraint solver, don't use this directly.
-      getInfo1: function() {
-        Bump.Assert( false );
-      },
+      getInfo1: Bump.abstract,
 
       // Internal method used by the constraint solver, don't use this directly.
-      getInfo2: function() {
-        Bump.Assert( false );
-      },
+      getInfo2: Bump.abstract,
 
       // Internal method used by the constraint solver, don't use this directly.
       internalSetAppliedImpulse: function( appliedImpulse ) {
@@ -212,13 +208,8 @@
         return this.dbgDrawSize;
       },
 
-      setParam: function() {
-        Bump.Assert( false );
-      },
-
-      getParam: function() {
-        Bump.Assert( false );
-      }
+      setParam: Bump.abstract,
+      getParam: Bump.abstract
 
     }
   });

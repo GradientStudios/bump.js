@@ -4,17 +4,9 @@
     typeMembers: {
       Result: Bump.type({
         members: {
-          setShapeIdentifiersA: function() {
-            Bump.Assert( false );
-          },
-
-          setShapeIdentifiersB: function() {
-            Bump.Assert( false );
-          },
-
-          addContactPoint: function() {
-            Bump.Assert( false );
-          }
+          setShapeIdentifiersA: Bump.abstract,
+          setShapeIdentifiersB: Bump.abstract,
+          addContactPoint: Bump.abstract
         }
       }),
 
@@ -29,9 +21,7 @@
     },
 
     members: {
-      getClosestPoints: function() {
-        Bump.Assert( false );
-      }
+      getClosestPoints: Bump.abstract
     }
   });
 
