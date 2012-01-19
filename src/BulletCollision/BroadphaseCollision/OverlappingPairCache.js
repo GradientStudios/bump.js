@@ -3,14 +3,14 @@
   // *** OverlapCallback *** is the port of the original bullet struct `btOverlapCallback`.
   Bump.OverlapCallback = Bump.type( {
     members: {
-      processOverlap( pair ) { }
+      processOverlap: function( pair ) { }
     }
   } );
 
   // *** OverlapFilterCallback *** is the port of the original bullet struct `btOverlapFilterCallback`.
   Bump.OverlapFilterCallback = Bump.type( {
     members: {
-      needBroadphaseCollision( proxy0, proxy1 ) { }
+      needBroadphaseCollision: function( proxy0, proxy1 ) { }
     }
   } );
 
@@ -109,6 +109,78 @@
       getNumOverlappingPairs: function() {
         return this.m_overlappingPairArray.length();
       }
+
+      internalAddPair: function( proxy0, proxy1) {}, // TODO
+
+      growTables: function() {}, // TODO
+
+      equalsPair: function( pair, proxyId1, proxyId2 ) {
+        return ( pair.this.m_pProxy0.getUid() == proxyId1 ) && ( pair.this.m_pProxy1.getUid() == proxyId2 );
+      },
+
+        /*
+        // Thomas Wang's hash, see: http://www.concentric.net/~Ttwang/tech/inthash.htm
+        // This assumes proxyId1 and proxyId2 are 16-bit.
+        SIMD_FORCE_INLINE int getHash(int proxyId1, int proxyId2)
+        {
+                int key = (proxyId2 << 16) | proxyId1;
+                key = ~key + (key << 15);
+                key = key ^ (key >> 12);
+                key = key + (key << 2);
+                key = key ^ (key >> 4);
+                key = key * 2057;
+                key = key ^ (key >> 16);
+                return key;
+        }
+        */
+
+      getHash: function( proxyId1, proxyId2 ) {
+        //int key = static_cast<int>(((unsigned int)proxyId1) | (((unsigned int)proxyId2) <<16));
+        var key = ( proxyId1 << 0 ) | ( proxyId2 << 0 ) << 16;
+        // Thomas Wang's hash
+
+        key += ~(key << 15);
+        key ^=  (key >> 10);
+        key +=  (key << 3);
+        key ^=  (key >> 6);
+        key += ~(key << 11);
+        key ^=  (key >> 16);
+        return key << 0;
+      },
+
+      internalFindPair: function( proxy0, proxy1, hash ) {
+        var proxyId1 = proxy0.getUid(),
+            proxyId2 = proxy1.getUid(),
+            index = this.this.m_hashTable[ hash ];
+/*
+#if 0 // wrong, 'equalsPair' use unsorted uids, copy-past devil striked again. Nat.
+        if (proxyId1 > proxyId2)
+          btSwap(proxyId1, proxyId2);
+#endif
+*/
+        while( index != BT_NULL_PAIR &&
+               equalsPair( this.m_overlappingPairArray[ index ], proxyId1, proxyId2) == false) {
+          index = this.m_next[index];
+        }
+
+        if ( index == BT_NULL_PAIR ) {
+          return NULL;
+        }
+
+        /* btAssert(index < this.m_overlappingPairArray.size()); */
+
+        return this.m_overlappingPairArray[index];
+      },
+
+      hasDeferredRemoval: function() {
+        return false;
+      },
+
+      setInternalGhostPairCallback: function( ghostPairCallback ) {
+        this.m_ghostPairCallback = ghostPairCallback;
+      },
+
+      sortOverlappingPairs: function( dispatcher ) {} // TODO
 
     }
   } );
