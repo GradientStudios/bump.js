@@ -18,6 +18,8 @@
       this.y = y;
       this.z = z;
       this.w = w;
+
+      return this;
     },
 
     // ## Properties
@@ -463,18 +465,27 @@
       // Given *up to* four arguments, **creates** a new quaternion.
       create: function( x, y, z, w ) {
         var quat = Object.create( Bump.Quaternion.prototype );
-        quat.init( x || 0, y || 0, z || 0, w || 0 );
-        return quat;
+
+        if ( arguments.length ) {
+          return quat.init( x, y, z, w );
+        }
+
+        return quat.init( 0, 0, 0, 0 );
       },
 
       createWithAxisAngle: function( axis, angle ) {
         var d = axis.length();
-        // btAssert( d !== 0 );
+        Bump.Assert( d !== 0 );
         var s = Math.sin( angle * 0.5 ) / d,
             quat = Object.create( Bump.Quaternion.prototype );
 
-        quat.init( axis.x * s, axis.y * s, axis.z * s, Math.cos( angle * 0.5 ) );
-        return quat;
+        return quat.init( axis.x * s, axis.y * s, axis.z * s, Math.cos( angle * 0.5 ) );
+      },
+
+      createWithEuler: function( yaw, pitch, roll ) {
+        var quat = Object.create( Bump.Quaternion.prototype );
+        quat.init( 0, 0, 0, 0 );
+        return quat.setEuler( yaw, pitch, roll );
       },
 
       getIdentity: function() {

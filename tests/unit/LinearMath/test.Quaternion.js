@@ -14,11 +14,8 @@ test( 'create', function() {
   ok( Bump.Quaternion.create, 'create exists' );
 
   var a = Bump.Quaternion.create(),
-      f = Bump.Quaternion.create(),
-      b = Bump.Quaternion.create( 1 ),
-      c = Bump.Quaternion.create( 2, 1 ),
-      d = Bump.Quaternion.create( 3, 2, 1 ),
-      e = Bump.Quaternion.create( 4, 3, 2, 1 );
+      b = Bump.Quaternion.create(),
+      c = Bump.Quaternion.create( 4, 3, 2, 1 );
 
   if ( a.x ) {
     equal( a.x, 0 );
@@ -26,25 +23,10 @@ test( 'create', function() {
     equal( a.z, 0 );
     equal( a.w, 0 );
 
-    equal( b.x, 1 );
-    equal( b.y, 0 );
-    equal( b.z, 0 );
-    equal( b.w, 0 );
-
-    equal( c.x, 2 );
-    equal( c.y, 1 );
-    equal( c.z, 0 );
-    equal( c.w, 0 );
-
-    equal( d.x, 3 );
-    equal( d.y, 2 );
-    equal( d.z, 1 );
-    equal( d.w, 0 );
-
-    equal( e.x, 4 );
-    equal( e.y, 3 );
-    equal( e.z, 2 );
-    equal( e.w, 1 );
+    equal( c.x, 4 );
+    equal( c.y, 3 );
+    equal( c.z, 2 );
+    equal( c.w, 1 );
   }
 
   if ( a.m_floats ) {
@@ -53,28 +35,13 @@ test( 'create', function() {
     equal( a.m_floats[2], 0 );
     equal( a.m_floats[3], 0 );
 
-    equal( b.m_floats[0], 1 );
-    equal( b.m_floats[1], 0 );
-    equal( b.m_floats[2], 0 );
-    equal( b.m_floats[3], 0 );
-
-    equal( c.m_floats[0], 2 );
-    equal( c.m_floats[1], 1 );
-    equal( c.m_floats[2], 0 );
-    equal( c.m_floats[3], 0 );
-
-    equal( d.m_floats[0], 3 );
-    equal( d.m_floats[1], 2 );
-    equal( d.m_floats[2], 1 );
-    equal( d.m_floats[3], 0 );
-
-    equal( e.m_floats[0], 4 );
-    equal( e.m_floats[1], 3 );
-    equal( e.m_floats[2], 2 );
-    equal( e.m_floats[3], 1 );
+    equal( c.m_floats[0], 4 );
+    equal( c.m_floats[1], 3 );
+    equal( c.m_floats[2], 2 );
+    equal( c.m_floats[3], 1 );
   }
 
-  var arr = [ a, b, c, d, e, f ];
+  var arr = [ a, b, c ];
   for ( var i = 0; i < arr.length - 1; ++i ) {
     for ( var j = i + 1; j < arr.length; ++j ) {
       notStrictEqual( arr[i], arr[j], 'creates unique objects' );
