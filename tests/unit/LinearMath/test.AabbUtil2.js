@@ -161,28 +161,45 @@ test( 'basic', function() {
 
 module( 'AabbUtil2.RayAabb' );
 
-test( 'test skipped', function() {
-  // var rayFrom = Bump.Vector3.create( 0.5, 0.5, 0.5),
-  //     rayTo = Bump.Vector3.create( 1.5, 0.5, 0.5 ),
-  //     aabbMin = Bump.Vector3.create( 0, 0, 0 ),
-  //     aabbMax = Bump.Vector3.create( 1, 1, 1 ),
-  //     param = { param: 0 },
-  //     normal = Bump.Vector3.create();
+test( 'basic', function() {
+  var aabbMin = Bump.Vector3.create( 0, 0, 0 ),
+      aabbMax = Bump.Vector3.create( 1, 1, 1 ),
+      hitLambdaA = { param: 1 },
+      hitLambdaB = { param: 1 },
+      hitLambdaC = { param: 1 },
+      normal = Bump.Vector3.create();
 
-  // testFunc( Bump, 'RayAabb', {
-  //   isStaticFunc: true,
-  //   args: [
-  //     [
-  //       rayFrom, rayTo,
-  //       aabbMin, aabbMax,
-  //       { param: param, isConst: false },
-  //       { param: normal, isConst: false }
-  //     ]
-  //   ],
-  //   expected: [
-  //     true
-  //   ]
-  // });
+  testFunc( Bump, 'RayAabb', {
+    isStaticFunc: true,
+    args: [
+      [
+        Bump.Vector3.create( 0.5, 3, 0.5 ),
+        Bump.Vector3.create( 0.5, 0.5, 0.5 ),
+        aabbMin, aabbMax,
+        { param: hitLambdaA, expected: { param: 0.8 } },
+        { param: normal, expected: Bump.Vector3.create( 0, -1, 0 ) }
+      ],
+      [
+        Bump.Vector3.create( 0, 1.5, 0 ),
+        Bump.Vector3.create( 0, 0.5, 0 ),
+        aabbMin, aabbMax,
+        { param: hitLambdaB, expected: { param: 0.5 } },
+        { param: normal, expected: Bump.Vector3.create( 0, -1, 0 ) }
+      ],
+      [
+        Bump.Vector3.create( -Math.pow( 2, -48 ), 3, 0 ),
+        Bump.Vector3.create( 0, 0.5, 0 ),
+        aabbMin, aabbMax,
+        { param: hitLambdaC, expected: { param: 1 } },
+        { param: normal, expected: Bump.Vector3.create( 1, 0, 0 ) }
+      ]
+    ],
+    expected: [
+      true,
+      true,
+      true
+    ]
+  });
 });
 
 module( 'AabbUtil2.TransformAabbWithExtents' );
