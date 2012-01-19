@@ -204,11 +204,52 @@ test( 'basic', function() {
 
 module( 'AabbUtil2.TransformAabbWithExtents' );
 
-test( 'test skipped', function() {});
+test( 'basic', function() {
+  var t = Bump.Transform.create(
+        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, 1, 1 ), Math.PI / 2 ),
+        Bump.Vector3.create( 0.5, 0.5, 0.5 )
+      ),
+      aabbMin = Bump.Vector3.create(),
+      aabbMax = Bump.Vector3.create();
+
+  testFunc( Bump, 'TransformAabbWithExtents', {
+    isStaticFunc: true,
+    epsilon: Math.pow( 2, -48 ),
+    args: [
+      [
+        Bump.Vector3.create( 0.48, 0.48, 0.48 ), 0.02, t,
+        { param: aabbMin, expected: Bump.Vector3.create( -0.2440169358562926, -0.2440169358562926, -0.2440169358562925 ) },
+        { param: aabbMax, expected: Bump.Vector3.create( 1.244016935856293, 1.244016935856293, 1.244016935856292 ) }
+      ]
+    ]
+  });
+});
 
 module( 'AabbUtil2.TransformAabb' );
 
-test( 'test skipped', function() {});
+test( 'basic', function() {
+  var t = Bump.Transform.create(
+        Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, 1, 1 ), Math.PI / 2 ),
+        Bump.Vector3.create( 0.5, 0.5, 0.5 )
+      ),
+      aabbMin = Bump.Vector3.create(),
+      aabbMax = Bump.Vector3.create();
+
+  testFunc( Bump, 'TransformAabb', {
+    isStaticFunc: true,
+    epsilon: Math.pow( 2, -48 ),
+    args: [
+      [
+        Bump.Vector3.create( -0.48, -0.48, -0.48 ),
+        Bump.Vector3.create( 0.48, 0.48, 0.48 ),
+        0.02,
+        t,
+        { param: aabbMin, expected: Bump.Vector3.create( -0.2440169358562926, -0.2440169358562926, -0.2440169358562925 ) },
+        { param: aabbMax, expected: Bump.Vector3.create( 1.244016935856293, 1.244016935856293, 1.244016935856292 ) }
+      ]
+    ]
+  });
+});
 
 module( 'AabbUtil2.testQuantizedAabbAgainstQuantizedAabb' );
 
