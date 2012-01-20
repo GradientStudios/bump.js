@@ -51,7 +51,7 @@
   Bump.DbvtTreeCollider = Bump.type( {
     parent: Bump.Dbvt.ICollide,
 
-    init: function( p ) {
+    init: function DbvtTreeCollider( p ) {
       this.pbp = p;
       this.proxy = null;
     },
@@ -82,10 +82,25 @@
     }
   } );
 
+  Bump.BroadphaseRayTester = Bump.type( {
+    parent: Bump.Dbvt.ICollide,
+
+    init: function BroadphaseRayTester( orgCallback ) {
+      this.m_rayCallback = orgCallback; /* BroadphaseRayCallback */
+    },
+
+    members: {
+      ProcessNode: function( leaf ) {
+        var proxy = leaf.data;
+        this.m_rayCallback.process( proxy );
+      }
+    }
+  } );
+
   Bump.DbvtBroadphase = Bump.type( {
     parent: Bump.BroadphaseInterface,
 
-    init: function( paircache ) {
+    init: function DbvtBroadphase( paircache ) {
       /* Fields */
       this.m_deferedcollide = false; // Defere dynamic/static collision to collide call
       this.m_needcleanup = true; // Need to run cleanup?
@@ -142,10 +157,46 @@
       optimize: function() {
       },
 
-      createProxy: function() {
+      createProxy: function( aabbMin,
+                             aabbMax,
+                             shapeType,
+                             userPtr,
+                             collisionFilterGroup,
+                             collisionFilterMask,
+                             dispatcher,
+                             multiSapProxy
+                           ) {
+        var proxy = Bump.DbvtProxy.create( aabbMin, aabbMax, userPtr,
+                                           collisionFilterGroup,
+                                           collisionFilterMask ),
+            aabb = Bump.DbvtVolume.FromMM( aabbMin, aabbMax );
+
+        //bproxy->aabb                  =       btDbvtVolume::FromMM(aabbMin,aabbMax);
+        proxy.stage = this.m_stageCurrent;
+        proxy.m_uniqueId = ++this.m_gid;
+        proxy.leaf = this.m_sets[ 0 ].insert( aabb, proxy );
+        listappend( proxy, this.m_stageRoots[ this.m_stageCurrent ] );
+        if( !this.m_deferedcollide ) {
+          var collider = Bump.DbvtTreeCollider.create( this );
+          collider.proxy = proxy;
+          this.m_sets[ 0 ].collideTV( this.m_sets[ 0 ].m_root, aabb, collider );
+          this.m_sets[ 1 ].collideTV( this.m_sets[ 1 ].m_root, aabb, collider );
+        }
+        return proxy;
       },
 
-      destroyProxy: function( proxy, dispatcher ) {
+      destroyProxy: function( absproxy, dispatcher ) {
+        var proxy = absproxy;
+        if( proxy.stage === Bump.DbvtBroadphase.Stages.STAGECOUNT ) {
+          this.m_sets[ 1 ].remove( proxy.leaf );
+        }
+        else {
+          this.m_sets[ 0 ].remove( proxy.leaf );
+        }
+        listremove( proxy, this.m_stageRoots[ proxy.stage ] );
+        this.m_paircache.removeOverlappingPairsContainingProxy( proxy, dispatcher );
+        /* btAlignedFree( proxy ); */
+        this.m_needcleanup = true;
       },
 
       setAabb: function( proxy, aabbMin, aabbMax, dispatcher ) {
@@ -160,7 +211,10 @@
       aabbTest: function (aabbMin, aabbMax, callback ){
       },
 
-      getAabb: function( proxy, aabbMin, aabbMax ) {
+      getAabb: function( absproxy, aabbMin, aabbMax ) {
+        var proxy = absproxy;
+	proxy.m_aabbMin.clone( aabbMin );
+	proxy.m_aabbMax.clone( aabbMax );
       },
 
       calculateOverlappingPairs: function( dispatcher ) {
