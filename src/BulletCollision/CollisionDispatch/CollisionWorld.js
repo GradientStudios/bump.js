@@ -142,9 +142,9 @@
         return this.debugDrawer;
       },
 
-      debugDrawWorld: Bump.noop,
+      debugDrawWorld: Bump.notImplemented,
 
-      debugDrawObject: Bump.noop,
+      debugDrawObject: Bump.notImplemented,
 
       getNumCollisionObjects: function() {
         return this.collisionObjects.length;
@@ -218,9 +218,9 @@
         }
       },
 
-      rayTestSingle: Bump.noop,
+      rayTestSingle: Bump.notImplemented,
 
-      objectQuerySingle: Bump.noop,
+      objectQuerySingle: Bump.notImplemented,
 
       addCollisionObject: function( collisionObject, collisionFilterGroup, collisionFilterMask ) {
         Bump.Assert( collisionObject !== null );
