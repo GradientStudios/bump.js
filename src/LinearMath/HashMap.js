@@ -22,6 +22,7 @@
         hash = hash ^ ( this.string.charCodeAt( i ) );
         hash = hash >>> 0;
         // Multiply by the magic number.
+        //
         //     hash = hash * FNVMultiple;
         //
         // **Warning:** This be very dragonous. This is because Javascript
