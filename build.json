@@ -13,6 +13,7 @@
         "src/LinearMath/TransformUtil.js",
         "src/LinearMath/AabbUtil2.js",
         "src/LinearMath/HashMap.js",
+        "src/LinearMath/AlignedObjectArray.js",
 
         "src/LinearMath/MotionState.js",
         "src/LinearMath/DefaultMotionState.js",

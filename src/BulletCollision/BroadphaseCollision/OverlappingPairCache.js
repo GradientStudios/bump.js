@@ -15,7 +15,8 @@
   } );
 
   // These globals shouldn't need to be accessible outside of OverlappingPairCache.js.
-  var gRemovePairs = 0,
+  var gOverlappingPairs = 0,
+      gRemovePairs = 0,
       gAddedPairs = 0,
       gFindPairs = 0;
 
@@ -237,7 +238,20 @@
         this.processAllOverlappingPairs( cleanPairs, dispatcher );
       },
 
-      processAllOverlappingPairs: function( callback, dispatcher ) {}, // TODO
+      processAllOverlappingPairs: function( callback, dispatcher ) {
+        var i;
+        // printf("m_overlappingPairArray.size()=%d\n",m_overlappingPairArray.size());
+        for ( i = 0; i < this.m_overlappingPairArray.length(); ) {
+          var pair = this.m_overlappingPairArray[i];
+          if( callback.processOverlap( pair ) ) {
+            this.removeOverlappingPair( pair.m_pProxy0, pair.m_pProxy1, dispatcher );
+            gOverlappingPairs--;
+          }
+          else {
+            i++;
+          }
+        }
+      },
 
       getOverlappingPairArrayPtr: function() {
         return this.m_overlappingPairArray;
@@ -438,8 +452,29 @@
         this.m_ghostPairCallback = ghostPairCallback;
       },
 
-      sortOverlappingPairs: function( dispatcher ) {} // TODO
+      sortOverlappingPairs: function( dispatcher ) {
+        ///need to keep hashmap in sync with pair address, so rebuild all
+        var tmpPairs = [],
+            i;
+        for( i = 0; i < this.m_overlappingPairArray.length(); i++ ) {
+          tmpPairs.push( this.m_overlappingPairArray[ i ] );
+        }
 
+        for( i = 0 ; i < tmpPairs.length(); i++ ) {
+          this.removeOverlappingPair( tmpPairs[ i ].m_pProxy0, tmpPairs[ i ].m_pProxy1, dispatcher );
+        }
+
+        for( i = 0; i < this.m_next.length(); i++ ) {
+          this.m_next[ i ] = BT_NULL_PAIR;
+        }
+
+        // TODO : implement quickSort
+        Bump.quickSort( tmpPairs, Bump.BroadphasePairSortPredicate.create() );
+
+        for( i = 0; i < tmpPairs.length(); i++ ) {
+          this.addOverlappingPair( tmpPairs[ i ].m_pProxy0, tmpPairs[ i ].m_pProxy1 );
+        }
+      }
     }
   } );
 
