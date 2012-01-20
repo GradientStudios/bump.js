@@ -101,19 +101,44 @@ test( 'test skipped', function() {});
 
 module( 'PersistentManifold.getNumContacts' );
 
-test( 'test skipped', function() {});
+test( 'basic', function() {
+  var pm = Bump.PersistentManifold.create();
+
+  strictEqual( typeof pm.getNumContacts(), 'number' );
+});
 
 module( 'PersistentManifold.getContactPoint' );
 
-test( 'test skipped', function() {});
+test( 'basic', function() {
+  var body0 = Bump.RigidBody.create( 1, null, null ),
+      body1 = Bump.RigidBody.create( 1, null, null ),
+      pm = Bump.PersistentManifold.create( body0, body1, 0, 0.02, 0.02 ),
+      mp = Bump.ManifoldPoint.create();
+
+  pm.addManifoldPoint( mp );
+  deepEqual( pm.getContactPoint( 0 ), mp );
+  strictEqual( pm.getContactPoint( 0 ), pm.pointCache[0] );
+});
 
 module( 'PersistentManifold.getContactBreakingThreshold' );
 
-test( 'test skipped', function() {});
+test( 'basic', function() {
+  var body0 = Bump.RigidBody.create( 1, null, null ),
+      body1 = Bump.RigidBody.create( 1, null, null ),
+      pm = Bump.PersistentManifold.create( body0, body1, 0, 0.01, 0.03 );
+
+  strictEqual( pm.getContactBreakingThreshold(), 0.01 );
+});
 
 module( 'PersistentManifold.getContactProcessingThreshold' );
 
-test( 'test skipped', function() {});
+test( 'basic', function() {
+  var body0 = Bump.RigidBody.create( 1, null, null ),
+      body1 = Bump.RigidBody.create( 1, null, null ),
+      pm = Bump.PersistentManifold.create( body0, body1, 0, 0.01, 0.03 );
+
+  strictEqual( pm.getContactProcessingThreshold(), 0.03 );
+});
 
 module( 'PersistentManifold.getCacheEntry' );
 
