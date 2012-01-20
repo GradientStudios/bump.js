@@ -213,15 +213,15 @@ test( '_super methods', 3, function() {
 test( 'nested _super', function() {
   var A = Bump.type({
         members: { foo: function() { this.a = true; } }
-      });
+      }),
       B = Bump.type({
         parent: A,
         members: { foo: function() { this._super(); this.b = true; } }
-      });
+      }),
       C = Bump.type({
         parent: B,
         members: { foo: function() { this._super(); this.c = true; } }
-      });
+      }),
 
   c = C.create();
   c.foo();
