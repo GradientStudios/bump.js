@@ -9,6 +9,9 @@ this.Bump = {};
   Bump.abstract = function abstract() {
     Bump.Assert( false );
   };
+  Bump.notImplemented = function() {
+    console.log( 'Not implemented (yet)!' );
+  };
 
   function superWrap( superFunc, newFunc ) {
     if ( superFunc == null ) {
