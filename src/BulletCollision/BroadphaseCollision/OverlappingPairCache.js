@@ -468,7 +468,6 @@
           this.m_next[ i ] = BT_NULL_PAIR;
         }
 
-        // TODO : implement quickSort
         Bump.quickSort( tmpPairs, Bump.BroadphasePairSortPredicate.create() );
 
         for( i = 0; i < tmpPairs.length(); i++ ) {
