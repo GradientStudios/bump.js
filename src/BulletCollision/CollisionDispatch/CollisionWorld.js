@@ -1,14 +1,9 @@
 (function( window, Bump ) {
-  var tmpV1 = Bump.Vector3.create(),
-      tmpV2 = Bump.Vector3.create(),
-      tmpV3 = Bump.Vector3.create(),
-      tmpV4 = Bump.Vector3.create(),
-      tmpV5 = Bump.Vector3.create(),
-      tmpT1 = Bump.Transform.create(),
-      tmpT2 = Bump.Transform.create(),
-      tmpT3 = Bump.Transform.create();
+  var tmpV1 = Bump.Vector3.create();
 
   Bump.CollisionWorld = Bump.type({
+
+    // Bullet doesn't hide the default constructor, but it really should.
     init: function CollisionWorld( dispatcher, pairCache, collisionConfiguration ) {
       this.collisionObjects = [];
       this.dispatcher1 = dispatcher;
@@ -66,27 +61,19 @@
       // aabb and for each object with ray-aabb overlap, perform an exact ray
       // test unfortunately the implementation for `rayTest` and
       // `convexSweepTest` duplicated, albeit practically identical.
-      //
-      // Uses the following temporary variables:
-      //
-      // - `tmpV1`
-      // - `tmpV2`
-      // - `tmpV3`
-      // - `tmpV4`
-      // - `tmpV5`
       updateSingleAabb: (function() {
         var reportMe;
 
         return function( colObj ) {
-          var minAabb = tmpV1, maxAabb = tmpV2;
+          var minAabb = Bump.Vector3.create(), maxAabb = Bump.Vector3.create();
           colObj.getCollisionShape().getAabb( colObj.getWorldTransform(), minAabb, maxAabb );
           // Need to increase the aabb for contact thresholds.
-          var contactThreshold = tmpV3.setValue( Bump.gContactBreakingThreshold, Bump.gContactBreakingThreshold, Bump.gContactBreakingThreshold );
+          var contactThreshold = Bump.Vector3.create( Bump.gContactBreakingThreshold, Bump.gContactBreakingThreshold, Bump.gContactBreakingThreshold );
           minAabb.subtractSelf( contactThreshold );
           maxAabb.addSelf( contactThreshold );
 
           if ( this.getDispatchInfo().useContinuous && colObj.getInternalType() === Bump.CollisionObject.CollisionObjectTypes.CO_RIGID_BODY ) {
-            var minAabb2 = tmpV4, maxAabb2 = tmpV5;
+            var minAabb2 = Bump.Vector3.create(), maxAabb2 = Bump.Vector3.create();
             colObj.getCollisionShape().getAabb( colObj.getInterpolationWorldTransform(), minAabb2, maxAabb2 );
             minAabb2.subtractSelf( contactThreshold );
             maxAabb2.addSelf( contactThreshold );
@@ -100,7 +87,7 @@
           // if not.
           if (
             colObj.isStaticObject() ||
-              ( maxAabb.subtract( minAabb, tmpV4 ).length2() < 1e12 )
+              ( maxAabb.subtract( minAabb, tmpV1 ).length2() < 1e12 )
           ) {
             bp.setAabb( colObj.getBroadphaseHandle(), minAabb, maxAabb, this.dispatcher1 );
           }
@@ -163,29 +150,21 @@
       // aabb and for each object with ray-aabb overlap, perform an exact ray
       // test unfortunately the implementation for `rayTest` and
       // `convexSweepTest` duplicated, albeit practically identical.
-      //
-      // Uses the following temporary variables:
-      //
-      // - `tmpV1`
-      // - `tmpV2`
-      // - `tmpV3`
-      // - `tmpV4`
-      // - `tmpV5`
-      // - `tmpT1`
-      // - `tmpT2`
-      // - `tmpT3`
       convexSweepTest: function( castShape, convexFromWorld, convexToWorld, resultCallback, allowedCcdPenetration ) {
-        var convexFromTrans = tmpT1, convexToTrans = tmpT2;
+        var convexFromTrans = Bump.Transform.create();
+        var convexToTrans = Bump.Transform.create();
         convexFromTrans.assign( convexFromWorld );
         convexToTrans.assign( convexToWorld );
-        var castShapeAabbMin = tmpV1, castShapeAabbMax = tmpV2;
+
+        var castShapeAabbMin = Bump.Vector3.create();
+        var castShapeAabbMax = Bump.Vector3.create();
 
         // Compute AABB that encompasses angular movement.
-        var linVel = tmpV3, angVel = tmpV4;
+        var linVel = Bump.Vector3.create(), angVel = Bump.Vector3.create();
         Bump.TransformUtil.calculateVelocity( convexFromTrans, convexToTrans, 1, linVel, angVel );
-        var zeroLinVel = tmpV5;
+        var zeroLinVel = Bump.Vector3.create();
         zeroLinVel.setValue( 0, 0, 0 );
-        var R = tmpT3;
+        var R = Bump.Transform.create();
         R.setIdentity();
         R.setRotation( convexFromTrans.getRotation() );
         castShape.calculateTemporalAabb( R, zeroLinVel, angVel, 1, castShapeAabbMin, castShapeAabbMax );
@@ -194,12 +173,8 @@
         this.broadphasePairCache.rayTest( convexFromTrans.origin, convexToTrans.origin, convexCB, castShapeAabbMin, castShapeAabbMax );
       },
 
-      // Uses the following temporary variables:
-      //
-      // - `tmpV1`
-      // - `tmpV2`
       contactTest: function( colObj, resultCallback ) {
-        var aabbMin = tmpV1, aabbMax = tmpV2;
+        var aabbMin = Bump.Vector3.create(), aabbMax = Bump.Vector3.create();
         colObj.getCollisionShape().getAabb( colObj.getWorldTransform(), aabbMin, aabbMax );
         var contactCB = Bump.SingleContactCallback.create( colObj, this, resultCallback );
 
@@ -233,7 +208,7 @@
         // calculate new AABB
         var trans = collisionObject.getWorldTransform();
 
-        var minAabb = tmpV1, maxAabb = tmpV2;
+        var minAabb = Bump.Vector3.create(), maxAabb = Bump.Vector3.create();
         collisionObject.getCollisionShape().getAabb( trans, minAabb, maxAabb );
 
         var type = collisionObject.getCollisionShape().getShapeType();
