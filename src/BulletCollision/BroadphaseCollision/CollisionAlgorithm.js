@@ -52,6 +52,7 @@
         return this;
       },
 
+      destruct: Bump.noop,
       processCollision: Bump.abstract,
       calculateTimeOfImpact: Bump.abstract,
       getAllContactManifolds: Bump.abstract
