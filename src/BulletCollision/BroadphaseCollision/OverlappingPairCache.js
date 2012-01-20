@@ -90,7 +90,108 @@
         this.processAllOverlappingPairs( removeCallback, dispatcher );
       },
 
-      removeOverlappingPair: function( proxy0, proxy1, dispatcher ) {}, // TODO
+      removeOverlappingPair: function( proxy0, proxy1, dispatcher ) {
+        gRemovePairs++;
+        if( proxy0.m_uniqueId > proxy1.m_uniqueId ) {
+          /* btSwap(proxy0,proxy1); */
+          var tmp = proxy0;
+          proxy0 = proxy1;
+          proxy1 = tmp;
+        }
+        var proxyId1 = proxy0.getUid(),
+            proxyId2 = proxy1.getUid();
+
+        /*if (proxyId1 > proxyId2)
+                btSwap(proxyId1, proxyId2);*/
+
+        /* int  hash = static_cast<int>(getHash(static_cast<unsigned int>(proxyId1),static_cast<unsigned int>(proxyId2)) & (m_overlappingPairArray.capacity()-1)); */
+        var hash = ( this.getHash( proxyId1 << 0, proxyId2 << 0 ) & ( CAPACITY - 1 ) ) << 0,
+            pair = this.internalFindPair( proxy0, proxy1, hash );
+        if( pair === undefined ) {
+                return 0;
+        }
+
+        this.cleanOverlappingPair( pair, dispatcher );
+
+        var userData = pair.m_internalInfo1;
+
+        /* btAssert(pair->m_pProxy0->getUid() == proxyId1);
+        btAssert(pair->m_pProxy1->getUid() == proxyId2); */
+
+        /* int pairIndex = int(pair - &m_overlappingPairArray[0]); */
+        var pairIndex = this.m_overlappingPairArray.indexOf( pair );
+        /* btAssert(pairIndex < m_overlappingPairArray.size()); */
+
+        // Remove the pair from the hash table.
+        var index = this.m_hashTable[ hash ];
+        /* btAssert(index != BT_NULL_PAIR); */
+
+        var previous = BT_NULL_PAIR;
+        while( index !== pairIndex  ) {
+          previous = index;
+          index = this.m_next[ index ];
+        }
+
+        if( previous != BT_NULL_PAIR ) {
+          /* btAssert(m_next[previous] == pairIndex); */
+          this.m_next[ previous ] = this.m_next[ pairIndex ];
+        }
+        else {
+          this.m_hashTable[ hash ] = this.m_next[ pairIndex ];
+        }
+
+        // We now move the last pair into spot of the
+        // pair being removed. We need to fix the hash
+        // table indices to support the move.
+
+        var lastPairIndex = this.m_overlappingPairArray.length() - 1;
+
+        if( this.m_ghostPairCallback ) {
+          this.m_ghostPairCallback.removeOverlappingPair( proxy0, proxy1, dispatcher );
+        }
+
+        // If the removed pair is the last pair, we are done.
+        if( lastPairIndex === pairIndex ) {
+          this.m_overlappingPairArray.pop();
+          return userData;
+        }
+
+        // Remove the last pair from the hash table.
+        var last = this.m_overlappingPairArray[ lastPairIndex ],
+        /* missing swap here too, Nat. */
+        /* int lastHash = static_cast<int>(getHash(static_cast<unsigned int>(last->m_pProxy0->getUid()), static_cast<unsigned int>(last->m_pProxy1->getUid())) & (m_overlappingPairArray.capacity()-1)); */
+            lastHash = ( this.getHash( last.m_pProxy0.getUid() << 0,
+                                       last.m_pProxy1.getUid() << 0) & ( CAPACITY - 1) ) << 0;
+
+        index = this.m_hashTable[ lastHash ];
+        /* btAssert(index != BT_NULL_PAIR); */
+
+        previous = BT_NULL_PAIR;
+        while( index !== lastPairIndex ) {
+          previous = index;
+          index = this.m_next[ index ];
+        }
+
+        if( previous !== BT_NULL_PAIR ) {
+          /* btAssert(m_next[previous] == lastPairIndex); */
+          this.m_next[ previous ] = this.m_next[ lastPairIndex ];
+        }
+        else {
+          this.m_hashTable[ lastHash ] = this.m_next[ lastPairIndex ];
+        }
+
+        // Copy the last pair into the remove pair's spot.
+        this.m_overlappingPairArray[ pairIndex ] = this.m_overlappingPairArray[ lastPairIndex ];
+
+        // Insert the last pair into the hash table
+        this.m_next[ pairIndex ] = this.m_hashTable[ lastHash ];
+        this.m_hashTable[ lastHash ] = pairIndex;
+
+        this.m_overlappingPairArray.pop();
+
+        return userData;
+
+      },
 
       needsBroadphaseCollision: function( proxy0, proxy1 ) {
         if( this.m_overlapFilterCallback ) {
