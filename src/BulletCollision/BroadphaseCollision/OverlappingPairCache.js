@@ -53,7 +53,7 @@
   Bump.HashedOverlappingPairCache = Bump.type( {
     parent: Bump.OverlappingPairCache,
 
-    init: function() {
+    init: function HashedOverlappingPairCache() {
       this.m_overlapFilterCallback = null;
       this.m_blockedForChanges = false;
       this.m_ghostPairCallback = null;
@@ -75,7 +75,7 @@
         var RemovePairCallback = Bump.type( {
           parent: Bump.OverlapCallback,
 
-          init: function( obseleteProxy ) {
+          init: function RemovePairCallback( obseleteProxy ) {
             this.m_obsoleteProxy = obseleteProxy;
           },
 
@@ -217,7 +217,7 @@
         var CleanPairCallback = Bump.type( {
           parent: Bump.OverlapCallback,
 
-          init: function( cleanProxy, pairCache, dispatcher) {
+          init: function CleanPairCallback( cleanProxy, pairCache, dispatcher) {
             this.m_cleanProxy = cleanProxy;
             this.m_pairCache = pairCache;
             this.m_dispatcher = dispatcher;
