@@ -86,7 +86,7 @@
       this.m_collisionFilterGroup = collisionFilterGroup;
       this.m_collisionFilterMask = collisionFilterMask;
 
-      this.m_multiSapParentProxy = multiSapParentProxy;
+      this.m_multiSapParentProxy = multiSapParentProxy || null;
       this.m_uniqueId = 0;
 
       this.m_aabbMin = aabbMin.clone();

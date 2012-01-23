@@ -1,5 +1,23 @@
 (function( window, Bump ) {
 
+  Bump.BroadphaseAabbCallback = Bump.type( {
+    members: {
+      process: function( proxy ) {
+        Bump.Assert( false );
+      }
+    }
+  } );
+
+  Bump.BroadphaseRayCallback = Bump.type( {
+    parent: Bump.BroadphaseAabbCallback,
+
+    init: function BroadphaseRayCallback() {
+      this.m_rayDirectionInverse = Bump.Vector3.create();
+      this.m_signs = [];
+      this.m_lambda_max = 0;
+    }
+  } );
+
   Bump.BroadphaseInterface = Bump.type({
     members: {
       createProxy: Bump.abstract,
