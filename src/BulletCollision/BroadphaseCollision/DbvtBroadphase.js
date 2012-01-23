@@ -206,6 +206,30 @@
       rayTest: function( rayFrom, rayTo, rayCallback, aabbMin, aabbMax) {
         aabbMin = aabbMin || Bump.Vector3.create();
         aabbMax = aabbMin || Bump.Vector3.create();
+
+        var callback = Bump.BroadphaseRayTester.create( rayCallback );
+
+        this.m_sets[0].rayTestInternal(
+          this.m_sets[0].m_root,
+          rayFrom,
+          rayTo,
+          rayCallback.m_rayDirectionInverse,
+          rayCallback.m_signs,
+          rayCallback.m_lambda_max,
+          aabbMin,
+          aabbMax,
+          callback);
+
+        this.m_sets[1].rayTestInternal(
+          this.m_sets[1].m_root,
+          rayFrom,
+          rayTo,
+          rayCallback.m_rayDirectionInverse,
+          rayCallback.m_signs,
+          rayCallback.m_lambda_max,
+          aabbMin,
+          aabbMax,
+          callback);
       },
 
       aabbTest: function (aabbMin, aabbMax, callback ){
