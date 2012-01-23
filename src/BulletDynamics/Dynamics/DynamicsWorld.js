@@ -1,5 +1,12 @@
 (function( window, Bump ) {
 
+  Bump.DynamicsWorldType = Bump.Enum([
+    { id: 'BT_SIMPLE_DYNAMICS_WORLD',     param: 1 },
+    { id: 'BT_DISCRETE_DYNAMICS_WORLD',   param: 2 },
+    { id: 'BT_CONTINUOUS_DYNAMICS_WORLD', param: 3 },
+    { id: 'BT_SOFT_RIGID_DYNAMICS_WORLD', param: 4 }
+  ]);
+
   Bump.DynamicsWorld = Bump.type({
     parent: Bump.CollisionWorld,
 
@@ -27,7 +34,7 @@
       getGravity: Bump.abstract,
       synchronizeMotionStates: Bump.abstract,
       addRigidBody: Bump.abstract,
-      addRigidBodyToGroup: Bump.abstract,
+      addRigidBodyWithGroup: Bump.abstract,
       removeRigidBody: Bump.abstract,
       setConstraintSolver: Bump.abstract,
       getConstraintSolver: Bump.abstract,

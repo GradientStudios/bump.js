@@ -99,6 +99,244 @@
         this.clearForces();
 
         return numSimulationSubSteps;
+      },
+
+      synchronizeMotionStates: function() {
+        var i, body;
+
+        if ( this.synchronizeAllMotionStates ) {
+          // Iterate over all collision objects.
+          for ( i = 0; i < this.collisionObjects.length; ++i ) {
+            var colObj = this.collisionObjects[i];
+            body = Bump.RigidBody.upcast( colObj );
+            if ( body !== null ) {
+              this.synchronizeSingleMotionState( body );
+            }
+          }
+        } else {
+          // Iterate over all active rigid bodies.
+          for ( i = 0; i < this.nonStaticRigidBodies.length; ++i ) {
+            body = this.nonStaticRigidBodies[i];
+            if ( body.isActive() ) {
+              this.synchronizeSingleMotionState( body );
+            }
+          }
+        }
+      },
+
+      synchronizeSingleMotionState: function( body ) {
+        Bump.Assert( body !== null );
+
+        if ( body.getMotionState() !== null && !body.isStaticOrKinematicObject() ) {
+          // We need to call the update at least once, even for sleeping objects
+          // otherwise the 'graphics' transform never updates properly.
+          //
+          // **TODO:** Add 'dirty' flag.
+          var interpolatedTransform = Bump.Transform.create();
+          Bump.TransformUtil.integrateTransform(
+            body.getInterpolationWorldTransform(),
+            body.getInterpolationLinearVelocity(),
+            body.getInterpolationAngularVelocity(),
+            this.localTime * body.getHitFraction(),
+            interpolatedTransform
+          );
+          body.getMotionState().setWorldTransform( interpolatedTransform );
+        }
+      },
+
+      addConstraint: function( constraint, disableCollisionsBetweenLinkedBodies ) {
+        this.constraints.push( constraint );
+        if ( disableCollisionsBetweenLinkedBodies ) {
+          constraint.getRigidBodyA().addConstraintRef( constraint );
+          constraint.getRigidBodyB().addConstraintRef( constraint );
+        }
+      },
+
+      removeConstraint: function( constraint ) {
+        //     this.constraints.remove( constraint );
+        var idx = this.constraints.indexOf( constraint );
+        if ( idx !== -1 ) {
+          this.constraints[ idx ] = this.constraints[ this.constraints.length - 1 ];
+          this.constraints.pop();
+        }
+
+        constraint.getRigidBodyA().removeConstraintRef( constraint );
+        constraint.getRigidBodyB().removeConstraintRef( constraint );
+      },
+
+      addAction: function( action ) {
+        this.actions.push( action );
+      },
+
+      removeAction: function( action ) {
+        //     this.actions.remove( action );
+        var idx = this.actions.indexOf( action );
+        if ( idx !== -1 ) {
+          this.actions[ idx ] = this.actions[ this.actions.length - 1 ];
+          this.actions.pop();
+        }
+      },
+
+      getSimulationIslandManager: function() {
+        return this.islandManager;
+      },
+
+      getCollisionWorld: function() {
+        return this;
+      },
+
+      setGravity: function( gravity ) {
+        this.gravity = gravity;
+        for ( var i = 0; i < this.nonStaticRigidBodies.length; ++i ) {
+          var body = this.nonStaticRigidBodies[i];
+          if ( body.isActive() && !( body.getFlags() & Bump.RigidBodyFlags.BT_DISABLE_WORLD_GRAVITY ) ) {
+            body.setGravity( gravity );
+          }
+        }
+      },
+
+      getGravity: function() {
+        return this.gravity;
+      },
+
+      // Propose to remove this, as this merely adds a layer of redirection.
+      addCollisionObject: function( collisionObject, collisionFilterGroup, collisionFilterMask ) {
+        this._super( collisionObject, collisionFilterGroup, collisionFilterMask );
+      },
+
+      addRigidBody: function( body ) {
+        if ( !body.isStaticOrKinematicObject() && !( body.getFlags() & Bump.RigidBodyFlags.BT_DISABLE_WORLD_GRAVITY ) ) {
+          body.setGravity( this.gravity );
+        }
+
+        if ( body.getCollisionShape() !== null ) {
+          if ( !body.isStaticObject() ) {
+            this.nonStaticRigidBodies.push( body );
+          } else {
+            body.setActivationState( Bump.CollisionObject.ISLAND_SLEEPING );
+          }
+
+          var isDynamic = !( body.isStaticObject() || body.isKinematicObject() );
+          var collisionFilterGroup = isDynamic ?
+            Bump.BroadphaseProxy.CollisionFilterGroups.DefaultFilter :
+            Bump.BroadphaseProxy.CollisionFilterGroups.StaticFilter;
+          var collisionFilterMask = isDynamic ?
+            Bump.BroadphaseProxy.CollisionFilterGroups.AllFilter :
+            ( Bump.BroadphaseProxy.CollisionFilterGroups.AllFilter ^ Bump.BroadphaseProxy.CollisionFilterGroups.StaticFilter );
+
+          this.addCollisionObject( body, collisionFilterGroup, collisionFilterMask );
+        }
+      },
+
+      addRigidBodyWithGroup: function( body, group, mask ) {
+        if ( !body.isStaticOrKinematicObject() && !( body.getFlags() & Bump.RigidBodyFlags.BT_DISABLE_WORLD_GRAVITY ) ) {
+          body.setGravity( this.gravity );
+        }
+
+        if ( body.getCollisionShape() ) {
+          if ( !body.isStaticObject() ) {
+            this.nonStaticRigidBodies.push( body );
+          } else {
+            body.setActivationState( Bump.CollisionObject.ISLAND_SLEEPING );
+          }
+          this.addCollisionObject( body, group, mask );
+        }
+      },
+
+      removeRigidBody: function( body ) {
+        //     this.nonStaticRigidBodies.remove( body );
+        var idx = this.nonStaticRigidBodies.indexOf( body );
+        if ( idx !== -1 ) {
+          this.nonStaticRigidBodies[ idx ] = this.nonStaticRigidBodies[ this.nonStaticRigidBodies.length - 1 ];
+          this.nonStaticRigidBodies.pop();
+        }
+
+        Bump.CollisionWorld.prototype.removeCollisionObject.apply( this, [ body ] );
+      },
+
+      removeCollisionObject: function( collisionObject ) {
+        var body = Bump.RigidBody.upcast( collisionObject );
+        if ( body !== null ) {
+          this.removeRigidBody( body );
+        } else {
+          this._super( collisionObject );
+        }
+      },
+
+      debugDrawConstraint: Bump.notImplemented,
+      debugDrawWorld: Bump.notImplemented,
+
+      setConstraintSolver: function( solver ) {
+        //    if ( this.ownsConstraintSolver ) {
+        //      btAlignedFree( this.constraintSolver );
+        //    }
+
+        this.ownsConstraintSolver = false;
+        this.constraintSolver = solver;
+      },
+
+      getConstraintSolver: function() {
+        return this.constraintSolver;
+      },
+
+      getNumConstraints: function() {
+        return this.constraints.length;
+      },
+
+      getConstraint: function( index ) {
+        return this.constraints[index];
+      },
+
+      getWorldType: function() {
+        return Bump.DynamicsWorldType.BT_DISCRETE_DYNAMICS_WORLD;
+      },
+
+      clearForces: function() {
+        // **TODO:** Iterate over awake simulation islands!
+        for ( var i = 0; i < this.nonStaticRigidBodies.length; ++i ) {
+          var body = this.nonStaticRigidBodies[i];
+          // Need to check if next line is ok. It might break backward
+          // compatibility (people applying forces on sleeping objects get
+          // never cleared and accumulate on wake-up).
+          body.clearForces();
+        }
+      },
+
+      applyGravity: function() {
+        // **TODO:** Iterate over awake simulation islands!
+        for ( var i = 0; i < this.nonStaticRigidBodies.length; ++i ) {
+          var body = this.nonStaticRigidBodies[i];
+          if ( body.isActive() ) {
+            body.applyGravity();
+          }
+        }
+      },
+
+      setNumTasks: Bump.noop,
+
+      // `updateVehicles` is obselete. Please use `updateActions` instead.
+      updateVehicles: function( timeStep ) {
+        this.updateActions( timeStep );
+      },
+
+      // **Obselete.** Please use `addAction` instead.
+      addVehicle: function( vehicle ) {
+        this.addAction(vehicle);
+      },
+
+      // **Obselete.** Please use `removeAction` instead.
+      removeVehicle: function( vehicle ) {
+        this.removeAction( vehicle );
+      },
+
+      // **Obselete.** Please use `addAction` instead.
+      addCharacter: function( character ) {
+        this.addAction( character );
+      },
+
+      // **Obselete.** Please use `removeAction` instead.
+      removeCharacter: function( character ) {
+        this.removeAction( character );
       }
 
     }
