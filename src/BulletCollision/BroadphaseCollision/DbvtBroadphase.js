@@ -97,6 +97,21 @@
     }
   } );
 
+  Bump.BroadphaseAabbTester = Bump.type( {
+    parent: Bump.Dbvt.ICollide,
+
+    init: function BroadohaseAabbTester ( orgCallback ) {
+      this.m_aabbCallback = orgCallback;
+    },
+
+    members: {
+      Process: function( leaf ) {
+        var proxy = leaf.data;
+        this.m_aabbCallback.process( proxy );
+      }
+    }
+  } );
+
   Bump.DbvtBroadphase = Bump.type( {
     parent: Bump.BroadphaseInterface,
 
@@ -232,7 +247,13 @@
           callback);
       },
 
-      aabbTest: function (aabbMin, aabbMax, callback ){
+      aabbTest: function (aabbMin, aabbMax, aabbCallback ){
+        var callback = aabbCallback,
+	bounds = Bump.DbvtVolume.FromMM( aabbMin, aabbMax );
+
+	//process all children, that overlap with  the given AABB bounds
+	this.m_sets[ 0 ].collideTV( this.m_sets[ 0 ].m_root, bounds, callback);
+	this.m_sets[ 1 ].collideTV( this.m_sets[ 1 ].m_root, bounds, callback);
       },
 
       getAabb: function( absproxy, aabbMin, aabbMax ) {
