@@ -37,6 +37,7 @@
         "src/BulletCollision/CollisionDispatch/CollisionWorld.js",
 
         "src/BulletDynamics/Dynamics/RigidBody.js",
+        "src/BulletDynamics/Dynamics/ActionInterface.js",
 
         "src/BulletCollision/CollisionShapes/CollisionShape.js",
         "src/BulletCollision/CollisionShapes/ConvexShape.js",
