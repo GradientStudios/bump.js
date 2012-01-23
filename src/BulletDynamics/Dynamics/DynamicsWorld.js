@@ -16,10 +16,7 @@
     },
 
     members: {
-      destruct: function() {
-        this._super();
-      },
-
+      destruct: Bump.noop,
       stepSimulation: Bump.abstract,
       debugDrawWorld: Bump.abstract,
       addConstraint: Bump.noop,
