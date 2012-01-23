@@ -35,6 +35,10 @@
     return a < lb ? lb : ( ub < a ? ub : a );
   };
 
+  Bump.FuzzyZero = function btFuzzyZero( x ) {
+    return Math.abs( x ) < Bump.SIMD_EPSILON;
+  };
+
   Bump.Assert = function btAssert( expression ) {
     if ( !expression ) {
       undefined.error();
