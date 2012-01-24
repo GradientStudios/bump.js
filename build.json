@@ -35,6 +35,7 @@
         "src/BulletDynamics/ConstraintSolver/TypedConstraint.js",
         "src/BulletDynamics/ConstraintSolver/SolverConstraint.js",
         "src/BulletDynamics/ConstraintSolver/ConstraintSolver.js",
+        "src/BulletDynamics/ConstraintSolver/SequentialImpulseConstraintSolver.js",
 
         "src/BulletCollision/CollisionDispatch/UnionFind.js",
         "src/BulletCollision/CollisionDispatch/CollisionConfiguration.js",
