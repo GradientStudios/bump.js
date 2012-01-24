@@ -23,7 +23,7 @@
       return this;
     },
 
-    member: {
+    members: {
 
       destruct: function() {
         var i, collisionObject, bp;
