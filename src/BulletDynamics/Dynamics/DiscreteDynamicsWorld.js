@@ -306,7 +306,7 @@
 
       // **Obselete.** Please use `addAction` instead.
       addVehicle: function( vehicle ) {
-        this.addAction(vehicle);
+        this.addAction( vehicle );
       },
 
       // **Obselete.** Please use `removeAction` instead.
@@ -385,7 +385,7 @@
               }
             }
 
-            body.proceedToTransform( predictedTrans);
+            body.proceedToTransform( predictedTrans );
           }
         }
       },
@@ -624,7 +624,7 @@
 
         this.updateActivationState( timeStep );
 
-        if ( null !== this.internalTickCallback) {
+        if ( null !== this.internalTickCallback ) {
           this.internalTickCallback( this, timeStep );
         }
       },

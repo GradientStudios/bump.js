@@ -231,7 +231,7 @@
       length: function() {
         return Math.sqrt( this.x * this.x +
                           this.y * this.y +
-                          this.z * this.z);
+                          this.z * this.z );
       },
 
       // Computes and returns the squared distance between

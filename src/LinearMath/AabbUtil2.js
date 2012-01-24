@@ -27,7 +27,7 @@
     var overlap = true;
     overlap = ( aabbMin1.x > aabbMax2.x || aabbMax1.x < aabbMin2.x ) ? false : overlap;
     overlap = ( aabbMin1.z > aabbMax2.z || aabbMax1.z < aabbMin2.z ) ? false : overlap;
-    overlap = ( aabbMin1.y > aabbMax2.y || aabbMax1.y < aabbMin2.y)  ? false : overlap;
+    overlap = ( aabbMin1.y > aabbMax2.y || aabbMax1.y < aabbMin2.y ) ? false : overlap;
     return overlap;
   };
 
@@ -62,12 +62,12 @@
   AabbUtil2.RayAabb2 = function( rayFrom, rayInvDirection, raySign, bounds, tmin, lambda_min, lambda_max ) {
     var tmax, tymin, tymax, tzmin, tzmax;
 
-    tmin.tmin = ( bounds[ raySign[0] ].x - rayFrom.x) * rayInvDirection.x;
-    tmax = ( bounds[ 1 - raySign[0] ].x - rayFrom.x) * rayInvDirection.x;
-    tymin = ( bounds[ raySign[1] ].y - rayFrom.y) * rayInvDirection.y;
-    tymax = ( bounds[ 1 - raySign[1] ].y - rayFrom.y) * rayInvDirection.y;
+    tmin.tmin = ( bounds[ raySign[0] ].x - rayFrom.x ) * rayInvDirection.x;
+    tmax = ( bounds[ 1 - raySign[0] ].x - rayFrom.x ) * rayInvDirection.x;
+    tymin = ( bounds[ raySign[1] ].y - rayFrom.y ) * rayInvDirection.y;
+    tymax = ( bounds[ 1 - raySign[1] ].y - rayFrom.y ) * rayInvDirection.y;
 
-    if ( (tmin.tmin > tymax) || (tymin > tmax) ) {
+    if ( ( tmin.tmin > tymax ) || ( tymin > tmax ) ) {
       return false;
     }
 
@@ -82,7 +82,7 @@
     tzmin = ( bounds[ raySign[2] ].z - rayFrom.z ) * rayInvDirection.z;
     tzmax = ( bounds[ 1 - raySign[2] ].z - rayFrom.z ) * rayInvDirection.z;
 
-    if ( (tmin.tmin > tzmax) || (tzmin > tmax) ) {
+    if ( ( tmin.tmin > tzmax ) || ( tzmin > tmax ) ) {
       return false;
     }
 
@@ -94,7 +94,7 @@
       tmax = tzmax;
     }
 
-    return ( (tmin.tmin < lambda_max) && (tmax > lambda_min) );
+    return ( ( tmin.tmin < lambda_max ) && ( tmax > lambda_min ) );
   };
 
   AabbUtil2.RayAabb = function( rayFrom, rayTo, aabbMin, aabbMax, param, normal ) {
@@ -105,7 +105,7 @@
         sourceOutcode = AabbUtil2.Outcode( source, aabbHalfExtent ),
         targetOutcode = AabbUtil2.Outcode( target, aabbHalfExtent );
 
-    if ( (sourceOutcode & targetOutcode) === 0x0 ) {
+    if ( ( sourceOutcode & targetOutcode ) === 0x0 ) {
       var lambda,
           lambda_enter = 0,
           lambda_exit  = param.param,
@@ -118,14 +118,14 @@
       for ( j = 0; j < 2; ++j ) {
         for ( i = 0; i != 3; ++i ) {
           if ( sourceOutcode & bit ) {
-            lambda = ( -source[i] - aabbHalfExtent[i] * normSign) / r[i];
+            lambda = ( -source[i] - aabbHalfExtent[i] * normSign ) / r[i];
             if ( lambda_enter <= lambda ) {
               lambda_enter = lambda;
               hitNormal.setValue( 0, 0, 0 );
               hitNormal[i] = normSign;
             }
           } else if ( targetOutcode & bit ) {
-            lambda = ( -source[i] - aabbHalfExtent[i] * normSign) / r[i];
+            lambda = ( -source[i] - aabbHalfExtent[i] * normSign ) / r[i];
             // `btSetMin(lambda_exit, lambda);`
             if ( lambda < lambda_exit ) { lambda_exit = lambda; }
           }

@@ -594,7 +594,7 @@
 
       updateDeactivation: function( timeStep ) {
         if (
-          ( this.getActivationState() === Bump.CollisionObject.ISLAND_SLEEPING) ||
+          ( this.getActivationState() === Bump.CollisionObject.ISLAND_SLEEPING ) ||
             ( this.getActivationState() === Bump.CollisionObject.DISABLE_DEACTIVATION )
         ) {
           return;
@@ -622,7 +622,7 @@
         }
 
         if (
-          ( this.getActivationState() === Bump.CollisionObject.ISLAND_SLEEPING) ||
+          ( this.getActivationState() === Bump.CollisionObject.ISLAND_SLEEPING ) ||
             ( this.getActivationState() === Bump.CollisionObject.WANTS_DEACTIVATION )
         ) {
           return true;

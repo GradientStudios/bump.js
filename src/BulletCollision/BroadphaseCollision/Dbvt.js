@@ -131,35 +131,35 @@
         px = Bump.Vector3.create();
 
         switch( s ) {
-        case (0+0+0):
+        case ( 0 + 0 + 0 ):
           px.setValue( this.mi.x, this.mi.y, this.mi.z );
           pi.setValue( this.mx.x, this.mx.y, this.mx.z );
           break;
-        case (1+0+0):
+        case ( 1 + 0 + 0 ):
           px.setValue( this.mx.x, this.mi.y, this.mi.z );
           pi.setValue( this.mi.x, this.mx.y, this.mx.z );
           break;
-        case (0+2+0):
+        case ( 0 + 2 + 0 ):
           px.setValue( this.mi.x, this.mx.y, this.mi.z );
           pi.setValue( this.mx.x, this.mi.y, this.mx.z );
           break;
-        case (1+2+0):
+        case ( 1 + 2 + 0 ):
           px.setValue( this.mx.x, this.mx.y, this.mi.z );
           pi.setValue( this.mi.x, this.mi.y, this.mx.z );
           break;
-        case (0+0+4):
+        case ( 0 + 0 + 4 ):
           px.setValue( this.mi.x, this.mi.y, this.mx.z );
           pi.setValue( this.mx.x, this.mx.y, this.mi.z );
           break;
-        case (1+0+4):
+        case ( 1 + 0 + 4 ):
           px.setValue( this.mx.x, this.mi.y, this.mx.z );
           pi.setValue( this.mi.x, this.mx.y, this.mi.z );
           break;
-        case (0+2+4):
+        case ( 0 + 2 + 4 ):
           px.setValue( this.mi.x, this.mx.y, this.mx.z );
           pi.setValue( this.mx.x, this.mi.y, this.mi.z );
           break;
-        case (1+2+4):
+        case ( 1 + 2 + 4 ):
           px.setValue( this.mx.x, this.mx.y, this.mx.z );
           pi.setValue( this.mi.x, this.mi.y, this.mi.z );
           break;
@@ -416,10 +416,10 @@
   });
 
 
-  // The following are functions are ported from the static helper functions defined in btDbvt.cpp,
-  // external to the btDbvt struct.
-  // Since these functions do not appear to be used outside of Dbvt.js, they don't need to be
-  // publically accessible, for now at least.
+  // The following are functions are ported from the static helper functions
+  // defined in `btDbvt.cpp`, external to the btDbvt struct.
+  // Since these functions do not appear to be used outside of Dbvt.js, they
+  // don't need to be publically accessible, for now at least.
 
   // static DBVT_INLINE int indexof(const btDbvtNode* node)
   var indexof = function( node ) {
@@ -500,13 +500,15 @@
     else {
       if ( !root.isleaf() ) {
         do {
-          root = root.childs[ Bump.Select.DbvtVolume3( leaf.volume,
-                                                       root.childs[0].volume,
-                                                       root.childs[1].volume) ];
+          root = root.childs[
+            Bump.Select.DbvtVolume3( leaf.volume,
+                                     root.childs[0].volume,
+                                     root.childs[1].volume )
+          ];
         } while( !root.isleaf() );
       }
       var prev = root.parent;
-      var node = createnodeTreeParentVolume2Data( pdbvt, prev, leaf.volume, root.volume, 0);
+      var node = createnodeTreeParentVolume2Data( pdbvt, prev, leaf.volume, root.volume, 0 );
       if ( prev ) {
         prev.childs[ indexof( root ) ] = node;
         node.childs[ 0 ] = root;
@@ -515,7 +517,7 @@
         leaf.parent = node;
         do {
           if ( !prev.volume.Contain( node.volume ) ) {
-            Bump.Merge.DbvtVolume3( prev.childs[ 0 ].volume, prev.childs[ 1 ].volume, prev.volume);
+            Bump.Merge.DbvtVolume3( prev.childs[ 0 ].volume, prev.childs[ 1 ].volume, prev.volume );
           }
           else {
             break;
@@ -549,7 +551,7 @@
         deletenode( pdbvt, parent );
         while( prev ) {
           var pb = prev.volume;
-          Bump.Merge.DbvtVolume3( prev.childs[ 0 ].volume, prev.childs[ 1 ].volume, prev.volume);
+          Bump.Merge.DbvtVolume3( prev.childs[ 0 ].volume, prev.childs[ 1 ].volume, prev.volume );
           if ( Bump.NotEqual.DbvtVolume2( pb, prev.volume ) ) {
             prev = prev.parent;
           }
@@ -623,7 +625,7 @@
         }
       }
       var n = [ leaves[ minidx[ 0 ] ], leaves[ minidx[ 1 ] ] ],
-          p = createnodeTreeParentVolume2Data( pdbvt, 0, n[ 0 ].volume, n[ 1 ].volume, 0);
+          p = createnodeTreeParentVolume2Data( pdbvt, 0, n[ 0 ].volume, n[ 1 ].volume, 0 );
       p.childs[ 0 ] = n[ 0 ];
       p.childs[ 1 ] = n[ 1 ];
       n[ 0 ].parent = p;
@@ -640,7 +642,7 @@
                  Bump.Vector3.create( 0, 0, 1 )
                ];
     if ( leaves.length > 1 ) {
-      if (leaves.length > bu_threshold) {
+      if ( leaves.length > bu_threshold ) {
         var vol = bounds( leaves ),
         org = vol.Center().clone(),
         sets = [],
@@ -671,11 +673,11 @@
         else {
           //sets[0].reserve(leaves.size()/2+1);
           //sets[1].reserve(leaves.size()/2);
-          for (var k = 0, ni = leaves.length; k < ni; ++k) {
+          for ( var k = 0, ni = leaves.length; k < ni; ++k ) {
             sets[ k & 1 ].push( leaves[k] );
           }
         }
-        var node = createnodeTreeParentVolumeData( pdbvt, 0, vol, 0);
+        var node = createnodeTreeParentVolumeData( pdbvt, 0, vol, 0 );
         node.childs[ 0 ] = topdown( pdbvt, sets[ 0 ], bu_threshold );
         node.childs[ 1 ] = topdown( pdbvt, sets[ 1 ], bu_threshold );
         node.childs[ 0 ].parent = node;
@@ -757,10 +759,10 @@
         }
       },
 
-      empty: function() { return (0 === this.m_root); },
+      empty: function() { return ( 0 === this.m_root ); },
 
       optimizeBottomUp: function() {
-        if (this.m_root) {
+        if ( this.m_root ) {
           var leaves = [];
           //leaves.reserve(this.m_leaves);
           fetchleaves( this, this.m_root, leaves );
@@ -771,7 +773,7 @@
 
       optimizeTopDown: function( bu_threshold ) {
         bu_threshold = bu_threshold || 128;
-        if (this.m_root) {
+        if ( this.m_root ) {
           var leaves = [];
           //leaves.reserve(this.m_leaves);
           fetchleaves( this, this.m_root, leaves );
@@ -812,7 +814,7 @@
         var root = removeleaf( this, leaf );
         if ( root ) {
           if ( lookahead >= 0 ) {
-            for ( var i = 0; (i < lookahead) && root.parent; ++i ) {
+            for ( var i = 0; ( i < lookahead ) && root.parent; ++i ) {
               root = root.parent;
             }
           }
@@ -898,7 +900,7 @@
 
       clone: function( dest, iclone ) {
         dest.clear();
-        if (this.m_root !== 0) {
+        if ( this.m_root !== 0 ) {
           var stack = [];
           //stack.reserve(this.m_leaves);
           stack.push( Bump.Dbvt.sStkCLN.create( this.m_root, 0 ) );
@@ -909,7 +911,7 @@
             /*var i = stack.length - 1,
             /e = stack[i], */
             var e = stack.pop(),
-            n = createnodeTreeParentVolumeData( dest, e.parent, e.node.volume, e.node.data);
+            n = createnodeTreeParentVolumeData( dest, e.parent, e.node.volume, e.node.data );
             /* stack.pop(); */
             if ( e.parent !== 0 ) {
               /*e.parent.childs[ i & 1 ] = n; */ /* nice trick, but doesn't work if you want an exact clone */
@@ -923,7 +925,7 @@
               stack.push( Bump.Dbvt.sStkCLN.create(e.node.childs[1], n ) );
             }
             else if ( iclone ) { /* added if to make sure iclone is defined */
-              iclone.CloneLeaf(n);
+              iclone.CloneLeaf( n );
             }
           } while( stack.length > 0 );
         }
@@ -1120,7 +1122,7 @@
           Bump.Dbvt.extractLeaves( node.childs[ 1 ], leaves );
         }
         else {
-          leaves.push(node);
+          leaves.push( node );
         }
       },
 
@@ -1181,7 +1183,7 @@
             var tmin = 1,
             lambda_min = 0,
             result1 = Bump.rayAabb2( rayFrom, rayDirectionInverse, signs,
-                                     bounds, tmin, lambda_min, lambda_max);
+                                     bounds, tmin, lambda_min, lambda_max );
 /*
 #ifdef COMPARE_BTRAY_AABB
 				btScalar param=1.f;
@@ -1208,14 +1210,14 @@
 
       collideKDOP: function( root, normals, offsets, count, policy ) {
         if ( root ) {
-          var inside = (1 << count) - 1,
+          var inside = ( 1 << count ) - 1,
               stack = [],
               signs = [],
               i, j;
           /* btAssert(count<int (sizeof(signs)/sizeof(signs[0]))); */
 
           for ( i = 0; i < count; i++ ) {
-            signs[ i ] = ( ( normals[ i ].x >= 0) ? 1 : 0 ) +
+            signs[ i ] = ( ( normals[ i ].x >= 0 ) ? 1 : 0 ) +
               ( ( normals[ i ].y >= 0 ) ? 2 : 0 ) +
               ( ( normals[ i ].z >= 0 ) ? 4 : 0 );
           }
@@ -1230,7 +1232,7 @@
             for ( i = 0, j = 1; ( !out ) && ( i < count ); ++i, j <<= 1 ) {
               if ( 0 === ( se.mask & j ) ) {
                 var side = se.node.volume.Classify( normals[i], offsets[i], signs[i] );
-                switch(side) {
+                switch( side ) {
                 case -1:
                   out=true; break;
                 case +1:
@@ -1253,8 +1255,8 @@
         }
       },
 
-      collideOCL: function( root, normals, offsets, sortaxis, count, policy, fsort) {
-        fsort = (fsort === undefined) || fsort;
+      collideOCL: function( root, normals, offsets, sortaxis, count, policy, fsort ) {
+        fsort = ( fsort === undefined ) || fsort;
 
         if ( root ) {
           var srtsgns = ( sortaxis.x >= 0 ? 1 : 0 ) +
@@ -1268,7 +1270,7 @@
               i, j, k;
           /* btAssert(count<int (sizeof(signs)/sizeof(signs[0]))); */
           for ( i = 0; i < count; ++i ) {
-            signs[ i ] = ( ( normals[ i ].x >= 0) ? 1 : 0 ) +
+            signs[ i ] = ( ( normals[ i ].x >= 0 ) ? 1 : 0 ) +
               ( ( normals[ i ].y >= 0 ) ? 2 : 0 ) +
               ( ( normals[ i ].z >= 0 ) ? 4 : 0 );
           }
@@ -1285,7 +1287,7 @@
             var id = stack[ stack.length - 1 ],
             se = stock[ id ];
             stack.pop();
-            ifree.push(id);
+            ifree.push( id );
             if ( se.mask != inside ) {
               var out = false;
               for ( i=0, j=1; ( !out ) && ( i < count ); ++i, j <<= 1 ) {
@@ -1328,7 +1330,7 @@
 #if DBVT_USE_MEMMOVE
                   memmove(&stack[j+1],&stack[j],sizeof(int)*(stack.size()-j-1));
 #else */
-                  for ( k = stack.length - 1; k > j; --k) {
+                  for ( k = stack.length - 1; k > j; --k ) {
                     stack[ k ] = stack[ k - 1 ];
                   }
 /* #endif */
@@ -1340,7 +1342,7 @@
 #if DBVT_USE_MEMMOVE
                                                         memmove(&stack[j+1],&stack[j],sizeof(int)*(stack.size()-j-1));
 #else */
-                  for ( k = stack.length - 1; k > j; --k) {
+                  for ( k = stack.length - 1; k > j; --k ) {
                     stack[ k ] = stack[ k - 1 ];
                   }
 /* #endif */
@@ -1367,7 +1369,7 @@
           do {
             var n = stack[ stack.length - 1 ];
             stack.pop();
-            if ( policy.Descent(n) ) {
+            if ( policy.Descent( n ) ) {
               if ( n.isinternal() ) {
                 stack.push( n.childs[ 0 ] );
                 stack.push( n.childs[ 1 ] );
@@ -1478,8 +1480,8 @@
   Bump.Dbvt.IWriter = Bump.type({
     members: {
       Prepare: function( root, numnodes ) {},
-      WriteNode: function( node, index, parent, child0, child1) {},
-      WriteLeaf: function( node, index, parent) {}
+      WriteNode: function( node, index, parent, child0, child1 ) {},
+      WriteLeaf: function( node, index, parent ) {}
     }
   });
 

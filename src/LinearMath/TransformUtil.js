@@ -49,7 +49,7 @@
 
     if ( fAngle < 0.001 ) {
       // use Taylor's expansions of sync function
-      axis = angvel.multiplyScalar( 0.5 * timeStep - ( timeStep * timeStep * timeStep) * 0.020833333333 * fAngle * fAngle, tmpV2 );
+      axis = angvel.multiplyScalar( 0.5 * timeStep - ( timeStep * timeStep * timeStep ) * 0.020833333333 * fAngle * fAngle, tmpV2 );
     } else {
       axis = angvel.multiplyScalar( Math.sin( 0.5 * fAngle * timeStep ) / fAngle, tmpV2 );
     }

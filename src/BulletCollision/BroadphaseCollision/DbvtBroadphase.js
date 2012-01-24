@@ -171,7 +171,7 @@
       collide: function( dispatcher ) {
         /* SPC(this.m_profiling.m_total); // not defined without DBVT_BP_PROFILE */
         /* optimize                             */
-        this.m_sets[ 0 ].optimizeIncremental( 1 + ( this.m_sets[ 0 ].m_leaves * this.m_dupdates) / 100 );
+        this.m_sets[ 0 ].optimizeIncremental( 1 + ( this.m_sets[ 0 ].m_leaves * this.m_dupdates ) / 100 );
         if ( this.m_fixedleft ) {
           var count = 1 + ( this.m_sets[ 1 ].m_leaves * this.m_fupdates ) / 100;
           this.m_sets[ 1 ].optimizeIncremental( 1 + ( this.m_sets[ 1 ].m_leaves * this.m_fupdates ) / 100 );
@@ -197,7 +197,7 @@
             current.leaf = this.m_sets[ 1 ].insert( curAabb, current );
             current.stage = Bump.DbvtBroadphase.Stages.STAGECOUNT;
             current = next;
-          } while(current);
+          } while( current );
           this.m_fixedleft = this.m_sets[ 1 ].m_leaves;
           this.m_needcleanup = true;
         }
@@ -207,13 +207,13 @@
           /* SPC(this.m_profiling.m_fdcollide); */
           this.m_sets[ 0 ].collideTTpersistentStack( this.m_sets[ 0 ].m_root,
                                                      this.m_sets[ 1 ].m_root,
-                                                     collider2);
+                                                     collider2 );
         }
         if ( this.m_deferedcollide ) {
           /* SPC(this.m_profiling.m_ddcollide); */
           this.m_sets[ 0 ].collideTTpersistentStack( this.m_sets[ 0 ].m_root,
                                                      this.m_sets[ 0 ].m_root,
-                                                     collider2);
+                                                     collider2 );
         }
         /* clean up */
         if ( this.m_needcleanup ) {
@@ -365,13 +365,13 @@
           this.m_needcleanup = true;
           if ( !this.m_deferedcollide ) {
             var collider = Bump.DbvtTreeCollider.create( this );
-            this.m_sets[ 1 ].collideTTpersistentStack( this.m_sets[ 1 ].m_root, proxy.leaf, collider);
-            this.m_sets[ 0 ].collideTTpersistentStack( this.m_sets[ 0 ].m_root, proxy.leaf, collider);
+            this.m_sets[ 1 ].collideTTpersistentStack( this.m_sets[ 1 ].m_root, proxy.leaf, collider );
+            this.m_sets[ 0 ].collideTTpersistentStack( this.m_sets[ 0 ].m_root, proxy.leaf, collider );
           }
         }
       },
 
-      rayTest: function( rayFrom, rayTo, rayCallback, aabbMin, aabbMax) {
+      rayTest: function( rayFrom, rayTo, rayCallback, aabbMin, aabbMax ) {
         aabbMin = aabbMin || Bump.Vector3.create();
         aabbMax = aabbMin || Bump.Vector3.create();
 
@@ -386,7 +386,7 @@
           rayCallback.m_lambda_max,
           aabbMin,
           aabbMax,
-          callback);
+          callback );
 
         this.m_sets[1].rayTestInternal(
           this.m_sets[1].m_root,
@@ -397,7 +397,7 @@
           rayCallback.m_lambda_max,
           aabbMin,
           aabbMax,
-          callback);
+          callback );
       },
 
       aabbTest: function (aabbMin, aabbMax, aabbCallback ) {
@@ -451,7 +451,7 @@
           if ( !this.m_sets[ 1 ].empty() ) {
             Bump.Merge.DbvtVolume3( this.m_sets[0].m_root.volume,
                                     this.m_sets[1].m_root.volume,
-                                    bounds);
+                                    bounds );
           }
           else {
             this.m_sets[ 0 ].m_root.volume.clone( bounds );
@@ -463,7 +463,7 @@
         else {
           /* TODO : could optimize this to avoid object creation by
              adding a destination param to FromCR */
-          bounds = Bump.DbvtVolume.FromCR( Bump.Vector3.create( 0, 0, 0), 0 );
+          bounds = Bump.DbvtVolume.FromCR( Bump.Vector3.create( 0, 0, 0 ), 0 );
         }
         bounds.Mins().clone( aabbMin );
         bounds.Maxs().clone( aabbMax );
@@ -518,7 +518,7 @@
 
           for ( i = 0; i < overlappingPairArray.length; i++ ) {
             var pair = overlappingPairArray[i], /* btBroadphasePair& */
-            isDuplicate = (pair.equal( previousPair) );
+                isDuplicate = ( pair.equal( previousPair ) );
 
             previousPair = pair;
 

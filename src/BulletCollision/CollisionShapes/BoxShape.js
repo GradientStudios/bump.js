@@ -88,7 +88,7 @@
           var vec = vectors[i];
           supportVerticesOut[i].setValue( Bump.Fsels( vec.x, halfExtents.x, -halfExtents.x ),
                                           Bump.Fsels( vec.y, halfExtents.y, -halfExtents.y ),
-                                          Bump.Fsels( vec.z, halfExtents.z, -halfExtents.z ));
+                                          Bump.Fsels( vec.z, halfExtents.z, -halfExtents.z ) );
         }
       },
 

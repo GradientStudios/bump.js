@@ -140,7 +140,7 @@
 
         return this.setValue(
           1 - ( yy + zz ), xy - wz, xz + wy,
-          xy + wz, 1.0 - (xx + zz), yz - wx,
+          xy + wz, 1.0 - ( xx + zz ), yz - wx,
           xz - wy, yz + wx, 1 - ( xx + yy )
         );
       },
@@ -176,7 +176,7 @@
         dest = dest || Bump.Quaternion.create();
 
         var trace = this.m_el0.x + this.m_el1.y + this.m_el2.z,
-            temp = new Array(4),
+            temp = new Array( 4 ),
             s;
 
         if ( trace > 0 ) {
@@ -249,7 +249,7 @@
         }
 
         // check that pitch is not at a singularity
-        if ( Math.abs( this.m_el2.x ) >= 1) {
+        if ( Math.abs( this.m_el2.x ) >= 1 ) {
           eulerOut1.yaw = 0;
           eulerOut2.yaw = 0;
 
@@ -280,11 +280,11 @@
           var cp1 = Math.cos( eulerOut1.pitch ),
               cp2 = Math.cos( eulerOut2.pitch );
 
-          eulerOut1.roll = Math.atan2( this.m_el2.y / cp1, this.m_el2.z / cp1);
-          eulerOut2.roll = Math.atan2( this.m_el2.y / cp2, this.m_el2.z / cp2);
+          eulerOut1.roll = Math.atan2( this.m_el2.y / cp1, this.m_el2.z / cp1 );
+          eulerOut2.roll = Math.atan2( this.m_el2.y / cp2, this.m_el2.z / cp2 );
 
-          eulerOut1.yaw = Math.atan2( this.m_el1.x / cp1, this.m_el0.x / cp1);
-          eulerOut2.yaw = Math.atan2( this.m_el1.x / cp2, this.m_el0.x / cp2);
+          eulerOut1.yaw = Math.atan2( this.m_el1.x / cp1, this.m_el0.x / cp1 );
+          eulerOut2.yaw = Math.atan2( this.m_el1.x / cp2, this.m_el0.x / cp2 );
         }
 
         return dest;
@@ -461,7 +461,7 @@
         return dest.setValue(
           this.cofac( 1, 1, 2, 2 ), this.cofac( 0, 2, 2, 1 ), this.cofac( 0, 1, 1, 2 ),
           this.cofac( 1, 2, 2, 0 ), this.cofac( 0, 0, 2, 2 ), this.cofac( 0, 2, 1, 0 ),
-          this.cofac( 1, 0, 2, 1 ), this.cofac( 0, 1, 2, 0) , this.cofac( 0, 0, 1, 1 )
+          this.cofac( 1, 0, 2, 1 ), this.cofac( 0, 1, 2, 0 ), this.cofac( 0, 0, 1, 1 )
         );
       },
 

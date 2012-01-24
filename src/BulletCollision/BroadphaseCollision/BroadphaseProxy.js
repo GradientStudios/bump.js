@@ -60,7 +60,7 @@
     ];
 
     Bump.BroadphaseNativeTypes = {};
-    for ( var i = 0; i < _broadphaseNativeTypes.length; i++) {
+    for ( var i = 0; i < _broadphaseNativeTypes.length; i++ ) {
       Bump.BroadphaseNativeTypes[ _broadphaseNativeTypes[ i ] ] = i;
     }
   })( Bump );
@@ -111,38 +111,38 @@
     typeMembers: {
 
       isPolyhedral: function( proxyType ) {
-	return (proxyType  < Bump.BroadphaseNativeTypes.IMPLICIT_CONVEX_SHAPES_START_HERE);
+        return ( proxyType < Bump.BroadphaseNativeTypes.IMPLICIT_CONVEX_SHAPES_START_HERE );
       },
 
       isConvex: function( proxyType ) {
-	return (proxyType < Bump.BroadphaseNativeTypes.CONCAVE_SHAPES_START_HERE);
+        return ( proxyType < Bump.BroadphaseNativeTypes.CONCAVE_SHAPES_START_HERE );
       },
 
       isNonMoving: function( proxyType ) {
-	return (this.isConcave(proxyType) &&
-                (proxyType!==Bump.BroadphaseNativeTypes.GIMPACT_SHAPE_PROXYTYPE));
+        return ( this.isConcave( proxyType ) &&
+                 ( proxyType !== Bump.BroadphaseNativeTypes.GIMPACT_SHAPE_PROXYTYPE ) );
       },
 
       isConcave: function( proxyType ) {
-	return ((proxyType > Bump.BroadphaseNativeTypes.CONCAVE_SHAPES_START_HERE) &&
-		(proxyType < Bump.BroadphaseNativeTypes.CONCAVE_SHAPES_END_HERE));
+        return ( ( proxyType > Bump.BroadphaseNativeTypes.CONCAVE_SHAPES_START_HERE ) &&
+                 ( proxyType < Bump.BroadphaseNativeTypes.CONCAVE_SHAPES_END_HERE ) );
       },
 
       isCompound: function( proxyType ) {
-	return (proxyType === Bump.BroadphaseNativeTypes.COMPOUND_SHAPE_PROXYTYPE);
+        return ( proxyType === Bump.BroadphaseNativeTypes.COMPOUND_SHAPE_PROXYTYPE );
       },
 
       isSoftBody: function( proxyType ) {
-	return (proxyType === Bump.BroadphaseNativeTypes.SOFTBODY_SHAPE_PROXYTYPE);
+        return ( proxyType === Bump.BroadphaseNativeTypes.SOFTBODY_SHAPE_PROXYTYPE );
       },
 
       isInfinite: function( proxyType ) {
-	return (proxyType === Bump.BroadphaseNativeTypes.STATIC_PLANE_PROXYTYPE);
+        return ( proxyType === Bump.BroadphaseNativeTypes.STATIC_PLANE_PROXYTYPE );
       },
 
       isConvex2d: function( proxyType ) {
-	return (proxyType === Bump.BroadphaseNativeTypes.BOX_2D_SHAPE_PROXYTYPE) ||
-          (proxyType === Bump.BroadphaseNativeTypes.CONVEX_2D_SHAPE_PROXYTYPE);
+        return ( ( proxyType === Bump.BroadphaseNativeTypes.BOX_2D_SHAPE_PROXYTYPE ) ||
+                 ( proxyType === Bump.BroadphaseNativeTypes.CONVEX_2D_SHAPE_PROXYTYPE ) );
       },
 
       // Create an empty `BroadphaseProxy.` This is analogous to the default constructor
@@ -165,11 +165,11 @@
       CollisionFilterGroups: {
         DefaultFilter: 1,
         StaticFilter: 2,
-	KinematicFilter: 4,
-	DebrisFilter: 8,
-	SensorTrigger: 16,
-	CharacterFilter: 32,
-	AllFilter: -1 //all bits sets: DefaultFilter | StaticFilter | KinematicFilter | DebrisFilter | SensorTrigger
+        KinematicFilter: 4,
+        DebrisFilter: 8,
+        SensorTrigger: 16,
+        CharacterFilter: 32,
+        AllFilter: -1 //all bits sets: DefaultFilter | StaticFilter | KinematicFilter | DebrisFilter | SensorTrigger
       }
 
     }
@@ -203,14 +203,15 @@
     },
 
     members: {
-      // The `equal` function replaces the operator== for `btBroadphasePair` objects, which previously was
-      // not a member funcion.
-      // Also note that this function compares proxies *with* consideration of order.
-      // Consider 2 different proxies, p0 and p1. If p0 and p1 somehow both recieve the same uid,
-      // then `create( p0, p1 )` and `create( p1, p0 )` will return results that are *not* considered
-      // equal. If uids are managed correctly, this should never happen.
+      // The `equal` function replaces the operator== for `btBroadphasePair`
+      // objects, which previously was not a member function. Also note that
+      // this function compares proxies *with* consideration of order. Consider
+      // 2 different proxies, `p0` and `p1`. If `p0` and `p1` somehow both
+      // receive the same `uid`, then `create( p0, p1 )` and `create( p1, p0 )`
+      // will return results that are *not* considered equal. If `uid`s are
+      // managed correctly, this should never happen.
       equal: function( other ) {
-        return (this.m_pProxy0 == other.m_pProxy0) && (this.m_pProxy1 == other.m_pProxy1);
+        return ( this.m_pProxy0 === other.m_pProxy0 ) && ( this.m_pProxy1 === other.m_pProxy1 );
       }
     },
 
@@ -256,8 +257,8 @@
             uidB1 = b.m_pProxy1 ? b.m_pProxy1.m_uniqueId : -1;
 
         return uidA0 > uidB0 ||
-          (a.m_pProxy0 == b.m_pProxy0 && uidA1 > uidB1) ||
-          (a.m_pProxy0 == b.m_pProxy0 && a.m_pProxy1 == b.m_pProxy1 && a.m_algorithm > b.m_algorithm);
+          ( a.m_pProxy0 === b.m_pProxy0 && uidA1 > uidB1 ) ||
+          ( a.m_pProxy0 === b.m_pProxy0 && a.m_pProxy1 === b.m_pProxy1 && a.m_algorithm > b.m_algorithm );
       },
 
       create: function() {

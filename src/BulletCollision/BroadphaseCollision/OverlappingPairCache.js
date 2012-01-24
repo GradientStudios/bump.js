@@ -36,7 +36,7 @@
       cleanProxyFromPairs: function( proxy, dispatcher ) {},
       setOverlapFilterCallback: function( callback ) {},
       processAllOverlappingPairs: function( callback, dispatcher ) {},
-      findPair: function( proxy0, proxy1) {},
+      findPair: function( proxy0, proxy1 ) {},
       hasDeferredRemoval: function() {},
       setInternalGhostPairCallback: function( ghostPairCallback ) {},
       sortOverlappingPairs: function( dispatcher ) {}
@@ -81,7 +81,7 @@
           },
 
           members: {
-            processOverlap: function( pair) {
+            processOverlap: function( pair ) {
               return ( ( pair.m_pProxy0 === this.m_obsoleteProxy ) ||
                        ( pair.m_pProxy1 === this.m_obsoleteProxy ) );
             }
@@ -163,7 +163,7 @@
         /* missing swap here too, Nat. */
         /* int lastHash = static_cast<int>(getHash(static_cast<unsigned int>(last->m_pProxy0->getUid()), static_cast<unsigned int>(last->m_pProxy1->getUid())) & (m_overlappingPairArray.capacity()-1)); */
             lastHash = ( this.getHash( last.m_pProxy0.getUid() << 0,
-                                       last.m_pProxy1.getUid() << 0) & ( CAPACITY - 1) ) << 0;
+                                       last.m_pProxy1.getUid() << 0 ) & ( CAPACITY - 1 ) ) << 0;
 
         index = this.m_hashTable[ lastHash ];
         /* btAssert(index != BT_NULL_PAIR); */
@@ -218,7 +218,7 @@
         var CleanPairCallback = Bump.type({
           parent: Bump.OverlapCallback,
 
-          init: function CleanPairCallback( cleanProxy, pairCache, dispatcher) {
+          init: function CleanPairCallback( cleanProxy, pairCache, dispatcher ) {
             this.m_cleanProxy = cleanProxy;
             this.m_pairCache = pairCache;
             this.m_dispatcher = dispatcher;
@@ -302,7 +302,7 @@
         var index = this.m_hashTable[ hash ];
         index = index === undefined ? BT_NULL_PAIR : index;
         while( index != BT_NULL_PAIR && this.equalsPair( this.m_overlappingPairArray[index],
-                                                         proxyId1, proxyId2) === false ) {
+                                                         proxyId1, proxyId2 ) === false ) {
           index = this.m_next[ index ];
           index = index === undefined ? BT_NULL_PAIR : index;
         }
@@ -333,7 +333,7 @@
         return this.m_overlappingPairArray.length();
       },
 
-      internalAddPair: function( proxy0, proxy1) {
+      internalAddPair: function( proxy0, proxy1 ) {
         if ( proxy0.m_uniqueId > proxy1.m_uniqueId ) {
           /* btSwap(proxy0,proxy1); */
           var tmp = proxy0;
@@ -410,12 +410,12 @@
         var key = ( proxyId1 << 0 ) | ( proxyId2 << 0 ) << 16;
         // Thomas Wang's hash
 
-        key += ~(key << 15);
-        key ^=  (key >> 10);
-        key +=  (key << 3);
-        key ^=  (key >> 6);
-        key += ~(key << 11);
-        key ^=  (key >> 16);
+        key += ~( key << 15 );
+        key ^=  ( key >> 10 );
+        key +=  ( key <<  3 );
+        key ^=  ( key >>  6 );
+        key += ~( key << 11 );
+        key ^=  ( key >> 16 );
         return key << 0;
       },
 
@@ -431,7 +431,7 @@
 */
         index = index === undefined ? BT_NULL_PAIR : index;
         while( index != BT_NULL_PAIR &&
-               this.equalsPair( this.m_overlappingPairArray[ index ], proxyId1, proxyId2) === false) {
+               this.equalsPair( this.m_overlappingPairArray[ index ], proxyId1, proxyId2 ) === false ) {
           index = this.m_next[index];
           index = index === undefined ? BT_NULL_PAIR : index;
         }

@@ -56,8 +56,8 @@
             collisionObject.setCompanionId( -1 );
             ++index;
           } else {
-            collisionObject.setIslandTag(-1);
-            collisionObject.setCompanionId(-2);
+            collisionObject.setIslandTag( -1 );
+            collisionObject.setCompanionId( -2 );
           }
         }
       },
@@ -114,7 +114,7 @@
 
           // Traverse the simulation islands, and call the solver, unless all
           // objects are sleeping/deactivated.
-          for ( startIslandIndex = 0; startIslandIndex < numElem; startIslandIndex = endIslandIndex) {
+          for ( startIslandIndex = 0; startIslandIndex < numElem; startIslandIndex = endIslandIndex ) {
             var islandId = this.getUnionFind().getElement( startIslandIndex ).id;
 
             var islandSleeping = true;
@@ -154,7 +154,7 @@
             }
 
             if ( !islandSleeping ) {
-              callback.ProcessIsland( this.islandBodies, this.islandBodies.length, startManifold,numIslandManifolds, islandId);
+              callback.ProcessIsland( this.islandBodies, this.islandBodies.length, startManifold,numIslandManifolds, islandId );
               console.log( 'Island callback of size:' + this.islandBodies.length + 'bodies, ' + numIslandManifolds + ' manifolds' );
             }
 
@@ -196,7 +196,7 @@
 
           var allSleeping = true;
 
-          for ( idx = startIslandIndex; idx < endIslandIndex; ++idx) {
+          for ( idx = startIslandIndex; idx < endIslandIndex; ++idx ) {
             i = this.getUnionFind().getElement( idx ).sz;
 
             colObj0 = collisionObjects[i];

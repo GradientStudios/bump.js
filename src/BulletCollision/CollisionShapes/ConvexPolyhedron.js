@@ -107,7 +107,7 @@
             }
 
             if ( !found ) {
-              this.m_uniqueEdges.push_back(edge);
+              this.m_uniqueEdges.push_back( edge );
             }
 
             if ( edptr ) {

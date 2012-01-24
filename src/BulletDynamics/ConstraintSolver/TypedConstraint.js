@@ -80,7 +80,7 @@
         } else if ( delta_max > 0 ) {
           if ( (pos <= uppLim ) && ( pos > ( uppLim - delta_max ) ) ) {
             lim_fact = ( uppLim - pos ) / delta_max;
-          } else if ( pos  > uppLim) {
+          } else if ( pos  > uppLim ) {
             lim_fact = 0;
           } else {
             lim_fact = 1;
@@ -214,7 +214,7 @@
     }
   });
 
-  Bump.AdjustAngleToLimits = function( angleInRadians, angleLowerLimitInRadians, angleUpperLimitInRadians) {
+  Bump.AdjustAngleToLimits = function( angleInRadians, angleLowerLimitInRadians, angleUpperLimitInRadians ) {
     var diffLo, diffHi;
 
     if ( angleLowerLimitInRadians >= angleUpperLimitInRadians ) {

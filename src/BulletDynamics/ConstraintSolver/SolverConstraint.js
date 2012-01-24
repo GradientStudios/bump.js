@@ -1,4 +1,4 @@
-( function( window, Bump) {
+( function( window, Bump ) {
 
   // **Bump.SolverConstraint** is the port of the Bullet struct
   // `btSolverConstraint`.
