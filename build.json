@@ -33,6 +33,7 @@
 
         "src/BulletDynamics/ConstraintSolver/ContactSolverInfo.js",
         "src/BulletDynamics/ConstraintSolver/TypedConstraint.js",
+        "src/BulletDynamics/ConstraintSolver/SolverConstraint.js",
         "src/BulletDynamics/ConstraintSolver/ConstraintSolver.js",
 
         "src/BulletCollision/CollisionDispatch/UnionFind.js",
