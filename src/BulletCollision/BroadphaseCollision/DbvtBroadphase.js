@@ -148,7 +148,7 @@
 
 /* omitting for now
 #if DBVT_BP_PROFILE
-	clear(m_profiling);
+        clear(m_profiling);
 #endif */
 
     },
@@ -402,17 +402,17 @@
 
       aabbTest: function (aabbMin, aabbMax, aabbCallback ) {
         var callback = aabbCallback,
-	bounds = Bump.DbvtVolume.FromMM( aabbMin, aabbMax );
+        bounds = Bump.DbvtVolume.FromMM( aabbMin, aabbMax );
 
-	//process all children, that overlap with  the given AABB bounds
-	this.m_sets[ 0 ].collideTV( this.m_sets[ 0 ].m_root, bounds, callback );
-	this.m_sets[ 1 ].collideTV( this.m_sets[ 1 ].m_root, bounds, callback );
+        //process all children, that overlap with  the given AABB bounds
+        this.m_sets[ 0 ].collideTV( this.m_sets[ 0 ].m_root, bounds, callback );
+        this.m_sets[ 1 ].collideTV( this.m_sets[ 1 ].m_root, bounds, callback );
       },
 
       getAabb: function( absproxy, aabbMin, aabbMax ) {
         var proxy = absproxy;
-	proxy.m_aabbMin.clone( aabbMin );
-	proxy.m_aabbMax.clone( aabbMax );
+        proxy.m_aabbMin.clone( aabbMin );
+        proxy.m_aabbMax.clone( aabbMax );
       },
 
       calculateOverlappingPairs: function( dispatcher ) {

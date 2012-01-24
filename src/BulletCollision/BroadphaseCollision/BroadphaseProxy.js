@@ -65,19 +65,21 @@
     }
   })( Bump );
 
-  // The ***btBroadphaseProxy*** is the main class that can be used with the Bullet broadphases.
-  // It stores collision shape type information, collision filter information and a client object,
-  // typically a `btCollisionObject` or `btRigidBody`.
+  // The **btBroadphaseProxy** is the main class that can be used with the
+  // Bullet broadphases. It stores collision shape type information, collision
+  // filter information and a client object, typically a `btCollisionObject` or
+  // `btRigidBody`.
 
   Bump.BroadphaseProxy = Bump.type({
 
     // Given *exactly* the following arguments, initializes the BroadphaseProxy:
-    // `aabbMin` : A Vector3 representing the minimum x, y, x values of the axis aligned bounding box.
-    // `aabbMax` : A Vector3 representing the maximum x, y, x values of the axis aligned bounding box.
-    // `userPtr` : The client object for the proxy (usually a CollisionObject or Rigidbody).
-    // `collisionFilterGroup` : The unsigned integer collision filter group. ???
-    // `collisionFilterMask` : The unsigned integer collision filter mask. ???
-    // `multiSapParentProxy` : ???
+    //
+    // - `aabbMin` : A Vector3 representing the minimum x, y, x values of the axis aligned bounding box.
+    // - `aabbMax` : A Vector3 representing the maximum x, y, x values of the axis aligned bounding box.
+    // - `userPtr` : The client object for the proxy (usually a CollisionObject or Rigidbody).
+    // - `collisionFilterGroup` : The unsigned integer collision filter group. ???
+    // - `collisionFilterMask` : The unsigned integer collision filter mask. ???
+    // - `multiSapParentProxy` : ???
     init: function BroadphaseProxy( aabbMin, aabbMax, userPtr, collisionFilterGroup,
                                     collisionFilterMask, multiSapParentProxy ) {
       // Usually the client CollisionObject or Rigidbody class
@@ -176,7 +178,7 @@
 
   });
 
-  // The ***BroadphasePair*** class contains a pair of aabb-overlapping objects.
+  // The **BroadphasePair** class contains a pair of aabb-overlapping objects.
   // A `Dispatcher` can search a `CollisionAlgorithm` that performs exact/narrowphase collision
   // detection on the actual collision shapes.
 

@@ -4,11 +4,10 @@
 
 (function( window, Bump ) {
 
-  // **Bump.DbvtAabbMm** is the port of the `btDbvtAabbMm` class.
-  // "DbvtAabbMm" stands for "Dynamic Bounding Volume Tree Axis-Aligned
-  // Bounding Box Minimum/Maximum," meaning that it represents an AABB
-  // from 2 `Vector3`s, the minimum `mi` bounds, and the maximum `mx`
-  // bounds.
+  // **Bump.DbvtAabbMm** is the port of the `btDbvtAabbMm` class. "DbvtAabbMm"
+  // stands for "Dynamic Bounding Volume Tree Axis-Aligned Bounding Box
+  // Minimum/Maximum," meaning that it represents an AABB from 2 `Vector3`s, the
+  // minimum `mi` bounds, and the maximum `mx` bounds.
   Bump.DbvtAabbMm = Bump.type({
     // Default constructor, sets mi and mx to zeroed `Vector3`s
     init: function DbvtAabbMm() {
@@ -102,12 +101,12 @@
       // Given `DbvtAabbMm` `a`, return true if `a`s bounding box is contained
       // within `this` bounding box.
       Contain: function( a ) {
-        return(	( this.mi.x <= a.mi.x ) &&
-		( this.mi.y <= a.mi.y ) &&
-		( this.mi.z <= a.mi.z ) &&
-		( this.mx.x >= a.mx.x ) &&
-		( this.mx.y >= a.mx.y ) &&
-		( this.mx.z >= a.mx.z ) );
+        return( ( this.mi.x <= a.mi.x ) &&
+                ( this.mi.y <= a.mi.y ) &&
+                ( this.mi.z <= a.mi.z ) &&
+                ( this.mx.x >= a.mx.x ) &&
+                ( this.mx.y >= a.mx.y ) &&
+                ( this.mx.z >= a.mx.z ) );
       },
 
       // Classify `this` DbvtAabbMm based on which side of a specified plane it
@@ -269,30 +268,30 @@
 
   // Intersect test for 2 `DbvtAabbMm`s
   Bump.Intersect.DbvtAabbMm2 = function( a, b ) {
-    /*#if	DBVT_INT0_IMPL == DBVT_IMPL_SSE
-	const __m128	rt(_mm_or_ps(	_mm_cmplt_ps(_mm_load_ps(b.mx),_mm_load_ps(a.mi)),
-		_mm_cmplt_ps(_mm_load_ps(a.mx),_mm_load_ps(b.mi))));
-	const __int32*	pu((const __int32*)&rt);
-	return((pu[0]|pu[1]|pu[2])==0);
-    #else*/
-    return( ( a.mi.x <= b.mx.x ) &&
-            ( a.mx.x >= b.mi.x ) &&
-            ( a.mi.y <= b.mx.y ) &&
-            ( a.mx.y >= b.mi.y ) &&
-            ( a.mi.z <= b.mx.z ) &&
-            ( a.mx.z >= b.mi.z ) );
-    //#endif
+    //     #if  DBVT_INT0_IMPL == DBVT_IMPL_SSE
+    //         const __m128     rt(_mm_or_ps(   _mm_cmplt_ps(_mm_load_ps(b.mx),_mm_load_ps(a.mi)),
+    //          _mm_cmplt_ps(_mm_load_ps(a.mx),_mm_load_ps(b.mi))));
+    //         const __int32*   pu((const __int32*)&rt);
+    //         return((pu[0]|pu[1]|pu[2])==0);
+    //     #else
+    return ( ( a.mi.x <= b.mx.x ) &&
+             ( a.mx.x >= b.mi.x ) &&
+             ( a.mi.y <= b.mx.y ) &&
+             ( a.mx.y >= b.mi.y ) &&
+             ( a.mi.z <= b.mx.z ) &&
+             ( a.mx.z >= b.mi.z ) );
+    //     #endif
   };
   Bump.Intersect.DbvtVolume2 = Bump.Intersect.DbvtAabbMm2; // typedef consistency
 
   // Intersect test for `DbvtAabbMm` `a` and `Vector3` `b`
   Bump.Intersect.DbvtAabbMm.Vector3 = function( a, b ) {
-    return( ( b.x >= a.mi.x ) &&
-            ( b.y >= a.mi.y ) &&
-            ( b.z >= a.mi.z ) &&
-            ( b.x <= a.mx.x ) &&
-            ( b.y <= a.mx.y ) &&
-            ( b.z <= a.mx.z ) );
+    return ( ( b.x >= a.mi.x ) &&
+             ( b.y >= a.mi.y ) &&
+             ( b.z >= a.mi.z ) &&
+             ( b.x <= a.mx.x ) &&
+             ( b.y <= a.mx.y ) &&
+             ( b.z <= a.mx.z ) );
   };
 
   Bump.Proximity = {};
@@ -307,8 +306,8 @@
   Bump.Proximity.DbvtVolume2 = Bump.Proximity.DbvtAabbMm2; // typedef consistency
 
   Bump.Select = {};
-  // Given `DbvtAabbMm`s `o`, `a`, and `b`, returns 0 if `o` is closer to `a` than to `b`,
-  // else returns 1. Distance is measured using `Proximity`.
+  // Given `DbvtAabbMm`s `o`, `a`, and `b`, returns 0 if `o` is closer to `a`
+  // than to `b`, else returns 1. Distance is measured using `Proximity`.
   Bump.Select.DbvtAabbMm3 = function( o, a, b ) {
     return ( Bump.Proximity.DbvtAabbMm2( o, a ) <
              Bump.Proximity.DbvtAabbMm2( o, b ) ) ? 0 : 1;
@@ -731,10 +730,15 @@
   };
 
 
-  // ***Bump.Dbvt*** is the port of the `btDbvt` struct. Original documentation as follows:
-  // The btDbvt class implements a fast dynamic bounding volume tree based on axis aligned bounding boxes (aabb tree).
-  // This btDbvt is used for soft body collision detection and for the btDbvtBroadphase. It has a fast insert, remove and update of nodes.
-  // Unlike the btQuantizedBvh, nodes can be dynamically moved around, which allows for change in topology of the underlying data structure.
+  // **Bump.Dbvt** is the port of the `btDbvt` struct. Original documentation
+  // as follows:
+  //
+  // The `btDbvt` class implements a fast dynamic bounding volume tree based on
+  // axis aligned bounding boxes (aabb tree). This `btDbvt` is used for soft
+  // body collision detection and for the `btDbvtBroadphase`. It has a fast
+  // insert, remove and update of nodes. Unlike the `btQuantizedBvh`, nodes can
+  // be dynamically moved around, which allows for change in topology of the
+  // underlying data structure.
   Bump.Dbvt = Bump.type({
     init: function Dbvt() {
       this.m_root = 0; // DbvtNode
@@ -1186,9 +1190,9 @@
                                      bounds, tmin, lambda_min, lambda_max );
 /*
 #ifdef COMPARE_BTRAY_AABB
-				btScalar param=1.f;
-				bool result2 = btRayAabb(rayFrom,rayTo,node->volume.Mins(),node->volume.Maxs(),param,resultNormal);
-				btAssert(result1 == result2);
+                                btScalar param=1.f;
+                                bool result2 = btRayAabb(rayFrom,rayTo,node->volume.Mins(),node->volume.Maxs(),param,resultNormal);
+                                btAssert(result1 == result2);
 #endif //TEST_BTRAY_AABB2
 */
             if ( result1 ) {
