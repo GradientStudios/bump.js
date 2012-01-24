@@ -240,9 +240,7 @@
         }
 
         // Swapremove
-        var idx = this.collisionObjects.indexOf( collisionObject );
-        this.collisionObjects[ idx ] = this.collisionObjects[ this.collisionObjects.length - 1 ];
-        this.collisionObjects.pop();
+        Bump.remove( this.collisionObjects, collisionObject );
       },
 
       performDiscreteCollisionDetection: function() {

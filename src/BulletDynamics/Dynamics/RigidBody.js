@@ -698,16 +698,7 @@
       },
 
       removeConstraintRef: function( c ) {
-        //     this.constraintRefs.remove( c );
-        var idx = this.constraintRefs.indexOf( c );
-        if ( idx !== -1 ) {
-          //     var last = this.constraintRefs.pop();
-          //     if ( idx < this.constraintRefs.length ) {
-          //       this.constraintRefs[ idx ] = last;
-          //     }
-          this.constraintRefs[ idx ] = this.constraintRefs[ this.constraintRefs.length - 1 ];
-          this.constraintRefs.pop();
-        }
+        Bump.remove( this.constraintRefs, c );
 
         this.checkCollideWith = this.constraintRefs.length > 0;
       },

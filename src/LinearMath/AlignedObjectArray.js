@@ -76,4 +76,14 @@
     }
   };
 
+  // **Bump.remove** removes the first instance of `key` from the array. This
+  // does not preserve the ordering, as it avoids a `O(n)` copy by moving the
+  // last element, then popping the last element.
+  Bump.remove = function( arr, key ) {
+    var findIndex = arr.indexOf( key );
+    if ( findIndex !== -1 ) {
+      arr[ findIndex ] = arr[ arr.length - 1 ];
+      arr.pop();
+    }
+  };
 })( this, this.Bump );

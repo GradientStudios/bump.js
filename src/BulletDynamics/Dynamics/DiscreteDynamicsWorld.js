@@ -153,12 +153,7 @@
       },
 
       removeConstraint: function( constraint ) {
-        //     this.constraints.remove( constraint );
-        var idx = this.constraints.indexOf( constraint );
-        if ( idx !== -1 ) {
-          this.constraints[ idx ] = this.constraints[ this.constraints.length - 1 ];
-          this.constraints.pop();
-        }
+        Bump.remove( this.constraints, constraint );
 
         constraint.getRigidBodyA().removeConstraintRef( constraint );
         constraint.getRigidBodyB().removeConstraintRef( constraint );
@@ -169,12 +164,7 @@
       },
 
       removeAction: function( action ) {
-        //     this.actions.remove( action );
-        var idx = this.actions.indexOf( action );
-        if ( idx !== -1 ) {
-          this.actions[ idx ] = this.actions[ this.actions.length - 1 ];
-          this.actions.pop();
-        }
+        Bump.remove( this.actions, action );
       },
 
       getSimulationIslandManager: function() {
@@ -244,12 +234,7 @@
       },
 
       removeRigidBody: function( body ) {
-        //     this.nonStaticRigidBodies.remove( body );
-        var idx = this.nonStaticRigidBodies.indexOf( body );
-        if ( idx !== -1 ) {
-          this.nonStaticRigidBodies[ idx ] = this.nonStaticRigidBodies[ this.nonStaticRigidBodies.length - 1 ];
-          this.nonStaticRigidBodies.pop();
-        }
+        Bump.remove( this.nonStaticRigidBodies, body );
 
         Bump.CollisionWorld.prototype.removeCollisionObject.apply( this, [ body ] );
       },
