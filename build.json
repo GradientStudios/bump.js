@@ -40,6 +40,7 @@
         "src/BulletCollision/CollisionDispatch/CollisionObject.js",
         "src/BulletCollision/CollisionDispatch/ManifoldResult.js",
         "src/BulletCollision/CollisionDispatch/CollisionWorld.js",
+        "src/BulletCollision/CollisionDispatch/SimulationIslandManager.js",
 
         "src/BulletDynamics/Dynamics/RigidBody.js",
         "src/BulletDynamics/Dynamics/ActionInterface.js",
