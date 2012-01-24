@@ -1,7 +1,8 @@
 ( function( window, Bump) {
 
-  // *** Bump.SolverConstraint *** is the port of the Bullet struct `btSolverConstraint`.
-  Bump.SolverConstraint = Bump.type( {
+  // **Bump.SolverConstraint** is the port of the Bullet struct
+  // `btSolverConstraint`.
+  Bump.SolverConstraint = Bump.type({
     init: function SolverConstraint() {
       this.m_relpos1CrossNormal = Bump.Vector3.create();
       this.m_contactNormal = Bump.Vector3.create();
@@ -33,10 +34,10 @@
     },
 
     typeMembers: {
-      SolverConstraintType: Bump.Enum( [
+      SolverConstraintType: Bump.Enum([
         { id: 'BT_SOLVER_CONTACT_1D' },
         { id: 'BT_SOLVER_FRICTION_1D' }
-      ] )
+      ])
     },
 
     properties: {
@@ -91,5 +92,5 @@
       }
     }
 
-  } );
-} )( this, this.Bump );
+  });
+})( this, this.Bump );

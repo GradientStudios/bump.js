@@ -4,12 +4,12 @@ module( 'Bump.BroadphaseNativeTypes' );
 // of the enum have the same value.
 var testEnumForUniqueValues = function( enumObj ) {
   var values = {};
-  for( var key in enumObj ) {
+  for ( var key in enumObj ) {
     values[ enumObj[ key ] ] = values[ enumObj[ key ] ] || [];
     values[ enumObj[ key ] ].push( key );
   }
-  for( var value in values ) {
-    if( values[ value ].length > 1 ) {
+  for ( var value in values ) {
+    if ( values[ value ].length > 1 ) {
       // duplicate values were found
       ok( false, 'Failed because properties ' + values[ value ].toString() + ' share value ' + value );
     }
@@ -23,13 +23,13 @@ var testEnumForUniqueValues = function( enumObj ) {
 // and evaluates it on all members of the given `enumObj` object.
 // `trueValues` is an array of all enum property names for which the expected result is true.
 // All other enum values are expected to evaluate to false.
-var testUnaryBoolTypeMemberOverEnum = function( type, op, enumObj, trueValues ){
-  if( typeof op === 'string' ) {
+var testUnaryBoolTypeMemberOverEnum = function( type, op, enumObj, trueValues ) {
+  if ( typeof op === 'string' ) {
     ok( op in type, 'typeMember ' + op + ' exists' );
     op = type[ op ].bind( type );
   }
-  for( var value in enumObj ) {
-    if( trueValues.indexOf( value ) !== -1 ) {
+  for ( var value in enumObj ) {
+    if ( trueValues.indexOf( value ) !== -1 ) {
       // expected to evaluate to true
       ok( op( enumObj[ value ] ), 'true for ' + value );
     }
@@ -81,7 +81,7 @@ test( 'BroadphaseNativeTypes enum', function() {
   ok( Bump.BroadphaseNativeTypes.MAX_BROADPHASE_COLLISION_TYPES !== undefined );
 
   testEnumForUniqueValues( Bump.BroadphaseNativeTypes );
-} );
+});
 
 // TODO : Add test to make sure that the enums each have unique values
 
@@ -89,7 +89,7 @@ module( 'Bump.BroadphaseProxy' );
 
 test( 'BroadphaseProxy exists', function() {
   ok( Bump.BroadphaseProxy );
-} );
+});
 
 module( 'Bump.BroadphaseProxy basic' );
 
@@ -102,7 +102,7 @@ test( 'createEmpty', function() {
 
   ok( a !== b, 'creates different objects' );
   deepEqual( a, b, 'creates similar objects' );
-} );
+});
 
 test( 'create', function() {
   var aabbMin = Bump.Vector3.create(-5, -5, -5),
@@ -125,7 +125,7 @@ test( 'create', function() {
   strictEqual( proxy.m_multiSapParentProxy, multiSapParentProxy,
                'm_multiSapParentProxy set correctly' );
 
-} );
+});
 
 test( 'getUid', function() {
   var proxy = Bump.BroadphaseProxy.createEmpty();
@@ -133,7 +133,7 @@ test( 'getUid', function() {
   equal( proxy.getUid(), 0, 'getUid returns correct value after initialization' );
   proxy.m_uniqueId = 10;
   equal( proxy.getUid(), 10, 'getUid returns correct value after being set' );
-} );
+});
 
 test( 'CollisionFilterGroups enum', function() {
   ok( Bump.BroadphaseProxy.CollisionFilterGroups );
@@ -146,7 +146,7 @@ test( 'CollisionFilterGroups enum', function() {
   ok( Bump.BroadphaseProxy.CollisionFilterGroups.AllFilter === -1 );
 
   testEnumForUniqueValues( Bump.BroadphaseProxy.CollisionFilterGroups );
-} );
+});
 
 test('isPolyhedral typeMember', function() {
   testUnaryBoolTypeMemberOverEnum( Bump.BroadphaseProxy, 'isPolyhedral', Bump.BroadphaseNativeTypes, [
@@ -157,8 +157,8 @@ test('isPolyhedral typeMember', function() {
     'CONVEX_HULL_SHAPE_PROXYTYPE',
     'CONVEX_POINT_CLOUD_SHAPE_PROXYTYPE',
     'CUSTOM_POLYHEDRAL_SHAPE_TYPE'
-  ] );
-} );
+  ]);
+});
 
 test('isConvex typeMember', function() {
   testUnaryBoolTypeMemberOverEnum( Bump.BroadphaseProxy, 'isConvex', Bump.BroadphaseNativeTypes, [
@@ -182,8 +182,8 @@ test('isConvex typeMember', function() {
     'BOX_2D_SHAPE_PROXYTYPE',
     'CONVEX_2D_SHAPE_PROXYTYPE',
     'CUSTOM_CONVEX_SHAPE_TYPE'
-  ] );
-} );
+  ]);
+});
 
 test('isConcave typeMember', function() {
   testUnaryBoolTypeMemberOverEnum( Bump.BroadphaseProxy, 'isConcave', Bump.BroadphaseNativeTypes, [
@@ -196,8 +196,8 @@ test('isConcave typeMember', function() {
     'EMPTY_SHAPE_PROXYTYPE',
     'STATIC_PLANE_PROXYTYPE',
     'CUSTOM_CONCAVE_SHAPE_TYPE'
-  ] );
-} );
+  ]);
+});
 
 test('isNonMoving typeMember', function() {
   testUnaryBoolTypeMemberOverEnum( Bump.BroadphaseProxy, 'isNonMoving', Bump.BroadphaseNativeTypes, [
@@ -209,33 +209,33 @@ test('isNonMoving typeMember', function() {
     'EMPTY_SHAPE_PROXYTYPE',
     'STATIC_PLANE_PROXYTYPE',
     'CUSTOM_CONCAVE_SHAPE_TYPE'
-  ] );
-} );
+  ]);
+});
 
 test('isCompound typeMember', function() {
   testUnaryBoolTypeMemberOverEnum( Bump.BroadphaseProxy, 'isCompound', Bump.BroadphaseNativeTypes, [
     'COMPOUND_SHAPE_PROXYTYPE'
-  ] );
-} );
+  ]);
+});
 
 test('isSoftBody typeMember', function() {
   testUnaryBoolTypeMemberOverEnum( Bump.BroadphaseProxy, 'isSoftBody', Bump.BroadphaseNativeTypes, [
     'SOFTBODY_SHAPE_PROXYTYPE'
-  ] );
-} );
+  ]);
+});
 
 test('isInfinite typeMember', function() {
   testUnaryBoolTypeMemberOverEnum( Bump.BroadphaseProxy, 'isInfinite', Bump.BroadphaseNativeTypes, [
     'STATIC_PLANE_PROXYTYPE'
-  ] );
-} );
+  ]);
+});
 
 test('isConvex2d typeMember', function() {
   testUnaryBoolTypeMemberOverEnum( Bump.BroadphaseProxy, 'isConvex2d', Bump.BroadphaseNativeTypes, [
     'BOX_2D_SHAPE_PROXYTYPE',
     'CONVEX_2D_SHAPE_PROXYTYPE'
-  ] );
-} );
+  ]);
+});
 
 
 /*** BroadphasePair tests ***/
@@ -244,11 +244,11 @@ module( 'Bump.BroadphasePair' );
 
 test( 'BroadphasePair exists', function() {
   ok( Bump.BroadphasePair );
-} );
+});
 
 module( 'Bump.BroadphasePair basic' );
 
-test( 'createEmpty', function(){
+test( 'createEmpty', function() {
   ok( Bump.BroadphasePair.createEmpty, 'createEmpty exists' );
   ok( typeof Bump.BroadphasePair.createEmpty() === 'object', 'creates an object' );
 
@@ -264,9 +264,9 @@ test( 'createEmpty', function(){
   strictEqual( a.m_internalInfo1, null, 'm_internalInfo1 correctly initialized' );
   strictEqual( a.m_internalTmpValue, 0, 'm_internalTmpValue correctly initialized' );
 
-} );
+});
 
-test( 'create', function(){
+test( 'create', function() {
   ok( Bump.BroadphasePair.create, 'create exists' );
 
   var p0 = Bump.BroadphaseProxy.createEmpty(),
@@ -290,7 +290,7 @@ test( 'create', function(){
   strictEqual( c.m_pProxy0, p0, 'm_pProxy0 correctly stored based on uid' );
   strictEqual( c.m_pProxy1, p1, 'm_pProxy1 correctly stored based on uid' );
 
-} );
+});
 
 test( 'clone', function() {
   ok( Bump.BroadphasePair.clone, 'clone exists' );
@@ -302,7 +302,7 @@ test( 'clone', function() {
   ok( typeof b === 'object', 'returns an object' );
   ok( a !== b, 'creates a new object' );
   deepEqual( a, b, 'new object is a correct copy' );
-} );
+});
 
 test( 'equal', function() {
   var p0 = Bump.BroadphaseProxy.createEmpty(),
@@ -315,13 +315,13 @@ test( 'equal', function() {
   ok( a.equal, 'equal member function exists' );
   ok( a.equal( b ), 'pairs made from the same proxies are equal' );
   ok( !a.equal( c ), 'pairs made from different proxies are not equal' );
-} );
+});
 
 module( 'Bump.BroadphasePairSortPredicate' );
 
 test( 'BroadphasePairSortPredicate exists', function() {
   ok( Bump.BroadphasePairSortPredicate );
-} );
+});
 
 test( 'create', function() {
   var pred = Bump.BroadphasePairSortPredicate.create(),
@@ -332,4 +332,4 @@ test( 'create', function() {
   ok(! pred( a, b ), 'predicate returns expected result for identical pairs' );
 
   // TODO : Add a test for pairs with realistic values.
-} );
+});

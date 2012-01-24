@@ -48,7 +48,7 @@
       // Clones `this` vector into `dest`. If `dest` is not provided,
       // a new Vector3 is created and returned.
       clone: function( dest ) {
-        if( dest ) {
+        if ( dest ) {
           dest.x = this.x;
           dest.y = this.y;
           dest.z = this.z;
@@ -71,7 +71,7 @@
       // If not, a new Vector3 is created and returned.
       // This function is analogous to `btVector3`'s `operator+`.
       add: function( vec, dest ) {
-        if( dest ) {
+        if ( dest ) {
           dest.x = this.x + vec.x;
           dest.y = this.y + vec.y;
           dest.z = this.z + vec.z;
@@ -95,7 +95,7 @@
       // If not, a new Vector3 is created and returned.
       // This function is analogous to `btVector3`'s `operator-`.
       subtract: function( vec, dest ) {
-        if( dest ) {
+        if ( dest ) {
           dest.x = this.x - vec.x;
           dest.y = this.y - vec.y;
           dest.z = this.z - vec.z;
@@ -119,7 +119,7 @@
       // if provided. If not, a new Vector3 is created and returned.
       // This function is analogous to `btVector3`'s `operator*` for `btScalar`.
       multiplyScalar: function( scalar, dest ) {
-        if( dest ) {
+        if ( dest ) {
           dest.x = this.x * scalar;
           dest.y = this.y * scalar;
           dest.z = this.z * scalar;
@@ -144,7 +144,7 @@
       // provided. If not, a new Vector3 is created and returned.
       // This function is analogous to `btVector3`'s `operator*` for `btVector3`.
       multiplyVector: function( vec, dest ) {
-        if( dest ) {
+        if ( dest ) {
           dest.x = this.x * vec.x;
           dest.y = this.y * vec.y;
           dest.z = this.z * vec.z;
@@ -170,7 +170,7 @@
       // if provided. If not, a new Vector3 is created and returned.
       // This function is analogous to `btVector3`'s `operator/` for `btScalar`.
       divideScalar: function( scalar, dest ) {
-        if( dest ) {
+        if ( dest ) {
           dest.x = this.x / scalar;
           dest.y = this.y / scalar;
           dest.z = this.z / scalar;
@@ -195,7 +195,7 @@
       // provided. If not, a new Vector3 is created and returned.
       // This function is analogous to `btVector3`'s `operator/` for `btVector3`.
       divideVector: function( vec, dest ) {
-        if( dest ) {
+        if ( dest ) {
           dest.x = this.x / vec.x;
           dest.y = this.y / vec.y;
           dest.z = this.z / vec.z;
@@ -254,7 +254,7 @@
         // avoid index [] notation, which is slow.
         var absMax = this.absolute().max();
 
-        if( absMax > 0 ) {
+        if ( absMax > 0 ) {
           this.divideScalarSelf( absMax );
           return this.divideScalarSelf( this.length() );
         }
@@ -327,7 +327,7 @@
       // Note that this will fail if `dest` === `this`. Instead, use the
       // `crossSelf` function.
       cross: function( vec, dest ) {
-        if( dest ) {
+        if ( dest ) {
           dest.x = this.y * vec.z - this.z * vec.y;
           dest.y = this.z * vec.x - this.x * vec.z;
           dest.z = this.x * vec.y - this.y * vec.x;
@@ -454,7 +454,7 @@
       // of 'vec'. Stores the result in dest if provided. If not, a new Vector3
       // is created and returned.
       lerp: function( vec, t, dest ) {
-        if( dest ) {
+        if ( dest ) {
           dest.x = this.x + ( vec.x - this.x ) * t;
           dest.y = this.y + ( vec.y - this.y ) * t;
           dest.z = this.z + ( vec.z - this.z ) * t;

@@ -60,16 +60,16 @@
     ];
 
     Bump.BroadphaseNativeTypes = {};
-    for( var i = 0; i < _broadphaseNativeTypes.length; i++) {
+    for ( var i = 0; i < _broadphaseNativeTypes.length; i++) {
       Bump.BroadphaseNativeTypes[ _broadphaseNativeTypes[ i ] ] = i;
     }
-  } )( Bump );
+  })( Bump );
 
   // The ***btBroadphaseProxy*** is the main class that can be used with the Bullet broadphases.
   // It stores collision shape type information, collision filter information and a client object,
   // typically a `btCollisionObject` or `btRigidBody`.
 
-  Bump.BroadphaseProxy = Bump.type( {
+  Bump.BroadphaseProxy = Bump.type({
 
     // Given *exactly* the following arguments, initializes the BroadphaseProxy:
     // `aabbMin` : A Vector3 representing the minimum x, y, x values of the axis aligned bounding box.
@@ -174,15 +174,15 @@
 
     }
 
-  } );
+  });
 
   // The ***BroadphasePair*** class contains a pair of aabb-overlapping objects.
   // A `Dispatcher` can search a `CollisionAlgorithm` that performs exact/narrowphase collision
   // detection on the actual collision shapes.
 
-  Bump.BroadphasePair = Bump.type( {
+  Bump.BroadphasePair = Bump.type({
     init: function BroadphasePair( proxy0, proxy1 ) {
-      if( proxy0.m_uniqueId < proxy1.m_uniqueId ) {
+      if ( proxy0.m_uniqueId < proxy1.m_uniqueId ) {
         this.m_pProxy0 = proxy0;
         this.m_pProxy1 = proxy1;
       }
@@ -243,12 +243,12 @@
         return newPair;
       }
     }
-  } );
+  });
 
   // BroadphasePairSortPredicate attempts to emulate btBroadphasePairSortPredicate, which
   // is a functor, while remaining faithful to Bump's style of object creation.
-  Bump.BroadphasePairSortPredicate = Bump.type( {
-    typeMembers : {
+  Bump.BroadphasePairSortPredicate = Bump.type({
+    typeMembers: {
       _functor: function( a, b ) {
         var uidA0 = a.m_pProxy0 ? a.m_pProxy0.m_uniqueId : -1,
             uidB0 = b.m_pProxy0 ? b.m_pProxy0.m_uniqueId : -1,
@@ -264,6 +264,6 @@
         return this._functor;
       }
     }
-  } );
+  });
 
-} )( this, this.Bump );
+})( this, this.Bump );

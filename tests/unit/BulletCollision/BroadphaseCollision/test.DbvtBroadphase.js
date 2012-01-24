@@ -1,4 +1,3 @@
-
 module( 'DbvtProxy.create' );
 
 test( 'basic', function() {
@@ -15,7 +14,7 @@ test( 'basic', function() {
   ok( dp, 'creates an object' );
   ok( dp instanceof Bump.DbvtProxy.prototype.constructor );
 
-} );
+});
 
 test( 'correct types', function() {
   var dp = Bump.DbvtProxy.create(
@@ -43,9 +42,6 @@ test( 'correct types', function() {
   checkTypes( dp, checks );
 });
 
-
 module( 'DbvtBroadphase' );
 
-test( 'skipped', function() {
-
-});
+test( 'skipped', function() {});

@@ -6,7 +6,7 @@ test( 'basic', function() {
 
   ok( brc, 'creates an object' );
   ok( brc instanceof Bump.BroadphaseRayCallback.prototype.constructor );
-} );
+});
 
 test( 'correct types', function() {
   var brc = Bump.BroadphaseRayCallback.create(),
@@ -17,4 +17,4 @@ test( 'correct types', function() {
       ];
 
   checkTypes( brc, checks );
-} );
+});

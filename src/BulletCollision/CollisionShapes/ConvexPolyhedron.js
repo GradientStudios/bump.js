@@ -84,10 +84,10 @@
         var i, j, k, numVertices, NbTris;
 
         this.m_localCenter.setValue( 0, 0, 0 );
-        for( i = 0; i < this.m_faces.length; ++i ) {
+        for ( i = 0; i < this.m_faces.length; ++i ) {
           numVertices = this.m_faces[i].m_indices.length;
           NbTris = numVertices;
-          for( j = 0; j < NbTris; ++j ) {
+          for ( j = 0; j < NbTris; ++j ) {
             k = ( j + 1 ) % numVertices;
             var vp = InternalVertexPair( this.m_faces[i].m_indices[j], this.m_faces[i].m_indices[k] );
             var edptr = edges.find( vp );

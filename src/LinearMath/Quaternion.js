@@ -419,7 +419,7 @@
         var diff = tmpQ1, sum = tmpQ2;
         this.subtract( quat, diff );
         this.add( quat, sum );
-        if( diff.dot( diff ) < sum.dot( sum ) ) {
+        if ( diff.dot( diff ) < sum.dot( sum ) ) {
           return quat.clone( dest );
         }
         return quat.negate( dest );

@@ -699,7 +699,7 @@ test( 'getSkewSymmetricMatrix', 80, function() {
   y,
   z;
 
-  for( var i = 0; i < 20; i++ ) {
+  for ( var i = 0; i < 20; i++ ) {
     x = Math.random();
     y = Math.random();
     z = Math.random();
@@ -713,7 +713,7 @@ test( 'getSkewSymmetricMatrix', 80, function() {
 });
 
 test( 'setZero', 10, function() {
-  for( var i = 0; i < 5; i++ ) {
+  for ( var i = 0; i < 5; i++ ) {
     var v = Bump.Vector3.create( Math.random(), Math.random(), Math.random() ),
     ret = v.setZero();
     ok( ret === v, 'return reference is correct' );

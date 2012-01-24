@@ -164,7 +164,7 @@
 
             this.islandBodies.length = 0;
           }
-        } // else if( !splitIslands )
+        } // else if ( !splitIslands )
       },
 
       buildIslands: function( dispatcher, collisionWorld ) {

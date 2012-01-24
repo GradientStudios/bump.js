@@ -3,7 +3,7 @@ module( 'Bump.DbvtAabbMm' );
 test( 'DbvtAabbMm exists', function() {
   var dbvtaabbmm = Bump.DbvtAabbMm || {};
   strictEqual( typeof dbvtaabbmm.create, 'function', 'Bump.DbvtAabbMm exists' );
-} );
+});
 
 test( 'DbvtAabbMm creation', function() {
   var t = Bump.DbvtAabbMm.create() || {};
@@ -16,7 +16,7 @@ test( 'empty', function() {
   var box = Bump.DbvtAabbMm.create();
   deepEqual( box.mi, Bump.Vector3.create(), 'mi zeroed out' );
   deepEqual( box.mx, Bump.Vector3.create(), 'mx zeroed out' );
-} );
+});
 
 test( 'FromCE', function() {
   strictEqual( typeof Bump.DbvtAabbMm.FromCE, 'function', 'FromCE exists' );
@@ -28,7 +28,7 @@ test( 'FromCE', function() {
 
   deepEqual( box.mi, Bump.Vector3.create( -5, -10, -20 ), 'mi initialized correctly' );
   deepEqual( box.mx, Bump.Vector3.create( 5, 10, 20 ), 'mx initialized correctly' );
-} );
+});
 
 test( 'FromCR', function() {
   strictEqual( typeof Bump.DbvtAabbMm.FromCR, 'function', 'FromCR exists' );
@@ -40,7 +40,7 @@ test( 'FromCR', function() {
 
   deepEqual( box.mi, Bump.Vector3.create( -10, -10, -10 ), 'mi initialized correctly' );
   deepEqual( box.mx, Bump.Vector3.create( 10, 10, 10 ), 'mx initialized correctly' );
-} );
+});
 
 test( 'FromMM', function() {
   strictEqual( typeof Bump.DbvtAabbMm.FromMM, 'function', 'FromMM exists' );
@@ -53,7 +53,7 @@ test( 'FromMM', function() {
   deepEqual( box.mi, min, 'mi value correct' );
   ok( box.mx !== max, 'mx copied' );
   deepEqual( box.mx, max, 'mx value correct' );
-} );
+});
 
 test( 'FromPoints', function() {
   strictEqual( typeof Bump.DbvtAabbMm.FromPoints, 'function', 'FromPoints exists' );
@@ -69,7 +69,7 @@ test( 'FromPoints', function() {
 
   deepEqual( box.mi, Bump.Vector3.create( -12, -2, -10 ), 'mi value correct' );
   deepEqual( box.mx, Bump.Vector3.create( 8, 12, 0 ), 'mx value correct' );
-} );
+});
 
 module( 'Bump.DbvtAabbMm member functions' );
 
@@ -92,10 +92,11 @@ module( 'Bump.DbvtAabbMm member functions' );
           Bump.Vector3.create(),
           Bump.Vector3.create( 3, 3, 4 ),
         ];
-    testUnaryOp( Bump.DbvtAabbMm, 'Center', objs, expected, {
-      destType: Bump.Vector3 } );
 
-  } );
+    testUnaryOp( Bump.DbvtAabbMm, 'Center', objs, expected, {
+      destType: Bump.Vector3
+    });
+  });
 
   test( 'Lengths', function() {
     var objs = [
@@ -106,10 +107,11 @@ module( 'Bump.DbvtAabbMm member functions' );
           Bump.Vector3.create( 20, 20, 20 ),
           Bump.Vector3.create( 2, 6, 16 ),
         ];
-    testUnaryOp( Bump.DbvtAabbMm, 'Lengths', objs, expected, {
-      destType: Bump.Vector3 } );
 
-  } );
+    testUnaryOp( Bump.DbvtAabbMm, 'Lengths', objs, expected, {
+      destType: Bump.Vector3
+    });
+  });
 
   test( 'Extents', function() {
     var objs = [
@@ -120,10 +122,11 @@ module( 'Bump.DbvtAabbMm member functions' );
           Bump.Vector3.create( 10, 10, 10 ),
           Bump.Vector3.create( 1, 3, 8 ),
         ];
-    testUnaryOp( Bump.DbvtAabbMm, 'Extents', objs, expected, {
-      destType: Bump.Vector3 } );
 
-  } );
+    testUnaryOp( Bump.DbvtAabbMm, 'Extents', objs, expected, {
+      destType: Bump.Vector3
+    });
+  });
 
   test( 'Mins', function() {
     var objs = [
@@ -134,9 +137,9 @@ module( 'Bump.DbvtAabbMm member functions' );
           Bump.Vector3.create( -10, -10, -10 ),
           Bump.Vector3.create( 2, 0, -4 ),
         ];
-    testUnaryOp( Bump.DbvtAabbMm, 'Mins', objs, expected );
 
-  } );
+    testUnaryOp( Bump.DbvtAabbMm, 'Mins', objs, expected );
+  });
 
   test( 'Maxs', function() {
     var objs = [
@@ -149,7 +152,7 @@ module( 'Bump.DbvtAabbMm member functions' );
         ];
     testUnaryOp( Bump.DbvtAabbMm, 'Maxs', objs, expected );
 
-  } );
+  });
 
   test( 'Expand', function() {
     var box = make( -1, -2, -3, 3, 2, 1 ),
@@ -160,10 +163,10 @@ module( 'Bump.DbvtAabbMm member functions' );
 
     testBinaryOp( Bump.DbvtAabbMm, 'Expand', box, e, expected, {
       modifiesSelf: true
-    } );
+    });
     ok( mi === box.mi, 'mi modified in place' );
     ok( mx === box.mx, 'mx modified in place' );
-  } );
+  });
 
   test( 'SignedExpand', function() {
     var box = make( -1, -2, -3, 3, 2, 1 ),
@@ -174,10 +177,10 @@ module( 'Bump.DbvtAabbMm member functions' );
 
     testBinaryOp( Bump.DbvtAabbMm, 'SignedExpand', box, e, expected, {
       modifiesSelf: true
-    } );
+    });
     ok( mi === box.mi, 'mi modified in place' );
     ok( mx === box.mx, 'mx modified in place' );
-  } );
+  });
 
   test( 'Contain', function() {
     var boxA = make( -1, -2, -3, 3, 2, 1 ),
@@ -205,7 +208,7 @@ module( 'Bump.DbvtAabbMm member functions' );
         ];
 
     testBinaryOp( Bump.DbvtAabbMm, 'Contain', boxA, boxBs, expected );
-  } );
+  });
 
   test( 'Classify (TODO)', function() {
     ok( Bump.DbvtAabbMm.prototype.Classify, 'Classify exists' );
@@ -228,15 +231,15 @@ module( 'Bump.DbvtAabbMm member functions' );
     equal( box.Classify( Bump.Vector3.create( 1, 1, 1 ).normalize(),
                          4, 7 ), 0, 'returns -1' );
     */
-  } );
+  });
 
   test( 'ProjectMinimum (TODO)', function() {
     ok( true, 'TODO' );
-  } );
+  });
 
   test( 'AddSpan (TODO)', function() {
     ok( true, 'TODO' );
-  } );
+  });
 
   module( 'Bump.DbvtAabbMm associated global functions' );
 
@@ -269,7 +272,7 @@ module( 'Bump.DbvtAabbMm member functions' );
     ok( func( box1, box11 ), 'overlap on all axes' );
 
 
-  } );
+  });
 
   test( 'Bump.Intersect.DbvtAabbMm.Vector3', function() {
     strictEqual( typeof Bump.Intersect, 'object', 'Bump.Intersect exists' );
@@ -303,7 +306,7 @@ module( 'Bump.DbvtAabbMm member functions' );
     ok( !func( box, vec10 ), 'no overlap on z axis' );
     ok( !func( box, vec11 ), 'no overlap on any axis' );
 
-  } );
+  });
 
   test( 'Bump.Proximity.DbvtAabbMm2', function() {
     strictEqual( typeof Bump.Proximity, 'object', 'Bump.Proximity exists' );
@@ -315,7 +318,7 @@ module( 'Bump.DbvtAabbMm member functions' );
     var func = Bump.Proximity.DbvtAabbMm2;
     equal( func( box1, box2 ), 60, 'correct result' );
 
-  } );
+  });
 
   test( 'Bump.Select.DbvtAabbMm3', function() {
     strictEqual( typeof Bump.Select, 'object', 'Bump.Select exists' );
@@ -331,7 +334,7 @@ module( 'Bump.DbvtAabbMm member functions' );
     ok( func( box3, box1, box2 ) === 1, 'correct result' );
     ok( func( box3, box2, box1 ) === 1, 'correct result' );
 
-  } );
+  });
 
   test( 'Bump.Merge.DbvtAabbMm3', function() {
     strictEqual( typeof Bump.Merge, 'object', 'Bump.Merge exists' );
@@ -345,7 +348,7 @@ module( 'Bump.DbvtAabbMm member functions' );
     Bump.Merge.DbvtAabbMm3( box1, box2, res );
     deepEqual( res, expected, 'correct result' );
 
-  } );
+  });
 
   test( 'Bump.NotEqual.DbvtAabbMm2', function() {
     strictEqual( typeof Bump.NotEqual, 'object', 'Bump.NotEqual exists' );
@@ -359,16 +362,16 @@ module( 'Bump.DbvtAabbMm member functions' );
     ok( func( box1, box2 ), 'correct result' );
     ok( !func( box1, box3 ), 'correct result' );
 
-  } );
+  });
 
-} )();
+})();
 
 module( 'Bump.DbvtVolume' );
 
 test( 'DbvtVolume "typecast" from DbvtAabbMm', function() {
   strictEqual( typeof Bump.DbvtVolume.create, 'function', 'Bump.DbvtVolume exists' );
   strictEqual( Bump.DbvtVolume, Bump.DbvtAabbMm, 'DbvtVolume and DbvtAabbMm refer to same object' );
-} );
+});
 
 test( 'DbvtVolume shares same associated functions', function() {
   strictEqual( Bump.Intersect.DbvtVolume2, Bump.Intersect.DbvtAabbMm2, 'Intersect' );
@@ -377,14 +380,14 @@ test( 'DbvtVolume shares same associated functions', function() {
   strictEqual( Bump.Select.DbvtVolume3, Bump.Select.DbvtAabbMm3, 'Select' );
   strictEqual( Bump.Merge.DbvtVolume3, Bump.Merge.DbvtAabbMm3, 'Merge' );
   strictEqual( Bump.NotEqual.DbvtVolume2, Bump.NotEqual.DbvtAabbMm2, 'NotEqual' );
-} );
+});
 
 module( 'Bump.DbvtNode' );
 
 test( 'Bump.DbvtNode exists', function() {
   var dbvtnode = Bump.DbvtNode || {};
   strictEqual( typeof dbvtnode.create, 'function', 'Bump.DbvtNode exists' );
-} );
+});
 
 test( 'Bump.DbvtNode creation', function() {
   var t = Bump.DbvtNode.create() || {};
@@ -392,7 +395,7 @@ test( 'Bump.DbvtNode creation', function() {
   deepEqual( t.volume, Bump.DbvtVolume.create(), 'volume initialized correctly' );
   strictEqual( t.parent, 0, 'parent initialized correctly' );
   deepEqual( t._unionValue, [ 0, 0 ], 'internal _unionValue initialized correctly' );
-} );
+});
 
 module( 'Bump.DbvtNode properties' );
 
@@ -436,7 +439,7 @@ test( 'union properties', function() {
   deepEqual( node._unionValue, [ 42, child2 ], 'union value set correctly' );
   deepEqual( node._unionValue, node.childs, 'node.childs matches internal union value' );
   deepEqual( node._unionValue[ 0 ], node.data, 'node.data matches internal union value [0]' );
-} );
+});
 
 module( 'Bump.DbvtNode member functions' );
 
@@ -452,7 +455,7 @@ test( 'isleaf', function() {
   ok( leaf2.isleaf(), 'leaf node returns true' );
   ok( !parent.isleaf(), 'internal node returns false' );
 
-} );
+});
 
 
 test( 'isinternal', function() {
@@ -467,14 +470,14 @@ test( 'isinternal', function() {
   ok( !leaf2.isinternal(), 'leaf node returns false' );
   ok( parent.isinternal(), 'internal node returns true' );
 
-} );
+});
 
 module( 'Bump.Dbvt' );
 
 test( 'Bump.Dbvt exists', function() {
   var dbvt = Bump.Dbvt || {};
   strictEqual( typeof dbvt.create, 'function', 'Bump.Dbvt exists' );
-} );
+});
 
 test( 'Bump.Dbvt creation', function() {
   var t = Bump.Dbvt.create() || {};
@@ -485,14 +488,14 @@ test( 'Bump.Dbvt creation', function() {
   equal( t.m_leaves, 0, 'm_leaves initialized correctly' );
   equal( t.m_opath, 0, 'm_opath initialized correctly' );
   deepEqual( t.m_stkStack, [], 'm_opath initialized correctly' );
-} );
+});
 
 module( 'Bump.Dbvt.sStkNN' );
 
 test( 'Bump.Dbvt.sStkNN exists', function() {
   var s = Bump.Dbvt.sStkNN || {};
   strictEqual( typeof s.create, 'function', 'Bump.Dbvt.sStkNN exists' );
-} );
+});
 
 test( 'Bump.Dbvt.sStkNN creation', function() {
   var t = Bump.Dbvt.sStkNN.create() || {},
@@ -505,14 +508,14 @@ test( 'Bump.Dbvt.sStkNN creation', function() {
   equal( t.b, 0, 'b initialized correctly to default' );
   strictEqual( t2.a, na, 'a initialized correctly' );
   strictEqual( t2.b, nb, 'b initialized correctly' );
-} );
+});
 
 module( 'Bump.Dbvt.sStkNP' );
 
 test( 'Bump.Dbvt.sStkNP exists', function() {
   var s = Bump.Dbvt.sStkNP || {};
   strictEqual( typeof s.create, 'function', 'Bump.Dbvt.sStkNP exists' );
-} );
+});
 
 test( 'Bump.Dbvt.sStkNP creation', function() {
   var t = Bump.Dbvt.sStkNP.create() || {},
@@ -524,14 +527,14 @@ test( 'Bump.Dbvt.sStkNP creation', function() {
   equal( t.mask, 0, 'mask initialized correctly to default' );
   strictEqual( t2.node, n, 'node initialized correctly' );
   equal( t2.mask, 4, 'mask initialized correctly' );
-} );
+});
 
 module( 'Bump.Dbvt.sStkNPS' );
 
 test( 'Bump.Dbvt.sStkNPS exists', function() {
   var s = Bump.Dbvt.sStkNPS || {};
   strictEqual( typeof s.create, 'function', 'Bump.Dbvt.sStkNPS exists' );
-} );
+});
 
 test( 'Bump.Dbvt.sStkNPS creation', function() {
   var t = Bump.Dbvt.sStkNPS.create() || {},
@@ -545,14 +548,14 @@ test( 'Bump.Dbvt.sStkNPS creation', function() {
   strictEqual( t2.node, n, 'node initialized correctly' );
   equal( t2.mask, 4, 'mask initialized correctly' );
   equal( t2.value, 1337, 'value initialized correctly' );
-} );
+});
 
 module( 'Bump.Dbvt.sStkCLN' );
 
 test( 'Bump.Dbvt.sStkCLN exists', function() {
   var s = Bump.Dbvt.sStkCLN || {};
   strictEqual( typeof s.create, 'function', 'Bump.Dbvt.sStkCLN exists' );
-} );
+});
 
 test( 'Bump.Dbvt.sStkCLN creation', function() {
   var t = Bump.Dbvt.sStkCLN.create() || {},
@@ -565,14 +568,14 @@ test( 'Bump.Dbvt.sStkCLN creation', function() {
   equal( t.parent, 0, 'parent initialized correctly to default' );
   strictEqual( t2.node, n, 'node initialized correctly' );
   equal( t2.parent, p, 'parent initialized correctly' );
-} );
+});
 
 module( 'Bump.Dbvt.ICollide' );
 
 test( 'Bump.Dbvt.ICollide exists', function() {
   var s = Bump.Dbvt.ICollide || {};
   strictEqual( typeof s.create, 'function', 'Bump.Dbvt.ICollide exists' );
-} );
+});
 
 test( 'Bump.Dbvt.ICollide creation', function() {
   var t = Bump.Dbvt.ICollide.create();
@@ -582,27 +585,27 @@ test( 'Bump.Dbvt.ICollide creation', function() {
   strictEqual( typeof t.ProcessNodeScalar, 'function', 'ProcessNode exists' );
   strictEqual( typeof t.Descent, 'function', 'ProcessNode exists' );
   strictEqual( typeof t.AllLeaves, 'function', 'ProcessNode exists' );
-} );
+});
 
 module( 'Bump.Dbvt.IClone' );
 
 test( 'Bump.Dbvt.IClone exists', function() {
   var s = Bump.Dbvt.IClone || {};
   strictEqual( typeof s.create, 'function', 'Bump.Dbvt.IClone exists' );
-} );
+});
 
 test( 'Bump.Dbvt.IClone creation', function() {
   var t = Bump.Dbvt.IClone.create();
   ok( t instanceof Bump.Dbvt.IClone.prototype.init, 'creation without `new` operator' );
   strictEqual( typeof t.CloneLeaf, 'function', 'CloneLeaf exists' );
-} );
+});
 
 module( 'Bump.DbvtNodeEnumerator' );
 
 test( 'Bump.DbvtNodeEnumerator exists', function() {
   var s = Bump.DbvtNodeEnumerator || {};
   strictEqual( typeof s.create, 'function', 'Bump.DbvtNodeEnumerator exists' );
-} );
+});
 
 test( 'Bump.DbvtNodeEnumerator creation', function() {
   var t = Bump.DbvtNodeEnumerator.create();
@@ -614,7 +617,7 @@ test( 'Bump.DbvtNodeEnumerator creation', function() {
   strictEqual( typeof t.ProcessNodeScalar, 'function', 'ProcessNode exists' );
   strictEqual( typeof t.Descent, 'function', 'ProcessNode exists' );
   strictEqual( typeof t.AllLeaves, 'function', 'ProcessNode exists' );
-} );
+});
 
 test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
   var t = Bump.DbvtNodeEnumerator.create(),
@@ -632,7 +635,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
   deepEqual( t.nodes, [ n0, n1, n2 ], 'Process function correctly adds to nodes' );
 
-} );
+});
 
 (function() {
 
@@ -641,7 +644,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
   test( 'Bump.Dbvt.IWriter exists', function() {
     var s = Bump.Dbvt.IWriter || {};
     strictEqual( typeof s.create, 'function', 'Bump.Dbvt.IWriter exists' );
-  } );
+  });
 
   test( 'Bump.Dbvt.IWriter creation', function() {
     var t = Bump.Dbvt.IWriter.create();
@@ -649,13 +652,13 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     strictEqual( typeof t.Prepare, 'function', 'Prepare exists' );
     strictEqual( typeof t.WriteNode, 'function', 'WriteNode exists' );
     strictEqual( typeof t.WriteLeaf, 'function', 'WriteLeaf exists' );
-  } );
+  });
 
   // create an IWriter subclass for testing
-  var TestWriter = Bump.type( {
+  var TestWriter = Bump.type({
     parent: Bump.Dbvt.IWriter,
 
-    init: function(){
+    init: function() {
       this.s = '';
     },
 
@@ -670,7 +673,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
         this.s += ' { leaf : ' + index + ' : ' + node.dataAsInt + ' }';
       }
     }
-  } );
+  });
 
   var makeTestTree = function() {
     var dbvt0 = Bump.Dbvt.create();
@@ -711,9 +714,9 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     var vols = [],
         extents = Bump.Vector3.create( 0.25, 0.25, 0.25 );
     n = (n-1) / 2;
-    for( var vi = -n; vi <= n; vi++ ) {
-      for( var vj = -n; vj <= n; vj++ ) {
-        for( var vk = -n; vk <= n; vk++ ) {
+    for ( var vi = -n; vi <= n; vi++ ) {
+      for ( var vj = -n; vj <= n; vj++ ) {
+        for ( var vk = -n; vk <= n; vk++ ) {
           vols.push( Bump.DbvtVolume.FromCE( Bump.Vector3.create( vi, vj, vk ), extents ) );
         }
       }
@@ -723,7 +726,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
   // insert all volumes into dbvt
   var insertAll = function( dbvt, vols ) {
-    for( var i = 0; i < vols.length; i++ ) {
+    for ( var i = 0; i < vols.length; i++ ) {
       dbvt.insert( vols[ i ], i );
     }
   }
@@ -748,7 +751,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
     //epsilonNumberCheck( enumerator.nodes, expected, Bump.SIMD_EPSILON );
     deepEqual( enumerator.nodes, expected, 'correctly populates enumerator' );
-  } );
+  });
 
   test('enumLeaves', function() {
     strictEqual( typeof Bump.Dbvt.enumLeaves, 'function', 'exists' );
@@ -765,7 +768,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
     //epsilonNumberCheck( enumerator.nodes, expected, Bump.SIMD_EPSILON );
     deepEqual( enumerator.nodes, expected, 'correctly populates enumerator' );
-  } );
+  });
 
   test('countLeaves', function() {
     strictEqual( typeof Bump.Dbvt.countLeaves, 'function', 'exists' );
@@ -775,7 +778,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
         result = Bump.Dbvt.countLeaves( dbvt.m_root );
 
     equal( result, expected, 'correctly counts leaves' );
-  } );
+  });
 
   test('maxdepth', function() {
     strictEqual( typeof Bump.Dbvt.maxdepth, 'function', 'exists' );
@@ -786,7 +789,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     dbvt = Bump.Dbvt.create();
     equal( Bump.Dbvt.maxdepth( dbvt.m_root ), 0, 'correctly computes max depth for empty tree' );
 
-  } );
+  });
 
   test('extractLeaves', function() {
     strictEqual( typeof Bump.Dbvt.extractLeaves, 'function', 'exists' );
@@ -803,7 +806,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
     //epsilonNumberCheck( extracterator.nodes, expected, Bump.SIMD_EPSILON );
     deepEqual( leaves, expected, 'correctly extracts leaves' );
-  } );
+  });
 
   module( 'Dbvt members' );
 
@@ -812,13 +815,13 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
         dest = Bump.Dbvt.create(),
         //vols = makeVolumeGrid( 3 ),
         writer = TestWriter.create(),
-        TestIClone = Bump.type( {
+        TestIClone = Bump.type({
           parent: Bump.Dbvt.IClone,
-          init: function TestIClone(){
+          init: function TestIClone() {
             this.sum = 0;
           },
           members: {
-            CloneLeaf: function( node ){
+            CloneLeaf: function( node ) {
               this.sum += node.dataAsInt;
             }
           }
@@ -855,7 +858,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     strictEqual( typeof dbvt.write, 'function', 'write exists' );
     dbvt.write( writer );
     equal( writer.s, expected, 'correct result' );
-  } );
+  });
 
 
   test('insert', function() {
@@ -896,7 +899,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     ],
     writer = TestWriter.create();
 
-    for( var id = 0; id < vols.length; id++ ) {
+    for ( var id = 0; id < vols.length; id++ ) {
       dbvt.insert( vols[ id ], id );
       dbvt.write( writer );
       equal( writer.s, expected[ id ], 'ok after insert ' + id );
@@ -927,7 +930,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
     dbvt.clear();
     ok( dbvt.empty(), 'cleared dbvt is empty' );
-  } );
+  });
 
   test('optimizeBottomUp', function() {
     var vols = makeVolumeGrid( 3 ),
@@ -1008,7 +1011,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     strictEqual( typeof dbvt.updateLeafLookahead, 'function', 'updateLeafLookahead exists' );
 
     insertAll( dbvt, vols );
-    for( var i = 0; i < 27; i++ ) {
+    for ( var i = 0; i < 27; i++ ) {
       var leaves = [],
       lh = (i % 4) - 1;
       Bump.Dbvt.extractLeaves( dbvt.m_root, leaves );
@@ -1018,7 +1021,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
       equal( writer.s, expected[ i ], 'correct result after update ' + i + '( with lookahead = ' + lh + ')' );
     }
 
-  } );
+  });
 
   test('remove', function() {
 
@@ -1057,7 +1060,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     strictEqual( typeof dbvt.remove, 'function', 'remove exists' );
 
     insertAll( dbvt, vols );
-    for( var i = 0; i < 26; i++ ) {
+    for ( var i = 0; i < 26; i++ ) {
       var leaves = [];
 
       Bump.Dbvt.extractLeaves( dbvt.m_root, leaves );
@@ -1069,7 +1072,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     dbvt.remove( dbvt.m_root );
     ok( dbvt.m_root === 0, 'final tree is empty' );
 
-  } );
+  });
 
   module( 'Dbvt.updateLeafVolume' );
   test('test skipped', function() {});
@@ -1112,4 +1115,4 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
   module( 'Dbvt.allocate' );
   test('test skipped', function() {});
-} )();
+})();

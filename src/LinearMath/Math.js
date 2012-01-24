@@ -53,7 +53,7 @@
     angleInRadians = Bump.Fmod( angleInRadians, Bump.SIMD_2_PI );
     if ( angleInRadians < -Math.PI ) {
       return angleInRadians + Math.PI;
-    } else if( angleInRadians > Math.PI ) {
+    } else if ( angleInRadians > Math.PI ) {
       return angleInRadians - Math.PI;
     } else {
       return angleInRadians;

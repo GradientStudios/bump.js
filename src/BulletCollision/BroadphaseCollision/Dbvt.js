@@ -9,7 +9,7 @@
   // Bounding Box Minimum/Maximum," meaning that it represents an AABB
   // from 2 `Vector3`s, the minimum `mi` bounds, and the maximum `mx`
   // bounds.
-  Bump.DbvtAabbMm = Bump.type( {
+  Bump.DbvtAabbMm = Bump.type({
     // Default constructor, sets mi and mx to zeroed `Vector3`s
     init: function DbvtAabbMm() {
       this.mi = Bump.Vector3.create();
@@ -30,7 +30,7 @@
       // Compute the center of `this` bounding box. The result is stored in the
       // the `Vector3` `dest` if provided. Otherwise a new `Vector3` is created.
       Center: function( dest ) {
-        if( dest ){
+        if ( dest ) {
           return this.mi.add( this.mx, dest ).divideScalar( 2, dest );
         }
         var res = Bump.Vector3.create();
@@ -47,7 +47,7 @@
       // in on each axis from its center. The result is stored in the
       // the `Vector3` `dest` if provided. Otherwise a new `Vector3` is created.
       Extents: function( dest ) {
-        if( dest ){
+        if ( dest ) {
           return this.mx.subtract( this.mi, dest ).divideScalar( 2, dest );
         }
         var res = Bump.Vector3.create();
@@ -78,19 +78,19 @@
       // in the positive direction for positive values, and only in the negative
       // direction for negative values.
       SignedExpand: function( e ) {
-        if( e.x > 0 ) {
+        if ( e.x > 0 ) {
           this.mx.x += e.x;
         }
         else{
           this.mi.x += e.x;
         }
-        if( e.y > 0 ) {
+        if ( e.y > 0 ) {
           this.mx.y += e.y;
         }
         else{
           this.mi.y += e.y;
         }
-        if( e.z > 0 ) {
+        if ( e.z > 0 ) {
           this.mx.z += e.z;
         }
         else{
@@ -165,11 +165,11 @@
           break;
         }
 
-        if( ( n.dot( px ) + o ) < 0 ) {
+        if ( ( n.dot( px ) + o ) < 0 ) {
           return -1;
         }
 
-        if( ( n.dot( pi ) + o ) >= 0 ) {
+        if ( ( n.dot( pi ) + o ) >= 0 ) {
           return 1;
         }
 
@@ -190,10 +190,10 @@
       // inside an object `span`, because the original function passes
       // them by reference.
       // TODO : Better description of use.
-      AddSpan: function( d, span ){
+      AddSpan: function( d, span ) {
         // unrolled to avoid array-like access of Vector3
         // properties, which is slow
-        if( d.x < 0 ){
+        if ( d.x < 0 ) {
           span.smi += this.mx.x * d.x;
           span.smx += this.mi.x * d.x;
         }
@@ -201,7 +201,7 @@
           span.smi += this.mi.x * d.x;
           span.smx += this.mx.x * d.x;
         }
-        if( d.y < 0 ){
+        if ( d.y < 0 ) {
           span.smi += this.mx.y * d.y;
           span.smx += this.mi.y * d.y;
         }
@@ -209,7 +209,7 @@
           span.smi += this.mi.y * d.y;
           span.smx += this.mx.y * d.y;
         }
-        if( d.z < 0 ){
+        if ( d.z < 0 ) {
           span.smi += this.mx.z * d.z;
           span.smx += this.mi.z * d.z;
         }
@@ -251,14 +251,14 @@
         n = n || pts.length; // added this, since pts is now an array object with stored length
         pts[ 0 ].clone( box.mi );
         pts[ 0 ].clone( box.mx );
-        for( var i = 1; i < n; ++i ) {
+        for ( var i = 1; i < n; ++i ) {
           box.mi.setMin( pts[ i ] );
           box.mx.setMax( pts[ i ] );
         }
         return box;
       }
     }
-  } );
+  });
 
   // emulates typedef btDbvtAabbMm btDbvtVolume
   Bump.DbvtVolume = Bump.DbvtAabbMm;
@@ -318,39 +318,39 @@
   Bump.Merge = {};
   Bump.Merge.DbvtAabbMm3 = function( a, b, r ) {
     // unrolled to avoid array-like vector access (for speed)
-    if( a.mi.x < b.mi.x ) {
+    if ( a.mi.x < b.mi.x ) {
       r.mi.x = a.mi.x;
     }
     else {
       r.mi.x = b.mi.x;
     }
-    if( a.mx.x > b.mx.x ) {
+    if ( a.mx.x > b.mx.x ) {
       r.mx.x = a.mx.x;
     }
     else {
       r.mx.x = b.mx.x;
     }
 
-    if( a.mi.y < b.mi.y ) {
+    if ( a.mi.y < b.mi.y ) {
       r.mi.y = a.mi.y;
     }
     else {
       r.mi.y = b.mi.y;
     }
-    if( a.mx.y > b.mx.y ) {
+    if ( a.mx.y > b.mx.y ) {
       r.mx.y = a.mx.y;
     }
     else {
       r.mx.y = b.mx.y;
     }
 
-    if( a.mi.z < b.mi.z ) {
+    if ( a.mi.z < b.mi.z ) {
       r.mi.z = a.mi.z;
     }
     else {
       r.mi.z = b.mi.z;
     }
-    if( a.mx.z > b.mx.z ) {
+    if ( a.mx.z > b.mx.z ) {
       r.mx.z = a.mx.z;
     }
     else {
@@ -372,8 +372,8 @@
 
 
   // **Bump.DbvtNode** is the port of the `btDbvtNode` struct.
-  Bump.DbvtNode = Bump.type( {
-    init: function DbvtNode(){
+  Bump.DbvtNode = Bump.type({
+    init: function DbvtNode() {
       this.volume = Bump.DbvtVolume.create();
       this.parent = 0;
       /* _unionValue should not be modified directly by outside code */
@@ -413,7 +413,7 @@
         return this._unionValue[ 1 ] !== 0;
       }
     }
-  } );
+  });
 
 
   // The following are functions are ported from the static helper functions defined in btDbvt.cpp,
@@ -439,7 +439,7 @@
   },
 
   getmaxdepth = function( node, depth, maxdepthRef ) {
-    if( node.isinternal() ) {
+    if ( node.isinternal() ) {
       getmaxdepth( node.childs[ 0 ], depth + 1, maxdepthRef );
       getmaxdepth( node.childs[ 1 ], depth + 1, maxdepthRef );
     }
@@ -454,11 +454,11 @@
   },
 
   recursedeletenode = function( pdbvt, node ) {
-    if( node.isleaf() ) {
+    if ( node.isleaf() ) {
       recursedeletenode( pdbvt, node.childs[ 0 ] );
       recursedeletenode( pdbvt, node.childs[ 1 ] );
     }
-    if( node == pdbvt.m_root ) {
+    if ( node == pdbvt.m_root ) {
       pdbvt.m_root = 0;
     }
     deletenode( pdbvt, node );
@@ -467,7 +467,7 @@
   // overloaded createnode functions have been renamed
   createnodeTreeParentData = function( pdbvt, parent, data ) {
     var node;
-    if( pdbvt.m_free ) {
+    if ( pdbvt.m_free ) {
       node = pdbvt.m_free;
       pdbvt.m_free = 0;
     }
@@ -493,12 +493,12 @@
   },
 
   insertleaf = function( pdbvt, root, leaf ) {
-    if( !pdbvt.m_root ) {
+    if ( !pdbvt.m_root ) {
       pdbvt.m_root = leaf;
       leaf.parent = 0;
     }
     else {
-      if( !root.isleaf() ) {
+      if ( !root.isleaf() ) {
         do {
           root = root.childs[ Bump.Select.DbvtVolume3( leaf.volume,
                                                        root.childs[0].volume,
@@ -507,14 +507,14 @@
       }
       var prev = root.parent;
       var node = createnodeTreeParentVolume2Data( pdbvt, prev, leaf.volume, root.volume, 0);
-      if( prev ) {
+      if ( prev ) {
         prev.childs[ indexof( root ) ] = node;
         node.childs[ 0 ] = root;
         root.parent = node;
         node.childs[ 1 ] = leaf;
         leaf.parent = node;
         do {
-          if( !prev.volume.Contain( node.volume ) ) {
+          if ( !prev.volume.Contain( node.volume ) ) {
             Bump.Merge.DbvtVolume3( prev.childs[ 0 ].volume, prev.childs[ 1 ].volume, prev.volume);
           }
           else {
@@ -535,7 +535,7 @@
   },
 
   removeleaf = function( pdbvt, leaf ) {
-    if( leaf === pdbvt.m_root ) {
+    if ( leaf === pdbvt.m_root ) {
                 pdbvt.m_root = 0;
                 return 0;
     }
@@ -543,14 +543,14 @@
       var parent = leaf.parent,
       prev = parent.parent,
       sibling = parent.childs[ 1 - indexof( leaf ) ];
-      if( prev ) {
+      if ( prev ) {
         prev.childs[ indexof( parent ) ] = sibling;
         sibling.parent = prev;
         deletenode( pdbvt, parent );
         while( prev ) {
           var pb = prev.volume;
           Bump.Merge.DbvtVolume3( prev.childs[ 0 ].volume, prev.childs[ 1 ].volume, prev.volume);
-          if( Bump.NotEqual.DbvtVolume2( pb, prev.volume ) ) {
+          if ( Bump.NotEqual.DbvtVolume2( pb, prev.volume ) ) {
             prev = prev.parent;
           }
           else {
@@ -570,7 +570,7 @@
 
   fetchleaves = function( pdbvt, root, leaves, depth ) {
     depth = ( depth === undefined ) ? -1 : depth;
-    if( root.isinternal() && depth ) {
+    if ( root.isinternal() && depth ) {
       fetchleaves( pdbvt, root.childs[ 0 ], leaves, depth - 1 );
       fetchleaves( pdbvt, root.childs[ 1 ], leaves, depth - 1 );
       deletenode( pdbvt, root );
@@ -584,8 +584,8 @@
     left.splice( 0 ); /* left.resize(0); */
     right.splice( 0 ); /* right.resize(0); */
     var tmpVector3 = Bump.Vector3.create();
-    for( var i = 0, ni = leaves.length; i < ni; ++i ) {
-      if( axis.dot( leaves[ i ].volume.Center().subract( org, tmpVector3 ) ) < 0 ) {
+    for ( var i = 0, ni = leaves.length; i < ni; ++i ) {
+      if ( axis.dot( leaves[ i ].volume.Center().subract( org, tmpVector3 ) ) < 0 ) {
         left.push( leaves[ i ] );
       }
       else {
@@ -602,7 +602,7 @@
 #else */
     var volume = leaves[0].volume.clone();
 /* #endif */
-    for( var i = 1, ni = leaves.length; i < ni; ++i ) {
+    for ( var i = 1, ni = leaves.length; i < ni; ++i ) {
       Bump.Merge.DbvtVolume3( volume, leaves[i].volume, volume );
     }
     return volume;
@@ -612,10 +612,10 @@
     while( leaves.length > 1 ) {
       var minsize = Bump.SIMD_INFINITY,
       minidx = [ -1, -1 ];
-      for(var i = 0; i < leaves.length; ++i ) {
-        for(var j = i + 1; j < leaves.length; ++j ) {
+      for (var i = 0; i < leaves.length; ++i ) {
+        for (var j = i + 1; j < leaves.length; ++j ) {
           var sz = size( merge( leaves[ i ].volume, leaves[ j ].volume ) );
-          if( sz < minsize ) {
+          if ( sz < minsize ) {
             minsize = sz;
             minidx[ 0 ] = i;
             minidx[ 1 ] = j;
@@ -639,8 +639,8 @@
                  Bump.Vector3.create( 0, 1, 0 ),
                  Bump.Vector3.create( 0, 0, 1 )
                ];
-    if( leaves.length > 1 ) {
-      if(leaves.length > bu_threshold) {
+    if ( leaves.length > 1 ) {
+      if (leaves.length > bu_threshold) {
         var vol = bounds( leaves ),
         org = vol.Center().clone(),
         sets = [],
@@ -648,22 +648,22 @@
         bestmidp = leaves.length,
         splitcount = [ [ 0, 0 ], [ 0, 0 ], [ 0, 0 ] ],
         i;
-        for( i = 0; i < leaves.length; ++i ) {
+        for ( i = 0; i < leaves.length; ++i ) {
           var x= leaves[i].volume.Center().subtract( org );
-          for( var j = 0; j < 3; ++j ) {
+          for ( var j = 0; j < 3; ++j ) {
             ++splitcount[ j ][ x.dot( axis[j] ) > 0 ? 1 : 0 ];
           }
         }
-        for( i = 0; i < 3; ++i ) {
-          if( ( splitcount[ i ][ 0 ] > 0 ) && ( splitcount[ i ][ 1 ] > 0 ) ) {
+        for ( i = 0; i < 3; ++i ) {
+          if ( ( splitcount[ i ][ 0 ] > 0 ) && ( splitcount[ i ][ 1 ] > 0 ) ) {
             var midp = Math.abs( splitcount[ i ][ 0 ] - splitcount[ i ][ 1 ] );
-            if( midp < bestmidp ) {
+            if ( midp < bestmidp ) {
               bestaxis = i;
               bestmidp = midp;
             }
           }
         }
-        if( bestaxis >= 0 ) {
+        if ( bestaxis >= 0 ) {
           //sets[ 0 ].reserve( splitcount[ bestaxis ][ 0 ] );
           //sets[ 1 ].reserve( splitcount[ bestaxis ][ 1 ] );
           split( leaves, sets[ 0 ], sets[ 1 ], org, axis[ bestaxis ] );
@@ -671,7 +671,7 @@
         else {
           //sets[0].reserve(leaves.size()/2+1);
           //sets[1].reserve(leaves.size()/2);
-          for(var k = 0, ni = leaves.length; k < ni; ++k) {
+          for (var k = 0, ni = leaves.length; k < ni; ++k) {
             sets[ k & 1 ].push( leaves[k] );
           }
         }
@@ -696,14 +696,14 @@
   sort = function( n, rRef ) {
     var p = n.parent;
     //btAssert( n->isinternal() );
-    if( p > n ) {
+    if ( p > n ) {
       var i = indexof( n ),
       j = 1 - i,
       s = p.childs[ j ],
       q = p.parent;
       //btAssert(n==p->childs[i]);
 
-      if( q ) {
+      if ( q ) {
         q.childs[ indexof( p ) ] = n;
       }
       else {
@@ -733,8 +733,8 @@
   // The btDbvt class implements a fast dynamic bounding volume tree based on axis aligned bounding boxes (aabb tree).
   // This btDbvt is used for soft body collision detection and for the btDbvtBroadphase. It has a fast insert, remove and update of nodes.
   // Unlike the btQuantizedBvh, nodes can be dynamically moved around, which allows for change in topology of the underlying data structure.
-  Bump.Dbvt = Bump.type( {
-    init: function Dbvt(){
+  Bump.Dbvt = Bump.type({
+    init: function Dbvt() {
       this.m_root = 0; // DbvtNode
       this.m_free = 0; // DbvtNode
       this.m_lkhd = -1; // int
@@ -745,7 +745,7 @@
 
     members: {
       clear: function() {
-        if( this.m_root ) {
+        if ( this.m_root ) {
           /* recursedeletenode( this, this.m_root ); */
           this.m_root = 0; /* added because this because recursedelete is no longer called */
           this.m_leaves = 0; /* added because this because recursedelete is no longer called */
@@ -760,7 +760,7 @@
       empty: function() { return (0 === this.m_root); },
 
       optimizeBottomUp: function() {
-        if(this.m_root) {
+        if (this.m_root) {
           var leaves = [];
           //leaves.reserve(this.m_leaves);
           fetchleaves( this, this.m_root, leaves );
@@ -771,7 +771,7 @@
 
       optimizeTopDown: function( bu_threshold ) {
         bu_threshold = bu_threshold || 128;
-        if(this.m_root) {
+        if (this.m_root) {
           var leaves = [];
           //leaves.reserve(this.m_leaves);
           fetchleaves( this, this.m_root, leaves );
@@ -780,10 +780,10 @@
       },
 
       optimizeIncremental: function( passes ) {
-        if( passes < 0 ) {
+        if ( passes < 0 ) {
           passes = this.m_leaves;
         }
-        if( this.m_root && ( passes > 0 ) ) {
+        if ( this.m_root && ( passes > 0 ) ) {
           do {
             var node = this.m_root,
                 bit = 0;
@@ -807,12 +807,12 @@
 
       // The `updateLeafLookahead` and `updateLeafVolume` functions have been renamed from
       // overloaded versions of `btDbvt`s `update` function.
-      updateLeafLookahead: function( leaf, lookahead ){
+      updateLeafLookahead: function( leaf, lookahead ) {
         lookahead = lookahead === undefined ? -1 : lookahead;
         var root = removeleaf( this, leaf );
-        if( root ) {
-          if( lookahead >= 0 ) {
-            for( var i = 0; (i < lookahead) && root.parent; ++i ) {
+        if ( root ) {
+          if ( lookahead >= 0 ) {
+            for ( var i = 0; (i < lookahead) && root.parent; ++i ) {
               root = root.parent;
             }
           }
@@ -825,9 +825,9 @@
 
       updateLeafVolume: function( leaf, volume ) {
         var root = removeleaf( this, leaf );
-        if( root ) {
-          if( this.m_lkhd >= 0 ) {
-            for( var i = 0; ( i < this.m_lkhd ) && root.parent; ++i ) {
+        if ( root ) {
+          if ( this.m_lkhd >= 0 ) {
+            for ( var i = 0; ( i < this.m_lkhd ) && root.parent; ++i ) {
               root = root.parent;
             }
           }
@@ -840,7 +840,7 @@
       },
 
       updateLeafVolumeVelocityMargin: function(  leaf, volume, velocity, margin  ) {
-        if( leaf.volume.Contain( volume ) ) {
+        if ( leaf.volume.Contain( volume ) ) {
           return false;
         }
         volume.Expand( Bump.Vector3.create( margin, margin, margin ) );
@@ -851,7 +851,7 @@
       },
 
       updateLeafVolumeVelocity: function(  leaf, volume, velocity  ) {
-        if( leaf.volume.Contain( volume ) ) {
+        if ( leaf.volume.Contain( volume ) ) {
           return false;
         }
         volume.SignedExpand( velocity );
@@ -860,7 +860,7 @@
       },
 
       updateLeafVolumeMargin: function(  leaf, volume, margin  ) {
-        if( leaf.volume.Contain( volume ) ) {
+        if ( leaf.volume.Contain( volume ) ) {
           return false;
         }
         volume.Expand( Bump.Vector3.create( margin,margin,margin ) );
@@ -879,13 +879,13 @@
         //nodes.nodes.reserve(m_leaves*2);
         Bump.Dbvt.enumNodes( this.m_root, nodes );
         iwriter.Prepare( this.m_root, nodes.nodes.length );
-        for( var i = 0; i < nodes.nodes.length; ++i ) {
+        for ( var i = 0; i < nodes.nodes.length; ++i ) {
           var n = nodes.nodes[ i ],
               p = -1;
-          if( n.parent ) {
+          if ( n.parent ) {
             p = nodes.nodes.indexOf( n.parent );
           }
-          if( n.isinternal() ) {
+          if ( n.isinternal() ) {
             var c0 = nodes.nodes.indexOf( n.childs[0] );
             var c1 = nodes.nodes.indexOf( n.childs[1] );
             iwriter.WriteNode( n, i, p, c0, c1 );
@@ -898,7 +898,7 @@
 
       clone: function( dest, iclone ) {
         dest.clear();
-        if(this.m_root !== 0) {
+        if (this.m_root !== 0) {
           var stack = [];
           //stack.reserve(this.m_leaves);
           stack.push( Bump.Dbvt.sStkCLN.create( this.m_root, 0 ) );
@@ -911,18 +911,18 @@
             var e = stack.pop(),
             n = createnodeTreeParentVolumeData( dest, e.parent, e.node.volume, e.node.data);
             /* stack.pop(); */
-            if( e.parent !== 0 ) {
+            if ( e.parent !== 0 ) {
               /*e.parent.childs[ i & 1 ] = n; */ /* nice trick, but doesn't work if you want an exact clone */
               e.parent.childs[ indexof( e.node ) ] = n;
             }
             else {
               dest.m_root = n;
             }
-            if( e.node.isinternal() ) {
+            if ( e.node.isinternal() ) {
               stack.push( Bump.Dbvt.sStkCLN.create(e.node.childs[0], n ) );
               stack.push( Bump.Dbvt.sStkCLN.create(e.node.childs[1], n ) );
             }
-            else if( iclone ) { /* added if to make sure iclone is defined */
+            else if ( iclone ) { /* added if to make sure iclone is defined */
               iclone.CloneLeaf(n);
             }
           } while( stack.length > 0 );
@@ -933,7 +933,7 @@
       // to the given `iCollide` `policy`.
       // TODO : Add description of use.
       collideTT: function( root0, root1, policy ) {
-        if( root0 && root1 ) {
+        if ( root0 && root1 ) {
           var depth = 1,
               threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 4,
               stkStack = [];
@@ -942,20 +942,20 @@
 
           do {
             var p = stkStack[ --depth ];
-            if( depth > threshold ) {
+            if ( depth > threshold ) {
               stkStack[ stkStack.length * 2 - 1 ] = undefined; /* stkStack.resize( stkStack.size() * 2 ); */
               threshold = stkStack.length - 4;
             }
-            if( p.a === p.b ) {
-              if( p.a.isinternal() ) {
+            if ( p.a === p.b ) {
+              if ( p.a.isinternal() ) {
                 stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.a.childs[ 0 ] );
                 stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.a.childs[ 1 ] );
                 stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.a.childs[ 1 ] );
               }
             }
-            else if( Bump.Intersect.DbvtVolume2( p.a.volume, p.b.volume ) ) {
-              if( p.a.isinternal() ) {
-                if( p.b.isinternal() ) {
+            else if ( Bump.Intersect.DbvtVolume2( p.a.volume, p.b.volume ) ) {
+              if ( p.a.isinternal() ) {
+                if ( p.b.isinternal() ) {
                   stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b.childs[ 0 ] );
                   stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b.childs[ 0 ] );
                   stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b.childs[ 1 ] );
@@ -967,7 +967,7 @@
                 }
               }
               else {
-                if( p.b.isinternal() ) {
+                if ( p.b.isinternal() ) {
                   stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 0 ] );
                   stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 1 ] );
                 }
@@ -981,27 +981,27 @@
       },
 
       collideTTpersistentStack: function( root0, root1, policy ) {
-        if( root0 && root1 ) {
+        if ( root0 && root1 ) {
           var depth = 1,
               threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 4;
           this.m_stkStack[ Bump.Dbvt.DOUBE_STACKSIZE - 1 ] = undefined; /* m_stkStack.resize( DOUBLE_STACKSIZE ); */
           this.m_stkStack[ 0 ] = Bump.Dbvt.sStkNN.create( root0, root1 );
           do {
             var p = this.m_stkStack[ --depth ];
-            if( depth > threshold ) {
+            if ( depth > threshold ) {
               this.m_stkStack[ this.m_stkStack.length * 2 - 1 ] = undefined; /* m_stkStack.resize( this.m_stkStack.size() * 2 ); */
               threshold = this.m_stkStack.length - 4;
             }
-            if( p.a === p.b ) {
-              if( p.a.isinternal() ) {
+            if ( p.a === p.b ) {
+              if ( p.a.isinternal() ) {
                 this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.a.childs[ 0 ] );
                 this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.a.childs[ 1 ] );
                 this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.a.childs[ 1 ] );
               }
             }
-            else if( Bump.Intersect.DbvtVolume2( p.a.volume, p.b.volume ) ) {
-              if( p.a.isinternal() ) {
-                if( p.b.isinternal() ) {
+            else if ( Bump.Intersect.DbvtVolume2( p.a.volume, p.b.volume ) ) {
+              if ( p.a.isinternal() ) {
+                if ( p.b.isinternal() ) {
                   this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b.childs[ 0 ] );
                   this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b.childs[ 0 ] );
                   this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b.childs[ 1 ] );
@@ -1013,7 +1013,7 @@
                 }
               }
               else {
-                if( p.b.isinternal() ) {
+                if ( p.b.isinternal() ) {
                   this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 0 ] );
                   this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 1 ] );
                 }
@@ -1029,7 +1029,7 @@
       // Process collision between a `Dbvt` tree, starting at `root`, and `DbvtVolume` `vol` according
       // to the given policy. ???
       collideTV: function( root, vol, policy ) {
-        if( root ) {
+        if ( root ) {
           var volume = vol.clone(),
               stack = [];
           /* stack.resize( 0 ); */
@@ -1039,7 +1039,7 @@
             var n = stack[stack.length - 1];
             stack.pop();
             if ( Bump.Intersect.DbvtVolume2( n.volume, volume ) ) {
-              if( n.isinternal() ) {
+              if ( n.isinternal() ) {
                 stack.push( n.childs[ 0 ] );
                 stack.push( n.childs[ 1 ] );
               }
@@ -1060,7 +1060,7 @@
                                  aabbMin,
                                  aabbMax,
                                  policy ) {
-        if( root ) {
+        if ( root ) {
           var resultNormal = Bump.Vector3.create(),
               depth = 1,
               threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 2,
@@ -1077,9 +1077,9 @@
                 result1 = false;
             result1 = Bump.rayAabb2.create( rayFrom, rayDirectionInverse, signs, bounds,
                                             tmin, lambda_min, lambda_max );
-            if( result1 ) {
-              if( node.isinternal() ) {
-                if( depth > threshold ) {
+            if ( result1 ) {
+              if ( node.isinternal() ) {
+                if ( depth > threshold ) {
                   stack[ stack.length * 2 - 1 ] = undefined; /* stack.resize( stack.size() * 2 ); */
                   threshold = stack.length - 2;
                 }
@@ -1098,14 +1098,14 @@
     typeMembers: {
       maxdepth: function( node ) {
         var depth = { value: 0 };
-        if( node ) {
+        if ( node ) {
           getmaxdepth( node, 1, depth );
         }
         return depth.value;
       },
 
       countLeaves: function( node ) {
-        if( node.isinternal() ) {
+        if ( node.isinternal() ) {
           return( Bump.Dbvt.countLeaves( node.childs[ 0 ] ) +
                   Bump.Dbvt.countLeaves( node.childs[ 1 ] ) );
         }
@@ -1115,7 +1115,7 @@
       },
 
       extractLeaves: function( node, leaves ) {
-        if( node.isinternal() ) {
+        if ( node.isinternal() ) {
           Bump.Dbvt.extractLeaves( node.childs[ 0 ], leaves );
           Bump.Dbvt.extractLeaves( node.childs[ 1 ], leaves );
         }
@@ -1130,7 +1130,7 @@
       // iterate over all nodes and process according to the given policy
       enumNodes: function( root, policy ) {
         policy.ProcessNode( root );
-        if( root.isinternal() ) {
+        if ( root.isinternal() ) {
           Bump.Dbvt.enumNodes( root.childs[ 0 ], policy );
           Bump.Dbvt.enumNodes( root.childs[ 1 ], policy );
         }
@@ -1138,7 +1138,7 @@
 
       // iterate over only the leaf nodes and process according to the given policy
       enumLeaves: function( root, policy ) {
-        if( root.isinternal() ) {
+        if ( root.isinternal() ) {
           Bump.Dbvt.enumLeaves( root.childs[ 0 ], policy );
           Bump.Dbvt.enumLeaves( root.childs[ 1 ], policy );
         }
@@ -1148,7 +1148,7 @@
       },
 
       rayTest: function( root, rayFrom, rayTo, policy ) {
-        if( root ) {
+        if ( root ) {
           var diff = rayTo.subtract( rayFrom ),
           rayDir = diff.normalized();
 
@@ -1189,9 +1189,9 @@
 				btAssert(result1 == result2);
 #endif //TEST_BTRAY_AABB2
 */
-            if( result1 ) {
-              if( node.isinternal() ) {
-                if( depth > threshold ) {
+            if ( result1 ) {
+              if ( node.isinternal() ) {
+                if ( depth > threshold ) {
                   stack[ stack.length * 2 - 1] = undefined;
                   threshold = stack.length - 2;
                 }
@@ -1207,14 +1207,14 @@
       },
 
       collideKDOP: function( root, normals, offsets, count, policy ) {
-        if( root ) {
+        if ( root ) {
           var inside = (1 << count) - 1,
               stack = [],
               signs = [],
               i, j;
           /* btAssert(count<int (sizeof(signs)/sizeof(signs[0]))); */
 
-          for( i = 0; i < count; i++ ) {
+          for ( i = 0; i < count; i++ ) {
             signs[ i ] = ( ( normals[ i ].x >= 0) ? 1 : 0 ) +
               ( ( normals[ i ].y >= 0 ) ? 2 : 0 ) +
               ( ( normals[ i ].z >= 0 ) ? 4 : 0 );
@@ -1227,8 +1227,8 @@
                 out = false;
             stack.pop();
 
-            for( i = 0, j = 1; ( !out ) && ( i < count ); ++i, j <<= 1 ) {
-              if( 0 === ( se.mask & j ) ) {
+            for ( i = 0, j = 1; ( !out ) && ( i < count ); ++i, j <<= 1 ) {
+              if ( 0 === ( se.mask & j ) ) {
                 var side = se.node.volume.Classify( normals[i], offsets[i], signs[i] );
                 switch(side) {
                 case -1:
@@ -1238,13 +1238,13 @@
                 }
               }
             }
-            if( !out ) {
-              if( (se.mask != inside ) && ( se.node.isinternal() ) ) {
+            if ( !out ) {
+              if ( (se.mask != inside ) && ( se.node.isinternal() ) ) {
                 stack.push( Bump.Dbvt.sStkNP.create( se.node.childs[0],se.mask ) );
                 stack.push( Bump.Dbvt.sStkNP.create( se.node.childs[1],se.mask ) );
               }
               else {
-                if( policy.AllLeaves( se.node ) ) {
+                if ( policy.AllLeaves( se.node ) ) {
                   Bump.Dbvt.enumLeaves( se.node, policy );
                 }
               }
@@ -1256,7 +1256,7 @@
       collideOCL: function( root, normals, offsets, sortaxis, count, policy, fsort) {
         fsort = (fsort === undefined) || fsort;
 
-        if( root ) {
+        if ( root ) {
           var srtsgns = ( sortaxis.x >= 0 ? 1 : 0 ) +
                         ( sortaxis.y >= 0 ? 2 : 0 ) +
                         ( sortaxis.z >= 0 ? 4 : 0 ),
@@ -1267,7 +1267,7 @@
               signs = [],
               i, j, k;
           /* btAssert(count<int (sizeof(signs)/sizeof(signs[0]))); */
-          for( i = 0; i < count; ++i ) {
+          for ( i = 0; i < count; ++i ) {
             signs[ i ] = ( ( normals[ i ].x >= 0) ? 1 : 0 ) +
               ( ( normals[ i ].y >= 0 ) ? 2 : 0 ) +
               ( ( normals[ i ].z >= 0 ) ? 4 : 0 );
@@ -1286,10 +1286,10 @@
             se = stock[ id ];
             stack.pop();
             ifree.push(id);
-            if( se.mask != inside ) {
+            if ( se.mask != inside ) {
               var out = false;
-              for( i=0, j=1; ( !out ) && ( i < count ); ++i, j <<= 1 ) {
-                if( 0 === ( se.mask & j ) ) {
+              for ( i=0, j=1; ( !out ) && ( i < count ); ++i, j <<= 1 ) {
+                if ( 0 === ( se.mask & j ) ) {
                   var side = se.node.volume.Classify( normals[i], offsets[i], signs[i] );
                   switch( side ) {
                   case -1:
@@ -1299,12 +1299,12 @@
                   }
                 }
               }
-              if( out ) {
+              if ( out ) {
                 continue;
               }
             }
-            if( policy.Descent( se.node ) ) {
-              if( se.node.isinternal() ) {
+            if ( policy.Descent( se.node ) ) {
+              if ( se.node.isinternal() ) {
                 var pns = [ se.node.childs[ 0 ], se.node.childs[ 1 ] ],
                     nes = [
                       Bump.Dbvt.sStkNPS.create( pns[ 0 ],
@@ -1320,7 +1320,7 @@
 
                 j = stack.length;
 
-                if( fsort && ( j > 0 ) ) {
+                if ( fsort && ( j > 0 ) ) {
                   /* Insert 0   */
                   j = Bump.Dbvt.nearest( stack[ 0 ], stock[ 0 ], nes[ q ].value, 0, stack.length );
                   stack.push( 0 );
@@ -1328,7 +1328,7 @@
 #if DBVT_USE_MEMMOVE
                   memmove(&stack[j+1],&stack[j],sizeof(int)*(stack.size()-j-1));
 #else */
-                  for( k = stack.length - 1; k > j; --k) {
+                  for ( k = stack.length - 1; k > j; --k) {
                     stack[ k ] = stack[ k - 1 ];
                   }
 /* #endif */
@@ -1340,7 +1340,7 @@
 #if DBVT_USE_MEMMOVE
                                                         memmove(&stack[j+1],&stack[j],sizeof(int)*(stack.size()-j-1));
 #else */
-                  for( k = stack.length - 1; k > j; --k) {
+                  for ( k = stack.length - 1; k > j; --k) {
                     stack[ k ] = stack[ k - 1 ];
                   }
 /* #endif */
@@ -1360,15 +1360,15 @@
       },
 
       collideTU: function( root, policy ) {
-        if( root ){
+        if ( root ) {
           var stack = [];
           //stack.reserve(SIMPLE_STACKSIZE);
           stack.push( root );
           do {
             var n = stack[ stack.length - 1 ];
             stack.pop();
-            if( policy.Descent(n) ) {
-              if( n.isinternal() ) {
+            if ( policy.Descent(n) ) {
+              if ( n.isinternal() ) {
                 stack.push( n.childs[ 0 ] );
                 stack.push( n.childs[ 1 ] );
               }
@@ -1390,7 +1390,7 @@
         var m = 0;
         while( l < h ) {
           m = ( l + h ) >> 1;
-          if( a[ i[ m ] ].value >= v ) {
+          if ( a[ i[ m ] ].value >= v ) {
             l = m + 1;
           }
           else {
@@ -1406,7 +1406,7 @@
       // `value` is pushed onto the end.
       allocate: function( ifree, stock, value ) {
         var i;
-        if( ifree.length > 0 ) {
+        if ( ifree.length > 0 ) {
           i = ifree[ ifree.length - 1 ];
           ifree.pop();
           stock[ i ] = value;
@@ -1418,76 +1418,76 @@
         return i;
       }
     }
-  } );
+  });
 
   // Stack element structs
 
-  Bump.Dbvt.sStkNN = Bump.type( {
+  Bump.Dbvt.sStkNN = Bump.type({
     // initialize from two `DbvtNode`s
     init: function sStkNN( na, nb ) {
       this.a = na || 0;
       this.b = nb || 0;
     }
-  } );
+  });
 
-  Bump.Dbvt.sStkNP = Bump.type( {
+  Bump.Dbvt.sStkNP = Bump.type({
     // initialize from `DbvtNode` `n` and int mask `m`
     init: function sStkNP( n, m ) {
       this.node = n || 0;
       this.mask = m || 0;
     }
-  } );
+  });
 
-  Bump.Dbvt.sStkNPS = Bump.type( {
+  Bump.Dbvt.sStkNPS = Bump.type({
     // initialize from `DbvtNode` `n`, int mask `m`, and float `v`
     init: function sStkNPS( n, m, v ) {
       this.node = n || 0;
       this.mask = m || 0;
       this.value = v || 0;
     }
-  } );
+  });
 
-  Bump.Dbvt.sStkCLN = Bump.type( {
+  Bump.Dbvt.sStkCLN = Bump.type({
     // initialize from two `DbvtNode`s
     init: function sStkCLN( n, p ) {
       this.node = n || 0;
       this.parent = p || 0;
     }
-  } );
+  });
 
   // Policies/Interfaces
 
-  Bump.Dbvt.ICollide = Bump.type( {
+  Bump.Dbvt.ICollide = Bump.type({
     members: {
       // originally ICollide specified 3 overloaded Process functions, which have
       // been renamed here based on their expected arguments
-      ProcessNode2: function( node1, node2 ){},
-      ProcessNode: function( node ){},
+      ProcessNode2: function( node1, node2 ) {},
+      ProcessNode: function( node ) {},
       ProcessNodeScalar: function( n, s ) {
         this.ProcessNode( n );
       },
-      Descent: function( node ){
+      Descent: function( node ) {
         return true;
       },
-      AllLeaves: function( node ){
+      AllLeaves: function( node ) {
         return true;
       }
     }
-  } );
+  });
 
-  Bump.Dbvt.IWriter = Bump.type( {
+  Bump.Dbvt.IWriter = Bump.type({
     members: {
-      Prepare: function( root, numnodes ){},
-      WriteNode: function( node, index, parent, child0, child1){},
-      WriteLeaf: function( node, index, parent){}
+      Prepare: function( root, numnodes ) {},
+      WriteNode: function( node, index, parent, child0, child1) {},
+      WriteLeaf: function( node, index, parent) {}
     }
-  } );
+  });
 
-  Bump.Dbvt.IClone = Bump.type( {
+  Bump.Dbvt.IClone = Bump.type({
     members: {
       CloneLeaf: function( node ) {}
     }
-  } );
+  });
 
   // Constants
   Bump.Dbvt.SIMPLE_STACKSIZE = 64;
@@ -1496,7 +1496,7 @@
 
   /* From btDbvt.cpp */
 
-  Bump.DbvtNodeEnumerator = Bump.type( {
+  Bump.DbvtNodeEnumerator = Bump.type({
     parent: Bump.Dbvt.ICollide,
 
     init: function DbvtNodeEnumerator() {
@@ -1510,7 +1510,6 @@
         this.nodes.push( n );
       }
     }
-  } );
+  });
 
-
-} )( this, this.Bump );
+})( this, this.Bump );

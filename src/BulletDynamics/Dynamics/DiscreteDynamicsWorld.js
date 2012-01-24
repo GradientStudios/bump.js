@@ -592,7 +592,7 @@
       },
 
       internalSingleStepSimulation: function( timeStep ) {
-        if( null !== this.internalPreTickCallback ) {
+        if ( null !== this.internalPreTickCallback ) {
           this.internalPreTickCallback( this, timeStep );
         }
 
