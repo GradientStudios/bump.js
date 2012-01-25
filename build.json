@@ -22,6 +22,7 @@
         "src/BulletCollision/NarrowPhaseCollision/ManifoldPoint.js",
         "src/BulletCollision/NarrowPhaseCollision/PersistentManifold.js",
         "src/BulletCollision/NarrowPhaseCollision/VoronoiSimplexSolver.js",
+        "src/BulletCollision/NarrowPhaseCollision/GjkEpa2.js",
         "src/BulletCollision/NarrowPhaseCollision/ConvexPenetrationDepthSolver.js",
         "src/BulletCollision/NarrowPhaseCollision/GjkEpaPenetrationDepthSolver.js",
 
