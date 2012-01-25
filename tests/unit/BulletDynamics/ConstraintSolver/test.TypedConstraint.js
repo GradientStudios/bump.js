@@ -62,3 +62,53 @@ test( 'bare bones', function() {
     args: [ [ 0.5, 0, 1, 0.1, 0.1 ] ]
   });
 });
+
+module( 'TypedConstraint.ConstraintInfo1 create' );
+
+test( 'basic', function() {
+  ok( Bump.TypedConstraint.ConstraintInfo1, 'TypedConstraint.ConstraintInfo1 exists' );
+
+  var ci1 = Bump.TypedConstraint.ConstraintInfo1.create();
+  ok( ci1 instanceof Bump.TypedConstraint.ConstraintInfo1.prototype.constructor );
+});
+
+test( 'correct types', function() {
+  var ci1 = Bump.TypedConstraint.ConstraintInfo1.create();
+
+  var checks = [
+    [ 'numConstraintRows', 'number' ],
+    [ 'nub', 'number' ]
+  ];
+
+  checkTypes( ci1, checks );
+});
+
+module( 'TypedConstraint.ConstraintInfo2 create' );
+
+test( 'basic', function() {
+  ok( Bump.TypedConstraint.ConstraintInfo2, 'TypedConstraint.ConstraintInfo2 exists' );
+
+  var ci2 = Bump.TypedConstraint.ConstraintInfo2.create();
+  ok( ci2 instanceof Bump.TypedConstraint.ConstraintInfo2.prototype.constructor );
+});
+
+test( 'correct types', function() {
+  var ci2 = Bump.TypedConstraint.ConstraintInfo2.create();
+
+  var checks = [
+    [ 'fps', 'number' ],
+    [ 'erp', 'number' ],
+    [ 'J1linearAxis', 'array' ],
+    [ 'J1angularAxis', 'array' ],
+    [ 'J2linearAxis', 'array' ],
+    [ 'J2angularAxis', 'array' ],
+    [ 'rowskip', 'number' ],
+    [ 'constraintError', 'array' ],
+    [ 'cfm', 'array' ],
+    [ 'findex', 'array' ],
+    [ 'numIterations', 'number' ],
+    [ 'damping', 'number' ]
+  ];
+
+  checkTypes( ci2, checks );
+});
