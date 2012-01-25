@@ -52,10 +52,10 @@
       },
 
       reset: function() {
-        usedVertexA = false;
-        usedVertexB = false;
-        usedVertexC = false;
-        usedVertexD = false;
+        this.usedVertexA = false;
+        this.usedVertexB = false;
+        this.usedVertexC = false;
+        this.usedVertexD = false;
       }
     }
   });
