@@ -21,6 +21,7 @@
         "src/BulletCollision/NarrowPhaseCollision/DiscreteCollisionDetectorInterface.js",
         "src/BulletCollision/NarrowPhaseCollision/ManifoldPoint.js",
         "src/BulletCollision/NarrowPhaseCollision/PersistentManifold.js",
+        "src/BulletCollision/NarrowPhaseCollision/VoronoiSimplexSolver.js",
 
         "src/BulletCollision/BroadphaseCollision/CollisionAlgorithm.js",
         "src/BulletCollision/BroadphaseCollision/Dispatcher.js",
