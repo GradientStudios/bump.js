@@ -211,6 +211,32 @@
       setParam: Bump.abstract,
       getParam: Bump.abstract
 
+    },
+
+    typeMembers: {
+      ConstraintInfo1: Bump.type( {
+        init: function ConstraintInfo1() {
+          this.numConstraintRows = 0;
+          this.nub = 0;
+        }
+      } ),
+
+      ConstraintInfo2: Bump.type( {
+        init: function ConstraintInfo2() {
+          this.fps = 0;
+          this.erp = 0;
+          this.J1linearAxis = []; /* btScalar* */
+          this.J1angularAxis = []; /* btScalar* */
+          this.J2linearAxis = []; /* btScalar* */
+          this.J2angularAxis = []; /* btScalar* */
+          this.rowskip = 0;
+          this.constraintError = []; /* btScalar* */
+          this.cfm = []; /* btScalar* */
+          this.findex = []; /* int* */
+          this.numIterations = 0;
+          this.damping = 0;
+        }
+      } )
     }
   });
 
