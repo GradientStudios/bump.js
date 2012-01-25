@@ -6,6 +6,126 @@
       VERTC = 2,
       VERTD = 3;
 
+  Bump.UsageBitfield = Bump.type({
+    init: function UsageBitfield() {
+      this.usedVertexA = false;
+      this.usedVertexB = false;
+      this.usedVertexC = false;
+      this.usedVertexD = false;
+      this.unused1 = false;
+      this.unused2 = false;
+      this.unused3 = false;
+      this.unused4 = false;
+
+      this.reset();
+
+      return this;
+    },
+
+    members: {
+      clone: function( dest ) {
+        dest = dest || Bump.UsageBitfield.create();
+
+        dest.usedVertexA = this.usedVertexA;
+        dest.usedVertexB = this.usedVertexB;
+        dest.usedVertexC = this.usedVertexC;
+        dest.usedVertexD = this.usedVertexD;
+        dest.unused1 = this.unused1;
+        dest.unused2 = this.unused2;
+        dest.unused3 = this.unused3;
+        dest.unused4 = this.unused4;
+
+        return dest;
+      },
+
+      assign: function( other ) {
+        this.usedVertexA = other.usedVertexA;
+        this.usedVertexB = other.usedVertexB;
+        this.usedVertexC = other.usedVertexC;
+        this.usedVertexD = other.usedVertexD;
+        this.unused1 = other.unused1;
+        this.unused2 = other.unused2;
+        this.unused3 = other.unused3;
+        this.unused4 = other.unused4;
+
+        return this;
+      },
+
+      reset: function() {
+        usedVertexA = false;
+        usedVertexB = false;
+        usedVertexC = false;
+        usedVertexD = false;
+      }
+    }
+  });
+
+  Bump.SubSimplexClosestResult = Bump.type({
+    init: function SubSimplexClosestResult() {
+      this.closestPointOnSimplex = Bump.Vector3.create();
+      this.usedVertices = Bump.UsageBitfield.create();
+      this.barycentricCoords = new Array( 4 );
+      for ( var i = 0; i < 4; ++i ) {
+        this.barycentricCoords[i] = 0;
+      }
+      this.degenerate = false;
+      return this;
+    },
+
+    members: {
+      clone: function( dest ) {
+        dest = dest || Bump.SubSimplexClosestResult.create();
+
+        dest.closestPointOnSimplex.assign( this.closestPointOnSimplex );
+        dest.usedVertices.assign( this.usedVertices );
+        for ( var i = 0; i < 4; ++i ) {
+          dest.barycentricCoords[i] = this.barycentricCoords[i];
+        }
+        dest.degenerate = this.degenerate;
+
+        return dest;
+      },
+
+      assign: function( other ) {
+        this.closestPointOnSimplex.assign( other.closestPointOnSimplex );
+        this.usedVertices.assign( other.usedVertices );
+        for ( var i = 0; i < 4; ++i ) {
+          this.barycentricCoords[i] = other.barycentricCoords[i];
+        }
+        this.degenerate = other.degenerate;
+
+        return this;
+      },
+
+      reset: function() {
+        this.degenerate = false;
+        this.setBarycentricCoordinates();
+        this.usedVertices.reset();
+      },
+
+      isValid: function() {
+        var valid = ( ( this.barycentricCoords[0] >= 0 ) &&
+                      ( this.barycentricCoords[1] >= 0 ) &&
+                      ( this.barycentricCoords[2] >= 0 ) &&
+                      ( this.barycentricCoords[3] >= 0 ) );
+
+        return valid;
+      },
+
+      setBarycentricCoordinates: function( a, b, c, d ) {
+        a = a || 0;
+        b = b || 0;
+        c = c || 0;
+        d = d || 0;
+
+        this.barycentricCoords[0] = a;
+        this.barycentricCoords[1] = b;
+        this.barycentricCoords[2] = c;
+        this.barycentricCoords[3] = d;
+      }
+    }
+  });
+
   Bump.VoronoiSimplexSolver = Bump.type({
     init: function VoronoiSimplexSolver() {
       this.numVertices = 0;
@@ -471,7 +591,7 @@
         v = vb * denom;
         w = vc * denom;
 
-        // var tmpV2 = Bump.Vector3.create();
+        var tmpV2 = Bump.Vector3.create();
         result.closestPointOnSimplex.assign(
           a
             .add( ab.multiplyScalar( v, tmpV2 ), tmpV1 )
