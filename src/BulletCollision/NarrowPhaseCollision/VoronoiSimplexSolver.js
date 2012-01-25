@@ -136,8 +136,8 @@
 
       for ( var i = 0; i < VORONOI_SIMPLEX_MAX_VERTS; ++i ) {
         this.simplexVectorW[i] = Bump.Vector3.create();
-        this.simplexVectorP[i] = Bump.Vector3.create();
-        this.simplexVectorQ[i] = Bump.Vector3.create();
+        this.simplexPointsP[i] = Bump.Vector3.create();
+        this.simplexPointsQ[i] = Bump.Vector3.create();
       }
 
       this.cachedP1 = Bump.Vector3.create();
