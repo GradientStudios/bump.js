@@ -38,6 +38,7 @@
 
         "src/BulletCollision/CollisionDispatch/UnionFind.js",
         "src/BulletCollision/CollisionDispatch/CollisionConfiguration.js",
+        "src/BulletCollision/CollisionDispatch/DefaultCollisionConfiguration.js",
         "src/BulletCollision/CollisionDispatch/CollisionDispatcher.js",
         "src/BulletCollision/CollisionDispatch/CollisionObject.js",
         "src/BulletCollision/CollisionDispatch/ManifoldResult.js",
