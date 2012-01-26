@@ -534,7 +534,7 @@
         return function( solverInfo ) {
           // Sorted version of all `TypedConstraint`, based on `islandId`
           var sortedConstraints = [];
-          sortedConstraints.length( this.constraints.length );
+          Bump.resize( sortedConstraints, this.constraints.length, Bump.TypedConstraint.create() );
           var i;
           for ( i = 0; i < this.getNumConstraints(); ++i ) {
             sortedConstraints[i] = this.constraints[i];
