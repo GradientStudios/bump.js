@@ -33,6 +33,31 @@
       this._union4 = 0;
     },
 
+    members: {
+      // `setZero` was added for porting situations where `btSolverContact`s are zeroed out using memset
+      setZero: function() {
+        this.m_relpos1CrossNormal.setZero();
+        this.m_contactNormal.setZero();
+        this.m_relpos2CrossNormal.setZero();
+        this.m_angularComponentA.setZero();
+        this.m_angularComponentB.setZero();
+        this.m_appliedPushImpulse = 0;
+        this.m_appliedImpulse = 0;
+        this.m_friction = 0;
+        this.m_jacDiagABInv = 0;
+        this.m_rhs = 0;
+        this.m_cfm = 0;
+        this.m_lowerLimit = 0;
+        this.m_upperLimit = 0;
+        this.m_rhsPenetration = 0;
+        this._union0 = 0;
+        this._union1 = 0;
+        this._union2 = 0;
+        this._union3 = 0;
+        this._union4 = 0;
+      }
+    },
+
     typeMembers: {
       SolverConstraintType: Bump.Enum([
         { id: 'BT_SOLVER_CONTACT_1D' },
