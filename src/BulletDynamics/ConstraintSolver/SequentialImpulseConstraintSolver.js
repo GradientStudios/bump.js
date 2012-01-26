@@ -1164,10 +1164,11 @@
     },
 
     typeMembers: {
-      s_fixed: Bump.RigidBody.create( 0, 0, 0 ),
+      s_fixed: null,
 
       getFixedBody: function() {
-        var s_fixed = Bump.SequentialImpulseConstraintSolver.s_fixed;
+        var s_fixed = Bump.SequentialImpulseConstraintSolver.s_fixed ||
+          Bump.RigidBody.create();
         s_fixed.setMassProps( 0, Bump.Vector3.create() );
         return s_fixed;
       }
