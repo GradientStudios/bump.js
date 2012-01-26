@@ -2,7 +2,7 @@
   Bump.MotionState = Bump.type({
     members: {
       getWorldTransform: Bump.abstract,
-      setWorldPosition: Bump.abstract
+      setWorldTransform: Bump.abstract
     }
   });
 })( this, this.Bump );
