@@ -35,6 +35,45 @@ var CollisionDispatcherDeepCopyCheck = function( a, b ) {
   strictEqual( a.collisionConfiguration, b.collisionConfiguration );
 };
 
+module( 'CollisionPairCallback.create' );
+
+test( 'basic', function() {
+  ok( Bump.CollisionPairCallback, 'CollisionPairCallback exists' );
+
+  var info = Bump.DispatcherInfo.create(),
+      dispatcher = Bump.CollisionDispatcher.create(),
+      cpc = Bump.CollisionPairCallback.create( info, dispatcher );
+
+  ok( cpc instanceof Bump.CollisionPairCallback.prototype.constructor, 'correct type' );
+
+  checkTypes( cpc, [
+    [ 'dispatchInfo', Bump.DispatcherInfo ],
+    [ 'dispatcher', Bump.CollisionDispatcher ]
+  ] );
+
+} );
+
+module( 'CollisionPairCallback members' );
+
+test( 'processOverlap', function() {
+  var fakeProxy0 = { m_uniqueId: 0 },
+      fakeProxy1 = { m_uniqueId: 0 },
+      pair = Bump.BroadphasePair.create( fakeProxy0, fakeProxy1 ),
+      dispatcher = Bump.CollisionDispatcher.create(),
+      info = Bump.DispatcherInfo.create(),
+      nearCallback = function( p, d, i ) {
+        ok( ( p === pair) && ( d == dispatcher ) && ( i === info ), 'near callback fired' );
+      };
+
+  dispatcher.setNearCallback( nearCallback );
+  var cpc = Bump.CollisionPairCallback.create( info, dispatcher );
+
+  ok( typeof cpc.processOverlap === 'function', 'processOverlap exists' );
+
+  cpc.processOverlap( pair );
+
+} );
+
 module( 'CollisionDispatcher.create' );
 
 test( 'no args', function() {

@@ -2,6 +2,24 @@
 
   Bump.gNumManifold = 0;
 
+  Bump.CollisionPairCallback = Bump.type({
+    parent: Bump.OverlapCallback,
+
+    init: function CollisionPairCallback( dispatchInfo, dispatcher ) {
+      this._super();
+      this.dispatchInfo = dispatchInfo || null; /* const btDispatcherInfo& */
+      this.dispatcher = dispatcher || null; /* btCollisionDispatcher* */
+    },
+
+    members: {
+      // Process the overlap for a given BroadphasePair
+      processOverlap: function( pair ) {
+	( this.dispatcher.getNearCallback() )( pair, this.dispatcher, this.dispatchInfo );
+	return false;
+      }
+    }
+  });
+
   Bump.CollisionDispatcher = Bump.type({
     parent: Bump.Dispatcher,
 
