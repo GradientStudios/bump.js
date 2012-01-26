@@ -1,5 +1,29 @@
 (function( window, Bump ) {
 
+  // not sure that this needs to be globally accessible through Bump
+  Bump.GetConstraintIslandId = function( lhs ) {
+    var islandId = 0,
+    rcolObj0 = lhs.getRigidBodyA(), /* const btCollisionObject& */
+    rcolObj1 = lhs.getRigidBodyB(); /* const btCollisionObject& */
+    islandId = rcolObj0.getIslandTag() >= 0 ? rcolObj0.getIslandTag() : rcolObj1.getIslandTag();
+    return islandId;
+  };
+
+  // *** SortConstraintOnIslandPredicate *** is ported from the
+  // `btSortConstraintOnIslandPredicate` functor class
+  Bump.SortConstraintOnIslandPredicate = Bump.type( {
+    typeMembers: {
+      create: function() {
+        // sort two `TypedConstraint`s
+        return function( lhs, rhs ) {
+          var rIslandId0 = Bump.GetConstraintIslandId( rhs ),
+              lIslandId0 = Bump.GetConstraintIslandId( lhs );
+          return lIslandId0 < rIslandId0;
+        };
+      }
+    }
+  } );
+
   Bump.DiscreteDynamicsWorld = Bump.type({
     parent: Bump.DynamicsWorld,
 
