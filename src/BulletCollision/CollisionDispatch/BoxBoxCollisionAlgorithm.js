@@ -3,15 +3,27 @@
   Bump.BoxBoxCollisionAlgorithm = Bump.type({
     parent: Bump.ActivatingCollisionAlgorithm,
 
-    init: function BoxBoxCollisionAlgorithm( ci ) {
-      this._super( ci );
-
-      this.ownManifold = false;
-      this.manifoldPtr = null;
-      return this;
-    },
-
     members: {
+      init: function BoxBoxCollisionAlgorithm( ci ) {
+        this._super( ci );
+
+        this.ownManifold = false;
+        this.manifoldPtr = null;
+        return this;
+      },
+
+      initWithManifold: function BoxBoxCollisionAlgorithm( mf, ci, obj0, obj1 ) {
+        this._super( ci, obj0, obj1 );
+        this.ownManifold = false;
+        this.manifoldPtr = mf;
+
+        if ( this.manifoldPtr === null && this.dispatcher.needsCollision( obj0, obj1 ) ) {
+          this.manifoldPtr = this.dispatcher.getNewManifold( obj0, obj1 );
+          this.ownManifold = true;
+        }
+        return this;
+      },
+
       clone: function( dest ) {
         dest = dest || Bump.BoxBoxCollisionAlgorithm.create();
 
@@ -30,6 +42,16 @@
         this.manifoldPtr = other.manifoldPtr;
 
         return this;
+      },
+
+      destruct: function() {
+        if ( this.ownManifold ) {
+          if ( this.manifoldPtr !== null ) {
+            this.dispatcher.releaseManifold( this.manifoldPtr );
+          }
+        }
+
+        this._super();
       },
 
       processCollision: function( body0, body1, dispatchInfo, resultOut ) {
@@ -61,6 +83,26 @@
         }
       }
 
+    },
+
+    typeMembers: {
+      create: function( a, b, c, d ) {
+        var ca = Object.create( Bump.BoxBoxCollisionAlgorithm.prototype );
+        if ( b === undefined ) {
+          return ca.init( a );
+        }
+
+        return ca.initWithManifold( a, b, c, d );
+      },
+
+      CreateFunc: Bump.type({
+        parent: Bump.CollisionAlgorithmCreateFunc,
+        members: {
+          CreateCollisionAlgorithm: function( ci, body0, body1 ) {
+            return Bump.BoxBoxCollisionAlgorithm.create( null, ci, body0, body1 );
+          }
+        }
+      })
     }
   });
 
