@@ -60,7 +60,7 @@
         for ( i = 0; i < MAX_BROADPHASE_COLLISION_TYPES; ++i ) {
           for ( j = 0; j < MAX_BROADPHASE_COLLISION_TYPES; ++j ) {
             this.doubleDispatch[i][j] = this.collisionConfiguration.getCollisionAlgorithmCreateFunc( i, j );
-            Bump.Assert( this.doubleDispatch[i][j] !== null );
+            Bump.Assert( Bump.INCOMPLETE_IMPLEMENTATION || this.doubleDispatch[i][j] !== null );
           }
         }
 

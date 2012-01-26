@@ -1,6 +1,4 @@
 (function( window, Bump ) {
-  var INCOMPLETE_IMPLEMENTATION = true;
-
   Bump.DefaultCollisionConstructionInfo = Bump.type({
     init: function DefaultCollisionConstructionInfo() {
       this.stackAlloc = null;
@@ -90,47 +88,47 @@
       this.simplexSolver = Bump.VoronoiSimplexSolver.create();
 
       if ( constructionInfo.useEpaPenetrationAlgorithm ) {
-        if ( Bump.GjkEpaPenetrationDepthSolver || !INCOMPLETE_IMPLEMENTATION ) {
+        if ( Bump.GjkEpaPenetrationDepthSolver || !Bump.INCOMPLETE_IMPLEMENTATION ) {
           this.pdSolver = Bump.GjkEpaPenetrationDepthSolver.create();
         }
       } else {
-        if ( Bump.MinkowskiPenetrationDepthSolver || !INCOMPLETE_IMPLEMENTATION ) {
+        if ( Bump.MinkowskiPenetrationDepthSolver || !Bump.INCOMPLETE_IMPLEMENTATION ) {
           this.pdSolver = Bump.MinkowskiPenetrationDepthSolver.create();
         }
       }
 
       // Default CreationFunctions, filling the `this.doubleDispatch` table.
-      if ( Bump.ConvexConvexAlgorithm || !INCOMPLETE_IMPLEMENTATION ) {
+      if ( Bump.ConvexConvexAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
         this.convexConvexCreateFunc = Bump.ConvexConvexAlgorithm.CreateFunc.create( this.simplexSolver, this.pdSolver );
       }
-      if ( Bump.ConvexConcaveCollisionAlgorithm || !INCOMPLETE_IMPLEMENTATION ) {
+      if ( Bump.ConvexConcaveCollisionAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
         this.convexConcaveCreateFunc = Bump.ConvexConcaveCollisionAlgorithm.CreateFunc.create();
         this.swappedConvexConcaveCreateFunc = Bump.ConvexConcaveCollisionAlgorithm.SwappedCreateFunc.create();
       }
-      if ( Bump.CompoundCollisionAlgorithm || !INCOMPLETE_IMPLEMENTATION ) {
+      if ( Bump.CompoundCollisionAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
         this.compoundCreateFunc = Bump.CompoundCollisionAlgorithm.CreateFunc.create();
         this.swappedCompoundCreateFunc = Bump.CompoundCollisionAlgorithm.SwappedCreateFunc.create();
       }
-      if ( Bump.EmptyAlgorithm || !INCOMPLETE_IMPLEMENTATION ) {
+      if ( Bump.EmptyAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
         this.emptyCreateFunc = Bump.EmptyAlgorithm.CreateFunc.create();
       }
 
-      if ( Bump.SphereSphereCollisionAlgorithm || !INCOMPLETE_IMPLEMENTATION ) {
+      if ( Bump.SphereSphereCollisionAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
         this.sphereSphereCF = Bump.SphereSphereCollisionAlgorithm.CreateFunc.create();
       }
 
-      if ( Bump.SphereTriangleCollisionAlgorithm || !INCOMPLETE_IMPLEMENTATION ) {
+      if ( Bump.SphereTriangleCollisionAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
         this.sphereTriangleCF = Bump.SphereTriangleCollisionAlgorithm.CreateFunc.create();
         this.triangleSphereCF = Bump.SphereTriangleCollisionAlgorithm.CreateFunc.create();
         this.triangleSphereCF.swapped = true;
       }
 
-      if ( Bump.BoxBoxCollisionAlgorithm || !INCOMPLETE_IMPLEMENTATION ) {
+      if ( Bump.BoxBoxCollisionAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
         this.boxBoxCF = Bump.BoxBoxCollisionAlgorithm.CreateFunc.create();
       }
 
       // Convex versus plane.
-      if ( Bump.ConvexPlaneCollisionAlgorithm || !INCOMPLETE_IMPLEMENTATION ) {
+      if ( Bump.ConvexPlaneCollisionAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
         this.convexPlaneCF = Bump.ConvexPlaneCollisionAlgorithm.CreateFunc.create();
         this.planeConvexCF = Bump.ConvexPlaneCollisionAlgorithm.CreateFunc();
         this.planeConvexCF.swapped = true;

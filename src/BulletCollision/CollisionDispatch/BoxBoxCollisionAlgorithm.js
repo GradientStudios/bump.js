@@ -13,7 +13,7 @@
       },
 
       initWithManifold: function BoxBoxCollisionAlgorithm( mf, ci, obj0, obj1 ) {
-        this._super( ci, obj0, obj1 );
+        Bump.ActivatingCollisionAlgorithm.prototype.init.apply( this, [ ci, obj0, obj1 ] );
         this.ownManifold = false;
         this.manifoldPtr = mf;
 

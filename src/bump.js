@@ -5,6 +5,8 @@ this.Bump = {};
 
 (function( window, Bump ) {
 
+  Bump.INCOMPLETE_IMPLEMENTATION = true;
+
   Bump.noop = function noop() {};
   Bump.abstract = function abstract() {
     Bump.Assert( false );
