@@ -81,6 +81,17 @@
         if ( this.ownManifold ) {
           resultOut.refreshContactPoints();
         }
+      },
+
+      calculateTimeOfImpact: function() {
+        // Not yet.
+        return 1;
+      },
+
+      getAllContactManifolds: function( manifoldArray ) {
+        if ( this.manifoldPtr && this.ownManifold ) {
+          manifoldArray.push( this.manifoldPtr );
+        }
       }
 
     },
