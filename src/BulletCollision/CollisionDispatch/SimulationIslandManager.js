@@ -1,5 +1,23 @@
 (function( window, Bump ) {
 
+  var getIslandId = function( lhs ) {
+    var islandId,
+    rcolObj0 = lhs.getBody0(), /* const btCollisionObject* */
+    rcolObj1 = lhs.getBody1(); /* const btCollisionObject* */
+    islandId = rcolObj0.getIslandTag() >= 0 ? rcolObj0.getIslandTag() : rcolObj1.getIslandTag();
+    return islandId;
+  };
+
+  Bump.PersistentManifoldSortPredicate = Bump.type( {
+    typeMembers: {
+      create: function() {
+        return function( lhs, rhs ) {
+          return getIslandId( lhs ) < getIslandId( rhs );
+        };
+      }
+    }
+  } );
+
   Bump.SimulationIslandManager = Bump.type({
     init: function SimulationIslandManager() {
       this.unionFind = Bump.UnionFind.create();

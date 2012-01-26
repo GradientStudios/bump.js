@@ -568,7 +568,7 @@
 
           var constraintsPtr = this.getNumConstraints() ? sortedConstraints : null;
 
-          var solverCallback = Bump.InplaceSolverIslandCallback.create( solverInfo, this.constraintSolver, constraintsPtr, sortedConstraints.length, this.debugDrawer, this.stackAlloc, this.dispatcher1 );
+          var solverCallback = InplaceSolverIslandCallback.create( solverInfo, this.constraintSolver, constraintsPtr, sortedConstraints.length, this.debugDrawer, this.stackAlloc, this.dispatcher1 );
 
           this.constraintSolver.prepareSolve( this.getCollisionWorld().getNumCollisionObjects(), this.getCollisionWorld().getDispatcher().getNumManifolds() );
 
