@@ -42,6 +42,7 @@
         "src/BulletCollision/CollisionDispatch/DefaultCollisionConfiguration.js",
         "src/BulletCollision/CollisionDispatch/CollisionDispatcher.js",
         "src/BulletCollision/CollisionDispatch/CollisionObject.js",
+        "src/BulletCollision/CollisionDispatch/ActivatingCollisionAlgorithm.js",
         "src/BulletCollision/CollisionDispatch/ManifoldResult.js",
         "src/BulletCollision/CollisionDispatch/CollisionWorld.js",
         "src/BulletCollision/CollisionDispatch/SimulationIslandManager.js",

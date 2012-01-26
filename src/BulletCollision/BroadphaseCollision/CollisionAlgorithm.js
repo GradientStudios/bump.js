@@ -52,6 +52,17 @@
         return this;
       },
 
+      clone: function( dest ) {
+        dest = dest || Bump.CollisionAlgorithm.create();
+        dest.dispatcher = this.dispatcher;
+        return dest;
+      },
+
+      assign: function( other ) {
+        this.dispatcher = other.dispatcher;
+        return this;
+      },
+
       destruct: Bump.noop,
       processCollision: Bump.abstract,
       calculateTimeOfImpact: Bump.abstract,
