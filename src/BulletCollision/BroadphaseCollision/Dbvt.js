@@ -1050,7 +1050,7 @@
                 stack.push( n.childs[ 1 ] );
               }
               else {
-                policy.Process( n );
+                policy.ProcessNode( n );
               }
             }
           } while( stack.length > 0 );
