@@ -48,13 +48,52 @@ test( 'basic', function() {
   dynamicsWorld.addRigidBody( body );
 
   // create a dynamic rigidbody
-  /*
-  var colShape = new Bump.SphereShape.create( 1 );
-  ok( colShape instanceof Bump.SphereShape.prototype.constructor );
+
+  var colShape = new Bump.BoxShape.create( Bump.Vector3.create( 1, 1, 1 ) );
+  ok( colShape instanceof Bump.BoxShape.prototype.constructor );
+  // var colShape = new Bump.SphereShape.create( 1 );
+  // ok( colShape instanceof Bump.SphereShape.prototype.constructor );
 
   collisionShapes.push( colShape );
-  */
 
+  var startTransform = Bump.Transform.create();
+  startTransform.setIdentity();
+
+  mass = 1;
+  isDynamic = ( mass !== 0 );
+  localInertia = Bump.Vector3.create();
+
+  if( isDynamic ) {
+    colShape.calculateLocalInertia( mass, localInertia );
+  }
+
+  startTransform.setOrigin( Bump.Vector3.create( 2, 10, 0 ) );
+
+  //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
+  myMotionState = Bump.DefaultMotionState.create( startTransform );
+  rbInfo = Bump.RigidBody.RigidBodyConstructionInfo.create( mass, myMotionState, colShape, localInertia );
+  body = Bump.RigidBody.create( rbInfo );
+
+  dynamicsWorld.addRigidBody(body);
+
+  /// Do some simulation
+/*
+  for( i = 0; i < 100; i++ ) {
+    dynamicsWorld.stepSimulation( 1 / 60, 10 );
+
+    //print positions of all objects
+    for( var j = dynamicsWorld.getNumCollisionObjects() - 1; j >= 0; j-- ) {
+      var obj = dynamicsWorld.getCollisionObjectArray()[ j ];
+      body = Bump.RigidBody.upcast( obj );
+      if( body && body.getMotionState() ) {
+        var trans = Bump.Transform.create();
+        body.getMotionState().getWorldTransform( trans );
+        console.log("world pos = " + trans.getOrigin().getX() +
+                    trans.getOrigin().getY() + trans.getOrigin().getZ() );
+      }
+    }
+  }
+*/
   ok( true, 'finish' );
 
 });

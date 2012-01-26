@@ -325,7 +325,7 @@
           if ( Bump.Intersect.DbvtVolume2( proxy.leaf.volume, aabb ) ) {
             /* Moving */
             var delta = aabbMin.subtract( proxy.m_aabbMin ),
-                velocity = proxy.m_abbMax.subtract( proxy.m_aabbMin )
+                velocity = proxy.m_aabbMax.subtract( proxy.m_aabbMin )
                   .divideScalarSelf( 2 )
                   .multiplyScalarSelf( this.m_prediction );
 
@@ -340,7 +340,10 @@
             }
             if (
 /*#ifdef DBVT_BP_MARGIN */
-              this.m_sets[0].update( proxy.leaf, aabb, velocity, Bump.DBVT_BP_MARGIN )
+              this.m_sets[0].updateLeafVolumeVelocityMargin( proxy.leaf,
+                                                             aabb,
+                                                             velocity,
+                                                             Bump.DBVT_BP_MARGIN )
 /*#else
                                         m_sets[0].update(proxy.leaf,aabb,velocity)
 #endif*/
