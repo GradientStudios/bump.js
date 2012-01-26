@@ -968,7 +968,7 @@
             info2.rowskip = 38; /* for now, this is the "correct" number, but what its used for
                                    is probably not JavaScript-friendly */
             ///the size of btSolverConstraint needs be a multiple of btScalar
-            btAssert(info2.rowskip*sizeof(btScalar)== sizeof(btSolverConstraint)); */
+            /* btAssert(info2.rowskip*sizeof(btScalar)== sizeof(btSolverConstraint)); */
             info2.constraintError = currentConstraintRow.rhs;
             currentConstraintRow.cfm = infoGlobal.globalCfm;
             info2.damping = infoGlobal.damping;
