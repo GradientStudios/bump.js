@@ -956,15 +956,17 @@
             rbB.internalGetDeltaLinearVelocity().setValue( 0, 0, 0 );
             rbB.internalGetDeltaAngularVelocity().setValue( 0, 0, 0 );
 
-            var info2; /* btTypedConstraint::btConstraintInfo2 */
+            var info2 = Bump.TypedConstraint.ConstraintInfo2.create();
             info2.fps = 1 / infoGlobal.timeStep;
             info2.erp = infoGlobal.erp;
-            info2.J1linearAxis.assign( currentConstraintRow.contactNormal );
-            info2.J1angularAxis.assign( currentConstraintRow.relpos1CrossNormal );
+            info2.J1linearAxis = currentConstraintRow.contactNormal;
+            info2.J1angularAxis = currentConstraintRow.relpos1CrossNormal;
             info2.J2linearAxis = 0;
-            info2.J2angularAxis.assign( currentConstraintRow.relpos2CrossNormal );
+            info2.J2angularAxis = currentConstraintRow.relpos2CrossNormal;
             // TODO: figure out what to do about this
-            /* info2.rowskip = sizeof(btSolverConstraint)/sizeof(btScalar);//check this
+            /* info2.rowskip = sizeof(btSolverConstraint)/sizeof(btScalar); */ //check this
+            info2.rowskip = 38; /* for now, this is the "correct" number, but what its used for
+                                   is probably not JavaScript-friendly */
             ///the size of btSolverConstraint needs be a multiple of btScalar
             btAssert(info2.rowskip*sizeof(btScalar)== sizeof(btSolverConstraint)); */
             info2.constraintError = currentConstraintRow.rhs;
