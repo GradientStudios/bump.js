@@ -76,7 +76,7 @@ test( 'basic', function() {
   dynamicsWorld.addRigidBody(body);
 
   /// Do some simulation
-/*
+
   for( i = 0; i < 100; i++ ) {
     dynamicsWorld.stepSimulation( 1 / 60, 10 );
 
@@ -87,12 +87,12 @@ test( 'basic', function() {
       if( body && body.getMotionState() ) {
         var trans = Bump.Transform.create();
         body.getMotionState().getWorldTransform( trans );
-        console.log("world pos = " + trans.getOrigin().getX() +
-                    trans.getOrigin().getY() + trans.getOrigin().getZ() );
+        console.log('world pos = ' + trans.getOrigin().x + ' ' +
+                    trans.getOrigin().y + ' ' + trans.getOrigin().z );
       }
     }
   }
-*/
+
   ok( true, 'finish' );
 
 });
