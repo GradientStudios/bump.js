@@ -60,6 +60,7 @@
         "src/BulletCollision/CollisionShapes/ConvexInternalShape.js",
         "src/BulletCollision/CollisionShapes/ConvexPolyhedron.js",
         "src/BulletCollision/CollisionShapes/PolyhedralConvexShape.js",
+        "src/BulletCollision/CollisionShapes/SphereShape.js",
         "src/BulletCollision/CollisionShapes/BoxShape.js"
       ],
       "prehint": true,

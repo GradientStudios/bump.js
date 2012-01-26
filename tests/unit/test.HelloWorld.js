@@ -29,10 +29,10 @@ test( 'basic', function() {
   groundTransform.setOrigin( Bump.Vector3.create( 0, -56, 0 ) );
 
   var mass = 0,
-  isDynamic = (mass !== 0 ),
+  isDynamic = ( mass !== 0 ),
   localInertia = Bump.Vector3.create();
 
-  if( isDynamic ) {
+  if ( isDynamic ) {
     groundShape.calculateLocalInertia( mass, localInertia );
   }
 
@@ -48,11 +48,10 @@ test( 'basic', function() {
   dynamicsWorld.addRigidBody( body );
 
   // create a dynamic rigidbody
-
-  var colShape = new Bump.BoxShape.create( Bump.Vector3.create( 1, 1, 1 ) );
-  ok( colShape instanceof Bump.BoxShape.prototype.constructor );
-  // var colShape = new Bump.SphereShape.create( 1 );
-  // ok( colShape instanceof Bump.SphereShape.prototype.constructor );
+  // var colShape = new Bump.BoxShape.create( Bump.Vector3.create( 1, 1, 1 ) );
+  // ok( colShape instanceof Bump.BoxShape.prototype.constructor );
+  var colShape = Bump.SphereShape.create( 1 );
+  ok( colShape instanceof Bump.SphereShape.prototype.constructor );
 
   collisionShapes.push( colShape );
 
