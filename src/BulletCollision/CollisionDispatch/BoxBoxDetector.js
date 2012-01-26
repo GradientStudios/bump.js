@@ -23,11 +23,193 @@
     }
   });
 
-  var dLineClosestApproach = function() {};
+  var dLineClosestApproach = function( pa, ua, pb, ub, alpha, beta ) {
+    var p = pb.subtract( pa ),
+        uaub = dDOT( ua, 0, ub, 0 ),
+        q1 =  dDOT( ua, 0, p, 0 ),
+        q2 = -dDOT( ub, 0, p, 0 ),
+        d = 1 - uaub * uaub;
+    if ( d <= 0.0001 ) {
+      alpha.value = 0;
+      beta.value  = 0;
+      return;
+    }
 
-  var intersectRectQuad2 = function() {};
+    d = 1 / d;
+    alpha.value = ( q1 + uaub * q2 ) * d;
+    beta.value  = ( uaub * q1 + q2 ) * d;
+  };
 
-  var cullPoints2 = function() {};
+  // Find all the intersection points between the 2D rectangle with vertices
+  // at `(+/-h[0],+/-h[1])` and the 2D quadrilateral with vertices `(p[0],p[1])`,
+  // `(p[2],p[3])`, `(p[4],p[5])`, `(p[6],p[7])`.
+  //
+  // The intersection points are returned as `x,y` pairs in the `ret` array.
+  // The number of intersection points is returned by the function (this will
+  // be in the range 0 to 8).
+  var intersectRectQuad2 = function( h, p, ret ) {
+    // `qIdx` (and `rIdx`) contain `nq` (and `nr`) coordinate points for the
+    // current (and chopped) polygons.
+    var nq = 4, nr = 0,
+        buffer = new Array( 16 ),
+        // `qIdx` indexes inside `p`.
+        q = p,
+        qIdx = 0,
+        // `rIdx` indexes inside `r`.
+        r = ret,
+        rIdx = 0,
+        z;
+
+    for ( var dir = 0; dir <= 1; ++dir ) {
+      // Direction notation: `xy[0]` = x axis, `xy[1]` = y axis.
+      for ( var sign = -1; sign <= 1; sign += 2 ) {
+        // Chop `q` along the line `xy[dir] = sign * h[dir]`.
+
+        // `pqIdx` indexes inside `p`.
+        var pqIdx = qIdx,
+            // `prIdx` indexes inside `r`.
+            prIdx = rIdx;
+        nr = 0;
+        for ( var i = nq; i > 0; --i ) {
+          // Go through all points in `q` and all lines between adjacent points.
+          if ( sign * q[ pqIdx + dir ] < h[ dir ] ) {
+            // This point is inside the chopping line.
+            r[ prIdx ] = q[ pqIdx ];
+            r[ prIdx + 1 ] = q[ pqIdx + 1 ];
+            prIdx += 2;
+            ++nr;
+            if ( nr & 8 ) {
+              q = r;
+              qIdx = rIdx;
+              // goto done;
+              if ( q !== ret || qIdx !== 0 ) {
+                for ( z = 0; z < nr * 2; ++z ) {
+                  ret[ z ] = q[ qIdx + z ];
+                }
+              }
+              return nr;
+            }
+          }
+
+          var nextq, nextqIdx;
+          if ( i > 1 ) {
+            nextq = q;
+            nextqIdx = pqIdx + 2;
+          } else {
+            nextq = q;
+            nextqIdx = qIdx;
+          }
+          if ( ( sign * q[ pqIdx + dir ] < h[ dir ]) ^ ( sign * nextq[ nextqIdx + dir ] < h[ dir ] ) ) {
+            // This line crosses the chopping line.
+            r[ prIdx + 1 - dir ] = q[ pqIdx + 1 - dir ] + ( nextq[ nextqIdx + 1 - dir ] - q[ pqIdx + 1 - dir ] ) /
+              ( nextq[ nextqIdx + dir ] - q[ pqIdx + dir ] ) * ( sign * h[ dir ] - q[ pqIdx + dir ] );
+            r[ prIdx + dir ] = sign * h[ dir ];
+            prIdx += 2;
+            ++nr;
+            if ( nr & 8 ) {
+              q = r;
+              qIdx = rIdx;
+              // goto done;
+              if ( q !== ret || qIdx !== 0 ) {
+                for ( z = 0; z < nr * 2; ++z ) {
+                  ret[ z ] = q[ qIdx + z ];
+                }
+              }
+              return nr;
+            }
+          }
+          pqIdx += 2;
+        }
+        q = r;
+        qIdx = rIdx;
+        if ( q === ret && qIdx === 0 ) {
+          r = buffer;
+          rIdx = 0;
+        } else {
+          r = ret;
+          rIdx = 0;
+        }
+        nq = nr;
+      }
+    }
+    // done:
+    if ( q !== ret || qIdx !== 0 ) {
+      for ( z = 0; z < nr * 2; ++z ) {
+        ret[ z ] = q[ qIdx + z ];
+      }
+    }
+    return nr;
+  };
+
+  var cullPoints2 = function( n, p, m, i0, iret ) {
+    var iretIdx = 0;
+    // Compute the centroid of the polygon in `cx,cy`.
+    var i, j;
+    var a, cx, cy, q;
+    if ( n === 1 ) {
+      cx = p[0];
+      cy = p[1];
+    } else if ( n === 2 ) {
+      cx = 0.5 * ( p[0] + p[2] );
+      cy = 0.5 * ( p[1] + p[3] );
+    } else {
+      a = 0;
+      cx = 0;
+      cy = 0;
+      for ( i = 0; i < n - 1; ++i ) {
+        q = p[ i * 2 ] * p[ i * 2 + 3 ] - p[ i * 2 + 2 ] * p[ i * 2 + 1 ];
+        a += q;
+        cx += q * ( p[ i * 2     ] + p[ i * 2 + 2 ] );
+        cy += q * ( p[ i * 2 + 1 ] + p[ i * 2 + 3 ] );
+      }
+      q = p[ n * 2 - 2 ] * p[1] - p[0] * p[ n * 2 - 1 ];
+      if ( Math.abs( a + q ) > Bump.SIMD_EPSILON ) {
+        a = 1 / ( 3 * ( a + q ) );
+      } else {
+        a = Infinity;
+      }
+      cx = a * ( cx + q * ( p[ n * 2 - 2 ] + p[0] ) );
+      cy = a * ( cy + q * ( p[ n * 2 - 1 ] + p[1] ) );
+    }
+
+    // Compute the angle of each point w.r.t. the centroid.
+    //     new Array( 8 );
+    var A = [ 0, 0, 0, 0, 0, 0, 0, 0 ];
+    for ( i = 0; i < n; ++i ) {
+      A[i] = Math.atan2( p[ i * 2 + 1 ] - cy, p[ i * 2 ] - cx );
+    }
+
+    // Search for points that have angles closest to `A[i0] + i*(2*pi/m)`.
+    var avail = new Array( 8 );
+    for ( i = 0; i < n; ++i ) {
+      avail[i] = 1;
+    }
+    avail[ i0 ] = 0;
+    iret[ iretIdx ] = i0;
+    ++iretIdx;
+    for ( j = 1; j < m; ++j ) {
+      a = j * ( 2 * Math.PI / m ) + A[ i0 ];
+      if ( a > Math.PI ) { a -= 2 * Math.PI; }
+      var maxdiff = 1e9, diff;
+
+      // `iret` is not allowed to keep this value, but it sometimes does, when
+      // `diff` = `#QNAN0`.
+      iret[ iretIdx ] = i0;
+
+      for ( i = 0; i < n; ++i ) {
+        if ( avail[i] ) {
+          diff = Math.abs ( A[i] - a );
+          if ( diff > Math.PI ) { diff = 2 * Math.PI - diff; }
+          if ( diff < maxdiff ) {
+            maxdiff = diff;
+            iret[ iretIdx ] = i;
+          }
+        }
+      }
+      avail[ iret[ iretIdx ] ] = 0;
+      ++iretIdx;
+    }
+  };
 
   var dBoxBox2 = function(
     p1, R1, side1,
@@ -161,8 +343,8 @@
     // if we get to this point, the boxes interpenetrate. compute the normal
     // in global coordinates.
     if ( normalR.matrix !== null ) {
-      var normR = normalR.matrix;
-      var normRIdx = normalR.index;
+      var normR = normalR.matrix,
+          normRIdx = normalR.index;
       normal.x = normR[ normRIdx     ];
       normal.y = normR[ normRIdx + 4 ];
       normal.z = normR[ normRIdx + 8 ];
@@ -203,8 +385,8 @@
         pb.z += sign * B[j] * R1[ 8 + j ];
       }
 
-      var alpha = { value: 0 }, beta = { value: 0 };
-      var ua = Bump.Vector3.create(), ub = Bump.Vector3.create;
+      var alpha = { value: 0 }, beta = { value: 0 },
+          ua = Bump.Vector3.create(), ub = Bump.Vector3.create;
 
       tmp = ~~(( code - 7 ) / 3);
       ua.x = R1[ tmp     ];
@@ -331,8 +513,8 @@
     // Find the four corners of the incident face, in reference-face coordinates.
 
     // `quad` is the 2D coordinate of incident face (x,y pairs).
-    var quad = new Array( 8 );
-    var c1, c2, m11, m12, m21, m22;
+    var quad = new Array( 8 ),
+        c1, c2, m11, m12, m21, m22;
     c1 = dDOT14( center, 0, Ra, code1 );
     c2 = dDOT14( center, 0, Ra, code2 );
     // optimize this? - we have already computed this data above, but it is not
@@ -362,8 +544,8 @@
     rect[1] = Sa[ code2 ];
 
     // intersect the incident and reference faces
-    var ret = new Array( 16 );
-    var n = intersectRectQuad2( rect, quad, ret );
+    var ret = new Array( 16 ),
+        n = intersectRectQuad2( rect, quad, ret );
 
     if ( n < 1 ) {
       // This should never happen.
@@ -378,8 +560,8 @@
     // Penetrating contact points.
     var point = new Array( 3 * 8 );
     // Depths for those points.
-    var dep = new Array( 8 );
-    var det1 = 1 / ( m11 * m22 - m12 * m21 );
+    var dep = new Array( 8 ),
+        det1 = 1 / ( m11 * m22 - m12 * m21 );
     m11 *= det1;
     m12 *= det1;
     m21 *= det1;
@@ -439,8 +621,8 @@
     } else {
       // We have more contacts than are wanted, some of them must be culled.
       // Find the deepest point, it is always the first contact.
-      var i1 = 0;
-      var maxdepth = dep[0];
+      var i1 = 0,
+          maxdepth = dep[0];
       for ( i = 1; i < cnum; ++i ) {
         if ( dep[i] > maxdepth ) {
           maxdepth = dep[i];
