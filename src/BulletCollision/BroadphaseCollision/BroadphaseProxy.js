@@ -83,16 +83,16 @@
     init: function BroadphaseProxy( aabbMin, aabbMax, userPtr, collisionFilterGroup,
                                     collisionFilterMask, multiSapParentProxy ) {
       // Usually the client CollisionObject or Rigidbody class
-      this.m_clientObject = userPtr;
+      this.clientObject = userPtr;
 
-      this.m_collisionFilterGroup = collisionFilterGroup;
-      this.m_collisionFilterMask = collisionFilterMask;
+      this.collisionFilterGroup = collisionFilterGroup;
+      this.collisionFilterMask = collisionFilterMask;
 
-      this.m_multiSapParentProxy = multiSapParentProxy || null;
-      this.m_uniqueId = 0;
+      this.multiSapParentProxy = multiSapParentProxy || null;
+      this.uniqueId = 0;
 
-      this.m_aabbMin = aabbMin.clone();
-      this.m_aabbMax = aabbMax.clone();
+      this.aabbMin = aabbMin.clone();
+      this.aabbMax = aabbMax.clone();
 
     },
 
@@ -104,7 +104,7 @@
     // ## Member functions
     members: {
       getUid: function() {
-        return this.m_uniqueId;
+        return this.uniqueId;
       }
 
     },
@@ -152,13 +152,13 @@
       createEmpty: function() {
         var newProxy = Object.create( Bump.BroadphaseProxy.prototype );
 
-        newProxy.m_clientObject = null;
-        newProxy.m_collisionFilterGroup = 0;
-        newProxy.m_collisionFilterMask = 0;
-        newProxy.m_multiSapParentProxy = null;
-        newProxy.m_uniqueId = 0;
-        newProxy.m_aabbMin = Bump.Vector3.create();
-        newProxy.m_aabbMax = Bump.Vector3.create();
+        newProxy.clientObject = null;
+        newProxy.collisionFilterGroup = 0;
+        newProxy.collisionFilterMask = 0;
+        newProxy.multiSapParentProxy = null;
+        newProxy.uniqueId = 0;
+        newProxy.aabbMin = Bump.Vector3.create();
+        newProxy.aabbMax = Bump.Vector3.create();
 
         return newProxy;
       },
@@ -184,24 +184,24 @@
 
   Bump.BroadphasePair = Bump.type({
     init: function BroadphasePair( proxy0, proxy1 ) {
-      if ( proxy0.m_uniqueId < proxy1.m_uniqueId ) {
-        this.m_pProxy0 = proxy0;
-        this.m_pProxy1 = proxy1;
+      if ( proxy0.uniqueId < proxy1.uniqueId ) {
+        this.pProxy0 = proxy0;
+        this.pProxy1 = proxy1;
       }
       else {
-        this.m_pProxy0 = proxy1;
-        this.m_pProxy1 = proxy0;
+        this.pProxy0 = proxy1;
+        this.pProxy1 = proxy0;
       }
 
-      this.m_algorithm = null;
+      this.algorithm = null;
 
-      // Note: The original btBroadphaseProxy source has m_internalInfo1 and m_internalTmpValue
+      // Note: The original btBroadphaseProxy source has internalInfo1 and internalTmpValue
       // lumped into a union, meaning that only one value can be used at a time. However, comments
       // suggest that these values should not be used.
 
       //don't use this data, it will be removed in future version.
-      this.m_internalInfo1 = null;
-      this.m_internalTmpValue = 0;
+      this.internalInfo1 = null;
+      this.internalTmpValue = 0;
     },
 
     members: {
@@ -213,7 +213,7 @@
       // will return results that are *not* considered equal. If `uid`s are
       // managed correctly, this should never happen.
       equal: function( other ) {
-        return ( this.m_pProxy0 === other.m_pProxy0 ) && ( this.m_pProxy1 === other.m_pProxy1 );
+        return ( this.pProxy0 === other.pProxy0 ) && ( this.pProxy1 === other.pProxy1 );
       }
     },
 
@@ -223,11 +223,11 @@
       clone: function( other ) {
         var newPair = Object.create( Bump.BroadphasePair.prototype );
 
-        newPair.m_pProxy0 = other.m_pProxy0;
-        newPair.m_pProxy1 = other.m_pProxy1;
-        newPair.m_algorithm = other.m_algorithm;
-        newPair.m_internalInfo1 = other.m_internalInfo1;
-        newPair.m_internalTmpValue = other.m_internalTmpValue;
+        newPair.pProxy0 = other.pProxy0;
+        newPair.pProxy1 = other.pProxy1;
+        newPair.algorithm = other.algorithm;
+        newPair.internalInfo1 = other.internalInfo1;
+        newPair.internalTmpValue = other.internalTmpValue;
 
         return newPair;
       },
@@ -237,11 +237,11 @@
       createEmpty: function() {
         var newPair = Object.create( Bump.BroadphasePair.prototype );
 
-        newPair.m_pProxy0 = null;
-        newPair.m_pProxy1 = null;
-        newPair.m_algorithm = null;
-        newPair.m_internalInfo1 = null;
-        newPair.m_internalTmpValue = 0;
+        newPair.pProxy0 = null;
+        newPair.pProxy1 = null;
+        newPair.algorithm = null;
+        newPair.internalInfo1 = null;
+        newPair.internalTmpValue = 0;
 
         return newPair;
       }
@@ -253,14 +253,14 @@
   Bump.BroadphasePairSortPredicate = Bump.type({
     typeMembers: {
       _functor: function( a, b ) {
-        var uidA0 = a.m_pProxy0 ? a.m_pProxy0.m_uniqueId : -1,
-            uidB0 = b.m_pProxy0 ? b.m_pProxy0.m_uniqueId : -1,
-            uidA1 = a.m_pProxy1 ? a.m_pProxy1.m_uniqueId : -1,
-            uidB1 = b.m_pProxy1 ? b.m_pProxy1.m_uniqueId : -1;
+        var uidA0 = a.pProxy0 ? a.pProxy0.uniqueId : -1,
+            uidB0 = b.pProxy0 ? b.pProxy0.uniqueId : -1,
+            uidA1 = a.pProxy1 ? a.pProxy1.uniqueId : -1,
+            uidB1 = b.pProxy1 ? b.pProxy1.uniqueId : -1;
 
         return uidA0 > uidB0 ||
-          ( a.m_pProxy0 === b.m_pProxy0 && uidA1 > uidB1 ) ||
-          ( a.m_pProxy0 === b.m_pProxy0 && a.m_pProxy1 === b.m_pProxy1 && a.m_algorithm > b.m_algorithm );
+          ( a.pProxy0 === b.pProxy0 && uidA1 > uidB1 ) ||
+          ( a.pProxy0 === b.pProxy0 && a.pProxy1 === b.pProxy1 && a.algorithm > b.algorithm );
       },
 
       create: function() {

@@ -55,16 +55,16 @@
     parent: Bump.OverlappingPairCache,
 
     init: function HashedOverlappingPairCache() {
-      this.m_overlapFilterCallback = null;
-      this.m_blockedForChanges = false;
-      this.m_ghostPairCallback = null;
+      this.overlapFilterCallback = null;
+      this.blockedForChanges = false;
+      this.ghostPairCallback = null;
 
       /* var initialAllocatedSize = 2;
-      m_overlappingPairArray.reserve(initialAllocatedSize); */
+      overlappingPairArray.reserve(initialAllocatedSize); */
 
-      this.m_overlappingPairArray = [];
-      this.m_hashTable = [];
-      this.m_next = [];
+      this.overlappingPairArray = [];
+      this.hashTable = [];
+      this.next = [];
 
       /* this.growTables(); */
     },
@@ -77,13 +77,13 @@
           parent: Bump.OverlapCallback,
 
           init: function RemovePairCallback( obseleteProxy ) {
-            this.m_obsoleteProxy = obseleteProxy;
+            this.obsoleteProxy = obseleteProxy;
           },
 
           members: {
             processOverlap: function( pair ) {
-              return ( ( pair.m_pProxy0 === this.m_obsoleteProxy ) ||
-                       ( pair.m_pProxy1 === this.m_obsoleteProxy ) );
+              return ( ( pair.pProxy0 === this.obsoleteProxy ) ||
+                       ( pair.pProxy1 === this.obsoleteProxy ) );
             }
           }
         }),
@@ -94,7 +94,7 @@
 
       removeOverlappingPair: function( proxy0, proxy1, dispatcher ) {
         gRemovePairs++;
-        if ( proxy0.m_uniqueId > proxy1.m_uniqueId ) {
+        if ( proxy0.uniqueId > proxy1.uniqueId ) {
           /* btSwap(proxy0,proxy1); */
           var tmp = proxy0;
           proxy0 = proxy1;
@@ -106,7 +106,7 @@
         /*if (proxyId1 > proxyId2)
                 btSwap(proxyId1, proxyId2);*/
 
-        /* int  hash = static_cast<int>(getHash(static_cast<unsigned int>(proxyId1),static_cast<unsigned int>(proxyId2)) & (m_overlappingPairArray.capacity()-1)); */
+        /* int  hash = static_cast<int>(getHash(static_cast<unsigned int>(proxyId1),static_cast<unsigned int>(proxyId2)) & (overlappingPairArray.capacity()-1)); */
         var hash = ( this.getHash( proxyId1 << 0, proxyId2 << 0 ) & ( CAPACITY - 1 ) ) << 0,
             pair = this.internalFindPair( proxy0, proxy1, hash );
         if ( pair === undefined ) {
@@ -115,92 +115,92 @@
 
         this.cleanOverlappingPair( pair, dispatcher );
 
-        var userData = pair.m_internalInfo1;
+        var userData = pair.internalInfo1;
 
-        /* btAssert(pair->m_pProxy0->getUid() == proxyId1);
-        btAssert(pair->m_pProxy1->getUid() == proxyId2); */
+        /* btAssert(pair->pProxy0->getUid() == proxyId1);
+        btAssert(pair->pProxy1->getUid() == proxyId2); */
 
-        /* int pairIndex = int(pair - &m_overlappingPairArray[0]); */
-        var pairIndex = this.m_overlappingPairArray.indexOf( pair );
-        /* btAssert(pairIndex < m_overlappingPairArray.size()); */
+        /* int pairIndex = int(pair - &overlappingPairArray[0]); */
+        var pairIndex = this.overlappingPairArray.indexOf( pair );
+        /* btAssert(pairIndex < overlappingPairArray.size()); */
 
         // Remove the pair from the hash table.
-        var index = this.m_hashTable[ hash ];
+        var index = this.hashTable[ hash ];
         /* btAssert(index != BT_NULL_PAIR); */
 
         var previous = BT_NULL_PAIR;
         while( index !== pairIndex  ) {
           previous = index;
-          index = this.m_next[ index ];
+          index = this.next[ index ];
         }
 
         if ( previous != BT_NULL_PAIR ) {
-          /* btAssert(m_next[previous] == pairIndex); */
-          this.m_next[ previous ] = this.m_next[ pairIndex ];
+          /* btAssert(next[previous] == pairIndex); */
+          this.next[ previous ] = this.next[ pairIndex ];
         }
         else {
-          this.m_hashTable[ hash ] = this.m_next[ pairIndex ];
+          this.hashTable[ hash ] = this.next[ pairIndex ];
         }
 
         // We now move the last pair into spot of the
         // pair being removed. We need to fix the hash
         // table indices to support the move.
 
-        var lastPairIndex = this.m_overlappingPairArray.length - 1;
+        var lastPairIndex = this.overlappingPairArray.length - 1;
 
-        if ( this.m_ghostPairCallback ) {
-          this.m_ghostPairCallback.removeOverlappingPair( proxy0, proxy1, dispatcher );
+        if ( this.ghostPairCallback ) {
+          this.ghostPairCallback.removeOverlappingPair( proxy0, proxy1, dispatcher );
         }
 
         // If the removed pair is the last pair, we are done.
         if ( lastPairIndex === pairIndex ) {
-          this.m_overlappingPairArray.pop();
+          this.overlappingPairArray.pop();
           return userData;
         }
 
         // Remove the last pair from the hash table.
-        var last = this.m_overlappingPairArray[ lastPairIndex ],
+        var last = this.overlappingPairArray[ lastPairIndex ],
         /* missing swap here too, Nat. */
-        /* int lastHash = static_cast<int>(getHash(static_cast<unsigned int>(last->m_pProxy0->getUid()), static_cast<unsigned int>(last->m_pProxy1->getUid())) & (m_overlappingPairArray.capacity()-1)); */
-            lastHash = ( this.getHash( last.m_pProxy0.getUid() << 0,
-                                       last.m_pProxy1.getUid() << 0 ) & ( CAPACITY - 1 ) ) << 0;
+        /* int lastHash = static_cast<int>(getHash(static_cast<unsigned int>(last->pProxy0->getUid()), static_cast<unsigned int>(last->pProxy1->getUid())) & (overlappingPairArray.capacity()-1)); */
+            lastHash = ( this.getHash( last.pProxy0.getUid() << 0,
+                                       last.pProxy1.getUid() << 0 ) & ( CAPACITY - 1 ) ) << 0;
 
-        index = this.m_hashTable[ lastHash ];
+        index = this.hashTable[ lastHash ];
         /* btAssert(index != BT_NULL_PAIR); */
 
         previous = BT_NULL_PAIR;
         while( index !== lastPairIndex ) {
           previous = index;
-          index = this.m_next[ index ];
+          index = this.next[ index ];
         }
 
         if ( previous !== BT_NULL_PAIR ) {
-          /* btAssert(m_next[previous] == lastPairIndex); */
-          this.m_next[ previous ] = this.m_next[ lastPairIndex ];
+          /* btAssert(next[previous] == lastPairIndex); */
+          this.next[ previous ] = this.next[ lastPairIndex ];
         }
         else {
-          this.m_hashTable[ lastHash ] = this.m_next[ lastPairIndex ];
+          this.hashTable[ lastHash ] = this.next[ lastPairIndex ];
         }
 
         // Copy the last pair into the remove pair's spot.
-        this.m_overlappingPairArray[ pairIndex ] = this.m_overlappingPairArray[ lastPairIndex ];
+        this.overlappingPairArray[ pairIndex ] = this.overlappingPairArray[ lastPairIndex ];
 
         // Insert the last pair into the hash table
-        this.m_next[ pairIndex ] = this.m_hashTable[ lastHash ];
-        this.m_hashTable[ lastHash ] = pairIndex;
+        this.next[ pairIndex ] = this.hashTable[ lastHash ];
+        this.hashTable[ lastHash ] = pairIndex;
 
-        this.m_overlappingPairArray.pop();
+        this.overlappingPairArray.pop();
 
         return userData;
 
       },
 
       needsBroadphaseCollision: function( proxy0, proxy1 ) {
-        if ( this.m_overlapFilterCallback ) {
-          return this.m_overlapFilterCallback.needBroadphaseCollision( proxy0, proxy1 );
+        if ( this.overlapFilterCallback ) {
+          return this.overlapFilterCallback.needBroadphaseCollision( proxy0, proxy1 );
         }
-        var collides = ( proxy0.m_collisionFilterGroup & proxy1.m_collisionFilterMask ) !== 0;
-        collides = collides && ( proxy1.m_collisionFilterGroup & proxy0.m_collisionFilterMask );
+        var collides = ( proxy0.collisionFilterGroup & proxy1.collisionFilterMask ) !== 0;
+        collides = collides && ( proxy1.collisionFilterGroup & proxy0.collisionFilterMask );
         return collides;
       },
 
@@ -219,16 +219,16 @@
           parent: Bump.OverlapCallback,
 
           init: function CleanPairCallback( cleanProxy, pairCache, dispatcher ) {
-            this.m_cleanProxy = cleanProxy;
-            this.m_pairCache = pairCache;
-            this.m_dispatcher = dispatcher;
+            this.cleanProxy = cleanProxy;
+            this.pairCache = pairCache;
+            this.dispatcher = dispatcher;
           },
 
           members: {
             processOverlap: function( pair ) {
-              if ( ( pair.m_pProxy0 === this.m_cleanProxy ) ||
-                  ( pair.m_pProxy1 === this.m_cleanProxy ) ) {
-                this.m_pairCache.cleanOverlappingPair( pair, this.m_dispatcher );
+              if ( ( pair.pProxy0 === this.cleanProxy ) ||
+                  ( pair.pProxy1 === this.cleanProxy ) ) {
+                this.pairCache.cleanOverlappingPair( pair, this.dispatcher );
               }
               return false;
             }
@@ -241,11 +241,11 @@
 
       processAllOverlappingPairs: function( callback, dispatcher ) {
         var i;
-        // printf("m_overlappingPairArray.size()=%d\n",m_overlappingPairArray.size());
-        for ( i = 0; i < this.m_overlappingPairArray.length; ) {
-          var pair = this.m_overlappingPairArray[i];
+        // printf("overlappingPairArray.size()=%d\n",overlappingPairArray.size());
+        for ( i = 0; i < this.overlappingPairArray.length; ) {
+          var pair = this.overlappingPairArray[i];
           if ( callback.processOverlap( pair ) ) {
-            this.removeOverlappingPair( pair.m_pProxy0, pair.m_pProxy1, dispatcher );
+            this.removeOverlappingPair( pair.pProxy0, pair.pProxy1, dispatcher );
             gOverlappingPairs--;
           }
           else {
@@ -255,24 +255,24 @@
       },
 
       getOverlappingPairArrayPtr: function() {
-        return this.m_overlappingPairArray;
+        return this.overlappingPairArray;
       },
 
       getOverlappingPairArray: function() {
-        return this.m_overlappingPairArray;
+        return this.overlappingPairArray;
       },
 
       cleanOverlappingPair: function( pair, dispatcher ) {
         if ( pair.algorithm ) {
-          /* pair->m_algorithm->~CollisionAlgorithm(); */
-          dispatcher.freeCollisionAlgorithm( pair.m_algorithm );
-          pair.m_algorithm = null;
+          /* pair->algorithm->~CollisionAlgorithm(); */
+          dispatcher.freeCollisionAlgorithm( pair.algorithm );
+          pair.algorithm = null;
         }
       },
 
       findPair: function( proxy0, proxy1 ) {
         gFindPairs++;
-        if ( proxy0.m_uniqueId > proxy1.m_uniqueId ) {
+        if ( proxy0.uniqueId > proxy1.uniqueId ) {
           /* btSwap(proxy0,proxy1); */
           var tmp = proxy0;
           proxy0 = proxy1;
@@ -285,13 +285,13 @@
                 btSwap(proxyId1, proxyId2);*/
 
         /* int hash = static_cast<int>(getHash(static_cast<unsigned int>(proxyId1),
-           static_cast<unsigned int>(proxyId2)) & (m_overlappingPairArray.capacity()-1)); */
+           static_cast<unsigned int>(proxyId2)) & (overlappingPairArray.capacity()-1)); */
 
         hash = ( this.getHash( proxyId1 << 0, proxyId2 << 0 ) &
                  ( CAPACITY - 1 ) ) << 0;
 
 
-        if ( hash >= this.m_hashTable.length ) {
+        if ( hash >= this.hashTable.length ) {
                 return undefined;
         }
 
@@ -299,11 +299,11 @@
         // don't get a chance to initialize all the values to be `BT_NULL_PAIR`.
         // Therefore, we check for `undefined`s and replace them with
         // `BT_NULL_PAIR`s.
-        var index = this.m_hashTable[ hash ];
+        var index = this.hashTable[ hash ];
         index = index === undefined ? BT_NULL_PAIR : index;
-        while( index != BT_NULL_PAIR && this.equalsPair( this.m_overlappingPairArray[index],
+        while( index != BT_NULL_PAIR && this.equalsPair( this.overlappingPairArray[index],
                                                          proxyId1, proxyId2 ) === false ) {
-          index = this.m_next[ index ];
+          index = this.next[ index ];
           index = index === undefined ? BT_NULL_PAIR : index;
         }
 
@@ -311,30 +311,30 @@
           return undefined;
         }
 
-        /* btAssert(index < m_overlappingPairArray.size()); */
+        /* btAssert(index < overlappingPairArray.size()); */
 
-        return this.m_overlappingPairArray[ index ];
+        return this.overlappingPairArray[ index ];
       },
 
       GetCount: function() {
-        return this.m_overlappingPairArray.length;
+        return this.overlappingPairArray.length;
       },
-      /* btBroadphasePair* GetPairs() { return m_pairs; } */
+      /* btBroadphasePair* GetPairs() { return pairs; } */
 
       getOverlapFilterCallback: function() {
-        return this.m_overlapFilterCallback;
+        return this.overlapFilterCallback;
       },
 
       setOverlapFilterCallback: function( callback ) {
-        this.m_overlapFilterCallback = callback;
+        this.overlapFilterCallback = callback;
       },
 
       getNumOverlappingPairs: function() {
-        return this.m_overlappingPairArray.length;
+        return this.overlappingPairArray.length;
       },
 
       internalAddPair: function( proxy0, proxy1 ) {
-        if ( proxy0.m_uniqueId > proxy1.m_uniqueId ) {
+        if ( proxy0.uniqueId > proxy1.uniqueId ) {
           /* btSwap(proxy0,proxy1); */
           var tmp = proxy0;
           proxy0 = proxy1;
@@ -346,7 +346,7 @@
         /*if (proxyId1 > proxyId2)
                 btSwap(proxyId1, proxyId2);*/
 
-       /*int     hash = static_cast<int>(getHash(static_cast<unsigned int>(proxyId1),static_cast<unsigned int>(proxyId2)) & (m_overlappingPairArray.capacity()-1));      // New hash value with new mask */
+       /*int     hash = static_cast<int>(getHash(static_cast<unsigned int>(proxyId1),static_cast<unsigned int>(proxyId2)) & (overlappingPairArray.capacity()-1));      // New hash value with new mask */
 
         // New hash value with new mask
         var hash = ( this.getHash( proxyId1 << 0, proxyId2 << 0 ) & ( CAPACITY - 1 ) ) << 0,
@@ -354,39 +354,39 @@
         if ( pair !== undefined ) {
           return pair;
         }
-        /*for (int i=0;i<m_overlappingPairArray.size();++i)
+        /*for (int i=0;i<overlappingPairArray.size();++i)
           {
-          if (     (m_overlappingPairArray[i].m_pProxy0==proxy0)&&
-          (m_overlappingPairArray[i].m_pProxy1==proxy1))
+          if (     (overlappingPairArray[i].pProxy0==proxy0)&&
+          (overlappingPairArray[i].pProxy1==proxy1))
           {
           printf("Adding duplicated %u<>%u\r\n",proxyId1,proxyId2);
           internalFindPair(proxy0, proxy1, hash);
           }
           }*/
 
-        var count = this.m_overlappingPairArray.length;
+        var count = this.overlappingPairArray.length;
 
         //this is where we add an actual pair, so also call the 'ghost'
-        if ( this.m_ghostPairCallback ) {
-          this.m_ghostPairCallback.addOverlappingPair( proxy0, proxy1 );
+        if ( this.ghostPairCallback ) {
+          this.ghostPairCallback.addOverlappingPair( proxy0, proxy1 );
         }
 
         pair = Bump.BroadphasePair.create( proxy0, proxy1 );
-        /* pair.m_pProxy0 = proxy0; */
-        /* pair.m_pProxy1 = proxy1; */
-        pair.m_algorithm = 0;
-        pair.m_internalTmpValue = 0;
+        /* pair.pProxy0 = proxy0; */
+        /* pair.pProxy1 = proxy1; */
+        pair.algorithm = 0;
+        pair.internalTmpValue = 0;
 
-        this.m_overlappingPairArray.push( pair );
+        this.overlappingPairArray.push( pair );
 
-        this.m_next[ count ] = this.m_hashTable[ hash ];
-        this.m_hashTable[ hash ] = count;
+        this.next[ count ] = this.hashTable[ hash ];
+        this.hashTable[ hash ] = count;
 
         return pair;
       },
 
       equalsPair: function( pair, proxyId1, proxyId2 ) {
-        return ( pair.m_pProxy0.getUid() == proxyId1 ) && ( pair.m_pProxy1.getUid() == proxyId2 );
+        return ( pair.pProxy0.getUid() == proxyId1 ) && ( pair.pProxy1.getUid() == proxyId2 );
       },
 
         /*
@@ -422,7 +422,7 @@
       internalFindPair: function( proxy0, proxy1, hash ) {
         var proxyId1 = proxy0.getUid(),
             proxyId2 = proxy1.getUid(),
-            index = this.m_hashTable[ hash ];
+            index = this.hashTable[ hash ];
 /*
 #if 0 // wrong, 'equalsPair' use unsorted uids, copy-past devil striked again. Nat.
         if (proxyId1 > proxyId2)
@@ -431,8 +431,8 @@
 */
         index = index === undefined ? BT_NULL_PAIR : index;
         while( index != BT_NULL_PAIR &&
-               this.equalsPair( this.m_overlappingPairArray[ index ], proxyId1, proxyId2 ) === false ) {
-          index = this.m_next[index];
+               this.equalsPair( this.overlappingPairArray[ index ], proxyId1, proxyId2 ) === false ) {
+          index = this.next[index];
           index = index === undefined ? BT_NULL_PAIR : index;
         }
 
@@ -440,9 +440,9 @@
           return undefined;
         }
 
-        /* btAssert(index < this.m_overlappingPairArray.size()); */
+        /* btAssert(index < this.overlappingPairArray.size()); */
 
-        return this.m_overlappingPairArray[ index ];
+        return this.overlappingPairArray[ index ];
       },
 
       hasDeferredRemoval: function() {
@@ -450,29 +450,29 @@
       },
 
       setInternalGhostPairCallback: function( ghostPairCallback ) {
-        this.m_ghostPairCallback = ghostPairCallback;
+        this.ghostPairCallback = ghostPairCallback;
       },
 
       sortOverlappingPairs: function( dispatcher ) {
         ///need to keep hashmap in sync with pair address, so rebuild all
         var tmpPairs = [],
             i;
-        for ( i = 0; i < this.m_overlappingPairArray.length; i++ ) {
-          tmpPairs.push( this.m_overlappingPairArray[ i ] );
+        for ( i = 0; i < this.overlappingPairArray.length; i++ ) {
+          tmpPairs.push( this.overlappingPairArray[ i ] );
         }
 
         for ( i = 0 ; i < tmpPairs.length; i++ ) {
-          this.removeOverlappingPair( tmpPairs[ i ].m_pProxy0, tmpPairs[ i ].m_pProxy1, dispatcher );
+          this.removeOverlappingPair( tmpPairs[ i ].pProxy0, tmpPairs[ i ].pProxy1, dispatcher );
         }
 
-        for ( i = 0; i < this.m_next.length; i++ ) {
-          this.m_next[ i ] = BT_NULL_PAIR;
+        for ( i = 0; i < this.next.length; i++ ) {
+          this.next[ i ] = BT_NULL_PAIR;
         }
 
         Bump.quickSort( tmpPairs, Bump.BroadphasePairSortPredicate.create() );
 
         for ( i = 0; i < tmpPairs.length; i++ ) {
-          this.addOverlappingPair( tmpPairs[ i ].m_pProxy0, tmpPairs[ i ].m_pProxy1 );
+          this.addOverlappingPair( tmpPairs[ i ].pProxy0, tmpPairs[ i ].pProxy1 );
         }
       }
     }

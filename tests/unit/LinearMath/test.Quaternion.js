@@ -29,16 +29,16 @@ test( 'create', function() {
     equal( c.w, 1 );
   }
 
-  if ( a.m_floats ) {
-    equal( a.m_floats[0], 0 );
-    equal( a.m_floats[1], 0 );
-    equal( a.m_floats[2], 0 );
-    equal( a.m_floats[3], 0 );
+  if ( a.floats ) {
+    equal( a.floats[0], 0 );
+    equal( a.floats[1], 0 );
+    equal( a.floats[2], 0 );
+    equal( a.floats[3], 0 );
 
-    equal( c.m_floats[0], 4 );
-    equal( c.m_floats[1], 3 );
-    equal( c.m_floats[2], 2 );
-    equal( c.m_floats[3], 1 );
+    equal( c.floats[0], 4 );
+    equal( c.floats[1], 3 );
+    equal( c.floats[2], 2 );
+    equal( c.floats[3], 1 );
   }
 
   var arr = [ a, b, c ];
@@ -138,11 +138,11 @@ test( '[sg]et[XYZW]', function() {
     equal( a.w, Math.SQRT2 );
   }
 
-  if ( a.m_floats ) {
-    equal( a.m_floats[0], 42 );
-    equal( a.m_floats[1], Math.PI );
-    equal( a.m_floats[2], Math.E );
-    equal( a.m_floats[3], Math.SQRT2 );
+  if ( a.floats ) {
+    equal( a.floats[0], 42 );
+    equal( a.floats[1], Math.PI );
+    equal( a.floats[2], Math.E );
+    equal( a.floats[3], Math.SQRT2 );
   }
 
   strictEqual( a, aRef, 'does not allocate new a' );
@@ -173,11 +173,11 @@ test( 'unary operator* property', function() {
     equal( a.w, Math.SQRT2 );
   }
 
-  if ( a.m_floats ) {
-    equal( a.m_floats[0], 42 );
-    equal( a.m_floats[1], Math.PI );
-    equal( a.m_floats[2], Math.E );
-    equal( a.m_floats[3], Math.SQRT2 );
+  if ( a.floats ) {
+    equal( a.floats[0], 42 );
+    equal( a.floats[1], Math.PI );
+    equal( a.floats[2], Math.E );
+    equal( a.floats[3], Math.SQRT2 );
   }
 
   strictEqual( a, aRef, 'does not allocate new a' );
@@ -213,11 +213,11 @@ test( 'setValue', function() {
     equal( a.w, Math.SQRT2 );
   }
 
-  if ( a.m_floats ) {
-    equal( a.m_floats[0], 42 );
-    equal( a.m_floats[1], Math.PI );
-    equal( a.m_floats[2], Math.E );
-    equal( a.m_floats[3], Math.SQRT2 );
+  if ( a.floats ) {
+    equal( a.floats[0], 42 );
+    equal( a.floats[1], Math.PI );
+    equal( a.floats[2], Math.E );
+    equal( a.floats[3], Math.SQRT2 );
   }
 
   strictEqual( a, aRef, 'does not allocate new a' );
@@ -241,11 +241,11 @@ test( 'setMin', function() {
     equal( a.w, 2 );
   }
 
-  if ( a.m_floats ) {
-    equal( a.m_floats[0], 1 );
-    equal( a.m_floats[1], 3 );
-    equal( a.m_floats[2], 4 );
-    equal( a.m_floats[3], 2 );
+  if ( a.floats ) {
+    equal( a.floats[0], 1 );
+    equal( a.floats[1], 3 );
+    equal( a.floats[2], 4 );
+    equal( a.floats[3], 2 );
   }
 
   strictEqual( a, aRef, 'does not allocate new a' );
@@ -271,11 +271,11 @@ test( 'setMax', function() {
     equal( a.w, 7 );
   }
 
-  if ( a.m_floats ) {
-    equal( a.m_floats[0], 8 );
-    equal( a.m_floats[1], 6 );
-    equal( a.m_floats[2], 5 );
-    equal( a.m_floats[3], 7 );
+  if ( a.floats ) {
+    equal( a.floats[0], 8 );
+    equal( a.floats[1], 6 );
+    equal( a.floats[2], 5 );
+    equal( a.floats[3], 7 );
   }
 
   strictEqual( a, aRef, 'does not allocate new a' );
@@ -302,11 +302,11 @@ test( 'setRotation', function() {
         Math.abs( a.w - aExpected.w ) < EPSILON );
   }
 
-  if ( a.m_floats ) {
-    ok( Math.abs( a.m_floats[0] - aExpected.m_floats[0] ) < EPSILON &&
-        Math.abs( a.m_floats[1] - aExpected.m_floats[1] ) < EPSILON &&
-        Math.abs( a.m_floats[2] - aExpected.m_floats[2] ) < EPSILON &&
-        Math.abs( a.m_floats[3] - aExpected.m_floats[3] ) < EPSILON );
+  if ( a.floats ) {
+    ok( Math.abs( a.floats[0] - aExpected.floats[0] ) < EPSILON &&
+        Math.abs( a.floats[1] - aExpected.floats[1] ) < EPSILON &&
+        Math.abs( a.floats[2] - aExpected.floats[2] ) < EPSILON &&
+        Math.abs( a.floats[3] - aExpected.floats[3] ) < EPSILON );
   }
 
   strictEqual( a, aRef, 'does not allocate new a' );
@@ -329,11 +329,11 @@ test( 'setEuler', function() {
         Math.abs( a.w - aExpected.w ) < EPSILON );
   }
 
-  if ( a.m_floats ) {
-    ok( Math.abs( a.m_floats[0] - aExpected.m_floats[0] ) < EPSILON &&
-        Math.abs( a.m_floats[1] - aExpected.m_floats[1] ) < EPSILON &&
-        Math.abs( a.m_floats[2] - aExpected.m_floats[2] ) < EPSILON &&
-        Math.abs( a.m_floats[3] - aExpected.m_floats[3] ) < EPSILON );
+  if ( a.floats ) {
+    ok( Math.abs( a.floats[0] - aExpected.floats[0] ) < EPSILON &&
+        Math.abs( a.floats[1] - aExpected.floats[1] ) < EPSILON &&
+        Math.abs( a.floats[2] - aExpected.floats[2] ) < EPSILON &&
+        Math.abs( a.floats[3] - aExpected.floats[3] ) < EPSILON );
   }
 
   strictEqual( a, aRef, 'does not allocate new a' );
@@ -356,11 +356,11 @@ test( 'setEulerZYX', function() {
         Math.abs( a.w - aExpected.w ) < EPSILON );
   }
 
-  if ( a.m_floats ) {
-    ok( Math.abs( a.m_floats[0] - aExpected.m_floats[0] ) < EPSILON &&
-        Math.abs( a.m_floats[1] - aExpected.m_floats[1] ) < EPSILON &&
-        Math.abs( a.m_floats[2] - aExpected.m_floats[2] ) < EPSILON &&
-        Math.abs( a.m_floats[3] - aExpected.m_floats[3] ) < EPSILON );
+  if ( a.floats ) {
+    ok( Math.abs( a.floats[0] - aExpected.floats[0] ) < EPSILON &&
+        Math.abs( a.floats[1] - aExpected.floats[1] ) < EPSILON &&
+        Math.abs( a.floats[2] - aExpected.floats[2] ) < EPSILON &&
+        Math.abs( a.floats[3] - aExpected.floats[3] ) < EPSILON );
   }
 
   strictEqual( a, aRef, 'does not allocate new a' );

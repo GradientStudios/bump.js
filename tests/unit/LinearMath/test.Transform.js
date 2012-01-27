@@ -554,9 +554,9 @@ test( 'basic', function() {
   deepEqual( a, b );
 
   notStrictEqual( a.basis, b.basis );
-  notStrictEqual( a.basis.m_el0, b.basis.m_el0 );
-  notStrictEqual( a.basis.m_el1, b.basis.m_el1 );
-  notStrictEqual( a.basis.m_el2, b.basis.m_el2 );
+  notStrictEqual( a.basis.el0, b.basis.el0 );
+  notStrictEqual( a.basis.el1, b.basis.el1 );
+  notStrictEqual( a.basis.el2, b.basis.el2 );
   notStrictEqual( a.origin, b.origin );
 });
 

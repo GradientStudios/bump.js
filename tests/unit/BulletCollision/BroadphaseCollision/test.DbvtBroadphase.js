@@ -26,13 +26,13 @@ test( 'correct types', function() {
   );
 
   var checks = [
-    [ 'm_clientObject', 'object' ],
-    [ 'm_collisionFilterGroup', 'number' ],
-    [ 'm_collisionFilterMask', 'number' ],
-    [ 'm_multiSapParentProxy', null ],
-    [ 'm_uniqueId', 'number' ],
-    [ 'm_aabbMin', Bump.Vector3 ],
-    [ 'm_aabbMax', Bump.Vector3 ],
+    [ 'clientObject', 'object' ],
+    [ 'collisionFilterGroup', 'number' ],
+    [ 'collisionFilterMask', 'number' ],
+    [ 'multiSapParentProxy', null ],
+    [ 'uniqueId', 'number' ],
+    [ 'aabbMin', Bump.Vector3 ],
+    [ 'aabbMax', Bump.Vector3 ],
 
     [ 'leaf', null ],
     [ 'links', 'array' ],

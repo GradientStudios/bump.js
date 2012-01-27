@@ -72,20 +72,20 @@ test( 'basic', function() {
 test( 'correct types', function() {
   var sc = Bump.SolverConstraint.create(),
   checks = [
-    [ 'm_relpos1CrossNormal', Bump.Vector3 ],
-    [ 'm_contactNormal', Bump.Vector3],
-    [ 'm_relpos2CrossNormal', Bump.Vector3],
-    [ 'm_angularComponentA', Bump.Vector3],
-    [ 'm_angularComponentB', Bump.Vector3],
-    [ 'm_appliedPushImpulse', 'number'],
-    [ 'm_appliedImpulse', 'number'],
-    [ 'm_friction', 'number'],
-    [ 'm_jacDiagABInv', 'number'],
-    [ 'm_rhs', 'number'],
-    [ 'm_cfm', 'number'],
-    [ 'm_lowerLimit', 'number'],
-    [ 'm_upperLimit', 'number'],
-    [ 'm_rhsPenetration', 'number'],
+    [ 'relpos1CrossNormal', Bump.Vector3 ],
+    [ 'contactNormal', Bump.Vector3],
+    [ 'relpos2CrossNormal', Bump.Vector3],
+    [ 'angularComponentA', Bump.Vector3],
+    [ 'angularComponentB', Bump.Vector3],
+    [ 'appliedPushImpulse', 'number'],
+    [ 'appliedImpulse', 'number'],
+    [ 'friction', 'number'],
+    [ 'jacDiagABInv', 'number'],
+    [ 'rhs', 'number'],
+    [ 'cfm', 'number'],
+    [ 'lowerLimit', 'number'],
+    [ 'upperLimit', 'number'],
+    [ 'rhsPenetration', 'number'],
       // internal values for unions
     [ '_union0', 'number'],
     [ '_union1', 'number'],
@@ -102,11 +102,11 @@ module( 'SolverConstraint union properties' );
 test( 'union 0', function() {
   var sc = Bump.SolverConstraint.create();
 
-  unionTest( sc, '_union0', [ 'm_numConsecutiveRowsPerKernel', 'm_unusedPadding0' ] );
-  unionTest( sc, '_union1', [ 'm_frictionIndex', 'm_unusedPadding1' ] );
-  unionTest( sc, '_union2', [ 'm_solverBodyA', 'm_companionIdA' ] );
-  unionTest( sc, '_union3', [ 'm_solverBodyB', 'm_companionIdB' ] );
-  unionTest( sc, '_union4', [ 'm_originalContactPoint', 'm_unusedPadding4' ] );
+  unionTest( sc, '_union0', [ 'numConsecutiveRowsPerKernel', 'unusedPadding0' ] );
+  unionTest( sc, '_union1', [ 'frictionIndex', 'unusedPadding1' ] );
+  unionTest( sc, '_union2', [ 'solverBodyA', 'companionIdA' ] );
+  unionTest( sc, '_union3', [ 'solverBodyB', 'companionIdB' ] );
+  unionTest( sc, '_union4', [ 'originalContactPoint', 'unusedPadding4' ] );
 
 });
 

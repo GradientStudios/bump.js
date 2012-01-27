@@ -8,11 +8,11 @@
     // Given *exactly* nine arguments in row major order,
     // initializes a 3x3 matrix.
     init: function Matrix3x3( xx, xy, xz, yx, yy, yz, zx, zy, zz ) {
-      this.m_el0 = Bump.Vector3.create( xx, xy, xz );
-      this.m_el1 = Bump.Vector3.create( yx, yy, yz );
-      this.m_el2 = Bump.Vector3.create( zx, zy, zz );
+      this.el0 = Bump.Vector3.create( xx, xy, xz );
+      this.el1 = Bump.Vector3.create( yx, yy, yz );
+      this.el2 = Bump.Vector3.create( zx, zy, zz );
 
-      this.m_el = [
+      this.el = [
         Bump.Vector3.create( xx, xy, xz ),
         Bump.Vector3.create( yx, yy, yz ),
         Bump.Vector3.create( zx, zy, zz )
@@ -30,18 +30,18 @@
       // they are much slower. It is faster to access the properties directly on
       // the object.
       0: {
-        get: function() { return this.m_el0; },
-        set: function( v ) { v.clone( this.m_el0 ); }
+        get: function() { return this.el0; },
+        set: function( v ) { v.clone( this.el0 ); }
       },
 
       1: {
-        get: function() { return this.m_el1; },
-        set: function( v ) { v.clone( this.m_el1 ); }
+        get: function() { return this.el1; },
+        set: function( v ) { v.clone( this.el1 ); }
       },
 
       2: {
-        get: function() { return this.m_el2; },
-        set: function( v ) { v.clone( this.m_el2 ); }
+        get: function() { return this.el2; },
+        set: function( v ) { v.clone( this.el2 ); }
       }
     },
 
@@ -53,19 +53,19 @@
       clone: function( dest ) {
         dest = dest || Bump.Matrix3x3.create();
         return dest.setValue(
-          this.m_el0.x, this.m_el0.y, this.m_el0.z,
-          this.m_el1.x, this.m_el1.y, this.m_el1.z,
-          this.m_el2.x, this.m_el2.y, this.m_el2.z
+          this.el0.x, this.el0.y, this.el0.z,
+          this.el1.x, this.el1.y, this.el1.z,
+          this.el2.x, this.el2.y, this.el2.z
         );
       },
 
       assign: function( other ) {
-        this.m_el0.assign( other.m_el0 );
-        this.m_el1.assign( other.m_el1 );
-        this.m_el2.assign( other.m_el2 );
+        this.el0.assign( other.el0 );
+        this.el1.assign( other.el1 );
+        this.el2.assign( other.el2 );
 
         for ( var i = 0; i < 3; ++i ) {
-          this.m_el[i].assign( other.m_el[i] );
+          this.el[i].assign( other.el[i] );
         }
 
         this.setValue( other.m11, other.m12, other.m13,
@@ -78,9 +78,9 @@
       // Compares `this` to `that` and returns whether they are the same.
       equal: function( that ) {
         return (
-          this.m_el0.x === that.m_el0.x && this.m_el0.y === that.m_el0.y && this.m_el0.z === that.m_el0.z &&
-          this.m_el1.x === that.m_el1.x && this.m_el1.y === that.m_el1.y && this.m_el1.z === that.m_el1.z &&
-          this.m_el2.x === that.m_el2.x && this.m_el2.y === that.m_el2.y && this.m_el2.z === that.m_el2.z
+          this.el0.x === that.el0.x && this.el0.y === that.el0.y && this.el0.z === that.el0.z &&
+          this.el1.x === that.el1.x && this.el1.y === that.el1.y && this.el1.z === that.el1.z &&
+          this.el2.x === that.el2.x && this.el2.y === that.el2.y && this.el2.z === that.el2.z
         );
       },
 
@@ -88,9 +88,9 @@
       // `dest`.
       getColumn: function( i, dest ) {
         dest = dest || Bump.Vector3.create();
-        dest.x = this.m_el0[i];
-        dest.y = this.m_el1[i];
-        dest.z = this.m_el2[i];
+        dest.x = this.el0[i];
+        dest.y = this.el1[i];
+        dest.z = this.el2[i];
         return dest;
       },
 
@@ -104,13 +104,13 @@
       // Given *exactly* nine arguments in row major order, sets the values of
       // `this` matrix.
       setValue: function( xx, xy, xz, yx, yy, yz, zx, zy, zz ) {
-        this.m_el0.setValue( xx, xy, xz );
-        this.m_el1.setValue( yx, yy, yz );
-        this.m_el2.setValue( zx, zy, zz );
+        this.el0.setValue( xx, xy, xz );
+        this.el1.setValue( yx, yy, yz );
+        this.el2.setValue( zx, zy, zz );
 
-        this.m_el[0].setValue( xx, xy, xz );
-        this.m_el[1].setValue( yx, yy, yz );
-        this.m_el[2].setValue( zx, zy, zz );
+        this.el[0].setValue( xx, xy, xz );
+        this.el[1].setValue( yx, yy, yz );
+        this.el[2].setValue( zx, zy, zz );
 
         this.m11 = xx; this.m12 = xy; this.m13 = xz;
         this.m21 = yx; this.m22 = yy; this.m23 = yz;
@@ -175,7 +175,7 @@
       getRotation: function( dest ) {
         dest = dest || Bump.Quaternion.create();
 
-        var trace = this.m_el0.x + this.m_el1.y + this.m_el2.z,
+        var trace = this.el0.x + this.el1.y + this.el2.z,
             temp = new Array( 4 ),
             s;
 
@@ -184,13 +184,13 @@
           temp[3] = ( s * 0.5 );
           s = 0.5 / s;
 
-          temp[0] = ( ( this.m_el2.y - this.m_el1.z ) * s );
-          temp[1] = ( ( this.m_el0.z - this.m_el2.x ) * s );
-          temp[2] = ( ( this.m_el1.x - this.m_el0.y ) * s );
+          temp[0] = ( ( this.el2.y - this.el1.z ) * s );
+          temp[1] = ( ( this.el0.z - this.el2.x ) * s );
+          temp[2] = ( ( this.el1.x - this.el0.y ) * s );
         } else {
-          var i = this.m_el0.x < this.m_el1.y ?
-                ( this.m_el1.y < this.m_el2.z ? 2 : 1 ) :
-                ( this.m_el0.x < this.m_el2.z ? 2 : 0 ),
+          var i = this.el0.x < this.el1.y ?
+                ( this.el1.y < this.el2.z ? 2 : 1 ) :
+                ( this.el0.x < this.el2.z ? 2 : 0 ),
               j = ( i + 1 ) % 3,
               k = ( i + 2 ) % 3;
 
@@ -212,9 +212,9 @@
       getEulerYPR: function( dest ) {
         dest = dest || {};
 
-        dest.yaw   = Math.atan2( this.m_el1.x, this.m_el0.x );
-        dest.pitch = Math.asin( -this.m_el2.x );
-        dest.roll  = Math.atan2( this.m_el2.y, this.m_el2.z );
+        dest.yaw   = Math.atan2( this.el1.x, this.el0.x );
+        dest.pitch = Math.asin( -this.el2.x );
+        dest.roll  = Math.atan2( this.el2.y, this.el2.z );
 
         if ( Math.abs( dest.pitch ) === Math.PI / 2 ) {
           if ( dest.yaw > 0 ) {
@@ -249,15 +249,15 @@
         }
 
         // check that pitch is not at a singularity
-        if ( Math.abs( this.m_el2.x ) >= 1 ) {
+        if ( Math.abs( this.el2.x ) >= 1 ) {
           eulerOut1.yaw = 0;
           eulerOut2.yaw = 0;
 
           // from difference of angles formula
-          var delta = Math.atan2( this.m_el0.x, this.m_el0.z );
+          var delta = Math.atan2( this.el0.x, this.el0.z );
 
           //gimbal locked up
-          if ( this.m_el2.x  > 0 ) {
+          if ( this.el2.x  > 0 ) {
             eulerOut1.pitch = Math.PI / 2;
             eulerOut2.pitch = Math.PI / 2;
             eulerOut1.roll = eulerOut1.pitch + delta;
@@ -274,17 +274,17 @@
         }
 
         else {
-          eulerOut1.pitch = - Math.asin( this.m_el2.x );
+          eulerOut1.pitch = - Math.asin( this.el2.x );
           eulerOut2.pitch = Math.PI - eulerOut1.pitch;
 
           var cp1 = Math.cos( eulerOut1.pitch ),
               cp2 = Math.cos( eulerOut2.pitch );
 
-          eulerOut1.roll = Math.atan2( this.m_el2.y / cp1, this.m_el2.z / cp1 );
-          eulerOut2.roll = Math.atan2( this.m_el2.y / cp2, this.m_el2.z / cp2 );
+          eulerOut1.roll = Math.atan2( this.el2.y / cp1, this.el2.z / cp1 );
+          eulerOut2.roll = Math.atan2( this.el2.y / cp2, this.el2.z / cp2 );
 
-          eulerOut1.yaw = Math.atan2( this.m_el1.x / cp1, this.m_el0.x / cp1 );
-          eulerOut2.yaw = Math.atan2( this.m_el1.x / cp2, this.m_el0.x / cp2 );
+          eulerOut1.yaw = Math.atan2( this.el1.x / cp1, this.el0.x / cp1 );
+          eulerOut2.yaw = Math.atan2( this.el1.x / cp2, this.el0.x / cp2 );
         }
 
         return dest;
@@ -296,18 +296,18 @@
       add: function( m, dest ) {
         dest = dest || Bump.Matrix3x3.create();
         return dest.setValue(
-          this.m_el0.x + m.m_el0.x, this.m_el0.y + m.m_el0.y, this.m_el0.z + m.m_el0.z,
-          this.m_el1.x + m.m_el1.x, this.m_el1.y + m.m_el1.y, this.m_el1.z + m.m_el1.z,
-          this.m_el2.x + m.m_el2.x, this.m_el2.y + m.m_el2.y, this.m_el2.z + m.m_el2.z
+          this.el0.x + m.el0.x, this.el0.y + m.el0.y, this.el0.z + m.el0.z,
+          this.el1.x + m.el1.x, this.el1.y + m.el1.y, this.el1.z + m.el1.z,
+          this.el2.x + m.el2.x, this.el2.y + m.el2.y, this.el2.z + m.el2.z
         );
       },
 
       // Add matrix `m` to `this`.
       addSelf: function( m ) {
         return this.setValue(
-          this.m_el0.x + m.m_el0.x, this.m_el0.y + m.m_el0.y, this.m_el0.z + m.m_el0.z,
-          this.m_el1.x + m.m_el1.x, this.m_el1.y + m.m_el1.y, this.m_el1.z + m.m_el1.z,
-          this.m_el2.x + m.m_el2.x, this.m_el2.y + m.m_el2.y, this.m_el2.z + m.m_el2.z
+          this.el0.x + m.el0.x, this.el0.y + m.el0.y, this.el0.z + m.el0.z,
+          this.el1.x + m.el1.x, this.el1.y + m.el1.y, this.el1.z + m.el1.z,
+          this.el2.x + m.el2.x, this.el2.y + m.el2.y, this.el2.z + m.el2.z
         );
       },
 
@@ -315,18 +315,18 @@
       subtract: function( m, dest ) {
         dest = dest || Bump.Matrix3x3.create();
         return dest.setValue(
-          this.m_el0.x - m.m_el0.x, this.m_el0.y - m.m_el0.y, this.m_el0.z - m.m_el0.z,
-          this.m_el1.x - m.m_el1.x, this.m_el1.y - m.m_el1.y, this.m_el1.z - m.m_el1.z,
-          this.m_el2.x - m.m_el2.x, this.m_el2.y - m.m_el2.y, this.m_el2.z - m.m_el2.z
+          this.el0.x - m.el0.x, this.el0.y - m.el0.y, this.el0.z - m.el0.z,
+          this.el1.x - m.el1.x, this.el1.y - m.el1.y, this.el1.z - m.el1.z,
+          this.el2.x - m.el2.x, this.el2.y - m.el2.y, this.el2.z - m.el2.z
         );
       },
 
       // Subtract matrix from `this`.
       subtractSelf: function( m ) {
         return this.setValue(
-          this.m_el0.x - m.m_el0.x, this.m_el0.y - m.m_el0.y, this.m_el0.z - m.m_el0.z,
-          this.m_el1.x - m.m_el1.x, this.m_el1.y - m.m_el1.y, this.m_el1.z - m.m_el1.z,
-          this.m_el2.x - m.m_el2.x, this.m_el2.y - m.m_el2.y, this.m_el2.z - m.m_el2.z
+          this.el0.x - m.el0.x, this.el0.y - m.el0.y, this.el0.z - m.el0.z,
+          this.el1.x - m.el1.x, this.el1.y - m.el1.y, this.el1.z - m.el1.z,
+          this.el2.x - m.el2.x, this.el2.y - m.el2.y, this.el2.z - m.el2.z
         );
       },
 
@@ -334,9 +334,9 @@
       multiplyMatrix: function( m, dest ) {
         dest = dest || Bump.Matrix3x3.create();
         return dest.setValue(
-          m.tdotx( this.m_el0 ), m.tdoty( this.m_el0 ), m.tdotz( this.m_el0 ),
-          m.tdotx( this.m_el1 ), m.tdoty( this.m_el1 ), m.tdotz( this.m_el1 ),
-          m.tdotx( this.m_el2 ), m.tdoty( this.m_el2 ), m.tdotz( this.m_el2 )
+          m.tdotx( this.el0 ), m.tdoty( this.el0 ), m.tdotz( this.el0 ),
+          m.tdotx( this.el1 ), m.tdoty( this.el1 ), m.tdotz( this.el1 ),
+          m.tdotx( this.el2 ), m.tdoty( this.el2 ), m.tdotz( this.el2 )
         );
       },
 
@@ -344,9 +344,9 @@
       // `dest` matrix.
       multiplyMatrixSelf: function( m ) {
         return this.setValue(
-          m.tdotx( this.m_el0 ), m.tdoty( this.m_el0 ), m.tdotz( this.m_el0 ),
-          m.tdotx( this.m_el1 ), m.tdoty( this.m_el1 ), m.tdotz( this.m_el1 ),
-          m.tdotx( this.m_el2 ), m.tdoty( this.m_el2 ), m.tdotz( this.m_el2 )
+          m.tdotx( this.el0 ), m.tdoty( this.el0 ), m.tdotz( this.el0 ),
+          m.tdotx( this.el1 ), m.tdoty( this.el1 ), m.tdotz( this.el1 ),
+          m.tdotx( this.el2 ), m.tdoty( this.el2 ), m.tdotz( this.el2 )
         );
       },
 
@@ -361,9 +361,9 @@
       multiplyVector: function( v, dest ) {
         dest = dest || Bump.Vector3.create();
         return dest.setValue(
-          this.m_el0.dot( v ),
-          this.m_el1.dot( v ),
-          this.m_el2.dot( v )
+          this.el0.dot( v ),
+          this.el1.dot( v ),
+          this.el2.dot( v )
         );
       },
 
@@ -387,9 +387,9 @@
       multiplyScalar: function( k, dest ) {
         dest = dest || Bump.Matrix3x3.create();
         return dest.setValue(
-          this.m_el0.x * k, this.m_el0.y * k, this.m_el0.z * k,
-          this.m_el1.x * k, this.m_el1.y * k, this.m_el1.z * k,
-          this.m_el2.x * k, this.m_el2.y * k, this.m_el2.z * k
+          this.el0.x * k, this.el0.y * k, this.el0.z * k,
+          this.el1.x * k, this.el1.y * k, this.el1.z * k,
+          this.el2.x * k, this.el2.y * k, this.el2.z * k
         );
       },
 
@@ -398,9 +398,9 @@
       scaled: function( s, dest ) {
         dest = dest || Bump.Matrix3x3.create();
         return dest.setValue(
-          this.m_el0.x * s.x, this.m_el0.y * s.y, this.m_el0.z * s.z,
-          this.m_el1.x * s.x, this.m_el1.y * s.y, this.m_el1.z * s.z,
-          this.m_el2.x * s.x, this.m_el2.y * s.y, this.m_el2.z * s.z
+          this.el0.x * s.x, this.el0.y * s.y, this.el0.z * s.z,
+          this.el1.x * s.x, this.el1.y * s.y, this.el1.z * s.z,
+          this.el2.x * s.x, this.el2.y * s.y, this.el2.z * s.z
         );
       },
 
@@ -416,15 +416,15 @@
       transposeTimes: function( m, dest ) {
         dest = dest || Bump.Matrix3x3.create();
         return dest.setValue(
-          this.m_el0.x * m.m_el0.x + this.m_el1.x * m.m_el1.x + this.m_el2.x * m.m_el2.x,
-          this.m_el0.x * m.m_el0.y + this.m_el1.x * m.m_el1.y + this.m_el2.x * m.m_el2.y,
-          this.m_el0.x * m.m_el0.z + this.m_el1.x * m.m_el1.z + this.m_el2.x * m.m_el2.z,
-          this.m_el0.y * m.m_el0.x + this.m_el1.y * m.m_el1.x + this.m_el2.y * m.m_el2.x,
-          this.m_el0.y * m.m_el0.y + this.m_el1.y * m.m_el1.y + this.m_el2.y * m.m_el2.y,
-          this.m_el0.y * m.m_el0.z + this.m_el1.y * m.m_el1.z + this.m_el2.y * m.m_el2.z,
-          this.m_el0.z * m.m_el0.x + this.m_el1.z * m.m_el1.x + this.m_el2.z * m.m_el2.x,
-          this.m_el0.z * m.m_el0.y + this.m_el1.z * m.m_el1.y + this.m_el2.z * m.m_el2.y,
-          this.m_el0.z * m.m_el0.z + this.m_el1.z * m.m_el1.z + this.m_el2.z * m.m_el2.z
+          this.el0.x * m.el0.x + this.el1.x * m.el1.x + this.el2.x * m.el2.x,
+          this.el0.x * m.el0.y + this.el1.x * m.el1.y + this.el2.x * m.el2.y,
+          this.el0.x * m.el0.z + this.el1.x * m.el1.z + this.el2.x * m.el2.z,
+          this.el0.y * m.el0.x + this.el1.y * m.el1.x + this.el2.y * m.el2.x,
+          this.el0.y * m.el0.y + this.el1.y * m.el1.y + this.el2.y * m.el2.y,
+          this.el0.y * m.el0.z + this.el1.y * m.el1.z + this.el2.y * m.el2.z,
+          this.el0.z * m.el0.x + this.el1.z * m.el1.x + this.el2.z * m.el2.x,
+          this.el0.z * m.el0.y + this.el1.z * m.el1.y + this.el2.z * m.el2.y,
+          this.el0.z * m.el0.z + this.el1.z * m.el1.z + this.el2.z * m.el2.z
         );
       },
 
@@ -440,9 +440,9 @@
       timesTranspose: function( m, dest ) {
         dest = dest || Bump.Matrix3x3.create();
         return dest.setValue(
-          this.m_el0.dot( m.m_el0 ), this.m_el0.dot( m.m_el1 ), this.m_el0.dot( m.m_el2 ),
-          this.m_el1.dot( m.m_el0 ), this.m_el1.dot( m.m_el1 ), this.m_el1.dot( m.m_el2 ),
-          this.m_el2.dot( m.m_el0 ), this.m_el2.dot( m.m_el1 ), this.m_el2.dot( m.m_el2 )
+          this.el0.dot( m.el0 ), this.el0.dot( m.el1 ), this.el0.dot( m.el2 ),
+          this.el1.dot( m.el0 ), this.el1.dot( m.el1 ), this.el1.dot( m.el2 ),
+          this.el2.dot( m.el0 ), this.el2.dot( m.el1 ), this.el2.dot( m.el2 )
         );
       },
 
@@ -451,7 +451,7 @@
       // Get the [determinant](http://en.wikipedia.org/wiki/Determinant) of
       // `this` matrix.
       determinant: function() {
-        return this.m_el0.triple( this.m_el1, this.m_el2 );
+        return this.el0.triple( this.el1, this.el2 );
       },
 
       // Computes the [adjugate matrix](http://en.wikipedia.org/wiki/Adjugate_matrix)
@@ -470,9 +470,9 @@
       absolute: function( dest ) {
         dest = dest || Bump.Matrix3x3.create();
         return dest.setValue(
-          Math.abs( this.m_el0.x ), Math.abs( this.m_el0.y ), Math.abs( this.m_el0.z ),
-          Math.abs( this.m_el1.x ), Math.abs( this.m_el1.y ), Math.abs( this.m_el1.z ),
-          Math.abs( this.m_el2.x ), Math.abs( this.m_el2.y ), Math.abs( this.m_el2.z )
+          Math.abs( this.el0.x ), Math.abs( this.el0.y ), Math.abs( this.el0.z ),
+          Math.abs( this.el1.x ), Math.abs( this.el1.y ), Math.abs( this.el1.z ),
+          Math.abs( this.el2.x ), Math.abs( this.el2.y ), Math.abs( this.el2.z )
         );
       },
 
@@ -481,9 +481,9 @@
       transpose: function( dest ) {
         dest = dest || Bump.Matrix3x3.create();
         return dest.setValue(
-          this.m_el0.x, this.m_el1.x, this.m_el2.x,
-          this.m_el0.y, this.m_el1.y, this.m_el2.y,
-          this.m_el0.z, this.m_el1.z, this.m_el2.z
+          this.el0.x, this.el1.x, this.el2.x,
+          this.el0.y, this.el1.y, this.el2.y,
+          this.el0.z, this.el1.z, this.el2.z
         );
       },
 
@@ -497,7 +497,7 @@
               this.cofac( 1, 2, 2, 0 ),
               this.cofac( 1, 0, 2, 1 )
             ),
-            det = this.m_el0.dot( co );
+            det = this.el0.dot( co );
 
         // btFullAssert( det !== 0);
         var s = 1 / det;
@@ -529,15 +529,15 @@
           // Find off-diagonal element `[p][q]` with largest magnitude
           var p = 0, q = 1, r = 2,
 
-              max = Math.abs( this.m_el0.y ),
-              v   = Math.abs( this.m_el0.z );
+              max = Math.abs( this.el0.y ),
+              v   = Math.abs( this.el0.z );
 
           if ( v > max ) {
             q = 2;
             r = 1;
             max = v;
           }
-          v = Math.abs( this.m_el1.z );
+          v = Math.abs( this.el1.z );
           if ( v > max ) {
             p = 1;
             q = 2;
@@ -545,7 +545,7 @@
             max = v;
           }
 
-          var t = threshold * ( Math.abs( this.m_el0.x ) + Math.abs( this.m_el1.y ) + Math.abs( this.m_el2.z ) );
+          var t = threshold * ( Math.abs( this.el0.x ) + Math.abs( this.el1.y ) + Math.abs( this.el2.z ) );
 
           if ( max <= t ) {
             if ( max <= EPSILON * t ) {
@@ -604,17 +604,17 @@
 
       // Returns the dot product of the first column and the given vector.
       tdotx: function( v ) {
-        return this.m_el0.x * v.x + this.m_el1.x * v.y + this.m_el2.x * v.z;
+        return this.el0.x * v.x + this.el1.x * v.y + this.el2.x * v.z;
       },
 
       // Returns the dot product of the first column and the given vector.
       tdoty: function( v ) {
-        return this.m_el0.y * v.x + this.m_el1.y * v.y + this.m_el2.y * v.z;
+        return this.el0.y * v.x + this.el1.y * v.y + this.el2.y * v.z;
       },
 
       // Returns the dot product of the first column and the given vector.
       tdotz: function( v ) {
-        return this.m_el0.z * v.x + this.m_el1.z * v.y + this.m_el2.z * v.z;
+        return this.el0.z * v.x + this.el1.z * v.y + this.el2.z * v.z;
       },
 
       // Compute the matrix cofactor
@@ -629,11 +629,11 @@
       // Internal method for alternate initialization using three
       // [`Bump.Vector3`](vector3.html)s
       _initWithVectors: function( vecA, vecB, vecC ) {
-        this.m_el0 = Bump.Vector3.clone( vecA );
-        this.m_el1 = Bump.Vector3.clone( vecB );
-        this.m_el2 = Bump.Vector3.clone( vecC );
+        this.el0 = Bump.Vector3.clone( vecA );
+        this.el1 = Bump.Vector3.clone( vecB );
+        this.el2 = Bump.Vector3.clone( vecC );
 
-        this.m_el = [
+        this.el = [
           Bump.Vector3.clone( vecA ),
           Bump.Vector3.clone( vecB ),
           Bump.Vector3.clone( vecC )
@@ -677,7 +677,7 @@
       // **Creates** a new matrix and copies a matrix to it.
       clone: function( mat ) {
         var newMat = Object.create( Bump.Matrix3x3.prototype );
-        newMat._initWithVectors( mat.m_el0, mat.m_el1, mat.m_el2 );
+        newMat._initWithVectors( mat.el0, mat.el1, mat.el2 );
         return newMat;
       }
     }

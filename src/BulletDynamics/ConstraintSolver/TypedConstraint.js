@@ -67,28 +67,28 @@
           return 0;
         }
 
-        var lim_fact = 1, delta_max = vel / timeFact;
+        var lifact = 1, delta_max = vel / timeFact;
 
         if ( delta_max < 0 ) {
           if ( ( pos >= lowLim ) && ( pos < ( lowLim - delta_max ) ) ) {
-            lim_fact = ( lowLim - pos ) / delta_max;
+            lifact = ( lowLim - pos ) / delta_max;
           } else if ( pos  < lowLim ) {
-            lim_fact = 0;
+            lifact = 0;
           } else {
-            lim_fact = 1;
+            lifact = 1;
           }
         } else if ( delta_max > 0 ) {
           if ( (pos <= uppLim ) && ( pos > ( uppLim - delta_max ) ) ) {
-            lim_fact = ( uppLim - pos ) / delta_max;
+            lifact = ( uppLim - pos ) / delta_max;
           } else if ( pos  > uppLim ) {
-            lim_fact = 0;
+            lifact = 0;
           } else {
-            lim_fact = 1;
+            lifact = 1;
           }
         } else {
-          lim_fact = 0;
+          lifact = 0;
         }
-        return lim_fact;
+        return lifact;
       },
 
       getFixedBody: (function() {
