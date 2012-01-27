@@ -87,8 +87,8 @@ test( 'basic', function() {
       if( body && body.getMotionState() ) {
         var trans = Bump.Transform.create();
         body.getMotionState().getWorldTransform( trans );
-        console.log('world pos = ' + trans.getOrigin().x + ' ' +
-                    trans.getOrigin().y + ' ' + trans.getOrigin().z );
+        // console.log( 'world pos = ' + trans.getOrigin().x + ' ' +
+        //              trans.getOrigin().y + ' ' + trans.getOrigin().z );
       }
     }
   }
