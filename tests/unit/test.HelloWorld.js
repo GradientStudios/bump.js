@@ -48,10 +48,10 @@ test( 'basic', function() {
   dynamicsWorld.addRigidBody( body );
 
   // create a dynamic rigidbody
-  // var colShape = new Bump.BoxShape.create( Bump.Vector3.create( 1, 1, 1 ) );
-  // ok( colShape instanceof Bump.BoxShape.prototype.constructor );
-  var colShape = Bump.SphereShape.create( 1 );
-  ok( colShape instanceof Bump.SphereShape.prototype.constructor );
+  var colShape = new Bump.BoxShape.create( Bump.Vector3.create( 1, 1, 1 ) );
+  ok( colShape instanceof Bump.BoxShape.prototype.constructor );
+  // var colShape = Bump.SphereShape.create( 1 );
+  // ok( colShape instanceof Bump.SphereShape.prototype.constructor );
 
   collisionShapes.push( colShape );
 
@@ -98,7 +98,7 @@ test( 'basic', function() {
   deepEqual( trans.origin, Bump.Vector3.create( 0, -56, 0 ) );
 
   dynamicsWorld.getCollisionObjectArray()[1].getMotionState().getWorldTransform( trans );
-  epsilonNumberCheck( trans.origin, Bump.Vector3.create( 2.632761955261, -5, -1.265523910522 ), Math.pow( 2, -18 ) );
+  epsilonNumberCheck( trans.origin, Bump.Vector3.create( 2.156484365463, -5.000000476837, -0.312612295151 ), Math.pow( 2, -18 ) );
 
   ok( true, 'finish' );
 
