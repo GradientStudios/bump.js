@@ -16,7 +16,7 @@ test( 'basic', function() {
   var dynamicsWorld = Bump.DiscreteDynamicsWorld.create( dispatcher, overlappingPairCache, solver, collisionConfiguration );
   ok( dynamicsWorld instanceof Bump.DiscreteDynamicsWorld.prototype.constructor );
 
-  dynamicsWorld.setGravity( Bump.Vector3.create( 0, -10, 0 ) );
+  dynamicsWorld.setGravity( Bump.Vector3.create( 0.1, -10, -0.2 ) );
 
   var groundShape = Bump.BoxShape.create( Bump.Vector3.create( 50, 50, 50 ) );
   ok( groundShape instanceof Bump.BoxShape.prototype.constructor );
@@ -77,7 +77,7 @@ test( 'basic', function() {
 
   /// Do some simulation
 
-  for( i = 0; i < 100; i++ ) {
+  for( i = 0; i < 1000; i++ ) {
     dynamicsWorld.stepSimulation( 1 / 60, 10 );
 
     //print positions of all objects
@@ -92,6 +92,13 @@ test( 'basic', function() {
       }
     }
   }
+
+  strictEqual( dynamicsWorld.getNumCollisionObjects(), 2 );
+  dynamicsWorld.getCollisionObjectArray()[0].getMotionState().getWorldTransform( trans );
+  deepEqual( trans.origin, Bump.Vector3.create( 0, -56, 0 ) );
+
+  dynamicsWorld.getCollisionObjectArray()[1].getMotionState().getWorldTransform( trans );
+  epsilonNumberCheck( trans.origin, Bump.Vector3.create( 2.632761955261, -5, -1.265523910522 ), Math.pow( 2, -18 ) );
 
   ok( true, 'finish' );
 
