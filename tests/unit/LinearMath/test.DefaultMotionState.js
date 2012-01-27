@@ -62,12 +62,12 @@ test( 'basic', function() {
   });
 });
 
-module( 'DefaultMotionState.setWorldPosition' );
+module( 'DefaultMotionState.setWorldTransform' );
 
 test( 'basic', function() {
   var ms = Bump.DefaultMotionState.create();
 
-  testFunc( Bump.DefaultMotionState, 'setWorldPosition', {
+  testFunc( Bump.DefaultMotionState, 'setWorldTransform', {
     objects: ms,
     args: [
       [ Bump.Transform.getIdentity() ]
