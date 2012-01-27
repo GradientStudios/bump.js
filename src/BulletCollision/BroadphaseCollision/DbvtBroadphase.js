@@ -226,7 +226,7 @@
               var p = pairs[ ( this.m_cid + i ) % pairs.length ], /* btBroadphasePair& */
                   pa = p.m_pProxy0, /* btDbvtProxy* */
                   pb = p.m_pProxy1;
-              if ( !Bump.Intersect.DbvtVolume( pa.leaf.volume, pb.leaf.volume ) ) {
+              if ( !Bump.Intersect.DbvtVolume2( pa.leaf.volume, pb.leaf.volume ) ) {
 /*#if DBVT_BP_SORTPAIRS
                                         if (pa.m_uniqueId>pb.m_uniqueId)
                                                 btSwap(pa,pb);
