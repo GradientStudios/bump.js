@@ -155,7 +155,7 @@
             var startManifold = null;
 
             if ( startManifoldIndex < numManifolds ) {
-              var curIslandId = this.getIslandId( this.islandmanifold[ startManifoldIndex ] );
+              var curIslandId = getIslandId( this.islandmanifold[ startManifoldIndex ] );
               if ( curIslandId === islandId ) {
                 startManifold = this.islandmanifold.slice( startManifoldIndex );
 

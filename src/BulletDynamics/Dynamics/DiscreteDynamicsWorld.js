@@ -541,7 +541,7 @@
             processConstraints: function() {
               if ( this.manifolds.length + this.constraints.length > 0 ) {
                 var bodies = this.bodies.length ? this.bodies : null;
-                var manifold = this.manifolds.length ? this.manifold : null;
+                var manifold = this.manifolds.length ? this.manifolds : null;
                 var constraints = this.constraints.length ? this.constraints : null;
 
                 this.solver.solveGroup( bodies, this.bodies.length, manifold, this.manifolds.length, constraints, this.constraints.length, this.solverInfo, this.debugDrawer, this.stackAlloc, this.dispatcher );
