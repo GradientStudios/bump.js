@@ -219,8 +219,6 @@
     normal, depth, return_code,
     maxc, contact, skip, output
   ) {
-    // console.log( [ R1[0], R1[1], R1[2], R1[3], R1[4], R1[5], R1[6], R1[7], R1[8], R1[9], R1[10], R1[11] ] );
-
     var fudge_factor = 1.05,
         p = Bump.Vector3.create(),
         pp = Bump.Vector3.create(),
@@ -255,7 +253,13 @@
     Q21 = Math.abs( R21 ); Q22 = Math.abs( R22 ); Q23 = Math.abs( R23 );
     Q31 = Math.abs( R31 ); Q32 = Math.abs( R32 ); Q33 = Math.abs( R33 );
 
-    // console.log( [ Q11, Q12, Q13, Q21, Q22, Q23, Q31, Q32, Q33 ] );
+    // console.log( 'p1 = (' + p1.x + ', ' + p1.y + ', ' + p1.z + ')' );
+    // console.log( 'R1 = [' + [ R1[0], R1[1], R1[2], R1[3], R1[4], R1[5], R1[6], R1[7], R1[8], R1[9], R1[10], R1[11] ] + ']' );
+    // console.log( 'side1 = (' + side1.x + ', ' + side1.y + ', ' + side1.z + ')' );
+    // console.log( 'p2 = (' + p2.x + ', ' + p2.y + ', ' + p2.z + ')' );
+    // console.log( 'R2 = [' + [ R2[0], R2[1], R2[2], R2[3], R2[4], R2[5], R2[6], R2[7], R2[8], R2[9], R2[10], R2[11] ] + ']' );
+    // console.log( 'pp = (' + pp.x + ', ' + pp.y + ', ' + pp.z + ')' );
+    // console.log( 'Q = [' + [ Q11, Q12, Q13, Q21, Q22, Q23, Q31, Q32, Q33 ] + ']' );
 
     // For all 15 possible separating axes:
     //
@@ -289,19 +293,19 @@
 
     // separating axis = u1, u2, u3
     tstRet = TST( pp[0], ( A[0] + B[0] * Q11 + B[1] * Q12 + B[2] * Q13 ), R1, 0, 1 );
-    if ( tstRet !== undefined ) { console.log( 'A' ); return tstRet; }
+    if ( tstRet !== undefined ) { return tstRet; }
     tstRet = TST( pp[1], ( A[1] + B[0] * Q21 + B[1] * Q22 + B[2] * Q23 ), R1, 1, 2 );
-    if ( tstRet !== undefined ) { console.log( 'B' ); return tstRet; }
+    if ( tstRet !== undefined ) { return tstRet; }
     tstRet = TST( pp[2], ( A[2] + B[0] * Q31 + B[1] * Q32 + B[2] * Q33 ), R1, 2, 3 );
-    if ( tstRet !== undefined ) { console.log( 'C' ); return tstRet; }
+    if ( tstRet !== undefined ) { return tstRet; }
 
     // separating axis = v1, v2, v3
     tstRet = TST( dDOT41( R2, 0, p ), A[0] * Q11 + A[1] * Q21 + A[2] * Q31 + B[0], R2, 0, 4 );
-    if ( tstRet !== undefined ) { console.log( 'D' ); return tstRet; }
+    if ( tstRet !== undefined ) { return tstRet; }
     tstRet = TST( dDOT41( R2, 1, p ), A[0] * Q12 + A[1] * Q22 + A[2] * Q32 + B[1], R2, 1, 5 );
-    if ( tstRet !== undefined ) { console.log( 'E' ); return tstRet; }
+    if ( tstRet !== undefined ) { return tstRet; }
     tstRet = TST( dDOT41( R2, 2, p ), A[0] * Q13 + A[1] * Q23 + A[2] * Q33 + B[2], R2, 2, 6 );
-    if ( tstRet !== undefined ) { console.log( 'F' ); return tstRet; }
+    if ( tstRet !== undefined ) { return tstRet; }
 
     // Note: cross product axes need to be scaled when s is computed.
     // normal (n1, n2, n3) is relative to box 1.
@@ -339,27 +343,27 @@
 
     // separating axis = u1 x (v1, v2, v3)
     tstRet = TST( pp[2] * R21 - pp[1] * R31, A[1] * Q31 + A[2] * Q21 + B[1] * Q13 + B[2] * Q12, 0, -R31, R21, 7 );
-    if ( tstRet !== undefined ) { console.log( 'G' ); return tstRet; }
+    if ( tstRet !== undefined ) { return tstRet; }
     tstRet = TST( pp[2] * R22 - pp[1] * R32, A[1] * Q32 + A[2] * Q22 + B[0] * Q13 + B[2] * Q11, 0, -R32, R22, 8 );
-    if ( tstRet !== undefined ) { console.log( 'H' ); return tstRet; }
+    if ( tstRet !== undefined ) { return tstRet; }
     tstRet = TST( pp[2] * R23 - pp[1] * R33, A[1] * Q33 + A[2] * Q23 + B[0] * Q12 + B[1] * Q11, 0, -R33, R23, 9 );
-    if ( tstRet !== undefined ) { console.log( 'I' ); return tstRet; }
+    if ( tstRet !== undefined ) { return tstRet; }
 
     // separating axis = u2 x (v1, v2, v3)
     tstRet = TST( pp[0] * R31 - pp[2] * R11, A[0] * Q31 + A[2] * Q11 + B[1] * Q23 + B[2] * Q22, R31, 0, -R11, 10 );
-    if ( tstRet !== undefined ) { console.log( 'J' ); return tstRet; }
+    if ( tstRet !== undefined ) { return tstRet; }
     tstRet = TST( pp[0] * R32 - pp[2] * R12, A[0] * Q32 + A[2] * Q12 + B[0] * Q23 + B[2] * Q21, R32, 0, -R12, 11 );
-    if ( tstRet !== undefined ) { console.log( 'K' ); return tstRet; }
+    if ( tstRet !== undefined ) { return tstRet; }
     tstRet = TST( pp[0] * R33 - pp[2] * R13, A[0] * Q33 + A[2] * Q13 + B[0] * Q22 + B[1] * Q21, R33, 0, -R13, 12 );
-    if ( tstRet !== undefined ) { console.log( 'L' ); return tstRet; }
+    if ( tstRet !== undefined ) { return tstRet; }
 
     // separating axis = u3 x (v1, v2, v3)
     tstRet = TST( pp[1] * R11 - pp[0] * R21, A[0] * Q21 + A[1] * Q11 + B[1] * Q33 + B[2] * Q32, -R21, R11, 0, 13 );
-    if ( tstRet !== undefined ) { console.log( 'M' ); return tstRet; }
+    if ( tstRet !== undefined ) { return tstRet; }
     tstRet = TST( pp[1] * R12 - pp[0] * R22, A[0] * Q22 + A[1] * Q12 + B[0] * Q33 + B[2] * Q31, -R22, R12, 0, 14 );
-    if ( tstRet !== undefined ) { console.log( 'N' ); return tstRet; }
+    if ( tstRet !== undefined ) { return tstRet; }
     tstRet = TST( pp[1] * R13 - pp[0] * R23, A[0] * Q23 + A[1] * Q13 + B[0] * Q32 + B[1] * Q31, -R23, R13, 0, 15 );
-    if ( tstRet !== undefined ) { console.log( 'O' ); return tstRet; }
+    if ( tstRet !== undefined ) { return tstRet; }
 
     if ( code === 0 ) { return 0; }
 
@@ -677,7 +681,6 @@
     }
 
     return_code.value = code;
-    console.log( cnum );
     return cnum;
   };
 
@@ -737,17 +740,18 @@
             return_code = { value: 0 },
             maxc = 4;
 
-        dBoxBox2(
+        var num = dBoxBox2(
           transformA.origin,
           R1,
-          2 * this.box1.getHalfExtentsWithMargin(),
+          this.box1.getHalfExtentsWithMargin().multiplyScalar( 2 ),
           transformB.origin,
           R2,
-          2 * this.box2.getHalfExtentsWithMargin(),
+          this.box2.getHalfExtentsWithMargin().multiplyScalar( 2 ),
           normal, depth, return_code,
           maxc, contact, skip,
           output
         );
+        // console.log( num );
       }
 
     }
