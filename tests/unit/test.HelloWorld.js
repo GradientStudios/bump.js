@@ -89,6 +89,7 @@ test( 'basic', function() {
       if( body && body.getMotionState() ) {
         var trans = Bump.Transform.create();
         body.getMotionState().getWorldTransform( trans );
+
         var precision = 20;
         console.log('world pos = ' + trans.getOrigin().x.toFixed(precision) + ' ' +
                     trans.getOrigin().y.toFixed(precision) + ' ' +

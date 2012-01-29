@@ -89,9 +89,9 @@
       initWithContactPoint: function ManifoldPoint( pointA, pointB, normal, distance ) {
         this.localPointA = pointA.clone();
         this.localPointB = pointB.clone();
-        this.positionWorldOnB = normal.clone();
+        this.positionWorldOnB = Bump.Vector3.create();
         this.positionWorldOnA = Bump.Vector3.create();
-        this.normalWorldOnB = Bump.Vector3.create();
+        this.normalWorldOnB = normal.clone();
 
         this.distance1 = distance;
         this.combinedFriction = 0;

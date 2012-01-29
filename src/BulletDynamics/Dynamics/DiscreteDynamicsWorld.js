@@ -531,9 +531,11 @@
                   }
                   if ( ( this.constraints.length + this.manifolds.length ) > this.solverInfo.minimumSolverBatchSize ) {
                     this.processConstraints();
-                  } else {
-                    console.log( 'deferred' );
                   }
+
+                  //    else {
+                  //      console.log( 'deferred' );
+                  //    }
                 }
               }
             },
