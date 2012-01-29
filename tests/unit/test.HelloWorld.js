@@ -50,8 +50,8 @@ test( 'basic', function() {
   // create a dynamic rigidbody
   var colShape = new Bump.BoxShape.create( Bump.Vector3.create( 1, 1, 1 ) );
   ok( colShape instanceof Bump.BoxShape.prototype.constructor );
-  // var colShape = Bump.SphereShape.create( 1 );
-  // ok( colShape instanceof Bump.SphereShape.prototype.constructor );
+  var colShape = Bump.SphereShape.create( 1 );
+  ok( colShape instanceof Bump.SphereShape.prototype.constructor );
 
   collisionShapes.push( colShape );
 
@@ -77,7 +77,9 @@ test( 'basic', function() {
 
   /// Do some simulation
 
-  for( i = 0; i < 1000; i++ ) {
+  for( i = 0; i < 100; i++ ) {
+    console.log( '\n*** FRAME ' + i + ' ***********************************************\n\n' );
+
     dynamicsWorld.stepSimulation( 1 / 60, 10 );
 
     //print positions of all objects
@@ -87,8 +89,10 @@ test( 'basic', function() {
       if( body && body.getMotionState() ) {
         var trans = Bump.Transform.create();
         body.getMotionState().getWorldTransform( trans );
-        console.log('world pos = ' + trans.getOrigin().x + ' ' +
-                    trans.getOrigin().y + ' ' + trans.getOrigin().z );
+        var precision = 20;
+        console.log('world pos = ' + trans.getOrigin().x.toFixed(precision) + ' ' +
+                    trans.getOrigin().y.toFixed(precision) + ' ' +
+                    trans.getOrigin().z.toFixed(precision) );
       }
     }
   }
@@ -98,7 +102,10 @@ test( 'basic', function() {
   deepEqual( trans.origin, Bump.Vector3.create( 0, -56, 0 ) );
 
   dynamicsWorld.getCollisionObjectArray()[1].getMotionState().getWorldTransform( trans );
-  epsilonNumberCheck( trans.origin, Bump.Vector3.create( 2.156484365463, -5.000000476837, -0.312612295151 ), Math.pow( 2, -18 ) );
+  // result after removing unnecessary type-casting from bullet's HelloWorld:
+  epsilonNumberCheck( trans.origin, Bump.Vector3.create( 2.14027777777777750146,
+                                                         -4.02777777777777057366,
+                                                         -0.28055555555555539149 ), Math.pow( 2, -18 ) );
 
   ok( true, 'finish' );
 

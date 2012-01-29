@@ -9,6 +9,15 @@
 (function( window, Bump ) {
   var tmpQ1, tmpQ2, tmpV1, tmpV2, tmpV3, EPSILON = Math.pow( 2, -52 );
 
+  Bump.printQuaternion = function( quat, message, precision ) {
+    message = message || '';
+    precision = ( precision === undefined ) ? 20 : precision;
+    console.log( message + ' ' + quat.x.toFixed( 20 ) + ' ' +
+                 quat.y.toFixed( 20 ) + ' ' +
+                 quat.z.toFixed( 20 ) + ' ' +
+                 quat.w.toFixed( 20 ) + ' ' );
+  };
+
   Bump.Quaternion = Bump.type({
     // Given *exactly* four arguments, initializes a quaternion.
     init: function Quaternion( x, y, z, w ) {

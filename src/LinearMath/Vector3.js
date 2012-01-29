@@ -5,6 +5,15 @@
  */
 (function( window, Bump ) {
 
+  Bump.printVector3 = function( vec, message, precision ) {
+    message = message || '';
+    precision = ( precision === undefined ) ? 20 : precision;
+
+    console.log( message + ' ' + vec.x.toFixed( precision ) + ' ' +
+                 vec.y.toFixed( precision ) + ' ' +
+                 vec.z.toFixed( precision ) );
+  };
+
   Bump.Vector3 = Bump.type({
 
     init: function Vector3( x, y, z, w ) {
