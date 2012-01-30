@@ -71,7 +71,11 @@
       }
 
       for ( i = curSize; i < newsize; ++i ) {
-        arr[ i ] = fillData.clone();
+        if ( fillData.clone ) {
+          arr[ i ] = fillData.clone();
+        } else {
+          arr[ i ] = fillData;
+        }
       }
     }
   };
