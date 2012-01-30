@@ -800,7 +800,7 @@
           );
           this.deltaAngularVelocity.addSelf(
             angularComponent
-              .multiplyScalar( impulseMagnitude * this.angularFactor, tmpV1 )
+              .multiplyVector( this.angularFactor.multiplyScalar( impulseMagnitude, tmpV1 ), tmpV1 )
           );
         }
       },

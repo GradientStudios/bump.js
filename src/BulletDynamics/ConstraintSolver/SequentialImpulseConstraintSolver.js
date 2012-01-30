@@ -685,7 +685,6 @@
                                                infoGlobal,
                                                debugDrawer,
                                                stackAlloc ) {
-        console.log( 'WTF' );
         var numPoolConstraints = this.tmpSolverContactConstraintPool.length,
             i,
             j;
@@ -695,7 +694,6 @@
               pt = solveManifold.originalContactPoint; /* btManifoldPoint* */
           Bump.Assert( pt );
           pt.appliedImpulse = solveManifold.appliedImpulse;
-          console.log( 'frictionIndex ' + solveManifold.frictionIndex );
           if( infoGlobal.solverMode & Bump.SolverMode.SOLVER_USE_FRICTION_WARMSTARTING ) {
             pt.appliedImpulseLateral1 =
               this.tmpSolverContactFrictionConstraintPool[ solveManifold.frictionIndex ].appliedImpulse;
