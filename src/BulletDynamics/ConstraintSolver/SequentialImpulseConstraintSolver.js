@@ -8,7 +8,7 @@
   var gNumSplitImpulseRecoveries = 0;
 
   var applyAnisotropicFriction = function( colObj, frictionDirection ) {
-    if( colObj && colObj.hasAnisotropicFriction() ) {
+    if( colObj && colObj.hasAnisotropicFriction ) {
       // transform to local coordinates
       var loc_lateral = colObj.getWorldTransform().getBasis().vectorMultiply( frictionDirection ),
           friction_scaling = colObj.getAnisotropicFriction();
@@ -149,7 +149,8 @@
         desiredVelocity = desiredVelocity || 0;
         cfmSlip = cfmSlip || 0;
 
-        var solverConstraint = this.tmpSolverContactFrictionConstraintPool.expandNonInitializing();
+        var solverConstraint = Bump.SolverConstraint.create();
+        this.tmpSolverContactFrictionConstraintPool.push( solverConstraint );
         solverConstraint.frictionIndex = frictionIndex;
         this.setupFrictionConstraint(solverConstraint, normalAxis, solverBodyA,
                                      solverBodyB, cp, rel_pos1, rel_pos2,
@@ -416,7 +417,7 @@
             var rel_pos1 = Bump.Vector3.create(), /* btVector3 */
                 rel_pos2 = Bump.Vector3.create(), /* btVector3 */
                 relaxationRef = { value: 0 }, /* btScalar */
-                rel_vel, /* btScalar */
+                rel_velRef = { value: 0 }, /* btScalar */
                 vel = Bump.Vector3.create(), /* btVector3 */
                 frictionIndex = this.tmpSolverContactConstraintPool.length, /* int */
                 /* btSolverConstraint& */
@@ -433,8 +434,9 @@
             solverConstraint.originalContactPoint = cp;
 
             this.setupContactConstraint( solverConstraint, colObj0, colObj1, cp, infoGlobal, vel,
-                                         rel_vel, relaxationRef, rel_pos1, rel_pos2);
-            var relaxation = relaxationRef.value;
+                                         rel_velRef, relaxationRef, rel_pos1, rel_pos2);
+            var relaxation = relaxationRef.value,
+                rel_vel = rel_velRef.value;
             /* const btVector3& pos1 = cp.getPositionWorldOnA(); */
             /* const btVector3& pos2 = cp.getPositionWorldOnB(); */
 
@@ -448,22 +450,22 @@
               vel.subtract( cp.normalWorldOnB.multiplyScalar( rel_vel, tmpVec1 ), cp.lateralFrictionDir1 );
               var lat_rel_vel = cp.lateralFrictionDir1.length2();
               if( !( infoGlobal.solverMode &
-                    Bump.Solver.SOLVER_DISABLE_VELOCITY_DEPENDENT_FRICTION_DIRECTION ) &&
+                    Bump.SolverMode.SOLVER_DISABLE_VELOCITY_DEPENDENT_FRICTION_DIRECTION ) &&
                   lat_rel_vel > Bump.SIMD_EPSILON) {
 
                 cp.lateralFrictionDir1 /= Math.sqrt( lat_rel_vel );
                 if( ( infoGlobal.solverMode & Bump.SolverMode.SOLVER_USE_2_FRICTION_DIRECTIONS ) ) {
                   cp.lateralFrictionDir1.cross( cp.normalWorldOnB, cp.lateralFrictionDir2 );
                   cp.lateralFrictionDir2.normalize(); //??
-                  this.applyAnisotropicFriction( colObj0, cp.lateralFrictionDir2 );
-                  this.applyAnisotropicFriction( colObj1, cp.lateralFrictionDir2 );
+                  applyAnisotropicFriction( colObj0, cp.lateralFrictionDir2 );
+                  applyAnisotropicFriction( colObj1, cp.lateralFrictionDir2 );
                   this.addFrictionConstraint( cp.lateralFrictionDir2, solverBodyA, solverBodyB,
                                               frictionIndex, cp, rel_pos1, rel_pos2,
                                               colObj0, colObj1, relaxation);
                 }
 
-                this.applyAnisotropicFriction( colObj0, cp.lateralFrictionDir1 );
-                this.applyAnisotropicFriction( colObj1, cp.lateralFrictionDir1 );
+                applyAnisotropicFriction( colObj0, cp.lateralFrictionDir1 );
+                applyAnisotropicFriction( colObj1, cp.lateralFrictionDir1 );
                 this.addFrictionConstraint( cp.lateralFrictionDir1, solverBodyA, solverBodyB,
                                             frictionIndex, cp, rel_pos1, rel_pos2,
                                             colObj0, colObj1, relaxation );
@@ -473,15 +475,15 @@
                 // re-calculate friction direction every frame, todo: check if this is really needed
                 Bump.PlaneSpace1( cp.normalWorldOnB, cp.lateralFrictionDir1, cp.lateralFrictionDir2 );
                 if( ( infoGlobal.solverMode & Bump.SolverMode.SOLVER_USE_2_FRICTION_DIRECTIONS ) ) {
-                  this.applyAnisotropicFriction( colObj0, cp.lateralFrictionDir2 );
-                  this.applyAnisotropicFriction( colObj1, cp.lateralFrictionDir2 );
+                  applyAnisotropicFriction( colObj0, cp.lateralFrictionDir2 );
+                  applyAnisotropicFriction( colObj1, cp.lateralFrictionDir2 );
                   this.addFrictionConstraint( cp.lateralFrictionDir2, solverBodyA, solverBodyB,
                                               frictionIndex, cp, rel_pos1, rel_pos2,
                                               colObj0, colObj1, relaxation);
                 }
 
-                this.applyAnisotropicFriction( colObj0, cp.lateralFrictionDir1);
-                this.applyAnisotropicFriction( colObj1, cp.lateralFrictionDir1);
+                applyAnisotropicFriction( colObj0, cp.lateralFrictionDir1);
+                applyAnisotropicFriction( colObj1, cp.lateralFrictionDir1);
                 this.addFrictionConstraint( cp.lateralFrictionDir1, solverBodyA, solverBodyB,
                                             frictionIndex, cp, rel_pos1, rel_pos2,
                                             colObj0, colObj1, relaxation );
