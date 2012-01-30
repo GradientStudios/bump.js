@@ -455,7 +455,7 @@
                     Bump.SolverMode.SOLVER_DISABLE_VELOCITY_DEPENDENT_FRICTION_DIRECTION ) &&
                   lat_rel_vel > Bump.SIMD_EPSILON) {
 
-                cp.lateralFrictionDir1 /= Math.sqrt( lat_rel_vel );
+                cp.lateralFrictionDir1.divideScalarSelf( Math.sqrt( lat_rel_vel ) );
                 if( ( infoGlobal.solverMode & Bump.SolverMode.SOLVER_USE_2_FRICTION_DIRECTIONS ) ) {
                   cp.lateralFrictionDir1.cross( cp.normalWorldOnB, cp.lateralFrictionDir2 );
                   cp.lateralFrictionDir2.normalize(); //??
@@ -685,15 +685,17 @@
                                                infoGlobal,
                                                debugDrawer,
                                                stackAlloc ) {
+        console.log( 'WTF' );
         var numPoolConstraints = this.tmpSolverContactConstraintPool.length,
             i,
             j;
 
         for ( j = 0; j < numPoolConstraints; j++ ) {
-          var solveManifold = this.tmpSolverContactConstraintPool[j],  /* const btSolverConstraint& */
+          var solveManifold = this.tmpSolverContactConstraintPool[ j ],  /* const btSolverConstraint& */
               pt = solveManifold.originalContactPoint; /* btManifoldPoint* */
           Bump.Assert( pt );
           pt.appliedImpulse = solveManifold.appliedImpulse;
+          console.log( 'frictionIndex ' + solveManifold.frictionIndex );
           if( infoGlobal.solverMode & Bump.SolverMode.SOLVER_USE_FRICTION_WARMSTARTING ) {
             pt.appliedImpulseLateral1 =
               this.tmpSolverContactFrictionConstraintPool[ solveManifold.frictionIndex ].appliedImpulse;
