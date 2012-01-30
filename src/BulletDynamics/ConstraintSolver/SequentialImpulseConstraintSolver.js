@@ -210,7 +210,7 @@
           denom0 = rb0.getInvMass() + cp.normalWorldOnB.dot( vec );
         }
         if (rb1) {
-          vec = solverConstraint.angularComponentB.negate.cross( rel_pos2 );
+          vec = solverConstraint.angularComponentB.negate( tmpVec ).cross( rel_pos2 );
           denom1 = rb1.getInvMass() + cp.normalWorldOnB.dot( vec );
         }
 /* #endif //COMPUTE_IMPULSE_DENOM */
@@ -421,10 +421,12 @@
                 frictionIndex = this.tmpSolverContactConstraintPool.length, /* int */
                 /* btSolverConstraint& */
                 // solverConstraint = this.tmpSolverContactConstraintPool.expandNonInitializing(),
-                solverConstraint = this.tmpSolverContactConstraintPool.push( Bump.SolverConstraint.create() ),
+                solverConstraint = Bump.SolverConstraint.create(),
                 rb0 = Bump.RigidBody.upcast( colObj0 ), /* btRigidBody* */
                 rb1 = Bump.RigidBody.upcast( colObj1 ), /* btRigidBody* */
                 tmpVec1 = Bump.Vector3.create();
+
+            this.tmpSolverContactConstraintPool.push( solverConstraint );
 
             solverConstraint.solverBodyA = rb0 ? rb0 : this.getFixedBody();
             solverConstraint.solverBodyB = rb1 ? rb1 : this.getFixedBody();
