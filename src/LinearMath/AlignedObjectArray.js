@@ -70,8 +70,11 @@
         arr.length = newsize;
       }
 
+      var data = fillData || {},
+          hasClone = data.clone;
+
       for ( i = curSize; i < newsize; ++i ) {
-        if ( fillData.clone ) {
+        if ( hasClone ) {
           arr[ i ] = fillData.clone();
         } else {
           arr[ i ] = fillData;

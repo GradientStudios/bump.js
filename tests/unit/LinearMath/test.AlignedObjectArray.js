@@ -10,3 +10,14 @@ test( 'non-Types', function() {
   }
   strictEqual( arr.length, 5 );
 });
+
+test( 'nulls', function() {
+  var arr = [];
+
+  Bump.resize( arr, 5, null );
+
+  for ( var i = 0; i < 5; ++i ) {
+    strictEqual( arr[i], null );
+  }
+  strictEqual( arr.length, 5 );
+});
