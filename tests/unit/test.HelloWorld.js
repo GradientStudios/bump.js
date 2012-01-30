@@ -50,8 +50,8 @@ test( 'basic', function() {
   // create a dynamic rigidbody
   var colShape = new Bump.BoxShape.create( Bump.Vector3.create( 1, 1, 1 ) );
   ok( colShape instanceof Bump.BoxShape.prototype.constructor );
-  var colShape = Bump.SphereShape.create( 1 );
-  ok( colShape instanceof Bump.SphereShape.prototype.constructor );
+  // var colShape = Bump.SphereShape.create( 1 );
+  // ok( colShape instanceof Bump.SphereShape.prototype.constructor );
 
   collisionShapes.push( colShape );
 
@@ -77,7 +77,7 @@ test( 'basic', function() {
 
   /// Do some simulation
 
-  for( i = 0; i < 100; i++ ) {
+  for( i = 0; i < 1000; i++ ) {
     console.log( '\n*** FRAME ' + i + ' ***********************************************\n\n' );
 
     dynamicsWorld.stepSimulation( 1 / 60, 10 );

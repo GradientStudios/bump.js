@@ -420,7 +420,8 @@
                 vel = Bump.Vector3.create(), /* btVector3 */
                 frictionIndex = this.tmpSolverContactConstraintPool.length, /* int */
                 /* btSolverConstraint& */
-                solverConstraint = this.tmpSolverContactConstraintPool.expandNonInitializing(),
+                // solverConstraint = this.tmpSolverContactConstraintPool.expandNonInitializing(),
+                solverConstraint = this.tmpSolverContactConstraintPool.push( Bump.SolverConstraint.create() ),
                 rb0 = Bump.RigidBody.upcast( colObj0 ), /* btRigidBody* */
                 rb1 = Bump.RigidBody.upcast( colObj1 ), /* btRigidBody* */
                 tmpVec1 = Bump.Vector3.create();
