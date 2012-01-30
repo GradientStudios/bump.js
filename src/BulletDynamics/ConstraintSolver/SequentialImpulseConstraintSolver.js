@@ -68,13 +68,15 @@
         var ftorqueAxis1 = rel_pos1.cross( solverConstraint.contactNormal );
         solverConstraint.relpos1CrossNormal = ftorqueAxis1;
         solverConstraint.angularComponentA = body0 ?
-          body0.getInvInertiaTensorWorld() * ftorqueAxis1 * body0.getAngularFactor() :
+          body0.getInvInertiaTensorWorld().multiplyVector( ftorqueAxis1, solverConstraint.angularComponentA )
+          .multiplyVector( body0.getAngularFactor(), solverConstraint.angularComponentA ) :
           Bump.Vector3.create();
 
         ftorqueAxis1 = rel_pos2.cross(-solverConstraint.contactNormal);
         solverConstraint.relpos2CrossNormal = ftorqueAxis1;
         solverConstraint.angularComponentB = body1 ?
-          body1.getInvInertiaTensorWorld() * ftorqueAxis1 * body1.getAngularFactor() :
+          body1.getInvInertiaTensorWorld().multiplyVector( ftorqueAxis1, solverConstraint.angularComponentB )
+          .multiplyVector( body1.getAngularFactor(), solverConstraint.angularComponentB ) :
           Bump.Vector3.create();
 
 /* #ifdef COMPUTE_IMPULSE_DENOM
