@@ -415,7 +415,7 @@
           if( cp.getDistance() <= manifold.getContactProcessingThreshold() ) {
             var rel_pos1 = Bump.Vector3.create(), /* btVector3 */
                 rel_pos2 = Bump.Vector3.create(), /* btVector3 */
-                relaxation, /* btScalar */
+                relaxationRef = { value: 0 }, /* btScalar */
                 rel_vel, /* btScalar */
                 vel = Bump.Vector3.create(), /* btVector3 */
                 frictionIndex = this.tmpSolverContactConstraintPool.length, /* int */
@@ -431,8 +431,8 @@
             solverConstraint.originalContactPoint = cp;
 
             this.setupContactConstraint( solverConstraint, colObj0, colObj1, cp, infoGlobal, vel,
-                                         rel_vel, relaxation, rel_pos1, rel_pos2);
-
+                                         rel_vel, relaxationRef, rel_pos1, rel_pos2);
+            var relaxation = relaxationRef.value;
             /* const btVector3& pos1 = cp.getPositionWorldOnA(); */
             /* const btVector3& pos2 = cp.getPositionWorldOnB(); */
 
