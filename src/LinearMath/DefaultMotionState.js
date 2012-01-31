@@ -35,7 +35,7 @@
         return this;
       },
 
-      setWorldPosition: function( centerOfMassWorldTrans ) {
+      setWorldTransform: function( centerOfMassWorldTrans ) {
         this.graphicsWorldTrans = centerOfMassWorldTrans
           .multiplyTransform( this.centerOfMassOffset, this.graphicsWorldTrans );
         return this;

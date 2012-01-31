@@ -115,15 +115,15 @@ test( 'create', function() {
                                        filterGroup, filterMask,
                                        multiSapParentProxy );
 
-  notStrictEqual( proxy.m_aabbMin, aabbMin, 'makes new copy for aabbMin' );
-  deepEqual( proxy.m_aabbMin, aabbMin, 'correct m_aabbMin value' );
-  notStrictEqual( proxy.m_aabbMin, aabbMax, 'makes new copy for aabbMax' );
-  deepEqual( proxy.m_aabbMin, aabbMin, 'correct m_aabbMax value' );
-  strictEqual( proxy.m_clientObject, userPtr, 'm_clientObject set correctly' );
-  equal( proxy.m_collisionFilterGroup, filterGroup, 'm_collisionFilterGroup set correctly');
-  equal( proxy.m_collisionFilterMask, filterMask, 'm_collisionFilterMask set correctly');
-  strictEqual( proxy.m_multiSapParentProxy, multiSapParentProxy,
-               'm_multiSapParentProxy set correctly' );
+  notStrictEqual( proxy.aabbMin, aabbMin, 'makes new copy for aabbMin' );
+  deepEqual( proxy.aabbMin, aabbMin, 'correct aabbMin value' );
+  notStrictEqual( proxy.aabbMin, aabbMax, 'makes new copy for aabbMax' );
+  deepEqual( proxy.aabbMin, aabbMin, 'correct aabbMax value' );
+  strictEqual( proxy.clientObject, userPtr, 'clientObject set correctly' );
+  equal( proxy.collisionFilterGroup, filterGroup, 'collisionFilterGroup set correctly');
+  equal( proxy.collisionFilterMask, filterMask, 'collisionFilterMask set correctly');
+  strictEqual( proxy.multiSapParentProxy, multiSapParentProxy,
+               'multiSapParentProxy set correctly' );
 
 });
 
@@ -131,7 +131,7 @@ test( 'getUid', function() {
   var proxy = Bump.BroadphaseProxy.createEmpty();
   ok( proxy.getUid, 'getUid member function exists' );
   equal( proxy.getUid(), 0, 'getUid returns correct value after initialization' );
-  proxy.m_uniqueId = 10;
+  proxy.uniqueId = 10;
   equal( proxy.getUid(), 10, 'getUid returns correct value after being set' );
 });
 
@@ -258,11 +258,11 @@ test( 'createEmpty', function() {
   ok( a !== b, 'creates different objects' );
   deepEqual( a, b, 'creates similar objects' );
 
-  strictEqual( a.m_pProxy0, null, 'm_pProxy0 correctly initialized' );
-  strictEqual( a.m_pProxy1, null, 'm_pProxy1 correctly initialized' );
-  strictEqual( a.m_algorithm, null, 'm_algorithm correctly initialized' );
-  strictEqual( a.m_internalInfo1, null, 'm_internalInfo1 correctly initialized' );
-  strictEqual( a.m_internalTmpValue, 0, 'm_internalTmpValue correctly initialized' );
+  strictEqual( a.pProxy0, null, 'pProxy0 correctly initialized' );
+  strictEqual( a.pProxy1, null, 'pProxy1 correctly initialized' );
+  strictEqual( a.algorithm, null, 'algorithm correctly initialized' );
+  strictEqual( a.internalInfo1, null, 'internalInfo1 correctly initialized' );
+  strictEqual( a.internalTmpValue, 0, 'internalTmpValue correctly initialized' );
 
 });
 
@@ -278,17 +278,17 @@ test( 'create', function() {
   ok( a !== b, 'creates different objects' );
   deepEqual( a, b, 'creates similar objects' );
 
-  strictEqual( a.m_pProxy0, p1, 'm_pProxy0 correctly initialized' );
-  strictEqual( a.m_pProxy1, p0, 'm_pProxy1 correctly initialized' );
-  strictEqual( a.m_algorithm, null, 'm_algorithm correctly initialized' );
-  strictEqual( a.m_internalInfo1, null, 'm_internalInfo1 correctly initialized' );
-  strictEqual( a.m_internalTmpValue, 0, 'm_internalTmpValue correctly initialized' );
+  strictEqual( a.pProxy0, p1, 'pProxy0 correctly initialized' );
+  strictEqual( a.pProxy1, p0, 'pProxy1 correctly initialized' );
+  strictEqual( a.algorithm, null, 'algorithm correctly initialized' );
+  strictEqual( a.internalInfo1, null, 'internalInfo1 correctly initialized' );
+  strictEqual( a.internalTmpValue, 0, 'internalTmpValue correctly initialized' );
 
-  p1.m_uniqueId = 10;
+  p1.uniqueId = 10;
 
   var c = Bump.BroadphasePair.create( p0, p1 );
-  strictEqual( c.m_pProxy0, p0, 'm_pProxy0 correctly stored based on uid' );
-  strictEqual( c.m_pProxy1, p1, 'm_pProxy1 correctly stored based on uid' );
+  strictEqual( c.pProxy0, p0, 'pProxy0 correctly stored based on uid' );
+  strictEqual( c.pProxy1, p1, 'pProxy1 correctly stored based on uid' );
 
 });
 

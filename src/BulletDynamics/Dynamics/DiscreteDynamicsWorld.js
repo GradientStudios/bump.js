@@ -1,5 +1,29 @@
 (function( window, Bump ) {
 
+  // not sure that this needs to be globally accessible through Bump
+  Bump.GetConstraintIslandId = function( lhs ) {
+    var islandId = 0,
+    rcolObj0 = lhs.getRigidBodyA(), /* const btCollisionObject& */
+    rcolObj1 = lhs.getRigidBodyB(); /* const btCollisionObject& */
+    islandId = rcolObj0.getIslandTag() >= 0 ? rcolObj0.getIslandTag() : rcolObj1.getIslandTag();
+    return islandId;
+  };
+
+  // *** SortConstraintOnIslandPredicate *** is ported from the
+  // `btSortConstraintOnIslandPredicate` functor class
+  Bump.SortConstraintOnIslandPredicate = Bump.type( {
+    typeMembers: {
+      create: function() {
+        // sort two `TypedConstraint`s
+        return function( lhs, rhs ) {
+          var rIslandId0 = Bump.GetConstraintIslandId( rhs ),
+              lIslandId0 = Bump.GetConstraintIslandId( lhs );
+          return lIslandId0 < rIslandId0;
+        };
+      }
+    }
+  } );
+
   Bump.DiscreteDynamicsWorld = Bump.type({
     parent: Bump.DynamicsWorld,
 
@@ -507,9 +531,11 @@
                   }
                   if ( ( this.constraints.length + this.manifolds.length ) > this.solverInfo.minimumSolverBatchSize ) {
                     this.processConstraints();
-                  } else {
-                    console.log( 'deferred' );
                   }
+
+                  //    else {
+                  //      console.log( 'deferred' );
+                  //    }
                 }
               }
             },
@@ -517,7 +543,7 @@
             processConstraints: function() {
               if ( this.manifolds.length + this.constraints.length > 0 ) {
                 var bodies = this.bodies.length ? this.bodies : null;
-                var manifold = this.manifolds.length ? this.manifold : null;
+                var manifold = this.manifolds.length ? this.manifolds : null;
                 var constraints = this.constraints.length ? this.constraints : null;
 
                 this.solver.solveGroup( bodies, this.bodies.length, manifold, this.manifolds.length, constraints, this.constraints.length, this.solverInfo, this.debugDrawer, this.stackAlloc, this.dispatcher );
@@ -534,7 +560,7 @@
         return function( solverInfo ) {
           // Sorted version of all `TypedConstraint`, based on `islandId`
           var sortedConstraints = [];
-          sortedConstraints.length( this.constraints.length );
+          Bump.resize( sortedConstraints, this.constraints.length, Bump.TypedConstraint.create() );
           var i;
           for ( i = 0; i < this.getNumConstraints(); ++i ) {
             sortedConstraints[i] = this.constraints[i];
@@ -544,7 +570,7 @@
 
           var constraintsPtr = this.getNumConstraints() ? sortedConstraints : null;
 
-          var solverCallback = Bump.InplaceSolverIslandCallback.create( solverInfo, this.constraintSolver, constraintsPtr, sortedConstraints.length, this.debugDrawer, this.stackAlloc, this.dispatcher1 );
+          var solverCallback = InplaceSolverIslandCallback.create( solverInfo, this.constraintSolver, constraintsPtr, sortedConstraints.length, this.debugDrawer, this.stackAlloc, this.dispatcher1 );
 
           this.constraintSolver.prepareSolve( this.getCollisionWorld().getNumCollisionObjects(), this.getCollisionWorld().getDispatcher().getNumManifolds() );
 

@@ -16,16 +16,16 @@ test( 'basic' , function() {
   ok( a !== b, 'creates different objects' );
   deepEqual( a, b, 'creates similar objects' );
 
-  if ( a.m_el0 ) {
-    ok( a.m_el0.x === 0 && a.m_el0.y === 0 && a.m_el0.z === 0 &&
-        a.m_el1.x === 0 && a.m_el1.y === 0 && a.m_el1.z === 0 &&
-        a.m_el2.x === 0 && a.m_el2.y === 0 && a.m_el2.z === 0 );
+  if ( a.el0 ) {
+    ok( a.el0.x === 0 && a.el0.y === 0 && a.el0.z === 0 &&
+        a.el1.x === 0 && a.el1.y === 0 && a.el1.z === 0 &&
+        a.el2.x === 0 && a.el2.y === 0 && a.el2.z === 0 );
   }
 
-  if ( a.m_el ) {
-    ok( a.m_el[0].x === 0 && a.m_el[0].y === 0 && a.m_el[0].z === 0 &&
-        a.m_el[1].x === 0 && a.m_el[1].y === 0 && a.m_el[1].z === 0 &&
-        a.m_el[2].x === 0 && a.m_el[2].y === 0 && a.m_el[2].z === 0 );
+  if ( a.el ) {
+    ok( a.el[0].x === 0 && a.el[0].y === 0 && a.el[0].z === 0 &&
+        a.el[1].x === 0 && a.el[1].y === 0 && a.el[1].z === 0 &&
+        a.el[2].x === 0 && a.el[2].y === 0 && a.el[2].z === 0 );
   }
 
   if ( a.m ) {
@@ -46,16 +46,16 @@ test( 'basic' , function() {
     7, 8/*0*/
   );
 
-  if ( c.m_el0 ) {
-    ok( c.m_el0.x === 1 && c.m_el0.y === 2 && c.m_el0.z === 3 &&
-        c.m_el1.x === 4 && c.m_el1.y === 5 && c.m_el1.z === 6 &&
-        c.m_el2.x === 7 && c.m_el2.y === 8 && c.m_el2.z === 0 );
+  if ( c.el0 ) {
+    ok( c.el0.x === 1 && c.el0.y === 2 && c.el0.z === 3 &&
+        c.el1.x === 4 && c.el1.y === 5 && c.el1.z === 6 &&
+        c.el2.x === 7 && c.el2.y === 8 && c.el2.z === 0 );
   }
 
-  if ( c.m_el ) {
-    ok( c.m_el[0].x === 1 && c.m_el[0].y === 2 && c.m_el[0].z === 3 &&
-        c.m_el[1].x === 4 && c.m_el[1].y === 5 && c.m_el[1].z === 6 &&
-        c.m_el[2].x === 7 && c.m_el[2].y === 8 && c.m_el[2].z === 0 );
+  if ( c.el ) {
+    ok( c.el[0].x === 1 && c.el[0].y === 2 && c.el[0].z === 3 &&
+        c.el[1].x === 4 && c.el[1].y === 5 && c.el[1].z === 6 &&
+        c.el[2].x === 7 && c.el[2].y === 8 && c.el[2].z === 0 );
   }
 
   if ( c.m ) {
@@ -81,17 +81,17 @@ test( 'basic', function() {
   m1.assign( m0 );
   deepEqual( m0, m1 );
 
-  if ( m0.m_el0 ) {
-    notStrictEqual( m0.m_el0, m1.m_el0 );
-    notStrictEqual( m0.m_el1, m1.m_el1 );
-    notStrictEqual( m0.m_el2, m1.m_el2 );
+  if ( m0.el0 ) {
+    notStrictEqual( m0.el0, m1.el0 );
+    notStrictEqual( m0.el1, m1.el1 );
+    notStrictEqual( m0.el2, m1.el2 );
   }
 
-  if ( m0.m_el ) {
-    notStrictEqual( m0.m_el, m1.m_el );
-    notStrictEqual( m0.m_el[0], m1.m_el[0] );
-    notStrictEqual( m0.m_el[1], m1.m_el[1] );
-    notStrictEqual( m0.m_el[2], m1.m_el[2] );
+  if ( m0.el ) {
+    notStrictEqual( m0.el, m1.el );
+    notStrictEqual( m0.el[0], m1.el[0] );
+    notStrictEqual( m0.el[1], m1.el[1] );
+    notStrictEqual( m0.el[2], m1.el[2] );
   }
 
   if ( m0.m ) {
@@ -111,16 +111,16 @@ test( 'getIdentity', function() {
   ok( c !== d, 'creates different objects' );
   deepEqual( c, d, 'creates similar objects' );
 
-  if ( c.m_el0 ) {
-    ok( c.m_el0.x === 1 && c.m_el0.y === 0 && c.m_el0.z === 0 &&
-        c.m_el1.x === 0 && c.m_el1.y === 1 && c.m_el1.z === 0 &&
-        c.m_el2.x === 0 && c.m_el2.y === 0 && c.m_el2.z === 1 );
+  if ( c.el0 ) {
+    ok( c.el0.x === 1 && c.el0.y === 0 && c.el0.z === 0 &&
+        c.el1.x === 0 && c.el1.y === 1 && c.el1.z === 0 &&
+        c.el2.x === 0 && c.el2.y === 0 && c.el2.z === 1 );
   }
 
-  if ( c.m_el ) {
-    ok( c.m_el[0].x === 1 && c.m_el[0].y === 0 && c.m_el[0].z === 0 &&
-        c.m_el[1].x === 0 && c.m_el[1].y === 1 && c.m_el[1].z === 0 &&
-        c.m_el[2].x === 0 && c.m_el[2].y === 0 && c.m_el[2].z === 1 );
+  if ( c.el ) {
+    ok( c.el[0].x === 1 && c.el[0].y === 0 && c.el[0].z === 0 &&
+        c.el[1].x === 0 && c.el[1].y === 1 && c.el[1].z === 0 &&
+        c.el[2].x === 0 && c.el[2].y === 0 && c.el[2].z === 1 );
   }
 
   if ( c.m ) {
@@ -558,15 +558,15 @@ test( 'diagonalize', function() {
       aDgn = Bump.Matrix3x3.create( 0.7639320225002103, 0, 0, 0, 5.23606797749979, 0, 0, 0, 1 );
 
   a.diagonalize( undefined, EPSILON, Infinity );
-  equal( a.m_el0.x, aDgn.m_el0.x );
-  equal( a.m_el0.y, aDgn.m_el0.y );
-  equal( a.m_el0.z, aDgn.m_el0.z );
-  equal( a.m_el1.x, aDgn.m_el1.x );
-  equal( a.m_el1.y, aDgn.m_el1.y );
-  equal( a.m_el1.z, aDgn.m_el1.z );
-  equal( a.m_el2.x, aDgn.m_el2.x );
-  equal( a.m_el2.y, aDgn.m_el2.y );
-  equal( a.m_el2.z, aDgn.m_el2.z );
+  equal( a.el0.x, aDgn.el0.x );
+  equal( a.el0.y, aDgn.el0.y );
+  equal( a.el0.z, aDgn.el0.z );
+  equal( a.el1.x, aDgn.el1.x );
+  equal( a.el1.y, aDgn.el1.y );
+  equal( a.el1.z, aDgn.el1.z );
+  equal( a.el2.x, aDgn.el2.x );
+  equal( a.el2.y, aDgn.el2.y );
+  equal( a.el2.z, aDgn.el2.z );
 });
 
 test( 'cofac', function() {

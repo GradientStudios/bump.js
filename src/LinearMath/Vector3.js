@@ -5,6 +5,15 @@
  */
 (function( window, Bump ) {
 
+  Bump.printVector3 = function( vec, message, precision ) {
+    message = message || '';
+    precision = ( precision === undefined ) ? 20 : precision;
+
+    console.log( message + ' ' + vec.x.toFixed( precision ) + ' ' +
+                 vec.y.toFixed( precision ) + ' ' +
+                 vec.z.toFixed( precision ) );
+  };
+
   Bump.Vector3 = Bump.type({
 
     init: function Vector3( x, y, z, w ) {
@@ -552,6 +561,14 @@
       // its squared magnitude is less than `Bump.SIMD_EPSILON`.
       fuzzyZero: function() {
         return this.length2() < Bump.SIMD_EPSILON;
+      },
+
+      toString: function() {
+        var precision = 6;
+        return ( '{ x: ' + this.x.toFixed( precision ) +
+                 ', y: ' + this.y.toFixed( precision ) +
+                 ', z: ' + this.z.toFixed( precision ) +
+                 ' }' );
       }
     },
 

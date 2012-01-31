@@ -12,9 +12,9 @@
     parent: Bump.BroadphaseAabbCallback,
 
     init: function BroadphaseRayCallback() {
-      this.m_rayDirectionInverse = Bump.Vector3.create();
-      this.m_signs = [];
-      this.m_lambda_max = 0;
+      this.rayDirectionInverse = Bump.Vector3.create();
+      this.signs = [];
+      this.lambda_max = 0;
     }
   });
 

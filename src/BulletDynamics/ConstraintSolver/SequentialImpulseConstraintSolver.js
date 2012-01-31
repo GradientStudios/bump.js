@@ -8,7 +8,7 @@
   var gNumSplitImpulseRecoveries = 0;
 
   var applyAnisotropicFriction = function( colObj, frictionDirection ) {
-    if( colObj && colObj.hasAnisotropicFriction() ) {
+    if( colObj && colObj.hasAnisotropicFriction ) {
       // transform to local coordinates
       var loc_lateral = colObj.getWorldTransform().getBasis().vectorMultiply( frictionDirection ),
           friction_scaling = colObj.getAnisotropicFriction();
@@ -68,13 +68,15 @@
         var ftorqueAxis1 = rel_pos1.cross( solverConstraint.contactNormal );
         solverConstraint.relpos1CrossNormal = ftorqueAxis1;
         solverConstraint.angularComponentA = body0 ?
-          body0.getInvInertiaTensorWorld() * ftorqueAxis1 * body0.getAngularFactor() :
+          body0.getInvInertiaTensorWorld().multiplyVector( ftorqueAxis1, solverConstraint.angularComponentA )
+          .multiplyVector( body0.getAngularFactor(), solverConstraint.angularComponentA ) :
           Bump.Vector3.create();
 
         ftorqueAxis1 = rel_pos2.cross(-solverConstraint.contactNormal);
         solverConstraint.relpos2CrossNormal = ftorqueAxis1;
         solverConstraint.angularComponentB = body1 ?
-          body1.getInvInertiaTensorWorld() * ftorqueAxis1 * body1.getAngularFactor() :
+          body1.getInvInertiaTensorWorld().multiplyVector( ftorqueAxis1, solverConstraint.angularComponentB )
+          .multiplyVector( body1.getAngularFactor(), solverConstraint.angularComponentB ) :
           Bump.Vector3.create();
 
 /* #ifdef COMPUTE_IMPULSE_DENOM
@@ -149,7 +151,8 @@
         desiredVelocity = desiredVelocity || 0;
         cfmSlip = cfmSlip || 0;
 
-        var solverConstraint = this.tmpSolverContactFrictionConstraintPool.expandNonInitializing();
+        var solverConstraint = Bump.SolverConstraint.create();
+        this.tmpSolverContactFrictionConstraintPool.push( solverConstraint );
         solverConstraint.frictionIndex = frictionIndex;
         this.setupFrictionConstraint(solverConstraint, normalAxis, solverBodyA,
                                      solverBodyB, cp, rel_pos1, rel_pos2,
@@ -210,7 +213,7 @@
           denom0 = rb0.getInvMass() + cp.normalWorldOnB.dot( vec );
         }
         if (rb1) {
-          vec = solverConstraint.angularComponentB.negate.cross( rel_pos2 );
+          vec = solverConstraint.angularComponentB.negate( tmpVec ).cross( rel_pos2 );
           denom1 = rb1.getInvMass() + cp.normalWorldOnB.dot( vec );
         }
 /* #endif //COMPUTE_IMPULSE_DENOM */
@@ -415,23 +418,27 @@
           if( cp.getDistance() <= manifold.getContactProcessingThreshold() ) {
             var rel_pos1 = Bump.Vector3.create(), /* btVector3 */
                 rel_pos2 = Bump.Vector3.create(), /* btVector3 */
-                relaxation, /* btScalar */
-                rel_vel, /* btScalar */
+                relaxationRef = { value: 0 }, /* btScalar */
+                rel_velRef = { value: 0 }, /* btScalar */
                 vel = Bump.Vector3.create(), /* btVector3 */
                 frictionIndex = this.tmpSolverContactConstraintPool.length, /* int */
                 /* btSolverConstraint& */
-                solverConstraint = this.tmpSolverContactConstraintPool.expandNonInitializing(),
+                // solverConstraint = this.tmpSolverContactConstraintPool.expandNonInitializing(),
+                solverConstraint = Bump.SolverConstraint.create(),
                 rb0 = Bump.RigidBody.upcast( colObj0 ), /* btRigidBody* */
                 rb1 = Bump.RigidBody.upcast( colObj1 ), /* btRigidBody* */
                 tmpVec1 = Bump.Vector3.create();
+
+            this.tmpSolverContactConstraintPool.push( solverConstraint );
 
             solverConstraint.solverBodyA = rb0 ? rb0 : this.getFixedBody();
             solverConstraint.solverBodyB = rb1 ? rb1 : this.getFixedBody();
             solverConstraint.originalContactPoint = cp;
 
             this.setupContactConstraint( solverConstraint, colObj0, colObj1, cp, infoGlobal, vel,
-                                         rel_vel, relaxation, rel_pos1, rel_pos2);
-
+                                         rel_velRef, relaxationRef, rel_pos1, rel_pos2);
+            var relaxation = relaxationRef.value,
+                rel_vel = rel_velRef.value;
             /* const btVector3& pos1 = cp.getPositionWorldOnA(); */
             /* const btVector3& pos2 = cp.getPositionWorldOnB(); */
 
@@ -445,22 +452,22 @@
               vel.subtract( cp.normalWorldOnB.multiplyScalar( rel_vel, tmpVec1 ), cp.lateralFrictionDir1 );
               var lat_rel_vel = cp.lateralFrictionDir1.length2();
               if( !( infoGlobal.solverMode &
-                    Bump.Solver.SOLVER_DISABLE_VELOCITY_DEPENDENT_FRICTION_DIRECTION ) &&
+                    Bump.SolverMode.SOLVER_DISABLE_VELOCITY_DEPENDENT_FRICTION_DIRECTION ) &&
                   lat_rel_vel > Bump.SIMD_EPSILON) {
 
-                cp.lateralFrictionDir1 /= Math.sqrt( lat_rel_vel );
+                cp.lateralFrictionDir1.divideScalarSelf( Math.sqrt( lat_rel_vel ) );
                 if( ( infoGlobal.solverMode & Bump.SolverMode.SOLVER_USE_2_FRICTION_DIRECTIONS ) ) {
                   cp.lateralFrictionDir1.cross( cp.normalWorldOnB, cp.lateralFrictionDir2 );
                   cp.lateralFrictionDir2.normalize(); //??
-                  this.applyAnisotropicFriction( colObj0, cp.lateralFrictionDir2 );
-                  this.applyAnisotropicFriction( colObj1, cp.lateralFrictionDir2 );
+                  applyAnisotropicFriction( colObj0, cp.lateralFrictionDir2 );
+                  applyAnisotropicFriction( colObj1, cp.lateralFrictionDir2 );
                   this.addFrictionConstraint( cp.lateralFrictionDir2, solverBodyA, solverBodyB,
                                               frictionIndex, cp, rel_pos1, rel_pos2,
                                               colObj0, colObj1, relaxation);
                 }
 
-                this.applyAnisotropicFriction( colObj0, cp.lateralFrictionDir1 );
-                this.applyAnisotropicFriction( colObj1, cp.lateralFrictionDir1 );
+                applyAnisotropicFriction( colObj0, cp.lateralFrictionDir1 );
+                applyAnisotropicFriction( colObj1, cp.lateralFrictionDir1 );
                 this.addFrictionConstraint( cp.lateralFrictionDir1, solverBodyA, solverBodyB,
                                             frictionIndex, cp, rel_pos1, rel_pos2,
                                             colObj0, colObj1, relaxation );
@@ -470,15 +477,15 @@
                 // re-calculate friction direction every frame, todo: check if this is really needed
                 Bump.PlaneSpace1( cp.normalWorldOnB, cp.lateralFrictionDir1, cp.lateralFrictionDir2 );
                 if( ( infoGlobal.solverMode & Bump.SolverMode.SOLVER_USE_2_FRICTION_DIRECTIONS ) ) {
-                  this.applyAnisotropicFriction( colObj0, cp.lateralFrictionDir2 );
-                  this.applyAnisotropicFriction( colObj1, cp.lateralFrictionDir2 );
+                  applyAnisotropicFriction( colObj0, cp.lateralFrictionDir2 );
+                  applyAnisotropicFriction( colObj1, cp.lateralFrictionDir2 );
                   this.addFrictionConstraint( cp.lateralFrictionDir2, solverBodyA, solverBodyB,
                                               frictionIndex, cp, rel_pos1, rel_pos2,
                                               colObj0, colObj1, relaxation);
                 }
 
-                this.applyAnisotropicFriction( colObj0, cp.lateralFrictionDir1);
-                this.applyAnisotropicFriction( colObj1, cp.lateralFrictionDir1);
+                applyAnisotropicFriction( colObj0, cp.lateralFrictionDir1);
+                applyAnisotropicFriction( colObj1, cp.lateralFrictionDir1);
                 this.addFrictionConstraint( cp.lateralFrictionDir1, solverBodyA, solverBodyB,
                                             frictionIndex, cp, rel_pos1, rel_pos2,
                                             colObj0, colObj1, relaxation );
@@ -580,12 +587,17 @@
         else {
           contactConstraint.appliedImpulse = sum;
         }
-        body1.internalApplyImpulse( contactConstraint.contactNormal * body1.internalGetInvMass(),
-                                    contactConstraint.angularComponentA,
-                                    deltaImpulse);
-        body2.internalApplyImpulse( -contactConstraint.contactNormal * body2.internalGetInvMass(),
-                                    contactConstraint.angularComponentB,
-                                    deltaImpulse);
+        body1.internalApplyImpulse(
+          contactConstraint.contactNormal.multiplyVector( body1.internalGetInvMass() ),
+          contactConstraint.angularComponentA,
+          deltaImpulse
+        );
+        body2.internalApplyImpulse(
+          contactConstraint.contactNormal.negate()
+            .multiplyVector( body2.internalGetInvMass() ),
+          contactConstraint.angularComponentB,
+          deltaImpulse
+        );
 
       },
 
@@ -616,12 +628,17 @@
           contactConstraint.appliedImpulse = sum;
         }
 
-        body1.internalApplyImpulse( contactConstraint.contactNormal * body1.internalGetInvMass(),
-                                    contactConstraint.angularComponentA,
-                                    deltaImpulse);
-        body2.internalApplyImpulse( -contactConstraint.contactNormal * body2.internalGetInvMass(),
-                                    contactConstraint.angularComponentB,
-                                    deltaImpulse);
+        body1.internalApplyImpulse(
+          contactConstraint.contactNormal.multiplyVector( body1.internalGetInvMass() ),
+          contactConstraint.angularComponentA,
+          deltaImpulse
+        );
+        body2.internalApplyImpulse(
+          contactConstraint.contactNormal.negate()
+            .multiplyVector( body2.internalGetInvMass() ),
+          contactConstraint.angularComponentB,
+          deltaImpulse
+        );
       },
 
       resolveSingleConstraintRowLowerLimitSIMD: function( body1, body2, contactConstraint ) {
@@ -683,7 +700,7 @@
             j;
 
         for ( j = 0; j < numPoolConstraints; j++ ) {
-          var solveManifold = this.tmpSolverContactConstraintPool[j],  /* const btSolverConstraint& */
+          var solveManifold = this.tmpSolverContactConstraintPool[ j ],  /* const btSolverConstraint& */
               pt = solveManifold.originalContactPoint; /* btManifoldPoint* */
           Bump.Assert( pt );
           pt.appliedImpulse = solveManifold.appliedImpulse;
@@ -1104,9 +1121,9 @@
                             stackAlloc,
                             dispatcher ) {
         /* BT_PROFILE("solveGroup"); */
-        //you need to provide at least some bodies
-        Bump.Assert(bodies);
-        Bump.Assert(numBodies);
+        // You need to provide at least some bodies.
+        Bump.Assert( bodies );
+        Bump.Assert( numBodies );
 
         this.solveGroupCacheFriendlySetup( bodies, numBodies, manifoldPtr, numManifolds, constraints,
                                            numConstraints, infoGlobal, debugDrawer, stackAlloc );
@@ -1117,7 +1134,7 @@
         return 0;
       },
 
-      ///clear internal cached data and reset random seed
+      // Clear internal cached data and reset random seed.
       reset: function() {
         this.btSeed2 = 0;
       },

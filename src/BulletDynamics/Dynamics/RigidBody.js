@@ -694,13 +694,13 @@
           this.constraintRefs.push( c );
         }
 
-        this.checkCollideWith = true;
+        this.m_checkCollideWith = true;
       },
 
       removeConstraintRef: function( c ) {
         Bump.remove( this.constraintRefs, c );
 
-        this.checkCollideWith = this.constraintRefs.length > 0;
+        this.m_checkCollideWith = this.constraintRefs.length > 0;
       },
 
       getConstraintRef: function( index ) {
@@ -800,7 +800,7 @@
           );
           this.deltaAngularVelocity.addSelf(
             angularComponent
-              .multiplyScalar( impulseMagnitude * this.angularFactor, tmpV1 )
+              .multiplyVector( this.angularFactor.multiplyScalar( impulseMagnitude, tmpV1 ), tmpV1 )
           );
         }
       },

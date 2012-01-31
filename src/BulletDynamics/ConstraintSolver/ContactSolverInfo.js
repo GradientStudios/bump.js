@@ -1,16 +1,16 @@
 (function( window, Bump ) {
 
   Bump.SolverMode = Bump.Enum([
-    { id: 'SOLVER_RANDMIZE_ORDER',                                param:   1 },
-    { id: 'SOLVER_FRICTION_SEPARATE',                             param:   2 },
-    { id: 'SOLVER_USE_WARMSTARTING',                              param:   4 },
-    { id: 'SOLVER_USE_FRICTION_WARMSTARTING',                     param:   8 },
-    { id: 'SOLVER_USE_2_FRICTION_DIRECTIONS',                     param:  16 },
-    { id: 'SOLVER_ENABLE_FRICTION_DIRECTION_CACHING',             param:  32 },
-    { id: 'SOLVER_DISABLE_VELOCITY_DEPENDENT_FRICTION_DIRECTION', param:  64 },
-    { id: 'SOLVER_CACHE_FRIENDLY',                                param: 128 },
-    { id: 'SOLVER_SIMD',                                          param: 256 },
-    { id: 'SOLVER_CUDA',                                          param: 512 }
+    { id: 'SOLVER_RANDMIZE_ORDER',                                value:   1 },
+    { id: 'SOLVER_FRICTION_SEPARATE',                             value:   2 },
+    { id: 'SOLVER_USE_WARMSTARTING',                              value:   4 },
+    { id: 'SOLVER_USE_FRICTION_WARMSTARTING',                     value:   8 },
+    { id: 'SOLVER_USE_2_FRICTION_DIRECTIONS',                     value:  16 },
+    { id: 'SOLVER_ENABLE_FRICTION_DIRECTION_CACHING',             value:  32 },
+    { id: 'SOLVER_DISABLE_VELOCITY_DEPENDENT_FRICTION_DIRECTION', value:  64 },
+    { id: 'SOLVER_CACHE_FRIENDLY',                                value: 128 },
+    { id: 'SOLVER_SIMD',                                          value: 256 },
+    { id: 'SOLVER_CUDA',                                          value: 512 }
   ]);
 
   Bump.ContactSolverInfo = Bump.type({
@@ -20,7 +20,7 @@
       this.friction = 0.3;
       this.timeStep = 0;
       this.restitution = 0;
-      this.numIterations = 0;
+      this.numIterations = 10;
       this.maxErrorReduction = 20;
       this.sor = 1;
       this.erp = 0.2;

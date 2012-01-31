@@ -115,7 +115,7 @@
         if ( q === undefined ) {
           while ( p !== this.elements[p].id ) {
             var elementPtr = this.elements[ this.elements[p].id ];
-            this.elements[p].m_id = elementPtr.id;
+            this.elements[p].id = elementPtr.id;
             p = elementPtr.id;
           }
           return p;

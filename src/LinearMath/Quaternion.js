@@ -9,10 +9,19 @@
 (function( window, Bump ) {
   var tmpQ1, tmpQ2, tmpV1, tmpV2, tmpV3, EPSILON = Math.pow( 2, -52 );
 
+  Bump.printQuaternion = function( quat, message, precision ) {
+    message = message || '';
+    precision = ( precision === undefined ) ? 20 : precision;
+    console.log( message + ' ' + quat.x.toFixed( 20 ) + ' ' +
+                 quat.y.toFixed( 20 ) + ' ' +
+                 quat.z.toFixed( 20 ) + ' ' +
+                 quat.w.toFixed( 20 ) + ' ' );
+  };
+
   Bump.Quaternion = Bump.type({
     // Given *exactly* four arguments, initializes a quaternion.
     init: function Quaternion( x, y, z, w ) {
-      this.m_floats = [ x, y, z, w ];
+      this.floats = [ x, y, z, w ];
 
       this.x = x;
       this.y = y;
@@ -32,7 +41,7 @@
         get: function() { return this.x; },
         set: function( x ) {
           this.x = x;
-          this.m_floats[0] = x;
+          this.floats[0] = x;
         }
       },
 
@@ -40,7 +49,7 @@
         get: function() { return this.y; },
         set: function( y ) {
           this.y = y;
-          this.m_floats[1] = y;
+          this.floats[1] = y;
         }
       },
 
@@ -48,7 +57,7 @@
         get: function() { return this.z; },
         set: function( z ) {
           this.z = z;
-          this.m_floats[2] = z;
+          this.floats[2] = z;
         }
       },
 
@@ -56,7 +65,7 @@
         get: function() { return this.w; },
         set: function( w ) {
           this.w = w;
-          this.m_floats[3] = w;
+          this.floats[3] = w;
         }
       }
     },
@@ -73,57 +82,57 @@
         dest.z = this.z;
         dest.w = this.w;
 
-        dest.m_floats[0] = this.m_floats[0];
-        dest.m_floats[1] = this.m_floats[1];
-        dest.m_floats[2] = this.m_floats[2];
-        dest.m_floats[3] = this.m_floats[3];
+        dest.floats[0] = this.floats[0];
+        dest.floats[1] = this.floats[1];
+        dest.floats[2] = this.floats[2];
+        dest.floats[3] = this.floats[3];
         return dest;
       },
 
       // *For compatibility.* `this.x` is faster.
       getX: function() {
-        return this.m_floats[0];
+        return this.floats[0];
       },
 
       // *For compatibility.* `this.y` is faster.
       getY: function() {
-        return this.m_floats[1];
+        return this.floats[1];
       },
 
       // *For compatibility.* `this.z` is faster.
       getZ: function() {
-        return this.m_floats[2];
+        return this.floats[2];
       },
 
       // *For compatibility.* `this.w` is faster.
       getW: function() {
-        return this.m_floats[3];
+        return this.floats[3];
       },
 
       // *For compatibility.* `this.x` is faster.
       setX: function( x ) {
-        this.m_floats[0] = x;
+        this.floats[0] = x;
         this.x = x;
         return this;
       },
 
       // *For compatibility.* `this.y` is faster.
       setY: function( y ) {
-        this.m_floats[1] = y;
+        this.floats[1] = y;
         this.y = y;
         return this;
       },
 
       // *For compatibility.* `this.z` is faster.
       setZ: function( z ) {
-        this.m_floats[2] = z;
+        this.floats[2] = z;
         this.z = z;
         return this;
       },
 
       // *For compatibility.* `this.w` is faster.
       setW: function( w ) {
-        this.m_floats[3] = w;
+        this.floats[3] = w;
         this.w = w;
         return this;
       },
@@ -146,10 +155,10 @@
 
       // Sets the elements of `this` quaternion to the four given values.
       setValue: function( x, y, z, w ) {
-        this.x = this.m_floats[0] = x;
-        this.y = this.m_floats[1] = y;
-        this.z = this.m_floats[2] = z;
-        this.w = this.m_floats[3] = w || 0;
+        this.x = this.floats[0] = x;
+        this.y = this.floats[1] = y;
+        this.z = this.floats[2] = z;
+        this.w = this.floats[3] = w || 0;
         return this;
       },
 
@@ -160,10 +169,10 @@
         if ( other.z < this.z ) { this.z = other.z; }
         if ( other.w < this.w ) { this.w = other.w; }
 
-        if ( other.m_floats[0] < this.m_floats[0] ) { this.m_floats[0] = other.m_floats[0]; }
-        if ( other.m_floats[1] < this.m_floats[1] ) { this.m_floats[1] = other.m_floats[1]; }
-        if ( other.m_floats[2] < this.m_floats[2] ) { this.m_floats[2] = other.m_floats[2]; }
-        if ( other.m_floats[3] < this.m_floats[3] ) { this.m_floats[3] = other.m_floats[3]; }
+        if ( other.floats[0] < this.floats[0] ) { this.floats[0] = other.floats[0]; }
+        if ( other.floats[1] < this.floats[1] ) { this.floats[1] = other.floats[1]; }
+        if ( other.floats[2] < this.floats[2] ) { this.floats[2] = other.floats[2]; }
+        if ( other.floats[3] < this.floats[3] ) { this.floats[3] = other.floats[3]; }
         return this;
       },
 
@@ -174,10 +183,10 @@
         if ( other.z > this.z ) { this.z = other.z; }
         if ( other.w > this.w ) { this.w = other.w; }
 
-        if ( other.m_floats[0] > this.m_floats[0] ) { this.m_floats[0] = other.m_floats[0]; }
-        if ( other.m_floats[1] > this.m_floats[1] ) { this.m_floats[1] = other.m_floats[1]; }
-        if ( other.m_floats[2] > this.m_floats[2] ) { this.m_floats[2] = other.m_floats[2]; }
-        if ( other.m_floats[3] > this.m_floats[3] ) { this.m_floats[3] = other.m_floats[3]; }
+        if ( other.floats[0] > this.floats[0] ) { this.floats[0] = other.floats[0]; }
+        if ( other.floats[1] > this.floats[1] ) { this.floats[1] = other.floats[1]; }
+        if ( other.floats[2] > this.floats[2] ) { this.floats[2] = other.floats[2]; }
+        if ( other.floats[3] > this.floats[3] ) { this.floats[3] = other.floats[3]; }
         return this;
       },
 

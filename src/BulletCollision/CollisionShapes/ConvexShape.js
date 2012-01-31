@@ -243,9 +243,9 @@
           var abs_b = t.basis.absolute( tmpV2 );
           center = t.origin;
           extent = tmpV3.setValue(
-            abs_b.m_el0.dot( halfExtents ),
-            abs_b.m_el1.dot( halfExtents ),
-            abs_b.m_el2.dot( halfExtents )
+            abs_b.el0.dot( halfExtents ),
+            abs_b.el1.dot( halfExtents ),
+            abs_b.el2.dot( halfExtents )
           );
 
           aabbMin = center.subtract( extent, aabbMin );
@@ -272,8 +272,8 @@
     //     case Bump.BroadphaseNativeTypes.CAPSULE_SHAPE_PROXYTYPE:
     //       btCapsuleShape* capsuleShape = (btCapsuleShape*)this;
     //       btVector3 halfExtents(capsuleShape->getRadius(),capsuleShape->getRadius(),capsuleShape->getRadius());
-    //       int m_upAxis = capsuleShape->getUpAxis();
-    //       halfExtents[m_upAxis] = capsuleShape->getRadius() + capsuleShape->getHalfHeight();
+    //       int upAxis = capsuleShape->getUpAxis();
+    //       halfExtents[upAxis] = capsuleShape->getRadius() + capsuleShape->getHalfHeight();
     //       halfExtents += btVector3(capsuleShape->getMarginNonVirtual(),capsuleShape->getMarginNonVirtual(),capsuleShape->getMarginNonVirtual());
     //       btMatrix3x3 abs_b = t.getBasis().absolute();
     //       btVector3 center = t.getOrigin();

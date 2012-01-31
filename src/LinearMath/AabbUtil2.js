@@ -147,9 +147,9 @@
     var halfExtentsWithMargin = halfExtents.add( tmpV1.setValue( margin, margin, margin ), tmpV1 ),
         abs_b = t.basis.absolute( tmpM1 ),
         center = t.origin.clone( tmpV2 ),
-        extent = tmpV3.setValue( abs_b.m_el0.dot( halfExtentsWithMargin ),
-                                 abs_b.m_el1.dot( halfExtentsWithMargin ),
-                                 abs_b.m_el2.dot( halfExtentsWithMargin ) );
+        extent = tmpV3.setValue( abs_b.el0.dot( halfExtentsWithMargin ),
+                                 abs_b.el1.dot( halfExtentsWithMargin ),
+                                 abs_b.el2.dot( halfExtentsWithMargin ) );
 
     aabbMinOut = center.subtract( extent, aabbMinOut );
     aabbMaxOut = center.add( extent, aabbMaxOut );
@@ -170,9 +170,9 @@
       .multiplyScalar( 0.5, tmpV2 );
     var abs_b = trans.basis.absolute( tmpM1 );
     var center = trans.transform( localCenter, tmpV3 );
-    var extent = tmpV4.setValue( abs_b.m_el0.dot( localHalfExtents ),
-                                 abs_b.m_el1.dot( localHalfExtents ),
-                                 abs_b.m_el2.dot( localHalfExtents ) );
+    var extent = tmpV4.setValue( abs_b.el0.dot( localHalfExtents ),
+                                 abs_b.el1.dot( localHalfExtents ),
+                                 abs_b.el2.dot( localHalfExtents ) );
     aabbMinOut = center.subtract( extent, aabbMinOut );
     aabbMaxOut = center.add( extent, aabbMaxOut );
   };

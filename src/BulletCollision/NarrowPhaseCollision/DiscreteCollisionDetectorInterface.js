@@ -21,6 +21,16 @@
     },
 
     members: {
+      clone: function( dest ) {
+        dest = dest || Bump.DiscreteCollisionDetectorInterface.create();
+        return dest;
+      },
+
+      assign: function( other ) {
+        return this;
+      },
+
+      destruct: Bump.noop,
       getClosestPoints: Bump.abstract
     }
   });

@@ -482,12 +482,12 @@ test( 'Bump.Dbvt exists', function() {
 test( 'Bump.Dbvt creation', function() {
   var t = Bump.Dbvt.create() || {};
   ok( t instanceof Bump.Dbvt.prototype.init, 'creation without `new` operator' );
-  equal( t.m_root, 0, 'm_root initialized correctly' );
-  equal( t.m_free, 0, 'm_free initialized correctly' );
-  equal( t.m_lkhd, -1, 'm_lkhd initialized correctly' );
-  equal( t.m_leaves, 0, 'm_leaves initialized correctly' );
-  equal( t.m_opath, 0, 'm_opath initialized correctly' );
-  deepEqual( t.m_stkStack, [], 'm_opath initialized correctly' );
+  equal( t.root, 0, 'root initialized correctly' );
+  equal( t.free, 0, 'free initialized correctly' );
+  equal( t.lkhd, -1, 'lkhd initialized correctly' );
+  equal( t.leaves, 0, 'leaves initialized correctly' );
+  equal( t.opath, 0, 'opath initialized correctly' );
+  deepEqual( t.stkStack, [], 'opath initialized correctly' );
 });
 
 module( 'Bump.Dbvt.sStkNN' );
@@ -704,7 +704,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     rightleft.dataAsInt = 30;
     rightright.dataAsInt = 40;
 
-    dbvt0.m_root = root;
+    dbvt0.root = root;
 
     return dbvt0;
   }
@@ -738,16 +738,16 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
     var enumerator = Bump.DbvtNodeEnumerator.create(),
     dbvt = makeTestTree(),
-    expected = [ dbvt.m_root,
-                 dbvt.m_root.childs[ 0 ],
-                 dbvt.m_root.childs[ 0 ].childs[ 0 ],
-                 dbvt.m_root.childs[ 0 ].childs[ 1 ],
-                 dbvt.m_root.childs[ 1 ],
-                 dbvt.m_root.childs[ 1 ].childs[ 0 ],
-                 dbvt.m_root.childs[ 1 ].childs[ 1 ]
+    expected = [ dbvt.root,
+                 dbvt.root.childs[ 0 ],
+                 dbvt.root.childs[ 0 ].childs[ 0 ],
+                 dbvt.root.childs[ 0 ].childs[ 1 ],
+                 dbvt.root.childs[ 1 ],
+                 dbvt.root.childs[ 1 ].childs[ 0 ],
+                 dbvt.root.childs[ 1 ].childs[ 1 ]
                ];
 
-    Bump.Dbvt.enumNodes( dbvt.m_root, enumerator );
+    Bump.Dbvt.enumNodes( dbvt.root, enumerator );
 
     //epsilonNumberCheck( enumerator.nodes, expected, Bump.SIMD_EPSILON );
     deepEqual( enumerator.nodes, expected, 'correctly populates enumerator' );
@@ -758,13 +758,13 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
     var enumerator = Bump.DbvtNodeEnumerator.create(),
     dbvt = makeTestTree(),
-    expected = [ dbvt.m_root.childs[ 0 ].childs[ 0 ],
-                 dbvt.m_root.childs[ 0 ].childs[ 1 ],
-                 dbvt.m_root.childs[ 1 ].childs[ 0 ],
-                 dbvt.m_root.childs[ 1 ].childs[ 1 ]
+    expected = [ dbvt.root.childs[ 0 ].childs[ 0 ],
+                 dbvt.root.childs[ 0 ].childs[ 1 ],
+                 dbvt.root.childs[ 1 ].childs[ 0 ],
+                 dbvt.root.childs[ 1 ].childs[ 1 ]
                ];
 
-    Bump.Dbvt.enumLeaves( dbvt.m_root, enumerator );
+    Bump.Dbvt.enumLeaves( dbvt.root, enumerator );
 
     //epsilonNumberCheck( enumerator.nodes, expected, Bump.SIMD_EPSILON );
     deepEqual( enumerator.nodes, expected, 'correctly populates enumerator' );
@@ -775,7 +775,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
     var dbvt = makeTestTree(),
         expected = 4,
-        result = Bump.Dbvt.countLeaves( dbvt.m_root );
+        result = Bump.Dbvt.countLeaves( dbvt.root );
 
     equal( result, expected, 'correctly counts leaves' );
   });
@@ -784,10 +784,10 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     strictEqual( typeof Bump.Dbvt.maxdepth, 'function', 'exists' );
 
     var dbvt = makeTestTree();
-    equal( Bump.Dbvt.maxdepth( dbvt.m_root ), 3, 'correctly computes max depth' );
+    equal( Bump.Dbvt.maxdepth( dbvt.root ), 3, 'correctly computes max depth' );
 
     dbvt = Bump.Dbvt.create();
-    equal( Bump.Dbvt.maxdepth( dbvt.m_root ), 0, 'correctly computes max depth for empty tree' );
+    equal( Bump.Dbvt.maxdepth( dbvt.root ), 0, 'correctly computes max depth for empty tree' );
 
   });
 
@@ -795,14 +795,14 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     strictEqual( typeof Bump.Dbvt.extractLeaves, 'function', 'exists' );
 
     var dbvt = makeTestTree(),
-    expected = [ dbvt.m_root.childs[ 0 ].childs[ 0 ],
-                 dbvt.m_root.childs[ 0 ].childs[ 1 ],
-                 dbvt.m_root.childs[ 1 ].childs[ 0 ],
-                 dbvt.m_root.childs[ 1 ].childs[ 1 ]
+    expected = [ dbvt.root.childs[ 0 ].childs[ 0 ],
+                 dbvt.root.childs[ 0 ].childs[ 1 ],
+                 dbvt.root.childs[ 1 ].childs[ 0 ],
+                 dbvt.root.childs[ 1 ].childs[ 1 ]
                ],
     leaves = [];
 
-    Bump.Dbvt.extractLeaves( dbvt.m_root, leaves );
+    Bump.Dbvt.extractLeaves( dbvt.root, leaves );
 
     //epsilonNumberCheck( extracterator.nodes, expected, Bump.SIMD_EPSILON );
     deepEqual( leaves, expected, 'correctly extracts leaves' );
@@ -831,7 +831,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     strictEqual( typeof dbvt.clone, 'function', 'exists' );
     dbvt.clone( dest, iclone );
 
-    strictEqual( dest.m_root, 0, 'cloning empty tree creates empty tree' );
+    strictEqual( dest.root, 0, 'cloning empty tree creates empty tree' );
     equal( iclone.sum, 0, 'no leaves visited' );
 
     //insertAll( dbvt, vols );
@@ -912,12 +912,12 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     strictEqual( typeof dbvt.clear, 'function', 'clear exists' );
 
     dbvt.clear();
-    equal( dbvt.m_root, 0, 'm_root cleared' );
-    equal( dbvt.m_free, 0, 'm_free cleared' );
-    equal( dbvt.m_lkhd, -1, 'm_lkhd cleared' );
-    equal( dbvt.m_leaves, 0, 'm_leaves cleared' );
-    deepEqual( dbvt.m_stkStack, [], 'm_stkStack cleared' );
-    equal( dbvt.m_opath, 0, 'm_opath cleared' );
+    equal( dbvt.root, 0, 'root cleared' );
+    equal( dbvt.free, 0, 'free cleared' );
+    equal( dbvt.lkhd, -1, 'lkhd cleared' );
+    equal( dbvt.leaves, 0, 'leaves cleared' );
+    deepEqual( dbvt.stkStack, [], 'stkStack cleared' );
+    equal( dbvt.opath, 0, 'opath cleared' );
   });
 
   test('empty', function() {
@@ -1014,7 +1014,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     for ( var i = 0; i < 27; i++ ) {
       var leaves = [],
       lh = (i % 4) - 1;
-      Bump.Dbvt.extractLeaves( dbvt.m_root, leaves );
+      Bump.Dbvt.extractLeaves( dbvt.root, leaves );
       dbvt.updateLeafLookahead( leaves[ i ], lh );
       dbvt.write( writer );
 
@@ -1063,14 +1063,14 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     for ( var i = 0; i < 26; i++ ) {
       var leaves = [];
 
-      Bump.Dbvt.extractLeaves( dbvt.m_root, leaves );
+      Bump.Dbvt.extractLeaves( dbvt.root, leaves );
       dbvt.remove( leaves[ 0 ] );
       dbvt.write( writer );
 
       equal( writer.s, expected[ i ], 'correct result after remove ' + i );
     }
-    dbvt.remove( dbvt.m_root );
-    ok( dbvt.m_root === 0, 'final tree is empty' );
+    dbvt.remove( dbvt.root );
+    ok( dbvt.root === 0, 'final tree is empty' );
 
   });
 

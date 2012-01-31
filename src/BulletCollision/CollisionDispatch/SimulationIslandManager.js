@@ -1,5 +1,23 @@
 (function( window, Bump ) {
 
+  var getIslandId = function( lhs ) {
+    var islandId,
+    rcolObj0 = lhs.getBody0(), /* const btCollisionObject* */
+    rcolObj1 = lhs.getBody1(); /* const btCollisionObject* */
+    islandId = rcolObj0.getIslandTag() >= 0 ? rcolObj0.getIslandTag() : rcolObj1.getIslandTag();
+    return islandId;
+  };
+
+  Bump.PersistentManifoldSortPredicate = Bump.type( {
+    typeMembers: {
+      create: function() {
+        return function( lhs, rhs ) {
+          return getIslandId( lhs ) < getIslandId( rhs );
+        };
+      }
+    }
+  } );
+
   Bump.SimulationIslandManager = Bump.type({
     init: function SimulationIslandManager() {
       this.unionFind = Bump.UnionFind.create();
@@ -137,7 +155,7 @@
             var startManifold = null;
 
             if ( startManifoldIndex < numManifolds ) {
-              var curIslandId = this.getIslandId( this.islandmanifold[ startManifoldIndex ] );
+              var curIslandId = getIslandId( this.islandmanifold[ startManifoldIndex ] );
               if ( curIslandId === islandId ) {
                 startManifold = this.islandmanifold.slice( startManifoldIndex );
 
@@ -155,7 +173,7 @@
 
             if ( !islandSleeping ) {
               callback.ProcessIsland( this.islandBodies, this.islandBodies.length, startManifold,numIslandManifolds, islandId );
-              console.log( 'Island callback of size:' + this.islandBodies.length + 'bodies, ' + numIslandManifolds + ' manifolds' );
+              /* console.log( 'Island callback of size:' + this.islandBodies.length + 'bodies, ' + numIslandManifolds + ' manifolds' ); */
             }
 
             if ( numIslandManifolds ) {

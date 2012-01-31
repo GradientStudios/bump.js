@@ -4,26 +4,26 @@
   // `btSolverConstraint`.
   Bump.SolverConstraint = Bump.type({
     init: function SolverConstraint() {
-      this.m_relpos1CrossNormal = Bump.Vector3.create();
-      this.m_contactNormal = Bump.Vector3.create();
+      this.relpos1CrossNormal = Bump.Vector3.create();
+      this.contactNormal = Bump.Vector3.create();
 
-      this.m_relpos2CrossNormal = Bump.Vector3.create();
-        //btVector3             m_contactNormal2;//usually m_contactNormal2 == -m_contactNormal
+      this.relpos2CrossNormal = Bump.Vector3.create();
+        //btVector3             contactNormal2;//usually contactNormal2 == -contactNormal
 
-      this.m_angularComponentA = Bump.Vector3.create();
-      this.m_angularComponentB = Bump.Vector3.create();
+      this.angularComponentA = Bump.Vector3.create();
+      this.angularComponentB = Bump.Vector3.create();
 
-      this.m_appliedPushImpulse = 0;
-      this.m_appliedImpulse = 0;
+      this.appliedPushImpulse = 0;
+      this.appliedImpulse = 0;
 
-      this.m_friction = 0;
-      this.m_jacDiagABInv = 0;
+      this.friction = 0;
+      this.jacDiagABInv = 0;
 
-      this.m_rhs = 0;
-      this.m_cfm = 0;
-      this.m_lowerLimit = 0;
-      this.m_upperLimit = 0;
-      this.m_rhsPenetration = 0;
+      this.rhs = 0;
+      this.cfm = 0;
+      this.lowerLimit = 0;
+      this.upperLimit = 0;
+      this.rhsPenetration = 0;
 
       // internal values for unions
       this._union0 = 0;
@@ -36,20 +36,20 @@
     members: {
       // `setZero` was added for porting situations where `btSolverContact`s are zeroed out using memset
       setZero: function() {
-        this.m_relpos1CrossNormal.setZero();
-        this.m_contactNormal.setZero();
-        this.m_relpos2CrossNormal.setZero();
-        this.m_angularComponentA.setZero();
-        this.m_angularComponentB.setZero();
-        this.m_appliedPushImpulse = 0;
-        this.m_appliedImpulse = 0;
-        this.m_friction = 0;
-        this.m_jacDiagABInv = 0;
-        this.m_rhs = 0;
-        this.m_cfm = 0;
-        this.m_lowerLimit = 0;
-        this.m_upperLimit = 0;
-        this.m_rhsPenetration = 0;
+        this.relpos1CrossNormal.setZero();
+        this.contactNormal.setZero();
+        this.relpos2CrossNormal.setZero();
+        this.angularComponentA.setZero();
+        this.angularComponentB.setZero();
+        this.appliedPushImpulse = 0;
+        this.appliedImpulse = 0;
+        this.friction = 0;
+        this.jacDiagABInv = 0;
+        this.rhs = 0;
+        this.cfm = 0;
+        this.lowerLimit = 0;
+        this.upperLimit = 0;
+        this.rhsPenetration = 0;
         this._union0 = 0;
         this._union1 = 0;
         this._union2 = 0;
@@ -66,52 +66,52 @@
     },
 
     properties: {
-      m_numConsecutiveRowsPerKernel: {
+      numConsecutiveRowsPerKernel: {
         get: function() { return this._union0; },
         set: function( v ) { this._union0 = v; }
       },
 
-      m_unusedPadding0: {
+      unusedPadding0: {
         get: function() { return this._union0; },
         set: function( v ) { this._union0 = v; }
       },
 
-      m_frictionIndex: {
+      frictionIndex: {
         get: function() { return this._union1; },
         set: function( v ) { this._union1 = v; }
       },
 
-      m_unusedPadding1: {
+      unusedPadding1: {
         get: function() { return this._union1; },
         set: function( v ) { this._union1 = v; }
       },
 
-      m_solverBodyA: {
+      solverBodyA: {
         get: function() { return this._union2; },
         set: function( v ) { this._union2 = v; }
       },
 
-      m_companionIdA: {
+      companionIdA: {
         get: function() { return this._union2; },
         set: function( v ) { this._union2 = v; }
       },
 
-      m_solverBodyB: {
+      solverBodyB: {
         get: function() { return this._union3; },
         set: function( v ) { this._union3 = v; }
       },
 
-      m_companionIdB: {
+      companionIdB: {
         get: function() { return this._union3; },
         set: function( v ) { this._union3 = v; }
       },
 
-      m_originalContactPoint: {
+      originalContactPoint: {
         get: function() { return this._union4; },
         set: function( v ) { this._union4 = v; }
       },
 
-      m_unusedPadding4: {
+      unusedPadding4: {
         get: function() { return this._union4; },
         set: function( v ) { this._union4 = v; }
       }

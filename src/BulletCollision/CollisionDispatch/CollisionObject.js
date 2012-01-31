@@ -30,7 +30,7 @@
       this.hitFraction = 1;
       this.ccdSweptSphereRadius = 0;
       this.ccdMotionThreshold = 0;
-      this.checkCollideWith = false;
+      this.m_checkCollideWith = false;
 
       this.worldTransform.setIdentity();
     },
@@ -62,7 +62,7 @@
         dest.hitFraction = this.hitFraction;
         dest.ccdSweptSphereRadius = this.ccdSweptSphereRadius;
         dest.ccdMotionThreshold = this.ccdMotionThreshold;
-        dest.checkCollideWith = this.checkCollideWith;
+        dest.m_checkCollideWith = this.m_checkCollideWith;
 
         return dest;
       },
@@ -91,7 +91,7 @@
         this.hitFraction = other.hitFraction;
         this.ccdSweptSphereRadius = other.ccdSweptSphereRadius;
         this.ccdMotionThreshold = other.ccdMotionThreshold;
-        this.checkCollideWith = other.checkCollideWith;
+        this.m_checkCollideWith = other.m_checkCollideWith;
 
         return this;
       },
@@ -364,7 +364,7 @@
       },
 
       checkCollideWith: function( co ) {
-        if ( this.checkCollideWith ) {
+        if ( this.m_checkCollideWith ) {
           return this.checkCollideWithOverride( co );
         }
 

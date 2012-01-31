@@ -11,9 +11,9 @@ test( 'basic', function() {
 test( 'correct types', function() {
   var brc = Bump.BroadphaseRayCallback.create(),
       checks = [
-        [ 'm_rayDirectionInverse', Bump.Vector3 ],
-        [ 'm_signs', 'array' ],
-        [ 'm_lambda_max', 'number' ]
+        [ 'rayDirectionInverse', Bump.Vector3 ],
+        [ 'signs', 'array' ],
+        [ 'lambda_max', 'number' ]
       ];
 
   checkTypes( brc, checks );

@@ -56,8 +56,8 @@ test( 'basic', function() {
 module( 'CollisionPairCallback members' );
 
 test( 'processOverlap', function() {
-  var fakeProxy0 = { m_uniqueId: 0 },
-      fakeProxy1 = { m_uniqueId: 0 },
+  var fakeProxy0 = { uniqueId: 0 },
+      fakeProxy1 = { uniqueId: 0 },
       pair = Bump.BroadphasePair.create( fakeProxy0, fakeProxy1 ),
       dispatcher = Bump.CollisionDispatcher.create(),
       info = Bump.DispatcherInfo.create(),

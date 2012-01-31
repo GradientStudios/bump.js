@@ -269,8 +269,8 @@
   // Intersect test for 2 `DbvtAabbMm`s
   Bump.Intersect.DbvtAabbMm2 = function( a, b ) {
     //     #if  DBVT_INT0_IMPL == DBVT_IMPL_SSE
-    //         const __m128     rt(_mm_or_ps(   _mm_cmplt_ps(_mm_load_ps(b.mx),_mm_load_ps(a.mi)),
-    //          _mm_cmplt_ps(_mm_load_ps(a.mx),_mm_load_ps(b.mi))));
+    //         const __m128     rt(_mor_ps(   _mcmplt_ps(_mload_ps(b.mx),_mload_ps(a.mi)),
+    //          _mcmplt_ps(_mload_ps(a.mx),_mload_ps(b.mi))));
     //         const __int32*   pu((const __int32*)&rt);
     //         return((pu[0]|pu[1]|pu[2])==0);
     //     #else
@@ -448,8 +448,8 @@
   },
 
   deletenode = function( pdbvt, node ) {
-    // btAlignedFree(pdbvt->m_free);
-    pdbvt.m_free = node;
+    // btAlignedFree(pdbvt->free);
+    pdbvt.free = node;
   },
 
   recursedeletenode = function( pdbvt, node ) {
@@ -457,8 +457,8 @@
       recursedeletenode( pdbvt, node.childs[ 0 ] );
       recursedeletenode( pdbvt, node.childs[ 1 ] );
     }
-    if ( node == pdbvt.m_root ) {
-      pdbvt.m_root = 0;
+    if ( node == pdbvt.root ) {
+      pdbvt.root = 0;
     }
     deletenode( pdbvt, node );
   },
@@ -466,9 +466,9 @@
   // overloaded createnode functions have been renamed
   createnodeTreeParentData = function( pdbvt, parent, data ) {
     var node;
-    if ( pdbvt.m_free ) {
-      node = pdbvt.m_free;
-      pdbvt.m_free = 0;
+    if ( pdbvt.free ) {
+      node = pdbvt.free;
+      pdbvt.free = 0;
     }
     else {
       node = Bump.DbvtNode.create();
@@ -492,8 +492,8 @@
   },
 
   insertleaf = function( pdbvt, root, leaf ) {
-    if ( !pdbvt.m_root ) {
-      pdbvt.m_root = leaf;
+    if ( !pdbvt.root ) {
+      pdbvt.root = leaf;
       leaf.parent = 0;
     }
     else {
@@ -530,14 +530,14 @@
         root.parent = node;
         node.childs[ 1 ] = leaf;
         leaf.parent = node;
-        pdbvt.m_root = node;
+        pdbvt.root = node;
       }
     }
   },
 
   removeleaf = function( pdbvt, leaf ) {
-    if ( leaf === pdbvt.m_root ) {
-                pdbvt.m_root = 0;
+    if ( leaf === pdbvt.root ) {
+                pdbvt.root = 0;
                 return 0;
     }
     else {
@@ -558,13 +558,13 @@
             break;
           }
         }
-        return prev || pdbvt.m_root;
+        return prev || pdbvt.root;
       }
       else {
-        pdbvt.m_root = sibling;
+        pdbvt.root = sibling;
         sibling.parent = 0;
         deletenode( pdbvt, parent );
-        return pdbvt.m_root;
+        return pdbvt.root;
       }
     }
   },
@@ -741,73 +741,73 @@
   // underlying data structure.
   Bump.Dbvt = Bump.type({
     init: function Dbvt() {
-      this.m_root = 0; // DbvtNode
-      this.m_free = 0; // DbvtNode
-      this.m_lkhd = -1; // int
-      this.m_leaves = 0; // int
-      this.m_opath = 0; // unsigned
-      this.m_stkStack = []; // array of `Dbvt.sStkNN`
+      this.root = 0; // DbvtNode
+      this.free = 0; // DbvtNode
+      this.lkhd = -1; // int
+      this.leaves = 0; // int
+      this.opath = 0; // unsigned
+      this.stkStack = []; // array of `Dbvt.sStkNN`
     },
 
     members: {
       clear: function() {
-        if ( this.m_root ) {
-          /* recursedeletenode( this, this.m_root ); */
-          this.m_root = 0; /* added because this because recursedelete is no longer called */
-          this.m_leaves = 0; /* added because this because recursedelete is no longer called */
-          /* btAlignedFree(this.m_free); */
-          this.m_free = 0;
-          this.m_lkhd = -1;
-          this.m_stkStack.splice( 0 );
-          this.m_opath = 0;
+        if ( this.root ) {
+          /* recursedeletenode( this, this.root ); */
+          this.root = 0; /* added because this because recursedelete is no longer called */
+          this.leaves = 0; /* added because this because recursedelete is no longer called */
+          /* btAlignedFree(this.free); */
+          this.free = 0;
+          this.lkhd = -1;
+          this.stkStack.splice( 0 );
+          this.opath = 0;
         }
       },
 
-      empty: function() { return ( 0 === this.m_root ); },
+      empty: function() { return ( 0 === this.root ); },
 
       optimizeBottomUp: function() {
-        if ( this.m_root ) {
+        if ( this.root ) {
           var leaves = [];
-          //leaves.reserve(this.m_leaves);
-          fetchleaves( this, this.m_root, leaves );
+          //leaves.reserve(this.leaves);
+          fetchleaves( this, this.root, leaves );
           bottomup( this, leaves );
-          this.m_root = leaves[ 0 ];
+          this.root = leaves[ 0 ];
         }
       },
 
       optimizeTopDown: function( bu_threshold ) {
         bu_threshold = bu_threshold || 128;
-        if ( this.m_root ) {
+        if ( this.root ) {
           var leaves = [];
-          //leaves.reserve(this.m_leaves);
-          fetchleaves( this, this.m_root, leaves );
-          this.m_root = topdown( this, leaves, bu_threshold );
+          //leaves.reserve(this.leaves);
+          fetchleaves( this, this.root, leaves );
+          this.root = topdown( this, leaves, bu_threshold );
         }
       },
 
       optimizeIncremental: function( passes ) {
         if ( passes < 0 ) {
-          passes = this.m_leaves;
+          passes = this.leaves;
         }
-        if ( this.m_root && ( passes > 0 ) ) {
+        if ( this.root && ( passes > 0 ) ) {
           do {
-            var node = this.m_root,
+            var node = this.root,
                 bit = 0;
             while( node.isinternal() ) {
-              node = sort( node, this.m_root ).childs[ ( this.m_opath >> bit ) & 1 ];
+              node = sort( node, this.root ).childs[ ( this.opath >> bit ) & 1 ];
               /* bit = ( bit + 1 ) & ( sizeof ( unsigned ) * 8 - 1 ); */
               bit = ( bit + 1 ) & 31;
             }
             this.updateLeafLookahead( node );
-            ++this.m_opath;
+            ++this.opath;
           } while( --passes );
         }
       },
 
       insert: function( volume, data ) {
         var leaf = createnodeTreeParentVolumeData( this, 0, volume, data );
-        insertleaf( this, this.m_root, leaf );
-        ++this.m_leaves;
+        insertleaf( this, this.root, leaf );
+        ++this.leaves;
         return leaf;
       },
 
@@ -823,7 +823,7 @@
             }
           }
           else {
-            root = this.m_root;
+            root = this.root;
           }
         }
         insertleaf( this, root, leaf );
@@ -832,13 +832,13 @@
       updateLeafVolume: function( leaf, volume ) {
         var root = removeleaf( this, leaf );
         if ( root ) {
-          if ( this.m_lkhd >= 0 ) {
-            for ( var i = 0; ( i < this.m_lkhd ) && root.parent; ++i ) {
+          if ( this.lkhd >= 0 ) {
+            for ( var i = 0; ( i < this.lkhd ) && root.parent; ++i ) {
               root = root.parent;
             }
           }
           else {
-            root = this.m_root;
+            root = this.root;
           }
         }
         leaf.volume = volume;
@@ -877,14 +877,14 @@
       remove: function( leaf ) {
         removeleaf( this, leaf );
         deletenode( this, leaf );
-        --this.m_leaves;
+        --this.leaves;
       },
 
       write: function( iwriter ) {
         var nodes = Bump.DbvtNodeEnumerator.create();
-        //nodes.nodes.reserve(m_leaves*2);
-        Bump.Dbvt.enumNodes( this.m_root, nodes );
-        iwriter.Prepare( this.m_root, nodes.nodes.length );
+        //nodes.nodes.reserve(leaves*2);
+        Bump.Dbvt.enumNodes( this.root, nodes );
+        iwriter.Prepare( this.root, nodes.nodes.length );
         for ( var i = 0; i < nodes.nodes.length; ++i ) {
           var n = nodes.nodes[ i ],
               p = -1;
@@ -904,10 +904,10 @@
 
       clone: function( dest, iclone ) {
         dest.clear();
-        if ( this.m_root !== 0 ) {
+        if ( this.root !== 0 ) {
           var stack = [];
-          //stack.reserve(this.m_leaves);
-          stack.push( Bump.Dbvt.sStkCLN.create( this.m_root, 0 ) );
+          //stack.reserve(this.leaves);
+          stack.push( Bump.Dbvt.sStkCLN.create( this.root, 0 ) );
           do {
             // Note that this was altered to ensure that the cloned tree is EXACTLY the same as the
             // original. Previously there was an issue with children swapping indices, creating a
@@ -922,7 +922,7 @@
               e.parent.childs[ indexof( e.node ) ] = n;
             }
             else {
-              dest.m_root = n;
+              dest.root = n;
             }
             if ( e.node.isinternal() ) {
               stack.push( Bump.Dbvt.sStkCLN.create(e.node.childs[0], n ) );
@@ -990,38 +990,38 @@
         if ( root0 && root1 ) {
           var depth = 1,
               threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 4;
-          this.m_stkStack[ Bump.Dbvt.DOUBE_STACKSIZE - 1 ] = undefined; /* m_stkStack.resize( DOUBLE_STACKSIZE ); */
-          this.m_stkStack[ 0 ] = Bump.Dbvt.sStkNN.create( root0, root1 );
+          this.stkStack[ Bump.Dbvt.DOUBE_STACKSIZE - 1 ] = undefined; /* stkStack.resize( DOUBLE_STACKSIZE ); */
+          this.stkStack[ 0 ] = Bump.Dbvt.sStkNN.create( root0, root1 );
           do {
-            var p = this.m_stkStack[ --depth ];
+            var p = this.stkStack[ --depth ];
             if ( depth > threshold ) {
-              this.m_stkStack[ this.m_stkStack.length * 2 - 1 ] = undefined; /* m_stkStack.resize( this.m_stkStack.size() * 2 ); */
-              threshold = this.m_stkStack.length - 4;
+              this.stkStack[ this.stkStack.length * 2 - 1 ] = undefined; /* stkStack.resize( this.stkStack.size() * 2 ); */
+              threshold = this.stkStack.length - 4;
             }
             if ( p.a === p.b ) {
               if ( p.a.isinternal() ) {
-                this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.a.childs[ 0 ] );
-                this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.a.childs[ 1 ] );
-                this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.a.childs[ 1 ] );
+                this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.a.childs[ 0 ] );
+                this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.a.childs[ 1 ] );
+                this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.a.childs[ 1 ] );
               }
             }
             else if ( Bump.Intersect.DbvtVolume2( p.a.volume, p.b.volume ) ) {
               if ( p.a.isinternal() ) {
                 if ( p.b.isinternal() ) {
-                  this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b.childs[ 0 ] );
-                  this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b.childs[ 0 ] );
-                  this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b.childs[ 1 ] );
-                  this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b.childs[ 1 ] );
+                  this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b.childs[ 0 ] );
+                  this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b.childs[ 0 ] );
+                  this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b.childs[ 1 ] );
+                  this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b.childs[ 1 ] );
                 }
                 else {
-                  this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b );
-                  this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b );
+                  this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b );
+                  this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b );
                 }
               }
               else {
                 if ( p.b.isinternal() ) {
-                  this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 0 ] );
-                  this.m_stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 1 ] );
+                  this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 0 ] );
+                  this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 1 ] );
                 }
                 else {
                   policy.ProcessNode2( p.a, p.b );

@@ -66,15 +66,15 @@
               pb = nb.data;
 
 /* #if DBVT_BP_SORTPAIRS
-          if ( pa.m_uniqueId > pb.m_uniqueId ) {
+          if ( pa.uniqueId > pb.uniqueId ) {
             //btSwap(pa,pb);
             var tmp = pa;
             pa = pb;
             pb = pa;
           }
 #endif */
-          this.pbp.m_paircache.addOverlappingPair( pa, pb );
-          ++this.pbp.m_newpairs;
+          this.pbp.paircache.addOverlappingPair( pa, pb );
+          ++this.pbp.newpairs;
         }
       },
 
@@ -88,13 +88,13 @@
     parent: Bump.Dbvt.ICollide,
 
     init: function BroadphaseRayTester( orgCallback ) {
-      this.m_rayCallback = orgCallback; /* BroadphaseRayCallback */
+      this.rayCallback = orgCallback; /* BroadphaseRayCallback */
     },
 
     members: {
       ProcessNode: function( leaf ) {
         var proxy = leaf.data;
-        this.m_rayCallback.process( proxy );
+        this.rayCallback.process( proxy );
       }
     }
   });
@@ -103,13 +103,13 @@
     parent: Bump.Dbvt.ICollide,
 
     init: function BroadohaseAabbTester ( orgCallback ) {
-      this.m_aabbCallback = orgCallback;
+      this.aabbCallback = orgCallback;
     },
 
     members: {
       Process: function( leaf ) {
         var proxy = leaf.data;
-        this.m_aabbCallback.process( proxy );
+        this.aabbCallback.process( proxy );
       }
     }
   });
@@ -119,36 +119,36 @@
 
     init: function DbvtBroadphase( paircache ) {
       /* Fields */
-      this.m_deferedcollide = false; // Defere dynamic/static collision to collide call
-      this.m_needcleanup = true; // Need to run cleanup?
-      this.m_releasepaircache = paircache ? false : true; // Release pair cache on delete
-      this.m_prediction = 0; // Velocity prediction (btScalar)
-      this.m_stageCurrent = 0; // Current stage (int)
-      this.m_fixedleft = 0; // Fixed optimization left (int)
-      this.m_fupdates = 1; // % of fixed updates per frame (int)
-      this.m_dupdates = 0; // % of dynamic updates per frame (int)
-      this.m_cupdates = 10; // % of cleanup updates per frame (int)
-      this.m_newpairs = 1; // Number of pairs created (int)
-      this.m_updates_call = 0; // Number of updates call (unsigned)
-      this.m_updates_done = 0; // Number of updates done (unsigned)
-      this.m_updates_ratio = 0; // m_updates_done/m_updates_call (btScalar)
+      this.deferedcollide = false; // Defere dynamic/static collision to collide call
+      this.needcleanup = true; // Need to run cleanup?
+      this.releasepaircache = paircache ? false : true; // Release pair cache on delete
+      this.prediction = 0; // Velocity prediction (btScalar)
+      this.stageCurrent = 0; // Current stage (int)
+      this.fixedleft = 0; // Fixed optimization left (int)
+      this.fupdates = 1; // % of fixed updates per frame (int)
+      this.dupdates = 0; // % of dynamic updates per frame (int)
+      this.cupdates = 10; // % of cleanup updates per frame (int)
+      this.newpairs = 1; // Number of pairs created (int)
+      this.updates_call = 0; // Number of updates call (unsigned)
+      this.updates_done = 0; // Number of updates done (unsigned)
+      this.updates_ratio = 0; // updates_done/updates_call (btScalar)
 
       // Pair cache (btOverlappingPairCache*)
-      this.m_paircache = paircache || Bump.HashedOverlappingPairCache.create();
-      this.m_pid = 0; // Parse id (int)
-      this.m_cid = 0; // Cleanup index (int)
-      this.m_gid = 0; // Gen id (int)
+      this.paircache = paircache || Bump.HashedOverlappingPairCache.create();
+      this.pid = 0; // Parse id (int)
+      this.cid = 0; // Cleanup index (int)
+      this.gid = 0; // Gen id (int)
 
-      this.m_stageRoots = new Array( Bump.DbvtBroadphase.Stages.STAGECOUNT + 1 ); // Stages list (btDbvtProxy*)
+      this.stageRoots = new Array( Bump.DbvtBroadphase.Stages.STAGECOUNT + 1 ); // Stages list (btDbvtProxy*)
       for ( var i = 0; i <= Bump.DbvtBroadphase.Stages.STAGECOUNT; ++i ) {
-        this.m_stageRoots[ i ] = 0;
+        this.stageRoots[ i ] = 0;
       }
 
-      this.m_sets = [ Bump.Dbvt.create(), Bump.Dbvt.create() ]; // Dbvt sets
+      this.sets = [ Bump.Dbvt.create(), Bump.Dbvt.create() ]; // Dbvt sets
 
 /* omitting for now
 #if DBVT_BP_PROFILE
-        clear(m_profiling);
+        clear(profiling);
 #endif */
 
     },
@@ -157,110 +157,110 @@
 
 /* omitting for now
 #if DBVT_BP_PROFILE
-        btClock m_clock;
+        btClock clock;
         struct  {
-                unsigned long m_total;
-                unsigned long m_ddcollide;
-                unsigned long m_fdcollide;
-                unsigned long m_cleanup;
-                unsigned long m_jobcount;
-        } m_profiling;
+                unsigned long total;
+                unsigned long ddcollide;
+                unsigned long fdcollide;
+                unsigned long cleanup;
+                unsigned long jobcount;
+        } profiling;
 #endif
 */
 
       collide: function( dispatcher ) {
-        /* SPC(this.m_profiling.m_total); // not defined without DBVT_BP_PROFILE */
+        /* SPC(this.profiling.total); // not defined without DBVT_BP_PROFILE */
         /* optimize                             */
-        this.m_sets[ 0 ].optimizeIncremental( 1 + ( this.m_sets[ 0 ].m_leaves * this.m_dupdates ) / 100 );
-        if ( this.m_fixedleft ) {
-          var count = 1 + ( this.m_sets[ 1 ].m_leaves * this.m_fupdates ) / 100;
-          this.m_sets[ 1 ].optimizeIncremental( 1 + ( this.m_sets[ 1 ].m_leaves * this.m_fupdates ) / 100 );
-          this.m_fixedleft = Math.max( 0, this.m_fixedleft - count );
+        this.sets[ 0 ].optimizeIncremental( 1 + ( this.sets[ 0 ].leaves * this.dupdates ) / 100 );
+        if ( this.fixedleft ) {
+          var count = 1 + ( this.sets[ 1 ].leaves * this.fupdates ) / 100;
+          this.sets[ 1 ].optimizeIncremental( 1 + ( this.sets[ 1 ].leaves * this.fupdates ) / 100 );
+          this.fixedleft = Math.max( 0, this.fixedleft - count );
         }
         /* dynamic -> fixed set */
-        this.m_stageCurrent = ( this.m_stageCurrent + 1 ) % Bump.DbvtBroadphase.Stages.STAGECOUNT;
-        var current = this.m_stageRoots[ this.m_stageCurrent ];
+        this.stageCurrent = ( this.stageCurrent + 1 ) % Bump.DbvtBroadphase.Stages.STAGECOUNT;
+        var current = this.stageRoots[ this.stageCurrent ];
         if ( current ) {
           var collider = Bump.DbvtTreeCollider.create( this );
           do {
             var next = current.links[ 1 ];
-            listremove( current, this.m_stageRoots[ current.stage ] );
-            listappend( current, this.m_stageRoots[ Bump.DbvtBroadphase.Stages.STAGECOUNT ] );
+            listremove( current, this.stageRoots[ current.stage ] );
+            listappend( current, this.stageRoots[ Bump.DbvtBroadphase.Stages.STAGECOUNT ] );
 /*#if DBVT_BP_ACCURATESLEEPING
-                        this.m_paircache.removeOverlappingPairsContainingProxy(current,dispatcher);
+                        this.paircache.removeOverlappingPairsContainingProxy(current,dispatcher);
                         collider.proxy=current;
-                        btDbvt::collideTV(this.m_sets[0].m_root,current.aabb,collider);
-                        btDbvt::collideTV(this.m_sets[1].m_root,current.aabb,collider);
+                        btDbvt::collideTV(this.sets[0].root,current.aabb,collider);
+                        btDbvt::collideTV(this.sets[1].root,current.aabb,collider);
 #endif*/
-            this.m_sets[ 0 ].remove( current.leaf );
-            var curAabb = Bump.DbvtVolume.FromMM( current.m_aabbMin, current.m_aabbMax );
-            current.leaf = this.m_sets[ 1 ].insert( curAabb, current );
+            this.sets[ 0 ].remove( current.leaf );
+            var curAabb = Bump.DbvtVolume.FromMM( current.aabbMin, current.aabbMax );
+            current.leaf = this.sets[ 1 ].insert( curAabb, current );
             current.stage = Bump.DbvtBroadphase.Stages.STAGECOUNT;
             current = next;
           } while( current );
-          this.m_fixedleft = this.m_sets[ 1 ].m_leaves;
-          this.m_needcleanup = true;
+          this.fixedleft = this.sets[ 1 ].leaves;
+          this.needcleanup = true;
         }
         /* collide dynamics */
         var collider2 = Bump.DbvtTreeCollider.create( this );
-        if ( this.m_deferedcollide ) {
-          /* SPC(this.m_profiling.m_fdcollide); */
-          this.m_sets[ 0 ].collideTTpersistentStack( this.m_sets[ 0 ].m_root,
-                                                     this.m_sets[ 1 ].m_root,
+        if ( this.deferedcollide ) {
+          /* SPC(this.profiling.fdcollide); */
+          this.sets[ 0 ].collideTTpersistentStack( this.sets[ 0 ].root,
+                                                     this.sets[ 1 ].root,
                                                      collider2 );
         }
-        if ( this.m_deferedcollide ) {
-          /* SPC(this.m_profiling.m_ddcollide); */
-          this.m_sets[ 0 ].collideTTpersistentStack( this.m_sets[ 0 ].m_root,
-                                                     this.m_sets[ 0 ].m_root,
+        if ( this.deferedcollide ) {
+          /* SPC(this.profiling.ddcollide); */
+          this.sets[ 0 ].collideTTpersistentStack( this.sets[ 0 ].root,
+                                                     this.sets[ 0 ].root,
                                                      collider2 );
         }
         /* clean up */
-        if ( this.m_needcleanup ) {
-          /* SPC(this.m_profiling.m_cleanup); */
-          var pairs = this.m_paircache.getOverlappingPairArray();
+        if ( this.needcleanup ) {
+          /* SPC(this.profiling.cleanup); */
+          var pairs = this.paircache.getOverlappingPairArray();
           if ( pairs.length > 0 ) {
             var ni = Math.min( pairs.length,
-                               Math.max( this.m_newpairs, (pairs.length * this.m_cupdates ) / 100 ) );
+                               Math.max( this.newpairs, (pairs.length * this.cupdates ) / 100 ) );
             for (var i = 0; i < ni; ++i ) {
-              var p = pairs[ ( this.m_cid + i ) % pairs.length ], /* btBroadphasePair& */
-                  pa = p.m_pProxy0, /* btDbvtProxy* */
-                  pb = p.m_pProxy1;
-              if ( !Bump.Intersect.DbvtVolume( pa.leaf.volume, pb.leaf.volume ) ) {
+              var p = pairs[ ( this.cid + i ) % pairs.length ], /* btBroadphasePair& */
+                  pa = p.pProxy0, /* btDbvtProxy* */
+                  pb = p.pProxy1;
+              if ( !Bump.Intersect.DbvtVolume2( pa.leaf.volume, pb.leaf.volume ) ) {
 /*#if DBVT_BP_SORTPAIRS
-                                        if (pa.m_uniqueId>pb.m_uniqueId)
+                                        if (pa.uniqueId>pb.uniqueId)
                                                 btSwap(pa,pb);
 #endif*/
-                this.m_paircache.removeOverlappingPair( pa, pb, dispatcher );
+                this.paircache.removeOverlappingPair( pa, pb, dispatcher );
                 --ni;
                 --i;
               }
             }
             if ( pairs.length > 0 ) {
-              this.m_cid = ( this.m_cid + ni ) % pairs.length;
+              this.cid = ( this.cid + ni ) % pairs.length;
             }
             else {
-              this.m_cid = 0;
+              this.cid = 0;
             }
           }
         }
-        ++this.m_pid;
-        this.m_newpairs = 1;
-        this.m_needcleanup = false;
-        if ( this.m_updates_call > 0 ) {
-          this.m_updates_ratio = this.m_updates_done / this.m_updates_call;
+        ++this.pid;
+        this.newpairs = 1;
+        this.needcleanup = false;
+        if ( this.updates_call > 0 ) {
+          this.updates_ratio = this.updates_done / this.updates_call;
         }
         else {
-          this.m_updates_ratio = 0;
+          this.updates_ratio = 0;
         }
-        this.m_updates_done /= 2;
-        this.m_updates_call /= 2;
+        this.updates_done /= 2;
+        this.updates_call /= 2;
 
       },
 
       optimize: function() {
-        this.m_sets[ 0 ].optimizeTopDown();
-        this.m_sets[ 1 ].optimizeTopDown();
+        this.sets[ 0 ].optimizeTopDown();
+        this.sets[ 1 ].optimizeTopDown();
       },
 
       createProxy: function( aabbMin,
@@ -278,15 +278,15 @@
             aabb = Bump.DbvtVolume.FromMM( aabbMin, aabbMax );
 
         //bproxy->aabb                  =       btDbvtVolume::FromMM(aabbMin,aabbMax);
-        proxy.stage = this.m_stageCurrent;
-        proxy.m_uniqueId = ++this.m_gid;
-        proxy.leaf = this.m_sets[ 0 ].insert( aabb, proxy );
-        listappend( proxy, this.m_stageRoots[ this.m_stageCurrent ] );
-        if ( !this.m_deferedcollide ) {
+        proxy.stage = this.stageCurrent;
+        proxy.uniqueId = ++this.gid;
+        proxy.leaf = this.sets[ 0 ].insert( aabb, proxy );
+        listappend( proxy, this.stageRoots[ this.stageCurrent ] );
+        if ( !this.deferedcollide ) {
           var collider = Bump.DbvtTreeCollider.create( this );
           collider.proxy = proxy;
-          this.m_sets[ 0 ].collideTV( this.m_sets[ 0 ].m_root, aabb, collider );
-          this.m_sets[ 1 ].collideTV( this.m_sets[ 1 ].m_root, aabb, collider );
+          this.sets[ 0 ].collideTV( this.sets[ 0 ].root, aabb, collider );
+          this.sets[ 1 ].collideTV( this.sets[ 1 ].root, aabb, collider );
         }
         return proxy;
       },
@@ -294,15 +294,15 @@
       destroyProxy: function( absproxy, dispatcher ) {
         var proxy = absproxy;
         if ( proxy.stage === Bump.DbvtBroadphase.Stages.STAGECOUNT ) {
-          this.m_sets[ 1 ].remove( proxy.leaf );
+          this.sets[ 1 ].remove( proxy.leaf );
         }
         else {
-          this.m_sets[ 0 ].remove( proxy.leaf );
+          this.sets[ 0 ].remove( proxy.leaf );
         }
-        listremove( proxy, this.m_stageRoots[ proxy.stage ] );
-        this.m_paircache.removeOverlappingPairsContainingProxy( proxy, dispatcher );
+        listremove( proxy, this.stageRoots[ proxy.stage ] );
+        this.paircache.removeOverlappingPairsContainingProxy( proxy, dispatcher );
         /* btAlignedFree( proxy ); */
-        this.m_needcleanup = true;
+        this.needcleanup = true;
       },
 
       setAabb: function( absproxy, aabbMin, aabbMax, dispatcher ) {
@@ -315,19 +315,19 @@
         var docollide = false;
         if ( proxy.stage === Bump.DbvtBroadphase.Stages.STAGECOUNT ) {
           /* fixed . dynamic set */
-          this.m_sets[ 1 ].remove( proxy.leaf );
-          proxy.leaf = this.m_sets[ 0 ].insert( aabb, proxy );
+          this.sets[ 1 ].remove( proxy.leaf );
+          proxy.leaf = this.sets[ 0 ].insert( aabb, proxy );
           docollide = true;
         }
         else {
           /* dynamic set */
-          ++this.m_updates_call;
+          ++this.updates_call;
           if ( Bump.Intersect.DbvtVolume2( proxy.leaf.volume, aabb ) ) {
             /* Moving */
-            var delta = aabbMin.subtract( proxy.m_aabbMin ),
-                velocity = proxy.m_aabbMax.subtract( proxy.m_aabbMin )
+            var delta = aabbMin.subtract( proxy.aabbMin ),
+                velocity = proxy.aabbMax.subtract( proxy.aabbMin )
                   .divideScalarSelf( 2 )
-                  .multiplyScalarSelf( this.m_prediction );
+                  .multiplyScalarSelf( this.prediction );
 
             if ( delta.x < 0 ) {
               velocity.x = -velocity.x;
@@ -340,36 +340,36 @@
             }
             if (
 /*#ifdef DBVT_BP_MARGIN */
-              this.m_sets[0].updateLeafVolumeVelocityMargin( proxy.leaf,
+              this.sets[0].updateLeafVolumeVelocityMargin( proxy.leaf,
                                                              aabb,
                                                              velocity,
                                                              Bump.DBVT_BP_MARGIN )
 /*#else
-                                        m_sets[0].update(proxy.leaf,aabb,velocity)
+                                        sets[0].update(proxy.leaf,aabb,velocity)
 #endif*/
             ) {
-              ++this.m_updates_done;
+              ++this.updates_done;
               docollide = true;
             }
           }
           else {
             /* Teleporting */
-            this.m_sets[ 0 ].update( proxy.leaf, aabb );
-            ++this.m_updates_done;
+            this.sets[ 0 ].update( proxy.leaf, aabb );
+            ++this.updates_done;
             docollide = true;
           }
         }
-        listremove( proxy, this.m_stageRoots[ proxy.stage ] );
-        aabbMin.clone( proxy.m_aabbMin );
-        aabbMax.clone( proxy.m_aabbMax );
-        proxy.stage = this.m_stageCurrent;
-        listappend( proxy, this.m_stageRoots[ this.m_stageCurrent ] );
+        listremove( proxy, this.stageRoots[ proxy.stage ] );
+        aabbMin.clone( proxy.aabbMin );
+        aabbMax.clone( proxy.aabbMax );
+        proxy.stage = this.stageCurrent;
+        listappend( proxy, this.stageRoots[ this.stageCurrent ] );
         if ( docollide ) {
-          this.m_needcleanup = true;
-          if ( !this.m_deferedcollide ) {
+          this.needcleanup = true;
+          if ( !this.deferedcollide ) {
             var collider = Bump.DbvtTreeCollider.create( this );
-            this.m_sets[ 1 ].collideTTpersistentStack( this.m_sets[ 1 ].m_root, proxy.leaf, collider );
-            this.m_sets[ 0 ].collideTTpersistentStack( this.m_sets[ 0 ].m_root, proxy.leaf, collider );
+            this.sets[ 1 ].collideTTpersistentStack( this.sets[ 1 ].root, proxy.leaf, collider );
+            this.sets[ 0 ].collideTTpersistentStack( this.sets[ 0 ].root, proxy.leaf, collider );
           }
         }
       },
@@ -380,24 +380,24 @@
 
         var callback = Bump.BroadphaseRayTester.create( rayCallback );
 
-        this.m_sets[0].rayTestInternal(
-          this.m_sets[0].m_root,
+        this.sets[0].rayTestInternal(
+          this.sets[0].root,
           rayFrom,
           rayTo,
-          rayCallback.m_rayDirectionInverse,
-          rayCallback.m_signs,
-          rayCallback.m_lambda_max,
+          rayCallback.rayDirectionInverse,
+          rayCallback.signs,
+          rayCallback.lambda_max,
           aabbMin,
           aabbMax,
           callback );
 
-        this.m_sets[1].rayTestInternal(
-          this.m_sets[1].m_root,
+        this.sets[1].rayTestInternal(
+          this.sets[1].root,
           rayFrom,
           rayTo,
-          rayCallback.m_rayDirectionInverse,
-          rayCallback.m_signs,
-          rayCallback.m_lambda_max,
+          rayCallback.rayDirectionInverse,
+          rayCallback.signs,
+          rayCallback.lambda_max,
           aabbMin,
           aabbMax,
           callback );
@@ -408,36 +408,36 @@
         bounds = Bump.DbvtVolume.FromMM( aabbMin, aabbMax );
 
         //process all children, that overlap with  the given AABB bounds
-        this.m_sets[ 0 ].collideTV( this.m_sets[ 0 ].m_root, bounds, callback );
-        this.m_sets[ 1 ].collideTV( this.m_sets[ 1 ].m_root, bounds, callback );
+        this.sets[ 0 ].collideTV( this.sets[ 0 ].root, bounds, callback );
+        this.sets[ 1 ].collideTV( this.sets[ 1 ].root, bounds, callback );
       },
 
       getAabb: function( absproxy, aabbMin, aabbMax ) {
         var proxy = absproxy;
-        proxy.m_aabbMin.clone( aabbMin );
-        proxy.m_aabbMax.clone( aabbMax );
+        proxy.aabbMin.clone( aabbMin );
+        proxy.aabbMax.clone( aabbMax );
       },
 
       calculateOverlappingPairs: function( dispatcher ) {
         this.collide( dispatcher );
 /*
 #if DBVT_BP_PROFILE
-        if (0==(m_pid%DBVT_BP_PROFILING_RATE))
+        if (0==(pid%DBVT_BP_PROFILING_RATE))
         {
-                printf("fixed(%u) dynamics(%u) pairs(%u)\r\n",m_sets[1].m_leaves,m_sets[0].m_leaves,m_paircache->getNumOverlappingPairs());
-                unsigned int    total=m_profiling.m_total;
+                printf("fixed(%u) dynamics(%u) pairs(%u)\r\n",sets[1].leaves,sets[0].leaves,paircache->getNumOverlappingPairs());
+                unsigned int    total=profiling.total;
                 if (total<=0) total=1;
-                printf("ddcollide: %u%% (%uus)\r\n",(50+m_profiling.m_ddcollide*100)/total,m_profiling.m_ddcollide/DBVT_BP_PROFILING_RATE);
-                printf("fdcollide: %u%% (%uus)\r\n",(50+m_profiling.m_fdcollide*100)/total,m_profiling.m_fdcollide/DBVT_BP_PROFILING_RATE);
-                printf("cleanup:   %u%% (%uus)\r\n",(50+m_profiling.m_cleanup*100)/total,m_profiling.m_cleanup/DBVT_BP_PROFILING_RATE);
+                printf("ddcollide: %u%% (%uus)\r\n",(50+profiling.ddcollide*100)/total,profiling.ddcollide/DBVT_BP_PROFILING_RATE);
+                printf("fdcollide: %u%% (%uus)\r\n",(50+profiling.fdcollide*100)/total,profiling.fdcollide/DBVT_BP_PROFILING_RATE);
+                printf("cleanup:   %u%% (%uus)\r\n",(50+profiling.cleanup*100)/total,profiling.cleanup/DBVT_BP_PROFILING_RATE);
                 printf("total:     %uus\r\n",total/DBVT_BP_PROFILING_RATE);
-                const unsigned long     sum=m_profiling.m_ddcollide+
-                        m_profiling.m_fdcollide+
-                        m_profiling.m_cleanup;
+                const unsigned long     sum=profiling.ddcollide+
+                        profiling.fdcollide+
+                        profiling.cleanup;
                 printf("leaked: %u%% (%uus)\r\n",100-((50+sum*100)/total),(total-sum)/DBVT_BP_PROFILING_RATE);
-                printf("job counts: %u%%\r\n",(m_profiling.m_jobcount*100)/((m_sets[0].m_leaves+m_sets[1].m_leaves)*DBVT_BP_PROFILING_RATE));
-                clear(m_profiling);
-                m_clock.reset();
+                printf("job counts: %u%%\r\n",(profiling.jobcount*100)/((sets[0].leaves+sets[1].leaves)*DBVT_BP_PROFILING_RATE));
+                clear(profiling);
+                clock.reset();
         }
 #endif
 */
@@ -445,23 +445,23 @@
       },
 
       getOverlappingPairCache: function() {
-        return this.m_paircache;
+        return this.paircache;
       },
 
       getBroadphaseAabb: function( aabbMin, aabbMax ) {
         var bounds = Bump.DbvtVolume.create();
-        if ( !this.m_sets[ 0 ].empty() ) {
-          if ( !this.m_sets[ 1 ].empty() ) {
-            Bump.Merge.DbvtVolume3( this.m_sets[0].m_root.volume,
-                                    this.m_sets[1].m_root.volume,
+        if ( !this.sets[ 0 ].empty() ) {
+          if ( !this.sets[ 1 ].empty() ) {
+            Bump.Merge.DbvtVolume3( this.sets[0].root.volume,
+                                    this.sets[1].root.volume,
                                     bounds );
           }
           else {
-            this.m_sets[ 0 ].m_root.volume.clone( bounds );
+            this.sets[ 0 ].root.volume.clone( bounds );
           }
         }
-        else if ( ! this.m_sets[1].empty() ) {
-          this.m_sets[1].m_root.volume.clone( bounds );
+        else if ( ! this.sets[1].empty() ) {
+          this.sets[1].root.volume.clone( bounds );
         }
         else {
           /* TODO : could optimize this to avoid object creation by
@@ -477,47 +477,47 @@
       ///reset broadphase internal structures, to ensure determinism/reproducability
       resetPool: function( dispatcher ) {
 
-        var totalObjects = this.m_sets[ 0 ].m_leaves + this.m_sets[ 1 ].m_leaves;
+        var totalObjects = this.sets[ 0 ].leaves + this.sets[ 1 ].leaves;
         if ( totalObjects === 0 ) {
           //reset internal dynamic tree data structures
-          this.m_sets[ 0 ].clear();
-          this.m_sets[ 1 ].clear();
+          this.sets[ 0 ].clear();
+          this.sets[ 1 ].clear();
 
-          this.m_deferedcollide = false;
-          this.m_needcleanup = true;
-          this.m_stageCurrent = 0;
-          this.m_fixedleft = 0;
-          this.m_fupdates = 1;
-          this.m_dupdates = 0;
-          this.m_cupdates = 10;
-          this.m_newpairs = 1;
-          this.m_updates_call = 0;
-          this.m_updates_done = 0;
-          this.m_updates_ratio = 0;
+          this.deferedcollide = false;
+          this.needcleanup = true;
+          this.stageCurrent = 0;
+          this.fixedleft = 0;
+          this.fupdates = 1;
+          this.dupdates = 0;
+          this.cupdates = 10;
+          this.newpairs = 1;
+          this.updates_call = 0;
+          this.updates_done = 0;
+          this.updates_ratio = 0;
 
-          this.m_gid = 0;
-          this.m_pid = 0;
-          this.m_cid = 0;
+          this.gid = 0;
+          this.pid = 0;
+          this.cid = 0;
 
           for ( var i = 0; i <= Bump.DbvtBroadphase.Stages.STAGECOUNT; ++i ) {
-            this.m_stageRoots[ i ] = null;
+            this.stageRoots[ i ] = null;
           }
         }
       },
 
       performDeferredRemoval: function( dispatcher ) {
-        if ( this.m_paircache.hasDeferredRemoval() ) {
+        if ( this.paircache.hasDeferredRemoval() ) {
 
-          var overlappingPairArray = this.m_paircache.getOverlappingPairArray();
+          var overlappingPairArray = this.paircache.getOverlappingPairArray();
           //perform a sort, to find duplicates and to sort 'invalid' pairs to the end
           Bump.quickSort( overlappingPairArray, Bump.BroadphasePairSortPredicate.create() );
 
           var invalidPair = 0,
               i,
               previousPair = Bump.BroadphasePair.create();
-          previousPair.m_pProxy0 = 0;
-          previousPair.m_pProxy1 = 0;
-          previousPair.m_algorithm = 0;
+          previousPair.pProxy0 = 0;
+          previousPair.pProxy1 = 0;
+          previousPair.algorithm = 0;
 
           for ( i = 0; i < overlappingPairArray.length; i++ ) {
             var pair = overlappingPairArray[i], /* btBroadphasePair& */
@@ -528,8 +528,8 @@
             var needsRemoval = false;
             if ( !isDuplicate ) {
               //important to perform AABB check that is consistent with the broadphase
-              var pa = pair.m_pProxy0, /* (btDbvtProxy*) */
-                  pb = pair.m_pProxy1,
+              var pa = pair.pProxy0, /* (btDbvtProxy*) */
+                  pb = pair.pProxy1,
                   hasOverlap = Bump.Intersect.DbvtVolume2( pa.leaf.volume, pb.leaf.volume );
 
               needsRemoval = !hasOverlap;
@@ -538,12 +538,12 @@
               //remove duplicate
               needsRemoval = true;
               //should have no algorithm
-              Bump.Assert( !pair.m_algorithm );
+              Bump.Assert( !pair.algorithm );
             }
             if ( needsRemoval ) {
-              this.m_paircache.cleanOverlappingPair( pair, dispatcher );
-              pair.m_pProxy0 = 0;
-              pair.m_pProxy1 = 0;
+              this.paircache.cleanOverlappingPair( pair, dispatcher );
+              pair.pProxy0 = 0;
+              pair.pProxy1 = 0;
               invalidPair++;
             }
           }
@@ -555,11 +555,11 @@
       },
 
       setVelocityPrediction: function( prediction ) {
-        this.m_prediction = prediction;
+        this.prediction = prediction;
       },
 
       getVelocityPrediction: function() {
-        return this.m_prediction;
+        return this.prediction;
       },
 
       ///this setAabbForceUpdate is similar to setAabb but always forces the aabb update.
@@ -573,29 +573,29 @@
 
         if ( proxy.stage  === Bump.DbvtBroadphase.Stages.STAGECOUNT ) {
           /* fixed . dynamic set */
-          this.m_sets[ 1 ].remove( proxy.leaf );
-          proxy.leaf = this.m_sets[ 0 ].insert( aabb, proxy );
+          this.sets[ 1 ].remove( proxy.leaf );
+          proxy.leaf = this.sets[ 0 ].insert( aabb, proxy );
           docollide = true;
         }
         else {
           /* dynamic set */
-          ++this.m_updates_call;
+          ++this.updates_call;
           /* Teleporting */
-          this.m_sets[ 0 ].update( proxy.leaf, aabb );
-          ++this.m_updates_done;
+          this.sets[ 0 ].update( proxy.leaf, aabb );
+          ++this.updates_done;
           docollide = true;
         }
-        listremove( proxy, this.m_stageRoots[ proxy.stage ] );
-        aabbMin.clone( proxy.m_aabbMin );
-        aabbMax.clone( proxy.m_aabbMax );
-        proxy.stage = this.m_stageCurrent;
-        listappend( proxy, this.m_stageRoots[ this.m_stageCurrent ] );
+        listremove( proxy, this.stageRoots[ proxy.stage ] );
+        aabbMin.clone( proxy.aabbMin );
+        aabbMax.clone( proxy.aabbMax );
+        proxy.stage = this.stageCurrent;
+        listappend( proxy, this.stageRoots[ this.stageCurrent ] );
         if ( docollide ) {
-          this.m_needcleanup = true;
-          if ( !this.m_deferedcollide ) {
+          this.needcleanup = true;
+          if ( !this.deferedcollide ) {
             var collider = Bump.DbvtTreeCollider.create( this );
-            this.m_sets[ 1 ].collideTTpersistentStack( this.m_sets[ 1 ].m_root, proxy.leaf, collider );
-            this.m_sets[ 0 ].collideTTpersistentStack( this.m_sets[ 0 ].m_root, proxy.leaf, collider );
+            this.sets[ 1 ].collideTTpersistentStack( this.sets[ 1 ].root, proxy.leaf, collider );
+            this.sets[ 0 ].collideTTpersistentStack( this.sets[ 0 ].root, proxy.leaf, collider );
           }
         }
       }

@@ -127,9 +127,9 @@
       transform: function( vec, dest ) {
         dest = dest || Bump.Vector3.create();
         return dest.setValue(
-          this.basis.m_el0.dot( vec ) + this.origin.x,
-          this.basis.m_el1.dot( vec ) + this.origin.y,
-          this.basis.m_el2.dot( vec ) + this.origin.z
+          this.basis.el0.dot( vec ) + this.origin.x,
+          this.basis.el1.dot( vec ) + this.origin.y,
+          this.basis.el2.dot( vec ) + this.origin.z
         );
       },
 
