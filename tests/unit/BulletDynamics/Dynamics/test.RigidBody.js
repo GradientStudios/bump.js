@@ -65,7 +65,7 @@ test( 'correct types', function() {
     [ 'hitFraction',                'number'  ],
     [ 'ccdSweptSphereRadius',       'number'  ],
     [ 'ccdMotionThreshold',         'number'  ],
-    [ 'checkCollideWith',           'boolean' ],
+    [ 'm_checkCollideWith',         'boolean' ],
 
     // RigidBody stuff
     [ 'invInertiaTensorWorld', Bump.Matrix3x3 ],

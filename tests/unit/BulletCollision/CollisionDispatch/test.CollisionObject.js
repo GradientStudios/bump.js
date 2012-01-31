@@ -94,7 +94,7 @@ test( 'correct types', function() {
     [ 'hitFraction',                'number'  ],
     [ 'ccdSweptSphereRadius',       'number'  ],
     [ 'ccdMotionThreshold',         'number'  ],
-    [ 'checkCollideWith',           'boolean' ]
+    [ 'm_checkCollideWith',         'boolean' ]
   ];
 
   checkTypes( co, checks );
