@@ -20,7 +20,7 @@
       this.friction = 0.3;
       this.timeStep = 0;
       this.restitution = 0;
-      this.numIterations = 0;
+      this.numIterations = 10;
       this.maxErrorReduction = 20;
       this.sor = 1;
       this.erp = 0.2;
