@@ -180,7 +180,7 @@ test( 'basic', function() {
       -5.00000057541053610777,
       -0.31261228615617137061
     ),
-    Math.pow( 2, -18 )
+    Math.pow( 2, -12 )
   );
 
   ok( true, 'finish' );
