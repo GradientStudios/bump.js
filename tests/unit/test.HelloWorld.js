@@ -78,7 +78,7 @@ test( 'basic', function() {
   /// Do some simulation
 
   var trans = Bump.Transform.create();
-  for( i = 0; i < 1000; i++ ) {
+  for( var i = 0; i < 1000; i++ ) {
     // console.log( '\n*** FRAME ' + i + ' ***********************************************\n\n' );
 
     dynamicsWorld.stepSimulation( 1 / 60, 10 );
