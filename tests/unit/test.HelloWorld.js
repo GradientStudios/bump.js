@@ -79,7 +79,7 @@ test( 'basic', function() {
 
   var trans = Bump.Transform.create();
   for( i = 0; i < 1000; i++ ) {
-    console.log( '\n*** FRAME ' + i + ' ***********************************************\n\n' );
+    // console.log( '\n*** FRAME ' + i + ' ***********************************************\n\n' );
 
     dynamicsWorld.stepSimulation( 1 / 60, 10 );
     dynamicsWorld.getCollisionObjectArray()[ 1 ].getMotionState().getWorldTransform( trans );
@@ -160,9 +160,9 @@ test( 'basic', function() {
         body.getMotionState().getWorldTransform( trans );
 
         var precision = 20;
-        console.log( 'world pos = ' + trans.getOrigin().x.toFixed( precision ) + ' ' +
-                     trans.getOrigin().y.toFixed( precision ) + ' ' +
-                     trans.getOrigin().z.toFixed( precision ) );
+        // console.log( 'world pos = ' + trans.getOrigin().x.toFixed( precision ) + ' ' +
+        //              trans.getOrigin().y.toFixed( precision ) + ' ' +
+        //              trans.getOrigin().z.toFixed( precision ) );
       }
     }
   }
