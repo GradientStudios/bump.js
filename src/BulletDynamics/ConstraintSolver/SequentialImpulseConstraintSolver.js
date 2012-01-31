@@ -623,12 +623,17 @@
           contactConstraint.appliedImpulse = sum;
         }
 
-        body1.internalApplyImpulse( contactConstraint.contactNormal * body1.internalGetInvMass(),
-                                    contactConstraint.angularComponentA,
-                                    deltaImpulse);
-        body2.internalApplyImpulse( -contactConstraint.contactNormal * body2.internalGetInvMass(),
-                                    contactConstraint.angularComponentB,
-                                    deltaImpulse);
+        body1.internalApplyImpulse(
+          contactConstraint.contactNormal.multiplyVector( body1.internalGetInvMass() ),
+          contactConstraint.angularComponentA,
+          deltaImpulse
+        );
+        body2.internalApplyImpulse(
+          contactConstraint.contactNormal.negate()
+            .multiplyVector( body2.internalGetInvMass() ),
+          contactConstraint.angularComponentB,
+          deltaImpulse
+        );
       },
 
       resolveSingleConstraintRowLowerLimitSIMD: function( body1, body2, contactConstraint ) {
@@ -1111,9 +1116,9 @@
                             stackAlloc,
                             dispatcher ) {
         /* BT_PROFILE("solveGroup"); */
-        //you need to provide at least some bodies
-        Bump.Assert(bodies);
-        Bump.Assert(numBodies);
+        // You need to provide at least some bodies.
+        Bump.Assert( bodies );
+        Bump.Assert( numBodies );
 
         this.solveGroupCacheFriendlySetup( bodies, numBodies, manifoldPtr, numManifolds, constraints,
                                            numConstraints, infoGlobal, debugDrawer, stackAlloc );
@@ -1124,7 +1129,7 @@
         return 0;
       },
 
-      ///clear internal cached data and reset random seed
+      // Clear internal cached data and reset random seed.
       reset: function() {
         this.btSeed2 = 0;
       },
