@@ -82,7 +82,7 @@ test( 'basic', function() {
 
     dynamicsWorld.stepSimulation( 1 / 60, 10 );
 
-    //print positions of all objects
+    // Print positions of all objects
     for( var j = dynamicsWorld.getNumCollisionObjects() - 1; j >= 0; j-- ) {
       var obj = dynamicsWorld.getCollisionObjectArray()[ j ];
       body = Bump.RigidBody.upcast( obj );
@@ -104,9 +104,15 @@ test( 'basic', function() {
 
   dynamicsWorld.getCollisionObjectArray()[1].getMotionState().getWorldTransform( trans );
   // result after removing unnecessary type-casting from bullet's HelloWorld:
-  epsilonNumberCheck( trans.origin, Bump.Vector3.create( 2.14027777777777750146,
-                                                         -4.02777777777777057366,
-                                                         -0.28055555555555539149 ), Math.pow( 2, -18 ) );
+  epsilonNumberCheck(
+    trans.origin,
+    Bump.Vector3.create(
+       2.15648442570597964618,
+      -5.00000057541053610777,
+      -0.31261228615617137061
+    ),
+    Math.pow( 2, -18 )
+  );
 
   ok( true, 'finish' );
 
