@@ -77,17 +77,86 @@ test( 'basic', function() {
 
   /// Do some simulation
 
+  var trans = Bump.Transform.create();
   for( i = 0; i < 1000; i++ ) {
     console.log( '\n*** FRAME ' + i + ' ***********************************************\n\n' );
 
     dynamicsWorld.stepSimulation( 1 / 60, 10 );
+    dynamicsWorld.getCollisionObjectArray()[ 1 ].getMotionState().getWorldTransform( trans );
 
+    var epsilon = Math.pow( 2, -12 );
+    switch( i ) {
+    case 102:
+      epsilonNumberCheck(
+        trans.origin,
+        Bump.Vector3.create(
+           2.14877779314729044913,
+          -4.87777931472906622901,
+          -0.29755558629458134234
+        ),
+        epsilon,
+        'Frame 102'
+      );
+      break;
+
+    case 103:
+      epsilonNumberCheck(
+        trans.origin,
+        Bump.Vector3.create(
+           2.15166668233606506178,
+          -5.16666823360654259290,
+          -0.30333336467213084520
+        ),
+        epsilon,
+        'Frame 103'
+      );
+      break;
+
+    case 104:
+      epsilonNumberCheck(
+        trans.origin,
+        Bump.Vector3.create(
+           2.15168070899085428493,
+          -5.13333977588289958049,
+          -0.30336141798170823680
+        ),
+        epsilon,
+        'Frame 104'
+      );
+      break;
+
+    case 105:
+      epsilonNumberCheck(
+        trans.origin,
+        Bump.Vector3.create(
+           2.15172252917021866736,
+          -5.10279085899821360783,
+          -0.30344505834043744574
+        ),
+        epsilon,
+        'Frame 105'
+      );
+      break;
+
+    case 106:
+      epsilonNumberCheck(
+        trans.origin,
+        Bump.Vector3.create(
+           2.15179212713025824755,
+          -5.07501972018105096396,
+          -0.30358425426051710572
+        ),
+        epsilon,
+        'Frame 106'
+      );
+      break;
+
+    }
     // Print positions of all objects
     for( var j = dynamicsWorld.getNumCollisionObjects() - 1; j >= 0; j-- ) {
       var obj = dynamicsWorld.getCollisionObjectArray()[ j ];
       body = Bump.RigidBody.upcast( obj );
       if( body && body.getMotionState() ) {
-        var trans = Bump.Transform.create();
         body.getMotionState().getWorldTransform( trans );
 
         var precision = 20;
