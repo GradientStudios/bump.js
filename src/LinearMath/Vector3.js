@@ -561,6 +561,14 @@
       // its squared magnitude is less than `Bump.SIMD_EPSILON`.
       fuzzyZero: function() {
         return this.length2() < Bump.SIMD_EPSILON;
+      },
+
+      toString: function() {
+        var precision = 6;
+        return ( '{ x: ' + this.x.toFixed( precision ) +
+                 ', y: ' + this.y.toFixed( precision ) +
+                 ', z: ' + this.z.toFixed( precision ) +
+                 ' }' );
       }
     },
 
