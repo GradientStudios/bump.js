@@ -72,6 +72,18 @@
 
     // ## Member functions
     members: {
+      // ### JSON Helper
+
+      // create a basic representation of btQuaternion for quick JSON stringify
+      toJSON: function() {
+        return {
+          x: this.x,
+          y: this.y,
+          z: this.z,
+          w: this.w
+        };
+      },
+
       // ### btQuadword members
 
       // Clones `this` quaternion into `dest`.

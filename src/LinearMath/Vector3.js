@@ -53,6 +53,17 @@
 
     // ## Member functions
     members: {
+      // ### JSON Helper
+
+      // create a basic representation of btQuaternion for quick JSON stringify
+      toJSON: function() {
+        return {
+          x: this.x,
+          y: this.y,
+          z: this.z,
+          w: this.w
+        };
+      },
 
       // Clones `this` vector into `dest`. If `dest` is not provided,
       // a new Vector3 is created and returned.
