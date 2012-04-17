@@ -10,7 +10,7 @@
   var tmpQ1, tmpQ2, tmpV1, tmpV2, tmpV3, EPSILON = Math.pow( 2, -52 );
 
   var trunc = function( v ) {
-    return Math.floor( v * 10000 ) / 10000;
+    return Math.floor( v * 1000 ) / 1000;
   };
 
   Bump.printQuaternion = function( quat, message, precision ) {

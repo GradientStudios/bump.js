@@ -6,7 +6,7 @@
 (function( window, Bump ) {
 
   var trunc = function( v ) {
-    return Math.floor( v * 1000000 ) / 1000000;
+    return Math.floor( v * 1000 ) / 1000;
   };
 
   Bump.printVector3 = function( vec, message, precision ) {
