@@ -5,6 +5,10 @@
  */
 (function( window, Bump ) {
 
+  var trunc = function( v ) {
+    return Math.floor( v * 1000000 ) / 1000000;
+  };
+
   Bump.printVector3 = function( vec, message, precision ) {
     message = message || '';
     precision = ( precision === undefined ) ? 20 : precision;
@@ -57,12 +61,7 @@
 
       // create a basic representation of btQuaternion for quick JSON stringify
       toJSON: function() {
-        return {
-          x: this.x,
-          y: this.y,
-          z: this.z,
-          w: this.w
-        };
+        return [ trunc( this.x ), trunc( this.y ), trunc( this.z ) ];
       },
 
       // Clones `this` vector into `dest`. If `dest` is not provided,

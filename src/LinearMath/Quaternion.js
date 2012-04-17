@@ -9,6 +9,10 @@
 (function( window, Bump ) {
   var tmpQ1, tmpQ2, tmpV1, tmpV2, tmpV3, EPSILON = Math.pow( 2, -52 );
 
+  var trunc = function( v ) {
+    return Math.floor( v * 10000 ) / 10000;
+  };
+
   Bump.printQuaternion = function( quat, message, precision ) {
     message = message || '';
     precision = ( precision === undefined ) ? 20 : precision;
@@ -76,12 +80,7 @@
 
       // create a basic representation of btQuaternion for quick JSON stringify
       toJSON: function() {
-        return {
-          x: this.x,
-          y: this.y,
-          z: this.z,
-          w: this.w
-        };
+        return [ trunc( this.x ), trunc( this.y ), trunc( this.z ), trunc( this.w ) ];
       },
 
       // ### btQuadword members
