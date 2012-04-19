@@ -406,7 +406,7 @@
       // - `tmpM1` ← `updateInertiaTensor`
       // - `tmpM2` ← `updateInertiaTensor`
       setCenterOfMassTransform: function( xform ) {
-        if ( this.isStaticOrKinematicObject() ) {
+        if ( this.isKinematicObject() ) {
           this.interpolationWorldTransform.assign( this.worldTransform );
         } else {
           this.interpolationWorldTransform.assign( xform );
