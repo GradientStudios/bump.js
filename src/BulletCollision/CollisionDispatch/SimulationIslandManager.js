@@ -113,7 +113,7 @@
         if ( !this.splitIslands ) {
           var manifold = dispatcher.getInternalManifoldPointer();
           var maxNumManifolds = dispatcher.getNumManifolds();
-          callback.ProcessIsland( collisionObjects, collisionObjects.length, manifold, maxNumManifolds, -1 );
+          callback.processIsland( collisionObjects, collisionObjects.length, manifold, maxNumManifolds, -1 );
         } else {
           // - Sort manifolds, based on islands.
           // - Sort the vector using predicate and std::sort
@@ -172,7 +172,7 @@
             }
 
             if ( !islandSleeping ) {
-              callback.ProcessIsland( this.islandBodies, this.islandBodies.length, startManifold,numIslandManifolds, islandId );
+              callback.processIsland( this.islandBodies, this.islandBodies.length, startManifold,numIslandManifolds, islandId );
               /* console.log( 'Island callback of size:' + this.islandBodies.length + 'bodies, ' + numIslandManifolds + ' manifolds' ); */
             }
 
@@ -317,7 +317,7 @@
 
         members: {
           destruct: Bump.noop,
-          ProcessIsland: Bump.abstract
+          processIsland: Bump.abstract
         }
       })
     }
