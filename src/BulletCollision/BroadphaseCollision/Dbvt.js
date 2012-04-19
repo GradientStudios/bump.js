@@ -504,7 +504,7 @@
                                      root.childs[0].volume,
                                      root.childs[1].volume )
           ];
-        } while( !root.isleaf() );
+        } while ( !root.isleaf() );
       }
       var prev = root.parent;
       var node = createnodeTreeParentVolume2Data( pdbvt, prev, leaf.volume, root.volume, 0 );
@@ -523,7 +523,7 @@
           }
           node = prev;
           prev = node.parent;
-        } while( 0 !== prev );
+        } while ( 0 !== prev );
       }
       else {
         node.childs[ 0 ] = root;
@@ -548,7 +548,7 @@
         prev.childs[ indexof( parent ) ] = sibling;
         sibling.parent = prev;
         deletenode( pdbvt, parent );
-        while( prev ) {
+        while ( prev ) {
           var pb = prev.volume;
           Bump.Merge.DbvtVolume3( prev.childs[ 0 ].volume, prev.childs[ 1 ].volume, prev.volume );
           if ( Bump.NotEqual.DbvtVolume2( pb, prev.volume ) ) {
@@ -610,7 +610,7 @@
   },
 
   bottomup = function( pdbvt, leaves ) {
-    while( leaves.length > 1 ) {
+    while ( leaves.length > 1 ) {
       var minsize = Bump.SIMD_INFINITY,
       minidx = [ -1, -1 ];
       for (var i = 0; i < leaves.length; ++i ) {
@@ -741,12 +741,17 @@
   // underlying data structure.
   Bump.Dbvt = Bump.type({
     init: function Dbvt() {
-      this.root = 0; // DbvtNode
-      this.free = 0; // DbvtNode
-      this.lkhd = -1; // int
-      this.leaves = 0; // int
-      this.opath = 0; // unsigned
-      this.stkStack = []; // array of `Dbvt.sStkNN`
+      // Default initializers
+      this.stkStack = [];       // array of `Dbvt.sStkNN`
+      this.rayTestStack = [];   // array of `DbvtNode`
+      // End default initializers
+
+      // !!!: The pointers should be `null`! >:o
+      this.root   = 0;          // DbvtNode*
+      this.free   = 0;          // DbvtNode*
+      this.lkhd   = -1;         // int
+      this.leaves = 0;          // int
+      this.opath  = 0;          // unsigned
     },
 
     members: {
@@ -793,14 +798,14 @@
           do {
             var node = this.root,
                 bit = 0;
-            while( node.isinternal() ) {
+            while ( node.isinternal() ) {
               node = sort( node, this.root ).childs[ ( this.opath >> bit ) & 1 ];
               /* bit = ( bit + 1 ) & ( sizeof ( unsigned ) * 8 - 1 ); */
               bit = ( bit + 1 ) & 31;
             }
             this.updateLeafLookahead( node );
             ++this.opath;
-          } while( --passes );
+          } while ( --passes );
         }
       },
 
@@ -931,7 +936,7 @@
             else if ( iclone ) { /* added if to make sure iclone is defined */
               iclone.CloneLeaf( n );
             }
-          } while( stack.length > 0 );
+          } while ( stack.length > 0 );
         }
       },
 
@@ -982,7 +987,7 @@
                 }
               }
             }
-          } while( depth );
+          } while ( depth );
         }
       },
 
@@ -1028,7 +1033,7 @@
                 }
               }
             }
-          } while( depth );
+          } while ( depth );
         }
       },
 
@@ -1053,26 +1058,29 @@
                 policy.ProcessNode( n );
               }
             }
-          } while( stack.length > 0 );
+          } while ( stack.length > 0 );
         }
       },
 
-      rayTestInternal: function( root,
-                                 rayFrom,
-                                 rayTo,
-                                 rayDirectionInverse,
-                                 signs,
-                                 lambda_max,
-                                 aabbMin,
-                                 aabbMax,
-                                 policy ) {
+      rayTestInternal: function(
+        root,
+        rayFrom,
+        rayTo,
+        rayDirectionInverse,
+        signs,
+        lambda_max,
+        aabbMin,
+        aabbMax,
+        policy
+      ) {
         if ( root ) {
-          var resultNormal = Bump.Vector3.create(),
-              depth = 1,
+          var resultNormal = Bump.Vector3.create();
+
+          var depth = 1,
               threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 2,
-              stack = [],
+              stack = this.rayTestStack,
               bounds = [ Bump.Vector3.create(), Bump.Vector3.create() ];
-          stack[ Bump.Dbvt.DOUBE_STACKSIZE - 1 ] = undefined; /* stack.resize( DOUBLE_STACKSIZE ); */
+          Bump.resize( stack, Bump.Dbvt.DOUBE_STACKSIZE, undefined );
           stack[ 0 ] = root;
           do {
             var node = stack[ --depth ];
@@ -1092,13 +1100,16 @@
                 stack[ depth++ ] = node.childs[ 0 ];
                 stack[ depth++ ] = node.childs[ 1 ];
               }
+
               else {
                 policy.Process( node );
               }
             }
-          } while( depth );
+          } while ( depth );
+
         }
       }
+
     },
 
     typeMembers: {
@@ -1208,7 +1219,7 @@
                 policy.Process( node );
               }
             }
-          } while( depth );
+          } while ( depth );
         }
       },
 
@@ -1255,7 +1266,7 @@
                 }
               }
             }
-          } while( stack.length );
+          } while ( stack.length );
         }
       },
 
@@ -1361,7 +1372,7 @@
                 policy.Process( se.node, se.value );
               }
             }
-          } while( stack.length );
+          } while ( stack.length );
         }
       },
 
@@ -1382,7 +1393,7 @@
                 policy.Process( n );
               }
             }
-          } while( stack.length > 0 );
+          } while ( stack.length > 0 );
         }
       },
 
@@ -1394,7 +1405,7 @@
       // h: integer,
       nearest: function( i, a, v, l, h ) {
         var m = 0;
-        while( l < h ) {
+        while ( l < h ) {
           m = ( l + h ) >> 1;
           if ( a[ i[ m ] ].value >= v ) {
             l = m + 1;
