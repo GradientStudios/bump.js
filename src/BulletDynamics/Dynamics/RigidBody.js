@@ -680,8 +680,11 @@
 
         for ( var i = 0; i < this.constraintRefs.length; ++i ) {
           var c = this.constraintRefs[i];
-          if ( c.getRigidBodyA() === otherRb || c.getRigidBodyB() === otherRb ) {
-            return false;
+
+          if ( c.isEnabled() ) {
+            if ( c.getRigidBodyA() === otherRb || c.getRigidBodyB() === otherRb ) {
+              return false;
+            }
           }
         }
 

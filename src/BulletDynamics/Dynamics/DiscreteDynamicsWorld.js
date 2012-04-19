@@ -574,18 +574,21 @@
         var i, numConstraints = this.constraints.length;
 
         for ( i = 0; i < numConstraints; ++i ) {
-          var constraint = this.constraints[i],
-              colObj0 = constraint.getRigidBodyA(),
-              colObj1 = constraint.getRigidBodyB();
+          var constraint = this.constraints[i];
 
-          if (( (colObj0 !== null) && (!colObj0.isStaticOrKinematicObject()) ) &&
-              ( (colObj1 !== null) && (!colObj1.isStaticOrKinematicObject()) ))
-          {
-            if ( colObj0.isActive() || colObj1.isActive() ) {
-              this.getSimulationIslandManager().getUnionFind().unite(
-                colObj0.getIslandTag(),
-                colObj1.getIslandTag()
-              );
+          if ( constraint.isEnabled() ) {
+            var colObj0 = constraint.getRigidBodyA();
+            var colObj1 = constraint.getRigidBodyB();
+
+            if (( (colObj0 !== null) && (!colObj0.isStaticOrKinematicObject()) ) &&
+                ( (colObj1 !== null) && (!colObj1.isStaticOrKinematicObject()) ))
+            {
+              if ( colObj0.isActive() || colObj1.isActive() ) {
+                this.getSimulationIslandManager().getUnionFind().unite(
+                  colObj0.getIslandTag(),
+                  colObj1.getIslandTag()
+                );
+              }
             }
           }
         }
