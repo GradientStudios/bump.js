@@ -72,7 +72,7 @@
           minAabb.subtractSelf( contactThreshold );
           maxAabb.addSelf( contactThreshold );
 
-          if ( this.getDispatchInfo().useContinuous && colObj.getInternalType() === Bump.CollisionObject.CollisionObjectTypes.CO_RIGID_BODY ) {
+          if ( this.getDispatchInfo().useContinuous && colObj.getInternalType() === Bump.CollisionObject.CollisionObjectTypes.CO_RIGID_BODY && !colObj.isStaticOrKinematicObject() ) {
             var minAabb2 = Bump.Vector3.create(), maxAabb2 = Bump.Vector3.create();
             colObj.getCollisionShape().getAabb( colObj.getInterpolationWorldTransform(), minAabb2, maxAabb2 );
             minAabb2.subtractSelf( contactThreshold );
