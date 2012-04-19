@@ -73,25 +73,29 @@ test( 'correct types', function() {
   var sc = Bump.SolverConstraint.create(),
   checks = [
     [ 'relpos1CrossNormal', Bump.Vector3 ],
-    [ 'contactNormal', Bump.Vector3],
-    [ 'relpos2CrossNormal', Bump.Vector3],
-    [ 'angularComponentA', Bump.Vector3],
-    [ 'angularComponentB', Bump.Vector3],
-    [ 'appliedPushImpulse', 'number'],
-    [ 'appliedImpulse', 'number'],
-    [ 'friction', 'number'],
-    [ 'jacDiagABInv', 'number'],
-    [ 'rhs', 'number'],
-    [ 'cfm', 'number'],
-    [ 'lowerLimit', 'number'],
-    [ 'upperLimit', 'number'],
-    [ 'rhsPenetration', 'number'],
-      // internal values for unions
-    [ '_union0', 'number'],
-    [ '_union1', 'number'],
-    [ '_union2', 'number'],
-    [ '_union3', 'number'],
-    [ '_union4', 'number']
+    [ 'contactNormal',      Bump.Vector3 ],
+    [ 'relpos2CrossNormal', Bump.Vector3 ],
+    [ 'angularComponentA',  Bump.Vector3 ],
+    [ 'angularComponentB',  Bump.Vector3 ],
+
+    [ 'appliedPushImpulse',          'number' ],
+    [ 'appliedImpulse',              'number' ],
+    [ 'friction',                    'number' ],
+    [ 'jacDiagABInv',                'number' ],
+    [ 'overrideNumSolverIterations', 'number' ],
+
+    [ 'rhs',            'number' ],
+    [ 'cfm',            'number' ],
+    [ 'lowerLimit',     'number' ],
+    [ 'upperLimit',     'number' ],
+    [ 'rhsPenetration', 'number' ],
+
+    // internal values for unions
+    [ '_union0', 'number' ],
+    [ '_union1', 'number' ],
+    [ '_union2', 'number' ],
+    [ '_union3', 'number' ],
+    [ '_union4', 'number' ]
   ];
 
   checkTypes( sc, checks );

@@ -16,14 +16,18 @@ test( 'correct types', function() {
     [ 'rbA', Bump.RigidBody ],
     [ 'rbB', Bump.RigidBody ],
 
-    [ 'objectType',               'number'  ],
-    [ 'userConstraintType',       'number'  ],
-    [ 'userConstraintId',         'number'  ],
+    [ 'objectType',         'number'  ],
+    [ 'userConstraintType', 'number'  ],
+    [ 'userConstraintId',   'number'  ],
+    [ 'needsFeedback',      'boolean' ],
+
+    [ 'appliedImpulse', 'number' ],
+    [ 'dbgDrawSize',    'number' ],
+
+    [ 'overrideNumSolverIterations', 'number' ],
+
     [ 'breakingImpulseThreshold', 'number'  ],
-    [ 'isEnabled',                'boolean' ],
-    [ 'needsFeedback',            'boolean' ],
-    [ 'appliedImpulse',           'number'  ],
-    [ 'dbgDrawSize',              'number'  ]
+    [ 'isEnabled',                'boolean' ]
   ];
 
   checkTypes( tc, checks );
@@ -96,18 +100,18 @@ test( 'correct types', function() {
   var ci2 = Bump.TypedConstraint.ConstraintInfo2.create();
 
   var checks = [
-    [ 'fps', 'number' ],
-    [ 'erp', 'number' ],
-    [ 'J1linearAxis', 'array' ],
-    [ 'J1angularAxis', 'array' ],
-    [ 'J2linearAxis', 'array' ],
-    [ 'J2angularAxis', 'array' ],
-    [ 'rowskip', 'number' ],
-    [ 'constraintError', 'array' ],
-    [ 'cfm', 'array' ],
-    [ 'findex', 'array' ],
-    [ 'numIterations', 'number' ],
-    [ 'damping', 'number' ]
+    [ 'fps',             'number' ],
+    [ 'erp',             'number' ],
+    [ 'J1linearAxis',    'array'  ],
+    [ 'J1angularAxis',   'array'  ],
+    [ 'J2linearAxis',    'array'  ],
+    [ 'J2angularAxis',   'array'  ],
+    [ 'rowskip',         'number' ],
+    [ 'constraintError', 'array'  ],
+    [ 'cfm',             'array'  ],
+    [ 'findex',          'array'  ],
+    [ 'numIterations',   'number' ],
+    [ 'damping',         'number' ]
   ];
 
   checkTypes( ci2, checks );

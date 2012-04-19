@@ -26,16 +26,19 @@
     init: function TypedConstraint( type, rbA, rbB ) {
       rbB = rbB === undefined ? this.getFixedBody() : rbB;
 
+      // Initializer list
       this._super( type );
       this.userConstraintType = -1;
       this.userConstraintId = -1;
       this.breakingImpulseThreshold = Infinity;
       this.isEnabled = true;
       this.needsFeedback = false;
+      this.overrideNumSolverIterations = -1;
       this.rbA = rbA;
       this.rbB = rbB;
       this.appliedImpulse = 0;
       this.dbgDrawSize = DEFAULT_DEBUGDRAW_SIZE;
+      // End initializer list
     },
 
     members: {
@@ -103,11 +106,22 @@
         };
       })(),
 
-      // Internal method used by the constraint solver, don't use this directly.
-      buildJacobian: function() {},
+      getOverrideNumSolverIterations: function() {
+        return this.overrideNumSolverIterations;
+      },
+
+      // Override the number of constraint solver iterations used to solve this
+      // constraint. -1 will use the default number of iterations, as specified
+      // in `SolverInfo.numIterations`.
+      setOverrideNumSolverIterations: function( overideNumIterations ) {
+        this.overrideNumSolverIterations = overideNumIterations;
+      },
 
       // Internal method used by the constraint solver, don't use this directly.
-      setupSolverConstraint: function() {},
+      buildJacobian: Bump.noop,
+
+      // Internal method used by the constraint solver, don't use this directly.
+      setupSolverConstraint: Bump.noop,
 
       // Internal method used by the constraint solver, don't use this directly.
       getInfo1: Bump.abstract,
