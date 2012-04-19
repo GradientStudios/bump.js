@@ -159,7 +159,8 @@
 
       // **Warning:** Returns an Array of Arrays.
       getInternalManifoldPointer: function() {
-        return this.manifoldsPtr;
+        var m_manifoldsPtr = this.manifoldsPtr;
+        return m_manifoldsPtr.length ? m_manifoldsPtr : null;
       },
 
       getManifoldByIndexInternal: function( index ) {
