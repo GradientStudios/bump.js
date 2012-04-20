@@ -58,6 +58,7 @@
         "src/BulletDynamics/Dynamics/DiscreteDynamicsWorld.js",
 
         "src/BulletCollision/CollisionShapes/CollisionShape.js",
+        "src/BulletCollision/CollisionShapes/CompoundShape.js",
         "src/BulletCollision/CollisionShapes/ConvexShape.js",
         "src/BulletCollision/CollisionShapes/ConvexInternalShape.js",
         "src/BulletCollision/CollisionShapes/ConvexPolyhedron.js",
