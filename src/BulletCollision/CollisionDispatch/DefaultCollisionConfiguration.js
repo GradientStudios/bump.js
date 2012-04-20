@@ -123,9 +123,7 @@
         this.triangleSphereCF.swapped = true;
       }
 
-      if ( Bump.BoxBoxCollisionAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
-        this.boxBoxCF = Bump.BoxBoxCollisionAlgorithm.CreateFunc.create();
-      }
+      this.boxBoxCF = Bump.BoxBoxCollisionAlgorithm.CreateFunc.create();
 
       // Convex versus plane.
       if ( Bump.ConvexPlaneCollisionAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
