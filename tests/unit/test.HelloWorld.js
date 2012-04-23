@@ -120,7 +120,6 @@ test( 'basic', function() {
   /// Do some simulation
   var trans = Bump.Transform.create();
   for( var i = 0; i < 1000; i++ ) {
-
     // Step simulation
     dynamicsWorld.stepSimulation( 1 / 60, 10 );
 
@@ -200,6 +199,7 @@ test( 'basic', function() {
     // Get CompoundShape transform
     dynamicsWorld.getCollisionObjectArray()[ 2 ].getMotionState().getWorldTransform( trans );
 
+    epsilon = Math.pow( 2, -16 );
     shapeName = 'CompoundShape';
     switch ( i ) {
     case 102:

@@ -254,6 +254,21 @@
             var childTrans = compoundShape.getChildTransform( i );
             newChildWorldTrans = orgTrans.multiplyTransform( childTrans, newChildWorldTrans );
 
+            // (function() {
+            //   var str = '';
+            //   for ( var i = 0; i < 3; ++i ) {
+            //     for ( var j = 0; j < 3; ++j ) {
+            //       if ( i !== 0 || j !== 0 ) {
+            //         str += ', ';
+            //       } else {
+            //         str += '      ';
+            //       }
+            //       str += newChildWorldTrans.basis[i][j].toExponential( 6 );
+            //     }
+            //   }
+            //   console.log( str );
+            // })();
+
             // perform an AABB check first
             childShape.getAabb( newChildWorldTrans, aabbMin0, aabbMax0 );
             otherObj.getCollisionShape().getAabb( otherObj.getWorldTransform(), aabbMin1, aabbMax1 );

@@ -1032,14 +1032,14 @@
         }
       },
 
-      // Process collision between a `Dbvt` tree, starting at `root`, and `DbvtVolume` `vol` according
-      // to the given policy. ???
+      // Process collision between a `Dbvt` tree, starting at `root`, and
+      // `DbvtVolume` `vol` according to the given policy. ???
       collideTV: function( root, vol, policy ) {
         if ( root ) {
           var volume = vol.clone(),
               stack = [];
-          /* stack.resize( 0 ); */
-          /* stack.reserve( SIMPLE_STACKSIZE ); */
+          // stack.resize( 0 );
+          // stack.reserve( SIMPLE_STACKSIZE );
           stack.push( root );
           do {
             var n = stack[stack.length - 1];
@@ -1048,8 +1048,7 @@
               if ( n.isinternal() ) {
                 stack.push( n.childs[ 0 ] );
                 stack.push( n.childs[ 1 ] );
-              }
-              else {
+              } else {
                 policy.ProcessNode( n );
               }
             }
