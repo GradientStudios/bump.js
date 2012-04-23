@@ -161,7 +161,7 @@
 
                 for (
                   endManifoldIndex = startManifoldIndex + 1;
-                  ( endManifoldIndex < numManifolds ) && ( islandId === this.getIslandId( this.islandmanifold[ endManifoldIndex ] ) );
+                  ( endManifoldIndex < numManifolds ) && ( islandId === getIslandId( this.islandmanifold[ endManifoldIndex ] ) );
                   ++endManifoldIndex
                 ) {
                   Bump.noop();
