@@ -33,10 +33,11 @@
 
     // Recursion.
     if ( lo < j ) {
-      quickSortInternal( compareFunc, lo, j );
+      quickSortInternal( arr, compareFunc, lo, j );
     }
+
     if ( i < hi ) {
-      quickSortInternal( compareFunc, i, hi );
+      quickSortInternal( arr, compareFunc, i, hi );
     }
   };
 
