@@ -29,8 +29,8 @@
         Bump.Assert( index < compoundShape.getNumChildShapes() );
 
         // backup
-        var orgTrans = m_compoundColObj.getWorldTransform();
-        var orgInterpolationTrans = m_compoundColObj.getInterpolationWorldTransform();
+        var orgTrans = m_compoundColObj.getWorldTransform().clone();
+        var orgInterpolationTrans = m_compoundColObj.getInterpolationWorldTransform().clone();
         var childTrans = compoundShape.getChildTransform( index );
         var newChildWorldTrans = orgTrans.multiplyTransform( childTrans );
 
@@ -54,7 +54,7 @@
             m_childCollisionAlgorithms[ index ] = this.dispatcher.findAlgorithm( m_compoundColObj, m_otherObj, this.sharedManifold );
           }
 
-          ///detect swapping case
+          // detect swapping case
           if ( m_resultOut.getBody0Internal() === m_compoundColObj ) {
             m_resultOut.setShapeIdentifiersA( -1, index );
           } else {
@@ -76,12 +76,10 @@
         }
       },
 
-      Process: function( leaf ) {
-        var m_compoundColObj = this.compoundColObj;
-
+      ProcessNode: function( leaf ) {
         var index = leaf.dataAsInt;
 
-        var compoundShape = m_compoundColObj.getCollisionShape();
+        var compoundShape = this.compoundColObj.getCollisionShape();
         var childShape = compoundShape.getChildShape( index );
         // if ( this.dispatchInfo.debugDraw && ( this.dispatchInfo.debugDraw.getDebugMode() & Bump.IDebugDraw.DBG_DrawAabb ) ) {
         //   var worldAabbMin = Bump.Vector3.create();
@@ -90,6 +88,7 @@
         //   Bump.TransformAabb( leaf.volume.Mins(), leaf.volume.Maxs(), 0, orgTrans, worldAabbMin, worldAabbMax );
         //   this.dispatchInfo.debugDraw.drawAabb( worldAabbMin, worldAabbMax, Bump.Vector3.create(1, 0, 0) );
         // }
+
         this.ProcessChildShape( childShape, index );
       }
 
@@ -250,7 +249,7 @@
           if ( m_childCollisionAlgorithms[i] ) {
             childShape = compoundShape.getChildShape( i );
             // if not longer overlapping, remove the algorithm
-            orgTrans = colObj.getWorldTransform( orgTrans );
+            orgTrans.assign( colObj.getWorldTransform() );
             orgInterpolationTrans = colObj.getInterpolationWorldTransform( orgInterpolationTrans );
             var childTrans = compoundShape.getChildTransform( i );
             newChildWorldTrans = orgTrans.multiplyTransform( childTrans, newChildWorldTrans );
@@ -298,7 +297,7 @@
           var childShape = compoundShape.getChildShape(i);
 
           // backup
-          orgTrans = colObj.getWorldTransform( orgTrans );
+          orgTrans.assign( colObj.getWorldTransform() );
 
           var childTrans = compoundShape.getChildTransform( i );
           colObj.setWorldTransform( orgTrans.multiplyTransform( childTrans ) );
