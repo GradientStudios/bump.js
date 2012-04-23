@@ -10,9 +10,9 @@
   var quickSortInternal = function( arr, compareFunc, lo, hi ) {
     // `lo` is the lower index, `hi` is the upper index
     // of the region of array a that is to be sorted.
-    var i = lo,
-    j = hi,
-    x = arr[ ( lo + hi ) / 2 ];
+    var i = lo;
+    var j = hi;
+    var x = arr[ ~~( ( lo + hi ) / 2 ) ];
 
     // Partition.
     do {
