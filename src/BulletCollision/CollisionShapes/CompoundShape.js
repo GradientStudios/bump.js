@@ -42,6 +42,10 @@
     parent: Bump.CollisionShape,
 
     init: function CompoundShape( enableDynamicAabbTree ) {
+      if ( typeof enableDynamicAabbTree === 'undefined' ) {
+        enableDynamicAabbTree = true;
+      }
+
       this._super();
 
       // Initializer list
