@@ -308,10 +308,9 @@
       setAabb: function( absproxy, aabbMin, aabbMax, dispatcher ) {
         var proxy = absproxy,
         aabb = Bump.DbvtVolume.FromMM( aabbMin, aabbMax );
-/* #if DBVT_BP_PREVENTFALSEUPDATE
-        if (NotEqual(aabb,proxy->leaf->volume))
-#endif
-        { */
+// #if DBVT_BP_PREVENTFALSEUPDATE
+//         if (NotEqual(aabb,proxy->leaf->volume)) {
+// #endif
         var docollide = false;
         if ( proxy.stage === Bump.DbvtBroadphase.Stages.STAGECOUNT ) {
           /* fixed . dynamic set */
@@ -339,22 +338,22 @@
               velocity.z = -velocity.z;
             }
             if (
-/*#ifdef DBVT_BP_MARGIN */
+// #ifdef DBVT_BP_MARGIN
               this.sets[0].updateLeafVolumeVelocityMargin( proxy.leaf,
                                                              aabb,
                                                              velocity,
                                                              Bump.DBVT_BP_MARGIN )
-/*#else
-                                        sets[0].update(proxy.leaf,aabb,velocity)
-#endif*/
+// #else
+//               sets[0].updateLeafVolumeVelocity( proxy.leaf, aabb, velocity )
+// #endif
             ) {
               ++this.updates_done;
               docollide = true;
             }
           }
           else {
-            /* Teleporting */
-            this.sets[ 0 ].update( proxy.leaf, aabb );
+            // Teleporting
+            this.sets[ 0 ].updateLeafVolume( proxy.leaf, aabb );
             ++this.updates_done;
             docollide = true;
           }
