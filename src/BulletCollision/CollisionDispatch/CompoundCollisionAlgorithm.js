@@ -1,5 +1,101 @@
 (function( window, Bump ) {
 
+  var CompoundLeafCallback = Bump.type({
+    parent: Bump.Dbvt.ICollide,
+
+    init: function CompoundLeafCallback( compoundObj, otherObj, dispatcher, dispatchInfo, resultOut, childCollisionAlgorithms, sharedManifold ) {
+      this._super();
+
+      // Initializer list
+      this.compoundColObj = compoundObj;
+      this.otherObj = otherObj;
+      this.dispatcher = dispatcher;
+      this.dispatchInfo = dispatchInfo;
+      this.resultOut = resultOut;
+      this.childCollisionAlgorithms = childCollisionAlgorithms;
+      this.sharedManifold = sharedManifold;
+      // End initializer list
+    },
+
+    members: {
+      ProcessChildShape: function( childShape, index ) {
+        var m_compoundColObj = this.compoundColObj;
+        var m_otherObj = this.otherObj;
+        var m_childCollisionAlgorithms = this.childCollisionAlgorithms;
+        var m_resultOut = this.resultOut;
+
+        Bump.Assert( index >= 0 );
+        var compoundShape = m_compoundColObj.getCollisionShape();
+        Bump.Assert( index < compoundShape.getNumChildShapes() );
+
+        // backup
+        var orgTrans = m_compoundColObj.getWorldTransform();
+        var orgInterpolationTrans = m_compoundColObj.getInterpolationWorldTransform();
+        var childTrans = compoundShape.getChildTransform( index );
+        var newChildWorldTrans = orgTrans.multiplyTransform( childTrans );
+
+        // perform an AABB check first
+        var aabbMin0 = Bump.Vector3.create();
+        var aabbMax0 = Bump.Vector3.create();
+        var aabbMin1 = Bump.Vector3.create();
+        var aabbMax1 = Bump.Vector3.create();
+        childShape.getAabb( newChildWorldTrans, aabbMin0, aabbMax0 );
+        m_otherObj.getCollisionShape().getAabb( m_otherObj.getWorldTransform(), aabbMin1, aabbMax1 );
+
+        if ( Bump.testAabbAgainstAabb2( aabbMin0, aabbMax0, aabbMin1, aabbMax1 ) ) {
+          m_compoundColObj.setWorldTransform( newChildWorldTrans );
+          m_compoundColObj.setInterpolationWorldTransform( newChildWorldTrans );
+
+          // the contactpoint is still projected back using the original inverted worldtrans
+          var tmpShape = m_compoundColObj.getCollisionShape();
+          m_compoundColObj.internalSetTemporaryCollisionShape( childShape );
+
+          if ( !m_childCollisionAlgorithms[ index ] ) {
+            m_childCollisionAlgorithms[ index ] = this.dispatcher.findAlgorithm( m_compoundColObj, m_otherObj, this.sharedManifold );
+          }
+
+          ///detect swapping case
+          if ( m_resultOut.getBody0Internal() === m_compoundColObj ) {
+            m_resultOut.setShapeIdentifiersA( -1, index );
+          } else {
+            m_resultOut.setShapeIdentifiersB( -1, index );
+          }
+
+          m_childCollisionAlgorithms[index].processCollision( m_compoundColObj, m_otherObj, this.dispatchInfo, m_resultOut );
+          // if ( this.dispatchInfo.debugDraw && ( this.dispatchInfo.debugDraw.getDebugMode() & Bump.IDebugDraw.DBG_DrawAabb ) ) {
+          //   var worldAabbMin = Bump.Vector3.create();
+          //   var worldAabbMax = Bump.Vector3.create();
+          //   this.dispatchInfo.debugDraw.drawAabb( aabbMin0, aabbMax0, Bump.Vector3.create(1, 1, 1) );
+          //   this.dispatchInfo.debugDraw.drawAabb( aabbMin1, aabbMax1, Bump.Vector3.create(1, 1, 1) );
+          // }
+
+          // revert back transform
+          m_compoundColObj.internalSetTemporaryCollisionShape( tmpShape );
+          m_compoundColObj.setWorldTransform( orgTrans );
+          m_compoundColObj.setInterpolationWorldTransform( orgInterpolationTrans );
+        }
+      },
+
+      Process: function( leaf ) {
+        var m_compoundColObj = this.compoundColObj;
+
+        var index = leaf.dataAsInt;
+
+        var compoundShape = m_compoundColObj.getCollisionShape();
+        var childShape = compoundShape.getChildShape( index );
+        // if ( this.dispatchInfo.debugDraw && ( this.dispatchInfo.debugDraw.getDebugMode() & Bump.IDebugDraw.DBG_DrawAabb ) ) {
+        //   var worldAabbMin = Bump.Vector3.create();
+        //   var worldAabbMax = Bump.Vector3.create();
+        //   var orgTrans = m_compoundColObj.getWorldTransform();
+        //   Bump.TransformAabb( leaf.volume.Mins(), leaf.volume.Maxs(), 0, orgTrans, worldAabbMin, worldAabbMax );
+        //   this.dispatchInfo.debugDraw.drawAabb( worldAabbMin, worldAabbMax, Bump.Vector3.create(1, 0, 0) );
+        // }
+        this.ProcessChildShape( childShape, index );
+      }
+
+    }
+  });
+
   Bump.CompoundCollisionAlgorithm = Bump.type({
     parent: Bump.ActivatingCollisionAlgorithm,
 
@@ -91,7 +187,7 @@
 
         var tree = compoundShape.getDynamicAabbTree();
         // use a dynamic aabb tree to cull potential child-overlaps
-        var callback = Bump.CompoundLeafCallback.create( colObj, otherObj, this.dispatcher, dispatchInfo, resultOut, m_childCollisionAlgorithms, this.sharedManifold );
+        var callback = CompoundLeafCallback.create( colObj, otherObj, this.dispatcher, dispatchInfo, resultOut, m_childCollisionAlgorithms, this.sharedManifold );
 
         // We need to refresh all contact manifolds.
         // Note that we should actually recursively traverse all children,
