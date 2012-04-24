@@ -1,13 +1,13 @@
 (function( window, Bump ) {
 
   Bump.CollisionAlgorithmConstructionInfo = Bump.type({
-    members: {
-      init: function CollisionAlgorithmConstructionInfo() {
-        this.dispatcher1 = null;
-        this.manifold = null;
-      },
+    init: function CollisionAlgorithmConstructionInfo() {
+      this.dispatcher1 = null;
+      this.manifold = null;
+    },
 
-      initWithDispatcher: function CollisionAlgorithmConstructionInfo( dispatcher ) {
+    members: {
+      initWithDispatcher: function( dispatcher ) {
         this.dispatcher1 = dispatcher;
         this.manifold = null;
       },
@@ -41,13 +41,13 @@
   });
 
   Bump.CollisionAlgorithm = Bump.type({
-    members: {
-      init: function CollisionAlgorithm() {
-        this.dispatcher = null;
-        return this;
-      },
+    init: function CollisionAlgorithm() {
+      this.dispatcher = null;
+      return this;
+    },
 
-      initWithInfo: function CollisionAlgorithm( ci ) {
+    members: {
+      initWithInfo: function( ci ) {
         this.dispatcher = ci.dispatcher1;
         return this;
       },

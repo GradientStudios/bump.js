@@ -1,6 +1,8 @@
 (function( window, Bump ) {
 
   Bump.ActionInterface = Bump.type({
+    init: function ActionInterface() {},
+
     members: {
       destruct: Bump.noop,
       updateAction: Bump.abstract,

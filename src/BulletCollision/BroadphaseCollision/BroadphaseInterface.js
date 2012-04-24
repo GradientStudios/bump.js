@@ -1,6 +1,7 @@
 (function( window, Bump ) {
 
   Bump.BroadphaseAabbCallback = Bump.type({
+    init: function BroadphaseAabbCallback() {},
     members: {
       process: function( proxy ) {
         Bump.Assert( false );
@@ -19,6 +20,7 @@
   });
 
   Bump.BroadphaseInterface = Bump.type({
+    init: function BroadphaseInterface() {},
     members: {
       createProxy: Bump.abstract,
       destroyProxy: Bump.abstract,

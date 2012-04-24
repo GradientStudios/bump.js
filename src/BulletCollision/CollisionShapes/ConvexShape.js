@@ -7,6 +7,10 @@
   Bump.ConvexShape = Bump.type({
     parent: Bump.CollisionShape,
 
+    init: function ConvexShape() {
+      this._super();
+    },
+
     members: {
       clone: function( dest ) {
         dest = dest || Bump.ConvexShape.create();

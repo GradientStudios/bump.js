@@ -1464,6 +1464,7 @@
   // Policies/Interfaces
 
   Bump.Dbvt.ICollide = Bump.type({
+    init: function ICollide() {},
     members: {
       // originally ICollide specified 3 overloaded Process functions, which have
       // been renamed here based on their expected arguments
@@ -1472,9 +1473,11 @@
       ProcessNodeScalar: function( n, s ) {
         this.ProcessNode( n );
       },
+
       Descent: function( node ) {
         return true;
       },
+
       AllLeaves: function( node ) {
         return true;
       }

@@ -18,29 +18,29 @@
   Bump.PersistentManifold = Bump.type({
     parent: Bump.TypedObject,
 
+    init: function PersistentManifold() {
+      this._super( Bump.ContactManifoldTypes.BT_PERSISTENT_MANIFOLD_TYPE );
+
+      this.pointCache = [];
+      for ( var i = 0; i < MANIFOLD_CACHE_SIZE; ++i ) {
+        this.pointCache.push( Bump.ManifoldPoint.create() );
+      }
+
+      // These two body pointers can point to the physics rigidbody class.
+      this.body0 = null;
+      this.body1 = null;
+
+      this.cachedPoints = 0;
+
+      this.contactBreakingThreshold = 0;
+      this.contactProcessingThreshold = 0;
+      this.companionIdA = 0;
+      this.companionIdB = 0;
+      this.index1a = 0;
+    },
+
     members: {
-      init: function ManifestPoint() {
-        this._super( Bump.ContactManifoldTypes.BT_PERSISTENT_MANIFOLD_TYPE );
-
-        this.pointCache = [];
-        for ( var i = 0; i < MANIFOLD_CACHE_SIZE; ++i ) {
-          this.pointCache.push( Bump.ManifoldPoint.create() );
-        }
-
-        // These two body pointers can point to the physics rigidbody class.
-        this.body0 = null;
-        this.body1 = null;
-
-        this.cachedPoints = 0;
-
-        this.contactBreakingThreshold = 0;
-        this.contactProcessingThreshold = 0;
-        this.companionIdA = 0;
-        this.companionIdB = 0;
-        this.index1a = 0;
-      },
-
-      initWithContactPoint: function ManifestPoint( body0, body1, throwaway, contactBreakingThreshold, contactProcessingThreshold ) {
+      initWithContactPoint: function( body0, body1, throwaway, contactBreakingThreshold, contactProcessingThreshold ) {
         Bump.TypedObject.prototype.init
           .apply( this, [ Bump.ContactManifoldTypes.BT_PERSISTENT_MANIFOLD_TYPE ] );
 

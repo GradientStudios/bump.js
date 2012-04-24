@@ -66,6 +66,7 @@
   ]);
 
   Bump.Dispatcher = Bump.type({
+    init: function Dispatcher() {},
     members: {
       findAlgorithm: Bump.abstract,
       getNewManifold: Bump.abstract,

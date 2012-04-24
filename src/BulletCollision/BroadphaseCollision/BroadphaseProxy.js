@@ -251,8 +251,9 @@
   // BroadphasePairSortPredicate attempts to emulate btBroadphasePairSortPredicate, which
   // is a functor, while remaining faithful to Bump's style of object creation.
   Bump.BroadphasePairSortPredicate = Bump.type({
+    init: function BroadphasePairSortPredicate() {},
     typeMembers: {
-      _functor: function( a, b ) {
+      _functor: function BroadphasePairSortPredicate( a, b ) {
         var uidA0 = a.pProxy0 ? a.pProxy0.uniqueId : -1,
             uidB0 = b.pProxy0 ? b.pProxy0.uniqueId : -1,
             uidA1 = a.pProxy1 ? a.pProxy1.uniqueId : -1,

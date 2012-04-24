@@ -23,33 +23,33 @@
   Bump.CollisionDispatcher = Bump.type({
     parent: Bump.Dispatcher,
 
-    members: {
-      init: function CollisionDispatcher() {
-        this._super();
+    init: function CollisionDispatcher() {
+      this._super();
 
-        var i, j, MAX_BROADPHASE_COLLISION_TYPES = Bump.BroadphaseNativeTypes.MAX_BROADPHASE_COLLISION_TYPES;
+      var i, j, MAX_BROADPHASE_COLLISION_TYPES = Bump.BroadphaseNativeTypes.MAX_BROADPHASE_COLLISION_TYPES;
 
-        this.dispatcherFlags = 0;
-        this.manifoldsPtr = [];
-        this.defaultManifoldResult = Bump.ManifoldResult.create();
-        this.nearCallback = null;
-        this.collisionAlgorithmPoolAllocator = null;
-        this.persistentManifoldPoolAllocator = null;
+      this.dispatcherFlags = 0;
+      this.manifoldsPtr = [];
+      this.defaultManifoldResult = Bump.ManifoldResult.create();
+      this.nearCallback = null;
+      this.collisionAlgorithmPoolAllocator = null;
+      this.persistentManifoldPoolAllocator = null;
 
-        this.doubleDispatch = new Array( MAX_BROADPHASE_COLLISION_TYPES );
-        for ( i = 0; i < MAX_BROADPHASE_COLLISION_TYPES; ++i ) {
-          this.doubleDispatch[i] = new Array( MAX_BROADPHASE_COLLISION_TYPES );
-          for ( j = 0; j < MAX_BROADPHASE_COLLISION_TYPES; ++j ) {
-            this.doubleDispatch[i][j] = null;
-          }
+      this.doubleDispatch = new Array( MAX_BROADPHASE_COLLISION_TYPES );
+      for ( i = 0; i < MAX_BROADPHASE_COLLISION_TYPES; ++i ) {
+        this.doubleDispatch[i] = new Array( MAX_BROADPHASE_COLLISION_TYPES );
+        for ( j = 0; j < MAX_BROADPHASE_COLLISION_TYPES; ++j ) {
+          this.doubleDispatch[i][j] = null;
         }
+      }
 
-        this.collisionConfiguration = null;
+      this.collisionConfiguration = null;
 
-        return this;
-      },
+      return this;
+    },
 
-      initWithConfig: function CollisionDispatcher( collisionConfiguration ) {
+    members: {
+      initWithConfig: function( collisionConfiguration ) {
         Bump.Dispatcher.prototype.init.apply( this, [] );
 
         var i, j, MAX_BROADPHASE_COLLISION_TYPES = Bump.BroadphaseNativeTypes.MAX_BROADPHASE_COLLISION_TYPES;
