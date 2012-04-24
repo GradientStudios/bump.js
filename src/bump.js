@@ -61,6 +61,10 @@ this.Bump = {};
   // all objects created by Bump.type
   function Type() {}
 
+  Bump.isType = function isType( obj ) {
+    return obj instanceof Type;
+  };
+
   // The type function will be used for object inheritance.
   // Objects are instantiated with Object.create()
   Bump.type = function type( options ) {

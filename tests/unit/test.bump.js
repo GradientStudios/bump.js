@@ -20,6 +20,11 @@ test( 'instantiate test 1', 3, function() {
   equal( Object.getPrototypeOf(a), ObjectA.prototype );
 });
 
+test( 'isType', 2, function() {
+  ok( Bump.isType( Bump.type() ) );
+  ok( !Bump.isType( {} ) );
+});
+
 test( 'inheritance supports instanceof', 3, function() {
   var A = Bump.type(),
       B = Bump.type( { parent: A } ),
