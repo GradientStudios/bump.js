@@ -108,6 +108,11 @@
 
       CreateFunc: Bump.type({
         parent: Bump.CollisionAlgorithmCreateFunc,
+
+        init: function CreateFunc() {
+          this._super();
+        },
+
         members: {
           CreateCollisionAlgorithm: function( ci, body0, body1 ) {
             return Bump.BoxBoxCollisionAlgorithm.create( null, ci, body0, body1 );
