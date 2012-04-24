@@ -3,6 +3,7 @@
   // **OverlappingPairCallback** is the port of the original bullet class
   // `btOverlappingPairCallback`.
   Bump.OverlappingPairCallback = Bump.type({
+    init: function OverlappingPairCallback() {},
     members: {
       addOverlappingPair: function( proxy0, proxy1 ) {},
       removeOverlappingPair: function( proxy0, proxy1, dispatcher ) {},

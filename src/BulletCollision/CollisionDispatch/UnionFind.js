@@ -28,8 +28,9 @@
   });
 
   Bump.UnionFindElementSortPredicate = Bump.type({
+    init: function UnionFindElementSortPredicate() {},
     typeMembers: {
-      _functor: function( lhs, rhs ) {
+      _functor: function UnionFindElementSortPredicate( lhs, rhs ) {
         return lhs.id < rhs.id;
       },
 

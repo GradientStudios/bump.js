@@ -687,7 +687,7 @@
   Bump.BoxBoxDetector = Bump.type({
     parent: Bump.DiscreteCollisionDetectorInterface,
 
-    init: function DiscreteCollisionDetectorInterface( box1, box2 ) {
+    init: function BoxBoxDetector( box1, box2 ) {
       this._super();
 
       this.box1 = box1;

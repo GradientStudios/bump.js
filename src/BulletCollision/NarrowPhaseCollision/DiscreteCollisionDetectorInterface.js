@@ -1,8 +1,10 @@
 (function( window, Bump ) {
 
   Bump.DiscreteCollisionDetectorInterface = Bump.type({
+    init: function DiscreteCollisionDetectorInterface() {},
     typeMembers: {
       Result: Bump.type({
+        init: function Result() {},
         members: {
           setShapeIdentifiersA: Bump.abstract,
           setShapeIdentifiersB: Bump.abstract,

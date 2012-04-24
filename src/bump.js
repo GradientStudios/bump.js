@@ -15,6 +15,9 @@ this.Bump = {};
     console.log( 'Not implemented (yet)!' );
   };
 
+  // This regex is not exhaustive, but will not return false positives.
+  var functionNameTest = /^function\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\(/;
+
   function superWrap( superFunc, newFunc ) {
     if ( superFunc == null ) {
       throw {
@@ -23,7 +26,7 @@ this.Bump = {};
       };
     }
 
-    return function superWrappedFunc() {
+    var superWrappedFunc = function superWrappedFunc() {
       var ret;
 
       this._super = superFunc;
@@ -32,6 +35,16 @@ this.Bump = {};
 
       return ret;
     };
+
+    var matches = functionNameTest.exec( newFunc );
+    if ( matches !== null ) {
+      var functionName = matches[1];
+      var superWrappedFuncBody = superWrappedFunc.toString();
+      var newFuncBody = superWrappedFuncBody.replace( 'superWrappedFunc', functionName );
+      return eval( '(' + newFuncBody + ')' );
+    }
+
+    return superWrappedFunc;
   }
 
   function walkProtoChain( prototype, func ) {
