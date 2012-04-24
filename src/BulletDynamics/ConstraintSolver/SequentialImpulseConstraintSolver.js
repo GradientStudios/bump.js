@@ -88,10 +88,12 @@
         var vec,
             denom0 = 0,
             denom1 = 0;
+
         if ( body0 ) {
           vec = ( solverConstraint.angularComponentA ).cross( rel_pos1 );
           denom0 = body0.getInvMass() + normalAxis.dot( vec );
         }
+
         if ( body1 ) {
           vec = ( solverConstraint.angularComponentB.negate() ).cross( rel_pos2 );
           denom1 = body1.getInvMass() + normalAxis.dot( vec );
@@ -112,15 +114,15 @@
 
         var vel1Dotn =
           solverConstraint.contactNormal.dot(
-            body0 ? body0.getLinearVelocity() : Bump.Vector3.create() ) +
+            body0 ? body0.getLinearVelocity() : Bump.Vector3.create( 0, 0, 0 ) ) +
           solverConstraint.relpos1CrossNormal.dot(
-            body0 ? body0.getAngularVelocity() : Bump.Vector3.create() );
+            body0 ? body0.getAngularVelocity() : Bump.Vector3.create( 0, 0, 0 ) );
 
         var vel2Dotn =
           -solverConstraint.contactNormal.dot(
-            body1 ? body1.getLinearVelocity() : Bump.Vector3.create() ) +
+            body1 ? body1.getLinearVelocity() : Bump.Vector3.create( 0, 0, 0 ) ) +
           solverConstraint.relpos2CrossNormal.dot(
-            body1 ? body1.getAngularVelocity() : Bump.Vector3.create() );
+            body1 ? body1.getAngularVelocity() : Bump.Vector3.create( 0, 0, 0 ) );
 
         var rel_vel = vel1Dotn + vel2Dotn;
 
@@ -266,21 +268,19 @@
 
         solverConstraint.appliedPushImpulse = 0;
 
-        var rel_vel2,  ///renamed to avoid needing a closure
-            vel1Dotn,
-            vel2Dotn;
-        vel1Dotn =
+        var vel1Dotn =
           solverConstraint.contactNormal.dot(
             rb0 ? rb0.getLinearVelocity() : zeroVec ) +
           solverConstraint.relpos1CrossNormal.dot(
             rb0 ? rb0.getAngularVelocity() : zeroVec );
-        vel2Dotn =
+        var vel2Dotn =
           -solverConstraint.contactNormal.dot(
             rb1 ? rb1.getLinearVelocity() : zeroVec ) +
           solverConstraint.relpos2CrossNormal.dot(
             rb1 ? rb1.getAngularVelocity() : zeroVec );
 
-        rel_vel2 = vel1Dotn + vel2Dotn;
+        // renamed to avoid needing a closure
+        var rel_vel2 = vel1Dotn + vel2Dotn;
 
         var positionalError = 0;
         var velocityError = restitution - rel_vel2; // * damping;
@@ -288,21 +288,19 @@
         if ( penetration > 0 ) {
           positionalError = 0;
           velocityError -= penetration / infoGlobal.timeStep;
-        }
-        else {
-          positionalError = -penetration * infoGlobal.erp/infoGlobal.timeStep;
+        } else {
+          positionalError = -penetration * infoGlobal.erp / infoGlobal.timeStep;
         }
 
         var penetrationImpulse = positionalError * solverConstraint.jacDiagABInv;
         var velocityImpulse = velocityError * solverConstraint.jacDiagABInv;
         if ( !infoGlobal.splitImpulse ||
-            ( penetration > infoGlobal.splitImpulsePenetrationThreshold ) ) {
-          //combine position and velocity into rhs
+             ( penetration > infoGlobal.splitImpulsePenetrationThreshold ) ) {
+          // combine position and velocity into rhs
           solverConstraint.rhs = penetrationImpulse + velocityImpulse;
           solverConstraint.rhsPenetration = 0;
-        }
-        else {
-          //split position and velocity into rhs and rhsPenetration
+        } else {
+          // split position and velocity into rhs and rhsPenetration
           solverConstraint.rhs = velocityImpulse;
           solverConstraint.rhsPenetration = penetrationImpulse;
         }
@@ -389,7 +387,7 @@
       },
 
       //        void    initSolverBody: function(btSolverBody* solverBody, btCollisionObject* collisionObject);
-      restitutionCurve: function( rel_vel, restitution) {
+      restitutionCurve: function( rel_vel, restitution ) {
         var rest = restitution * -rel_vel;
 	return rest;
       },
@@ -544,7 +542,7 @@
           body1.internalApplyPushImpulse( contactConstraint.contactNormal * body1.internalGetInvMass(),
                                           contactConstraint.angularComponentA,
                                           deltaImpulse);
-          body2.internalApplyPushImpulse( -contactConstraint.contactNormal * body2.internalGetInvMass(),
+          body2.internalApplyPushImpulse( contactConstraint.contactNormal.negate() * body2.internalGetInvMass(),
                                           contactConstraint.angularComponentB,
                                           deltaImpulse);
         }
@@ -693,9 +691,7 @@
                                                infoGlobal,
                                                debugDrawer,
                                                stackAlloc ) {
-        var numPoolConstraints = this.tmpSolverContactConstraintPool.length,
-            i,
-            j;
+        var i, j, numPoolConstraints = this.tmpSolverContactConstraintPool.length;
 
         for ( j = 0; j < numPoolConstraints; j++ ) {
           var solveManifold = this.tmpSolverContactConstraintPool[ j ],  /* const btSolverConstraint& */
@@ -722,16 +718,15 @@
           }
         }
 
-        var body; /* btRigidBody* */
+        var body;
         if ( infoGlobal.splitImpulse ) {
           for ( i = 0; i < numBodies; i++ ) {
-            body = Bump.RigidBody.upcast( bodies[ i ] ); /* btRigidBody* */
-            if (body) {
+            body = Bump.RigidBody.upcast( bodies[ i ] );
+            if ( body ) {
               body.internalWritebackVelocity( infoGlobal.timeStep );
             }
           }
-        }
-        else {
+        } else {
           for ( i = 0; i < numBodies; i++ ) {
             body = Bump.RigidBody.upcast( bodies[ i ] );
             if ( body ) {
@@ -1101,10 +1096,12 @@
         this.solveGroupCacheFriendlySplitImpulseIterations( bodies, numBodies, manifoldPtr, numManifolds,
                                                             constraints, numConstraints, infoGlobal,
                                                             debugDrawer, stackAlloc);
+
         for ( iteration = 0; iteration < infoGlobal.numIterations; iteration++ ) {
           this.solveSingleIteration( iteration, bodies, numBodies, manifoldPtr, numManifolds, constraints,
-                                     numConstraints,infoGlobal,debugDrawer,stackAlloc);
+                                     numConstraints,infoGlobal,debugDrawer,stackAlloc );
         }
+
         return 0;
       },
 
