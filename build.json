@@ -32,6 +32,7 @@
         "src/BulletCollision/BroadphaseCollision/Dbvt.js",
         "src/BulletCollision/BroadphaseCollision/DbvtBroadphase.js",
 
+        "src/BulletDynamics/ConstraintSolver/JacobianEntry.js",
         "src/BulletDynamics/ConstraintSolver/ContactSolverInfo.js",
         "src/BulletDynamics/ConstraintSolver/TypedConstraint.js",
         "src/BulletDynamics/ConstraintSolver/SolverConstraint.js",
