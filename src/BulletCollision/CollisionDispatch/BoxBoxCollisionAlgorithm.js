@@ -3,16 +3,16 @@
   Bump.BoxBoxCollisionAlgorithm = Bump.type({
     parent: Bump.ActivatingCollisionAlgorithm,
 
+    init: function BoxBoxCollisionAlgorithm( ci ) {
+      this._super( ci );
+
+      this.ownManifold = false;
+      this.manifoldPtr = null;
+      return this;
+    },
+
     members: {
-      init: function BoxBoxCollisionAlgorithm( ci ) {
-        this._super( ci );
-
-        this.ownManifold = false;
-        this.manifoldPtr = null;
-        return this;
-      },
-
-      initWithManifold: function BoxBoxCollisionAlgorithm( mf, ci, obj0, obj1 ) {
+      initWithManifold: function( mf, ci, obj0, obj1 ) {
         Bump.ActivatingCollisionAlgorithm.prototype.init.apply( this, [ ci, obj0, obj1 ] );
         this.ownManifold = false;
         this.manifoldPtr = mf;
@@ -108,6 +108,11 @@
 
       CreateFunc: Bump.type({
         parent: Bump.CollisionAlgorithmCreateFunc,
+
+        init: function CreateFunc() {
+          this._super();
+        },
+
         members: {
           CreateCollisionAlgorithm: function( ci, body0, body1 ) {
             return Bump.BoxBoxCollisionAlgorithm.create( null, ci, body0, body1 );

@@ -31,27 +31,27 @@
   Bump.ManifoldResult = Bump.type({
     parent: Bump.DiscreteCollisionDetectorInterface.Result,
 
+    init: function ManifoldResult( body0, body1 ) {
+      this._super();
+
+      this.manifoldPtr = null;
+
+      this.rootTransA = Bump.Transform.create();
+      this.rootTransB = Bump.Transform.create();
+
+      this.body0 = null;
+      this.body1 = null;
+
+      this.partId0 = 0;
+      this.partId1 = 0;
+      this.index0 = 0;
+      this.index1 = 0;
+
+      return this;
+    },
+
     members: {
-      init: function ManifoldResult( body0, body1 ) {
-        this._super();
-
-        this.manifoldPtr = null;
-
-        this.rootTransA = Bump.Transform.create();
-        this.rootTransB = Bump.Transform.create();
-
-        this.body0 = null;
-        this.body1 = null;
-
-        this.partId0 = 0;
-        this.partId1 = 0;
-        this.index0 = 0;
-        this.index1 = 0;
-
-        return this;
-      },
-
-      initWithCollisionObjects: function ManifoldResult( body0, body1 ) {
+      initWithCollisionObjects: function( body0, body1 ) {
         Bump.DiscreteCollisionDetectorInterface.Result.prototype.init.apply( this, [] );
 
         this.manifoldPtr = null;

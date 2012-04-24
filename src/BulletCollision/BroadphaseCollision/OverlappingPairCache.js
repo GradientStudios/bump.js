@@ -3,15 +3,17 @@
   // **OverlapCallback** is the port of the original bullet struct
   // `btOverlapCallback`.
   Bump.OverlapCallback = Bump.type({
+    init: function OverlapCallback() {},
     members: {
-      processOverlap: function( pair ) { }
+      processOverlap: function( pair ) {}
     }
   });
 
   // **OverlapFilterCallback** is the port of the original bullet struct `btOverlapFilterCallback`.
   Bump.OverlapFilterCallback = Bump.type({
+    init: function OverlapFilterCallback() {},
     members: {
-      needBroadphaseCollision: function( proxy0, proxy1 ) { }
+      needBroadphaseCollision: function( proxy0, proxy1 ) {}
     }
   });
 
@@ -27,6 +29,10 @@
   /// The btHashedOverlappingPairCache and btSortedOverlappingPairCache classes are two implementations.
   Bump.OverlappingPairCache = Bump.type({
     parent: Bump.OverlappingPairCallback,
+
+    init: function OverlappingPairCache() {
+      this._super();
+    },
 
     members: {
       getOverlappingPairArrayPtr: function() {},
