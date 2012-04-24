@@ -597,6 +597,10 @@
   Bump.Vector4 = Bump.type({
     parent: Bump.Vector3,
 
+    init: function Vector4( x, y, z, w ) {
+      this._super( x, y, z, w );
+    },
+
     members: {
       clone: function( dest ) {
         dest = dest || Bump.Vector4.create();

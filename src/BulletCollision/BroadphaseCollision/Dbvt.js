@@ -1463,6 +1463,7 @@
   // Policies/Interfaces
 
   Bump.Dbvt.ICollide = Bump.type({
+    init: function ICollide() {},
     members: {
       // originally ICollide specified 3 overloaded Process functions, which have
       // been renamed here based on their expected arguments
@@ -1471,9 +1472,11 @@
       ProcessNodeScalar: function( n, s ) {
         this.ProcessNode( n );
       },
+
       Descent: function( node ) {
         return true;
       },
+
       AllLeaves: function( node ) {
         return true;
       }
@@ -1481,16 +1484,18 @@
   });
 
   Bump.Dbvt.IWriter = Bump.type({
+    init: function IWriter() {},
     members: {
-      Prepare: function( root, numnodes ) {},
-      WriteNode: function( node, index, parent, child0, child1 ) {},
-      WriteLeaf: function( node, index, parent ) {}
+      Prepare: Bump.abstract,
+      WriteNode: Bump.abstract,
+      WriteLeaf: Bump.abstract
     }
   });
 
   Bump.Dbvt.IClone = Bump.type({
+    init: function IClone() {},
     members: {
-      CloneLeaf: function( node ) {}
+      CloneLeaf: Bump.noop
     }
   });
 

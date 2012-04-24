@@ -1,6 +1,7 @@
 (function( window, Bump ) {
 
   Bump.CollisionConfiguration = Bump.type({
+    init: function CollisionConfiguration() {},
     members: {
       getPersistentManifoldPool: Bump.abstract,
       getCollisionAlgorithmPool: Bump.abstract,

@@ -102,7 +102,7 @@
   Bump.BroadphaseAabbTester = Bump.type({
     parent: Bump.Dbvt.ICollide,
 
-    init: function BroadohaseAabbTester ( orgCallback ) {
+    init: function BroadphaseAabbTester( orgCallback ) {
       this.aabbCallback = orgCallback;
     },
 
