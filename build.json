@@ -23,11 +23,12 @@
         "src/BulletCollision/NarrowPhaseCollision/PersistentManifold.js",
         "src/BulletCollision/NarrowPhaseCollision/VoronoiSimplexSolver.js",
 
+        "src/BulletCollision/BroadphaseCollision/QuantizedBvh.js",
         "src/BulletCollision/BroadphaseCollision/CollisionAlgorithm.js",
         "src/BulletCollision/BroadphaseCollision/Dispatcher.js",
-        "src/BulletCollision/BroadphaseCollision/BroadphaseInterface.js",
         "src/BulletCollision/BroadphaseCollision/OverlappingPairCallback.js",
         "src/BulletCollision/BroadphaseCollision/OverlappingPairCache.js",
+        "src/BulletCollision/BroadphaseCollision/BroadphaseInterface.js",
         "src/BulletCollision/BroadphaseCollision/BroadphaseProxy.js",
         "src/BulletCollision/BroadphaseCollision/Dbvt.js",
         "src/BulletCollision/BroadphaseCollision/DbvtBroadphase.js",
@@ -59,6 +60,7 @@
         "src/BulletDynamics/Dynamics/DynamicsWorld.js",
         "src/BulletDynamics/Dynamics/DiscreteDynamicsWorld.js",
 
+        "src/BulletCollision/CollisionShapes/OptimizedBvh.js",
         "src/BulletCollision/CollisionShapes/TriangleCallback.js",
         "src/BulletCollision/CollisionShapes/CollisionShape.js",
         "src/BulletCollision/CollisionShapes/CompoundShape.js",
@@ -67,7 +69,13 @@
         "src/BulletCollision/CollisionShapes/ConvexPolyhedron.js",
         "src/BulletCollision/CollisionShapes/PolyhedralConvexShape.js",
         "src/BulletCollision/CollisionShapes/SphereShape.js",
-        "src/BulletCollision/CollisionShapes/BoxShape.js"
+        "src/BulletCollision/CollisionShapes/BoxShape.js",
+        "src/BulletCollision/CollisionShapes/ConcaveShape.js",
+        "src/BulletCollision/CollisionShapes/StridingMeshInterface.js",
+        "src/BulletCollision/CollisionShapes/TriangleIndexVertexArray.js",
+        "src/BulletCollision/CollisionShapes/TriangleMesh.js",
+        "src/BulletCollision/CollisionShapes/TriangleMeshShape.js",
+        "src/BulletCollision/CollisionShapes/BvhTriangleMeshShape.js"
       ],
       "prehint": true,
       "posthint": true,

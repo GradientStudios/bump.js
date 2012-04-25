@@ -14,8 +14,8 @@
     members: {
       // Process the overlap for a given BroadphasePair
       processOverlap: function( pair ) {
-	( this.dispatcher.getNearCallback() )( pair, this.dispatcher, this.dispatchInfo );
-	return false;
+        ( this.dispatcher.getNearCallback() )( pair, this.dispatcher, this.dispatchInfo );
+        return false;
       }
     }
   });

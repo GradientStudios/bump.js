@@ -389,7 +389,7 @@
       //        void    initSolverBody: function(btSolverBody* solverBody, btCollisionObject* collisionObject);
       restitutionCurve: function( rel_vel, restitution ) {
         var rest = restitution * -rel_vel;
-	return rest;
+        return rest;
       },
 
       convertContact: function( manifold, infoGlobal ) {
@@ -1089,8 +1089,7 @@
                                                    infoGlobal,
                                                    debugDrawer,
                                                    stackAlloc ) {
-	/* BT_PROFILE("solveGroupCacheFriendlyIterations"); */
-        /// should traverse the contacts random order...
+        // should traverse the contacts random order...
         var iteration;
         this.solveGroupCacheFriendlySplitImpulseIterations( bodies, numBodies, manifoldPtr, numManifolds,
                                                             constraints, numConstraints, infoGlobal,
@@ -1135,7 +1134,7 @@
 
       rand2: function() {
         this.btSeed2 = (1664525 * this.btSeed2 + 1013904223 ) & 0xffffffff;
-	return this.btSeed2;
+        return this.btSeed2;
       },
 
       /* Red flags here... this probably does not evaluate to the same as the original C++ */
@@ -1166,11 +1165,11 @@
       },
 
       setRandSeed: function( seed ) {
-	this.btSeed2 = seed;
+        this.btSeed2 = seed;
       },
 
       getRandSeed: function() {
-	return this.btSeed2;
+        return this.btSeed2;
       }
     },
 

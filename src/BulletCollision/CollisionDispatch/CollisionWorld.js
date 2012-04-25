@@ -305,8 +305,8 @@
 
     members: {
       needsCollision: function( proxy0 /* btBroadphaseProxy* */) {
-	var collides = ( proxy0.collisionFilterGroup & this.collisionFilterMask ) !== 0;
-	collides = collides && ( this.collisionFilterGroup & proxy0.collisionFilterMask );
+        var collides = ( proxy0.collisionFilterGroup & this.collisionFilterMask ) !== 0;
+        collides = collides && ( this.collisionFilterGroup & proxy0.collisionFilterMask );
         return collides;
       },
 
