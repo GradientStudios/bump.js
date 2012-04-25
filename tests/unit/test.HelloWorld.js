@@ -442,7 +442,7 @@ test( 'basic', function() {
       -5.00000057541053610777,
       -0.31261228615625574756
     ),
-    Math.pow( 2, -12 )
+    Math.pow( 2, -52 )
   );
 
   ok( true, 'finish' );

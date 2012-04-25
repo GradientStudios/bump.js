@@ -23,9 +23,9 @@
         --j;
       }
       if ( i <= j ) {
-        var tmp = i;
-        i = j;
-        j = i;
+        var tmp = arr[ i ];
+        arr[ i ] = arr[ j ];
+        arr[ j ] = tmp;
         ++i;
         --j;
       }

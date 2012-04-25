@@ -183,8 +183,8 @@
 
 //                      Bump.Vector3 rel_pos1 = pos1 - colObj0->getWorldTransform().getOrigin();
 //                      Bump.Vector3 rel_pos2 = pos2 - colObj1->getWorldTransform().getOrigin();
-        pos1.subtract( colObj0.getWorldTransform().getOrigin(), rel_pos1 );
-        pos2.subtract( colObj1.getWorldTransform().getOrigin(), rel_pos2 );
+        pos1.subtract( colObj0.getWorldTransform().origin, rel_pos1 );
+        pos2.subtract( colObj1.getWorldTransform().origin, rel_pos2 );
         relaxationRef.value = 1;
 
         torqueAxis0 = rel_pos1.cross( cp.normalWorldOnB );
@@ -200,10 +200,10 @@
             rb1.getInvInertiaTensorWorld().multiplyVector( torqueAxis1.negate( tmpVec ), tmpVec )
             .multiplyVector( rb1.getAngularFactor(), tmpVec ) :
             zeroVec );
-/* #ifdef COMPUTE_IMPULSE_DENOM
-                                        Bump.Scalar denom0 = rb0.computeImpulseDenominator(pos1,cp.normalWorldOnB);
-                                        Bump.Scalar denom1 = rb1.computeImpulseDenominator(pos2,cp.normalWorldOnB);
-#else */
+// #ifdef COMPUTE_IMPULSE_DENOM
+//                                         Bump.Scalar denom0 = rb0.computeImpulseDenominator(pos1,cp.normalWorldOnB);
+//                                         Bump.Scalar denom1 = rb1.computeImpulseDenominator(pos2,cp.normalWorldOnB);
+// #else
         var vec,
         denom0 = 0,
         denom1 = 0;
@@ -216,7 +216,7 @@
           vec = solverConstraint.angularComponentB.negate( tmpVec ).cross( rel_pos2 );
           denom1 = rb1.getInvMass() + cp.normalWorldOnB.dot( vec );
         }
-/* #endif //COMPUTE_IMPULSE_DENOM */
+// #endif //COMPUTE_IMPULSE_DENOM
 
         var denom = relaxationRef.value / ( denom0 + denom1 );
         solverConstraint.jacDiagABInv = denom;
@@ -1055,8 +1055,7 @@
         }
 
 
-        var manifold = null; /* btPersistentManifold* */
-        //                      btCollisionObject* colObj0=0,*colObj1=0;
+        var manifold = null;
 
         for ( i = 0; i < numManifolds; i++ ) {
           manifold = manifoldPtr[ i ];

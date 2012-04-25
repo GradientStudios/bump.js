@@ -255,8 +255,8 @@
         // First refresh worldspace positions and distance…
         for ( i = this.getNumContacts() - 1; i >= 0; --i ) {
           manifoldPoint = this.pointCache[i];
-          manifoldPoint.positionWorldOnA = trA.transform( manifoldPoint.localPointA );
-          manifoldPoint.positionWorldOnB = trB.transform( manifoldPoint.localPointB );
+          manifoldPoint.positionWorldOnA = trA.transform( manifoldPoint.localPointA, manifoldPoint.positionWorldOnA );
+          manifoldPoint.positionWorldOnB = trB.transform( manifoldPoint.localPointB, manifoldPoint.positionWorldOnB );
           manifoldPoint.distance1 = manifoldPoint.positionWorldOnA
             .subtract( manifoldPoint.positionWorldOnB, tmpV1 )
             .dot( manifoldPoint.normalWorldOnB );

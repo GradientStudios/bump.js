@@ -175,7 +175,7 @@
             }
 
             if ( !islandSleeping ) {
-              callback.ProcessIsland( this.islandBodies, this.islandBodies.length, startManifold,numIslandManifolds, islandId );
+              callback.ProcessIsland( this.islandBodies, this.islandBodies.length, startManifold, numIslandManifolds, islandId );
               /* console.log( 'Island callback of size:' + this.islandBodies.length + 'bodies, ' + numIslandManifolds + ' manifolds' ); */
             }
 
