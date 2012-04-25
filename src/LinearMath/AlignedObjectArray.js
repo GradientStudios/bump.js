@@ -10,9 +10,9 @@
   var quickSortInternal = function( arr, compareFunc, lo, hi ) {
     // `lo` is the lower index, `hi` is the upper index
     // of the region of array a that is to be sorted.
-    var i = lo,
-    j = hi,
-    x = arr[ ( lo + hi ) / 2 ];
+    var i = lo;
+    var j = hi;
+    var x = arr[ ~~( ( lo + hi ) / 2 ) ];
 
     // Partition.
     do {
@@ -23,9 +23,9 @@
         --j;
       }
       if ( i <= j ) {
-        var tmp = i;
-        i = j;
-        j = i;
+        var tmp = arr[ i ];
+        arr[ i ] = arr[ j ];
+        arr[ j ] = tmp;
         ++i;
         --j;
       }
@@ -33,10 +33,11 @@
 
     // Recursion.
     if ( lo < j ) {
-      quickSortInternal( compareFunc, lo, j );
+      quickSortInternal( arr, compareFunc, lo, j );
     }
+
     if ( i < hi ) {
-      quickSortInternal( compareFunc, i, hi );
+      quickSortInternal( arr, compareFunc, i, hi );
     }
   };
 

@@ -49,6 +49,7 @@
         "src/BulletCollision/CollisionDispatch/ActivatingCollisionAlgorithm.js",
         "src/BulletCollision/CollisionDispatch/BoxBoxDetector.js",
         "src/BulletCollision/CollisionDispatch/BoxBoxCollisionAlgorithm.js",
+        "src/BulletCollision/CollisionDispatch/CompoundCollisionAlgorithm.js",
         "src/BulletCollision/CollisionDispatch/ManifoldResult.js",
         "src/BulletCollision/CollisionDispatch/CollisionWorld.js",
         "src/BulletCollision/CollisionDispatch/SimulationIslandManager.js",
@@ -59,6 +60,7 @@
         "src/BulletDynamics/Dynamics/DiscreteDynamicsWorld.js",
 
         "src/BulletCollision/CollisionShapes/CollisionShape.js",
+        "src/BulletCollision/CollisionShapes/CompoundShape.js",
         "src/BulletCollision/CollisionShapes/ConvexShape.js",
         "src/BulletCollision/CollisionShapes/ConvexInternalShape.js",
         "src/BulletCollision/CollisionShapes/ConvexPolyhedron.js",

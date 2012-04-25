@@ -164,7 +164,7 @@
 
                 for (
                   endManifoldIndex = startManifoldIndex + 1;
-                  ( endManifoldIndex < numManifolds ) && ( islandId === this.getIslandId( this.islandmanifold[ endManifoldIndex ] ) );
+                  ( endManifoldIndex < numManifolds ) && ( islandId === getIslandId( this.islandmanifold[ endManifoldIndex ] ) );
                   ++endManifoldIndex
                 ) {
                   Bump.noop();
@@ -175,7 +175,7 @@
             }
 
             if ( !islandSleeping ) {
-              callback.ProcessIsland( this.islandBodies, this.islandBodies.length, startManifold,numIslandManifolds, islandId );
+              callback.ProcessIsland( this.islandBodies, this.islandBodies.length, startManifold, numIslandManifolds, islandId );
               /* console.log( 'Island callback of size:' + this.islandBodies.length + 'bodies, ' + numIslandManifolds + ' manifolds' ); */
             }
 
