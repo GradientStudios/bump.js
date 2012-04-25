@@ -270,6 +270,14 @@
     }
   });
 
+  // port of btCollisionWorld::LocalShapeInfo
+  Bump.CollisionWorld.LocalShapeInfo = Bump.type({
+    init: function LocalShapeInfo () {
+      this.shapePart = 0;
+      this.triangleIndex = 0;
+    }
+  });
+
   // port of btCollisionWorld::LocalRayResult
   Bump.CollisionWorld.LocalRayResult = Bump.type({
     init: function LocalRayResult (
@@ -290,8 +298,8 @@
     init: function RayResultCallback() {
       this.closestHitFraction = 1.0;
       this.collisionObject = null;
-      this.collisionFilterGroup = Bump.BroadphaseProxy.DefaultFilter;
-      this.collisionFilterMask = Bump.BroadphaseProxy.AllFilter;
+      this.collisionFilterGroup = Bump.BroadphaseProxy.CollisionFilterGroups.DefaultFilter;
+      this.collisionFilterMask = Bump.BroadphaseProxy.CollisionFilterGroups.AllFilter;
       this.flags = 0;
     },
 
@@ -315,6 +323,7 @@
 
     init: function ClosestRayResultCallback( rayFromWorld, /* const btVector3 & */
                                              rayToWorld /* const btVector3 & */ ) {
+      this._super();
       this.rayFromWorld = rayFromWorld.clone();
       this.rayToWorld = rayToWorld.clone();
 
@@ -333,7 +342,7 @@
         this.closestHitFraction = rayResult.hitFraction;
         this.collisionObject = rayResult.collisionObject;
         if (normalInWorldSpace) {
-          this.hitNormalWorld = rayResult.hitNormalLocal.clone( this.hitNormalWorld);
+          this.hitNormalWorld = rayResult.hitNormalLocal.clone( this.hitNormalWorld );
         }
         else {
           ///need to transform normal into worldspace
