@@ -59,6 +59,7 @@
         "src/BulletDynamics/Dynamics/DynamicsWorld.js",
         "src/BulletDynamics/Dynamics/DiscreteDynamicsWorld.js",
 
+        "src/BulletCollision/CollisionShapes/TriangleCallback.js",
         "src/BulletCollision/CollisionShapes/CollisionShape.js",
         "src/BulletCollision/CollisionShapes/CompoundShape.js",
         "src/BulletCollision/CollisionShapes/ConvexShape.js",
