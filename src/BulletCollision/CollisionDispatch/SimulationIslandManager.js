@@ -8,15 +8,18 @@
     return islandId;
   };
 
-  Bump.PersistentManifoldSortPredicate = Bump.type( {
+  Bump.PersistentManifoldSortPredicate = Bump.type({
+    init: function PersistentManifoldSortPredicate() {},
     typeMembers: {
+      _functor: function PersistentManifoldSortPredicate( lhs, rhs ) {
+        return getIslandId( lhs ) < getIslandId( rhs );
+      },
+
       create: function() {
-        return function( lhs, rhs ) {
-          return getIslandId( lhs ) < getIslandId( rhs );
-        };
+        return this._functor;
       }
     }
-  } );
+  });
 
   Bump.SimulationIslandManager = Bump.type({
     init: function SimulationIslandManager() {
@@ -162,7 +165,7 @@
 
                 for (
                   endManifoldIndex = startManifoldIndex + 1;
-                  ( endManifoldIndex < numManifolds ) && ( islandId === this.getIslandId( this.islandmanifold[ endManifoldIndex ] ) );
+                  ( endManifoldIndex < numManifolds ) && ( islandId === getIslandId( this.islandmanifold[ endManifoldIndex ] ) );
                   ++endManifoldIndex
                 ) {
                   Bump.noop();
@@ -173,7 +176,7 @@
             }
 
             if ( !islandSleeping ) {
-              callback.processIsland( this.islandBodies, this.islandBodies.length, startManifold,numIslandManifolds, islandId );
+              callback.processIsland( this.islandBodies, this.islandBodies.length, startManifold, numIslandManifolds, islandId );
               /* console.log( 'Island callback of size:' + this.islandBodies.length + 'bodies, ' + numIslandManifolds + ' manifolds' ); */
             }
 

@@ -105,10 +105,10 @@
         this.convexConcaveCreateFunc = Bump.ConvexConcaveCollisionAlgorithm.CreateFunc.create();
         this.swappedConvexConcaveCreateFunc = Bump.ConvexConcaveCollisionAlgorithm.SwappedCreateFunc.create();
       }
-      if ( Bump.CompoundCollisionAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
-        this.compoundCreateFunc = Bump.CompoundCollisionAlgorithm.CreateFunc.create();
-        this.swappedCompoundCreateFunc = Bump.CompoundCollisionAlgorithm.SwappedCreateFunc.create();
-      }
+
+      this.compoundCreateFunc = Bump.CompoundCollisionAlgorithm.CreateFunc.create();
+      this.swappedCompoundCreateFunc = Bump.CompoundCollisionAlgorithm.SwappedCreateFunc.create();
+
       if ( Bump.EmptyAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
         this.emptyCreateFunc = Bump.EmptyAlgorithm.CreateFunc.create();
       }
@@ -123,9 +123,7 @@
         this.triangleSphereCF.swapped = true;
       }
 
-      if ( Bump.BoxBoxCollisionAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
-        this.boxBoxCF = Bump.BoxBoxCollisionAlgorithm.CreateFunc.create();
-      }
+      this.boxBoxCF = Bump.BoxBoxCollisionAlgorithm.CreateFunc.create();
 
       // Convex versus plane.
       if ( Bump.ConvexPlaneCollisionAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {

@@ -70,18 +70,20 @@
         solverConstraint.appliedPushImpulse = 0;
 
         var ftorqueAxis1 = rel_pos1.cross( solverConstraint.contactNormal );
-        solverConstraint.relpos1CrossNormal = ftorqueAxis1;
-        solverConstraint.angularComponentA = body0 ?
-          body0.getInvInertiaTensorWorld().multiplyVector( ftorqueAxis1, solverConstraint.angularComponentA )
-          .multiplyVector( body0.getAngularFactor(), solverConstraint.angularComponentA ) :
-          Bump.Vector3.create();
+        solverConstraint.relpos1CrossNormal.assign( ftorqueAxis1 );
+        solverConstraint.angularComponentA.assign(
+          body0 ?
+            body0.getInvInertiaTensorWorld().multiplyVector( ftorqueAxis1, solverConstraint.angularComponentA ).multiplyVector( body0.getAngularFactor(), solverConstraint.angularComponentA ) :
+            Bump.Vector3.create()
+        );
 
-        ftorqueAxis1 = rel_pos2.cross(-solverConstraint.contactNormal);
-        solverConstraint.relpos2CrossNormal = ftorqueAxis1;
-        solverConstraint.angularComponentB = body1 ?
-          body1.getInvInertiaTensorWorld().multiplyVector( ftorqueAxis1, solverConstraint.angularComponentB )
-          .multiplyVector( body1.getAngularFactor(), solverConstraint.angularComponentB ) :
-          Bump.Vector3.create();
+        ftorqueAxis1 = rel_pos2.cross( solverConstraint.contactNormal.negate() );
+        solverConstraint.relpos2CrossNormal.assign( ftorqueAxis1 );
+        solverConstraint.angularComponentB.assign(
+          body1 ?
+            body1.getInvInertiaTensorWorld().multiplyVector( ftorqueAxis1, solverConstraint.angularComponentB ).multiplyVector( body1.getAngularFactor(), solverConstraint.angularComponentB ) :
+            Bump.Vector3.create()
+        );
 
 // #ifdef COMPUTE_IMPULSE_DENOM
 //         btScalar denom0 = rb0.computeImpulseDenominator(pos1,solverConstraint.contactNormal);
@@ -90,10 +92,12 @@
         var vec,
             denom0 = 0,
             denom1 = 0;
+
         if ( body0 ) {
           vec = ( solverConstraint.angularComponentA ).cross( rel_pos1 );
           denom0 = body0.getInvMass() + normalAxis.dot( vec );
         }
+
         if ( body1 ) {
           vec = ( solverConstraint.angularComponentB.negate() ).cross( rel_pos2 );
           denom1 = body1.getInvMass() + normalAxis.dot( vec );
@@ -112,26 +116,22 @@
 //           body1.getInvMass());
 // #endif //_USE_JACOBIAN
 
-        var rel_vel,
-            vel1Dotn,
-           vel2Dotn;
-
-        vel1Dotn =
+        var vel1Dotn =
           solverConstraint.contactNormal.dot(
-            body0 ? body0.getLinearVelocity() : Bump.Vector3.create() ) +
+            body0 ? body0.getLinearVelocity() : Bump.Vector3.create( 0, 0, 0 ) ) +
           solverConstraint.relpos1CrossNormal.dot(
-            body0 ? body0.getAngularVelocity() : Bump.Vector3.create() );
+            body0 ? body0.getAngularVelocity() : Bump.Vector3.create( 0, 0, 0 ) );
 
-        vel2Dotn =
+        var vel2Dotn =
           -solverConstraint.contactNormal.dot(
-            body1 ? body1.getLinearVelocity() : Bump.Vector3.create() ) +
+            body1 ? body1.getLinearVelocity() : Bump.Vector3.create( 0, 0, 0 ) ) +
           solverConstraint.relpos2CrossNormal.dot(
-            body1 ? body1.getAngularVelocity() : Bump.Vector3.create() );
+            body1 ? body1.getAngularVelocity() : Bump.Vector3.create( 0, 0, 0 ) );
 
-        rel_vel = vel1Dotn + vel2Dotn;
+        var rel_vel = vel1Dotn + vel2Dotn;
 
-        //              btScalar positionalError = 0;
-        var velocityError =  desiredVelocity - rel_vel,
+        // btScalar positionalError = 0;
+        var velocityError = desiredVelocity - rel_vel,
             velocityImpulse = velocityError * solverConstraint.jacDiagABInv;
 
         solverConstraint.rhs = velocityImpulse;
@@ -187,8 +187,8 @@
 
 //                      Bump.Vector3 rel_pos1 = pos1 - colObj0->getWorldTransform().getOrigin();
 //                      Bump.Vector3 rel_pos2 = pos2 - colObj1->getWorldTransform().getOrigin();
-        pos1.subtract( colObj0.getWorldTransform().getOrigin(), rel_pos1 );
-        pos2.subtract( colObj1.getWorldTransform().getOrigin(), rel_pos2 );
+        pos1.subtract( colObj0.getWorldTransform().origin, rel_pos1 );
+        pos2.subtract( colObj1.getWorldTransform().origin, rel_pos2 );
         relaxationRef.value = 1;
 
         torqueAxis0 = rel_pos1.cross( cp.normalWorldOnB );
@@ -272,21 +272,19 @@
 
         solverConstraint.appliedPushImpulse = 0;
 
-        var rel_vel2,  ///renamed to avoid needing a closure
-            vel1Dotn,
-            vel2Dotn;
-        vel1Dotn =
+        var vel1Dotn =
           solverConstraint.contactNormal.dot(
             rb0 ? rb0.getLinearVelocity() : zeroVec ) +
           solverConstraint.relpos1CrossNormal.dot(
             rb0 ? rb0.getAngularVelocity() : zeroVec );
-        vel2Dotn =
+        var vel2Dotn =
           -solverConstraint.contactNormal.dot(
             rb1 ? rb1.getLinearVelocity() : zeroVec ) +
           solverConstraint.relpos2CrossNormal.dot(
             rb1 ? rb1.getAngularVelocity() : zeroVec );
 
-        rel_vel2 = vel1Dotn + vel2Dotn;
+        // renamed to avoid needing a closure
+        var rel_vel2 = vel1Dotn + vel2Dotn;
 
         var positionalError = 0;
         var velocityError = restitution - rel_vel2; // * damping;
@@ -294,21 +292,19 @@
         if ( penetration > 0 ) {
           positionalError = 0;
           velocityError -= penetration / infoGlobal.timeStep;
-        }
-        else {
-          positionalError = -penetration * infoGlobal.erp/infoGlobal.timeStep;
+        } else {
+          positionalError = -penetration * infoGlobal.erp / infoGlobal.timeStep;
         }
 
         var penetrationImpulse = positionalError * solverConstraint.jacDiagABInv;
         var velocityImpulse = velocityError * solverConstraint.jacDiagABInv;
         if ( !infoGlobal.splitImpulse ||
-            ( penetration > infoGlobal.splitImpulsePenetrationThreshold ) ) {
-          //combine position and velocity into rhs
+             ( penetration > infoGlobal.splitImpulsePenetrationThreshold ) ) {
+          // combine position and velocity into rhs
           solverConstraint.rhs = penetrationImpulse + velocityImpulse;
           solverConstraint.rhsPenetration = 0;
-        }
-        else {
-          //split position and velocity into rhs and rhsPenetration
+        } else {
+          // split position and velocity into rhs and rhsPenetration
           solverConstraint.rhs = velocityImpulse;
           solverConstraint.rhsPenetration = penetrationImpulse;
         }
@@ -395,7 +391,7 @@
       },
 
       //        void    initSolverBody: function(btSolverBody* solverBody, btCollisionObject* collisionObject);
-      restitutionCurve: function( rel_vel, restitution) {
+      restitutionCurve: function( rel_vel, restitution ) {
         var rest = restitution * -rel_vel;
         return rest;
       },
@@ -550,7 +546,7 @@
           body1.internalApplyPushImpulse( contactConstraint.contactNormal * body1.internalGetInvMass(),
                                           contactConstraint.angularComponentA,
                                           deltaImpulse);
-          body2.internalApplyPushImpulse( -contactConstraint.contactNormal * body2.internalGetInvMass(),
+          body2.internalApplyPushImpulse( contactConstraint.contactNormal.negate() * body2.internalGetInvMass(),
                                           contactConstraint.angularComponentB,
                                           deltaImpulse);
         }
@@ -737,12 +733,11 @@
         if ( infoGlobal.splitImpulse ) {
           for ( i = 0; i < numBodies; i++ ) {
             body = Bump.RigidBody.upcast( bodies[ i ] ); // btRigidBody*
-            if (body) {
+            if ( body ) {
               body.internalWritebackVelocity( infoGlobal.timeStep );
             }
           }
-        }
-        else {
+        } else {
           for ( i = 0; i < numBodies; i++ ) {
             body = Bump.RigidBody.upcast( bodies[ i ] );
             if ( body ) {
@@ -1121,9 +1116,7 @@
         }
 
 
-        var manifold = null;    // btPersistentManifold*
-        // btCollisionObject* colObj0 = null, *colObj1 = null;
-
+        var manifold = null;
         for ( i = 0; i < numManifolds; i++ ) {
           manifold = manifoldPtr[ i ];
           this.convertContact( manifold, infoGlobal );
@@ -1186,6 +1179,7 @@
             infoGlobal, debugDrawer, stackAlloc
           );
         }
+
         return 0;
       },
 

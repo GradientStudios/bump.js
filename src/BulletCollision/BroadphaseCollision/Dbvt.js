@@ -1037,14 +1037,14 @@
         }
       },
 
-      // Process collision between a `Dbvt` tree, starting at `root`, and `DbvtVolume` `vol` according
-      // to the given policy. ???
+      // Process collision between a `Dbvt` tree, starting at `root`, and
+      // `DbvtVolume` `vol` according to the given policy. ???
       collideTV: function( root, vol, policy ) {
         if ( root ) {
           var volume = vol.clone(),
               stack = [];
-          /* stack.resize( 0 ); */
-          /* stack.reserve( SIMPLE_STACKSIZE ); */
+          // stack.resize( 0 );
+          // stack.reserve( SIMPLE_STACKSIZE );
           stack.push( root );
           do {
             var n = stack[stack.length - 1];
@@ -1053,8 +1053,7 @@
               if ( n.isinternal() ) {
                 stack.push( n.childs[ 0 ] );
                 stack.push( n.childs[ 1 ] );
-              }
-              else {
+              } else {
                 policy.ProcessNode( n );
               }
             }
@@ -1475,6 +1474,7 @@
   // Policies/Interfaces
 
   Bump.Dbvt.ICollide = Bump.type({
+    init: function ICollide() {},
     members: {
       // originally ICollide specified 3 overloaded Process functions, which have
       // been renamed here based on their expected arguments
@@ -1483,9 +1483,11 @@
       ProcessNodeScalar: function( n, s ) {
         this.ProcessNode( n );
       },
+
       Descent: function( node ) {
         return true;
       },
+
       AllLeaves: function( node ) {
         return true;
       }
@@ -1493,16 +1495,18 @@
   });
 
   Bump.Dbvt.IWriter = Bump.type({
+    init: function IWriter() {},
     members: {
-      Prepare: function( root, numnodes ) {},
-      WriteNode: function( node, index, parent, child0, child1 ) {},
-      WriteLeaf: function( node, index, parent ) {}
+      Prepare: Bump.abstract,
+      WriteNode: Bump.abstract,
+      WriteLeaf: Bump.abstract
     }
   });
 
   Bump.Dbvt.IClone = Bump.type({
+    init: function IClone() {},
     members: {
-      CloneLeaf: function( node ) {}
+      CloneLeaf: Bump.noop
     }
   });
 

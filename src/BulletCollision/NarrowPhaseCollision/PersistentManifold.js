@@ -57,29 +57,29 @@
   Bump.PersistentManifold = Bump.type({
     parent: Bump.TypedObject,
 
+    init: function PersistentManifold() {
+      this._super( Bump.ContactManifoldTypes.BT_PERSISTENT_MANIFOLD_TYPE );
+
+      this.pointCache = [];
+      for ( var i = 0; i < MANIFOLD_CACHE_SIZE; ++i ) {
+        this.pointCache.push( Bump.ManifoldPoint.create() );
+      }
+
+      // These two body pointers can point to the physics rigidbody class.
+      this.body0 = null;
+      this.body1 = null;
+
+      this.cachedPoints = 0;
+
+      this.contactBreakingThreshold = 0;
+      this.contactProcessingThreshold = 0;
+      this.companionIdA = 0;
+      this.companionIdB = 0;
+      this.index1a = 0;
+    },
+
     members: {
-      init: function ManifestPoint() {
-        this._super( Bump.ContactManifoldTypes.BT_PERSISTENT_MANIFOLD_TYPE );
-
-        this.pointCache = [];
-        for ( var i = 0; i < MANIFOLD_CACHE_SIZE; ++i ) {
-          this.pointCache.push( Bump.ManifoldPoint.create() );
-        }
-
-        // These two body pointers can point to the physics rigidbody class.
-        this.body0 = null;
-        this.body1 = null;
-
-        this.cachedPoints = 0;
-
-        this.contactBreakingThreshold = 0;
-        this.contactProcessingThreshold = 0;
-        this.companionIdA = 0;
-        this.companionIdB = 0;
-        this.index1a = 0;
-      },
-
-      initWithContactPoint: function ManifestPoint( body0, body1, throwaway, contactBreakingThreshold, contactProcessingThreshold ) {
+      initWithContactPoint: function( body0, body1, throwaway, contactBreakingThreshold, contactProcessingThreshold ) {
         Bump.TypedObject.prototype.init
           .apply( this, [ Bump.ContactManifoldTypes.BT_PERSISTENT_MANIFOLD_TYPE ] );
 
@@ -294,8 +294,8 @@
         // First refresh worldspace positions and distance…
         for ( i = this.getNumContacts() - 1; i >= 0; --i ) {
           manifoldPoint = this.pointCache[i];
-          manifoldPoint.positionWorldOnA = trA.transform( manifoldPoint.localPointA );
-          manifoldPoint.positionWorldOnB = trB.transform( manifoldPoint.localPointB );
+          manifoldPoint.positionWorldOnA = trA.transform( manifoldPoint.localPointA, manifoldPoint.positionWorldOnA );
+          manifoldPoint.positionWorldOnB = trB.transform( manifoldPoint.localPointB, manifoldPoint.positionWorldOnB );
           manifoldPoint.distance1 = manifoldPoint.positionWorldOnA
             .subtract( manifoldPoint.positionWorldOnB, tmpV1 )
             .dot( manifoldPoint.normalWorldOnB );

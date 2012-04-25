@@ -12,10 +12,11 @@
   // *** SortConstraintOnIslandPredicate *** is ported from the
   // `btSortConstraintOnIslandPredicate` functor class
   Bump.SortConstraintOnIslandPredicate = Bump.type({
+    init: function SortConstraintOnIslandPredicate() {},
     typeMembers: {
       create: function() {
         // sort two `TypedConstraint`s
-        return function( lhs, rhs ) {
+        return function SortConstraintOnIslandPredicate( lhs, rhs ) {
           var rIslandId0 = Bump.GetConstraintIslandId( rhs ),
               lIslandId0 = Bump.GetConstraintIslandId( lhs );
           return lIslandId0 < rIslandId0;

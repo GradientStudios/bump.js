@@ -267,7 +267,91 @@
       setForceUpdateAllAabbs: function( forceUpdateAllAabbs ) {
         this.forceUpdateAllAabbs = forceUpdateAllAabbs;
       }
+    }
+  });
 
+  // port of btCollisionWorld::LocalShapeInfo
+  Bump.CollisionWorld.LocalShapeInfo = Bump.type({
+    init: function LocalShapeInfo () {
+      this.shapePart = 0;
+      this.triangleIndex = 0;
+    }
+  });
+
+  // port of btCollisionWorld::LocalRayResult
+  Bump.CollisionWorld.LocalRayResult = Bump.type({
+    init: function LocalRayResult (
+      collisionObject, /* btCollisionObject* */
+      localShapeInfo, /* LocalShapeInfo* */
+      hitNormalLocal, /* const btVector3& */
+      hitFraction /* btScalar */
+    ) {
+      this.collisionObject = collisionObject;
+      this.localShapeInfo = localShapeInfo;
+      this.hitNormalLocal = hitNormalLocal;
+      this.hitFraction = hitFraction;
+    }
+  });
+
+  // port of btCollisionWorld::RayResultCallback
+  Bump.CollisionWorld.RayResultCallback = Bump.type({
+    init: function RayResultCallback() {
+      this.closestHitFraction = 1.0;
+      this.collisionObject = null;
+      this.collisionFilterGroup = Bump.BroadphaseProxy.CollisionFilterGroups.DefaultFilter;
+      this.collisionFilterMask = Bump.BroadphaseProxy.CollisionFilterGroups.AllFilter;
+      this.flags = 0;
+    },
+
+    members: {
+      needsCollision: function( proxy0 /* btBroadphaseProxy* */) {
+	var collides = ( proxy0.collisionFilterGroup & this.collisionFilterMask ) !== 0;
+	collides = collides && ( this.collisionFilterGroup & proxy0.collisionFilterMask );
+        return collides;
+      },
+
+      addSingleResult: function( rayResult, /* LocalRayResult& */
+                                 normalInWorldSpace /* bool */ ) {
+        // pure virtual in original codebase
+      }
+    }
+  });
+
+  // port of btCollisionWorld::ClosestRayResultCallback
+  Bump.CollisionWorld.ClosestRayResultCallback = Bump.type({
+    parent: Bump.CollisionWorld.RayResultCallback,
+
+    init: function ClosestRayResultCallback( rayFromWorld, /* const btVector3 & */
+                                             rayToWorld /* const btVector3 & */ ) {
+      this._super();
+      this.rayFromWorld = rayFromWorld.clone();
+      this.rayToWorld = rayToWorld.clone();
+
+      this.hitNormalWorld = Bump.Vector3.create();
+      this.hitPointWorld = Bump.Vector3.create();
+    },
+
+    members: {
+      addSingleResult: function (
+        rayResult, /* LocalRayResult& */
+        normalInWorldSpace /* bool */
+      ) {
+        //caller already does the filter on the m_closestHitFraction
+        Bump.Assert( rayResult.hitFraction <= this.closestHitFraction);
+
+        this.closestHitFraction = rayResult.hitFraction;
+        this.collisionObject = rayResult.collisionObject;
+        if (normalInWorldSpace) {
+          this.hitNormalWorld = rayResult.hitNormalLocal.clone( this.hitNormalWorld );
+        }
+        else {
+          ///need to transform normal into worldspace
+          this.hitNormalWorld = this.collisionObject.getWorldTransform().getBasis().
+            multiplyVector( rayResult.hitNormalLocal, this.hitNormalWorld );
+        }
+        this.hitPointWorld.setInterpolate3( this.rayFromWorld, this.rayToWorld, rayResult.hitFraction);
+        return rayResult.hitFraction;
+      }
     }
   });
 

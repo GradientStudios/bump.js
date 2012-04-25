@@ -44,49 +44,49 @@
   });
 
   Bump.ManifoldPoint = Bump.type({
+    init: function ManifoldPoint() {
+      this.localPointA = Bump.Vector3.create();
+      this.localPointB = Bump.Vector3.create();
+      this.positionWorldOnB = Bump.Vector3.create();
+      this.positionWorldOnA = Bump.Vector3.create();
+      this.normalWorldOnB = Bump.Vector3.create();
+
+      this.distance1 = 0;
+      this.combinedFriction = 0;
+      this.combinedRestitution = 0;
+
+      // BP mod, store contact triangles.
+      this.partId0 = 0;
+      this.partId1 = 0;
+      this.index0 = 0;
+      this.index1 = 0;
+
+      this.userPersistentData = null;
+      this.appliedImpulse = 0;
+
+      this.lateralFrictionInitialized = false;
+      this.appliedImpulseLateral1 = 0;
+      this.appliedImpulseLateral2 = 0;
+      this.contactMotion1 = 0;
+      this.contactMotion2 = 0;
+      this.contactCFM1 = 0;
+      this.contactCFM2 = 0;
+
+      // Lifetime of the contactpoint in frames.
+      this.lifeTime = 0;
+
+      this.lateralFrictionDir1 = Bump.Vector3.create();
+      this.lateralFrictionDir2 = Bump.Vector3.create();
+
+      this.constraintRow = [
+        Bump.ConstraintRow.create(),
+        Bump.ConstraintRow.create(),
+        Bump.ConstraintRow.create()
+      ];
+    },
+
     members: {
-      init: function ManifoldPoint() {
-        this.localPointA = Bump.Vector3.create();
-        this.localPointB = Bump.Vector3.create();
-        this.positionWorldOnB = Bump.Vector3.create();
-        this.positionWorldOnA = Bump.Vector3.create();
-        this.normalWorldOnB = Bump.Vector3.create();
-
-        this.distance1 = 0;
-        this.combinedFriction = 0;
-        this.combinedRestitution = 0;
-
-        // BP mod, store contact triangles.
-        this.partId0 = 0;
-        this.partId1 = 0;
-        this.index0 = 0;
-        this.index1 = 0;
-
-        this.userPersistentData = null;
-        this.appliedImpulse = 0;
-
-        this.lateralFrictionInitialized = false;
-        this.appliedImpulseLateral1 = 0;
-        this.appliedImpulseLateral2 = 0;
-        this.contactMotion1 = 0;
-        this.contactMotion2 = 0;
-        this.contactCFM1 = 0;
-        this.contactCFM2 = 0;
-
-        // Lifetime of the contactpoint in frames.
-        this.lifeTime = 0;
-
-        this.lateralFrictionDir1 = Bump.Vector3.create();
-        this.lateralFrictionDir2 = Bump.Vector3.create();
-
-        this.constraintRow = [
-          Bump.ConstraintRow.create(),
-          Bump.ConstraintRow.create(),
-          Bump.ConstraintRow.create()
-        ];
-      },
-
-      initWithContactPoint: function ManifoldPoint( pointA, pointB, normal, distance ) {
+      initWithContactPoint: function( pointA, pointB, normal, distance ) {
         this.localPointA = pointA.clone();
         this.localPointB = pointB.clone();
         this.positionWorldOnB = Bump.Vector3.create();
