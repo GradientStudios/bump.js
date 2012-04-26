@@ -1,7 +1,7 @@
 (function( window, Bump ) {
 
   Bump.WheelInfoConstructionInfo = Bump.type({
-    init: function() {
+    init: function WheelInfoConstructionInfo() {
       this.chassisConnectionCS = Bump.Vector3.create();
       this.wheelDirectionCS = Bump.Vector3.create();
       this.wheelAxleCS = Bump.Vector3.create();
