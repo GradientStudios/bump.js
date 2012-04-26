@@ -6,8 +6,12 @@
 (function( window, Bump ) {
 
   Bump.TypedArray = Bump.type({
-    init: function TypedArray() {
+    init: function TypedArray( type, bytesPerElement ) {
       this.ownsMemory = true;
+
+      this.type = type;
+      this.BYTES_PER_ELEMENT = bytesPerElement || type.BYTES_PER_ELEMENT;
+
       this.data = null;
       this.view = null;
       this.length = 0;
@@ -27,6 +31,10 @@
         return this.view[ n ];
       },
 
+      pointerAt: function( n ) {
+        return new this.type( this.data, n * this.BYTES_PER_ELEMENT );
+      },
+
       push: function( val ) {
         var size = this.length;
         if ( size === this.capacity ) {
@@ -38,8 +46,32 @@
         ++this.length;
       },
 
-      reserve: Bump.abstract
+      reserve: function( count ) {
+        if ( this.capacity < count ) {
+          var newData = new ArrayBuffer( this.BYTES_PER_ELEMENT * count );
+          var newView = new this.type( newData );
 
+          if ( this.view ) {
+            newView.set( this.view );
+          }
+
+          this.ownsMemory = true;
+
+          this.data = newData;
+          this.view = newView;
+          this.capacity = count;
+        }
+      }
+
+    }
+
+  });
+
+  Bump.UnsignedIntArray = Bump.type({
+    parent: Bump.TypedArray,
+
+    init: function UnsignedIntArray() {
+      this._super( Uint32Array );
     }
 
   });
@@ -48,10 +80,8 @@
     parent: Bump.TypedArray,
 
     init: function Vector3Array() {
-      this._super();
+      this._super( Float64Array, Float64Array.BYTES_PER_ELEMENT * 4 );
       this.__retVal = Bump.Vector3.create();
-
-      this.BYTES_PER_ELEMENT = Float64Array.BYTES_PER_ELEMENT * 4;
     },
 
     members: {
@@ -68,10 +98,6 @@
         return retVal;
       },
 
-      pointerAt: function( n ) {
-        return new Float64Array( this.data, n * this.BYTES_PER_ELEMENT );
-      },
-
       push: function( v ) {
         var size = this.length;
         if ( size === this.capacity ) {
@@ -86,23 +112,6 @@
         view[ idx + 3 ] = v.w;
 
         ++this.length;
-      },
-
-      reserve: function( count ) {
-        if ( this.capacity < count ) {
-          var newData = new ArrayBuffer( this.BYTES_PER_ELEMENT * count );
-          var newView = new Float64Array( newData );
-
-          if ( this.view ) {
-            newView.set( this.view );
-          }
-
-          this.ownsMemory = true;
-
-          this.data = newData;
-          this.view = newView;
-          this.capacity = count;
-        }
       }
 
     }

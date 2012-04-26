@@ -82,6 +82,66 @@ test( 'basic', function() {
   }
 
   var ptr = arr.pointerAt( 50 );
+  ok( ptr instanceof Float64Array, 'correct typed array: Float64Array' );
   equal( ptr.length, 2048 - 200, 'correct view length' );
   equal( ptr[0], 150, 'Float64Array starts at the correct place' );
+});
+
+module( 'UnsignedIntArray.create' );
+
+test( 'basic', function() {
+  var arr = Bump.UnsignedIntArray.create();
+
+  ok( arr instanceof Bump.UnsignedIntArray.prototype.constructor, 'correct type' );
+});
+
+module( 'UnsignedIntArray.push' );
+
+test( 'basic', function() {
+  var arr = Bump.UnsignedIntArray.create();
+  var targetLength = 300;
+  var i, e = 0;
+  for ( i = 0; i < targetLength; ++i ) {
+    arr.push( ++e );
+  }
+
+  equal( arr.size(), targetLength, 'correct length' );
+
+  var pass = true;
+  for ( i = 0; i < targetLength; ++i ) {
+    pass = pass && arr.view[ i ] === i + 1;
+  }
+
+  ok( pass, 'all pushed values are correct' );
+
+  equal( arr.capacity, 512, 'correct power of 2 capacity' );
+});
+
+module( 'UnsignedIntArray.at' );
+
+test( 'basic', function() {
+  var arr = Bump.UnsignedIntArray.create();
+  var targetLength = 300;
+  var i, e = 0;
+  for ( i = 0; i < targetLength; ++i ) {
+    arr.push( ++e );
+  }
+
+  deepEqual( arr.at( 50 ), 51 );
+});
+
+module( 'UnsignedIntArray.pointerAt' );
+
+test( 'basic', function() {
+  var arr = Bump.UnsignedIntArray.create();
+  var targetLength = 300;
+  var i, e = 0;
+  for ( i = 0; i < targetLength; ++i ) {
+    arr.push( ++e );
+  }
+
+  var ptr = arr.pointerAt( 50 );
+  ok( ptr instanceof Uint32Array, 'correct typed array: Uint32Array' );
+  equal( ptr.length, 512 - 50, 'correct view length' );
+  equal( ptr[0], 51, 'Uint32Array starts at the correct place' );
 });
