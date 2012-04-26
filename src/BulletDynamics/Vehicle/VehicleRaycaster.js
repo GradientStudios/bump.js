@@ -1,6 +1,6 @@
 (function( window, Bump ) {
 
-  Bump.DefaultVehicleRaycaster = Bump.type({
+  Bump.VehicleRaycaster = Bump.type({
     init: function() {
       this.distFraction = -1;
       this.hitPointInWorld = Bump.Vector3.create();
