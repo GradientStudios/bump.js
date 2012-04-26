@@ -9,7 +9,7 @@
     init: function TypedArray( type, bytesPerElement ) {
       this.ownsMemory = true;
 
-      this.type = type || Uint8Array;
+      this.type = type;
       this.BYTES_PER_ELEMENT = bytesPerElement || type.BYTES_PER_ELEMENT;
 
       this.data = null;
@@ -33,6 +33,17 @@
 
       pointerAt: function( n ) {
         return new this.type( this.data, n * this.BYTES_PER_ELEMENT );
+      },
+
+      viewAt: function( n ) {
+        var type  = this.type;
+        var bytes = this.BYTES_PER_ELEMENT;
+        var len   = bytes / type.BYTES_PER_ELEMENT;
+        return new type( this.data, n * bytes, len );
+      },
+
+      clear: function() {
+        this.init( this.type, this.BYTES_PER_ELEMENT );
       },
 
       push: function( val ) {
@@ -90,30 +101,59 @@
 
   });
 
-  // QuantizedBvhNode
-  Bump.QuantizedNodeArray = Bump.type({
+  Bump.StructArray = Bump.type({
     parent: Bump.TypedArray,
 
-    init: function QuantizedNodeArray() {
-      this._super( Uint8Array, 16 );
+    init: function StructArray( size, structType ) {
+      this._super( Uint8Array, size );
+      this.structType = structType;
     },
 
     members: {
       at: function( n ) {
-        return Bump.QuantizedBvhNode.create( this.data, this.BYTES_PER_ELEMENT * n );
+        return this.structType.create( this.data, this.BYTES_PER_ELEMENT * n );
       },
 
-      push: function( node ) {
+      push: function( struct ) {
         var size = this.length;
         if ( size === this.capacity ) {
           this.reserve( this.allocSize( size ) );
         }
 
-        this.view.set( node.__view, size * this.BYTES_PER_ELEMENT );
+        this.view.set( struct.__view, size * this.BYTES_PER_ELEMENT );
 
         ++this.length;
+      },
+
+      expand: function( fillData ) {
+        var sz = this.length;
+        if ( sz === this.capacity ) {
+          this.reserve( this.allocSize( sz ) );
+        }
+
+        ++this.length;
+
+        if ( fillData ) {
+          throw new Error( 'Fill data not implemented yet' );
+        }
+
+        return this.at( sz );
       }
 
+    }
+  });
+
+  Bump.QuantizedNodeArray = Bump.type({
+    parent: Bump.StructArray,
+    init: function QuantizedNodeArray() {
+      this._super( 16, Bump.QuantizedBvhNode );
+    }
+  });
+
+  Bump.BvhSubtreeInfoArray = Bump.type({
+    parent: Bump.StructArray,
+    init: function BvhSubtreeInfoArray() {
+      this._super( 32, Bump.BvhSubtreeInfo );
     }
   });
 

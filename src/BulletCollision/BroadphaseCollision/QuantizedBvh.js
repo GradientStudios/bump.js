@@ -44,6 +44,31 @@
     }
   });
 
+  Bump.BvhSubtreeInfo = Bump.type({
+    init: function QuantizedBvhNode( buffer, byteOffset ) {
+      if ( arguments.length < 2 ) {
+        byteOffset = 0;
+      }
+
+      if ( arguments.length < 1 ) {
+        buffer = new ArrayBuffer( 32 );
+      }
+
+      this.__view = new Uint8Array( buffer, byteOffset, 32 );
+      this.quantizedAabbMin = new Uint16Array( buffer, byteOffset, 3 );
+      this.quantizedAabbMax = new Uint16Array( buffer, byteOffset + 6, 3 );
+      this.rootNodeIndex = new Int32Array( buffer, byteOffset + 12, 1 );
+      this.subtreeSize = new Int32Array( buffer, byteOffset + 16, 1 );
+    },
+
+    members: {
+      setAabbFromQuantizeNode: function( quantizedNode ) {
+        this.quantizedAabbMin.set( quantizedNode.quantizedAabbMin );
+        this.quantizedAabbMax.set( quantizedNode.quantizedAabbMax );
+      }
+    }
+  });
+
   Bump.QuantizedBvh = Bump.type({
     init: function QuantizedBvh() {
       // Initializer list
@@ -62,6 +87,7 @@
       this.contiguousNodes = [];
       this.quantizedLeafNodes = Bump.QuantizedNodeArray.create();
       this.quantizedContiguousNodes = Bump.QuantizedNodeArray.create();
+      this.SubtreeHeaders = Bump.BvhSubtreeInfoArray.create();
       // End default initializers
 
       this.bvhAabbMin = Bump.Vector3.create( -Infinity, -Infinity, -Infinity );
@@ -69,6 +95,75 @@
     },
 
     members: {
+      assignInternalNodeFromLeafNode: function( internalNode, leafNodeIndex ) {
+        if ( this.useQuantization ) {
+          // this.quantizedContiguousNodes[internalNode] = this.quantizedLeafNodes[leafNodeIndex];
+          this.quantizedContiguousNodes.viewAt( internalNode )
+            .set( this.quantizedLeafNodes.viewAt( leafNodeIndex ) );
+        } else {
+          this.contiguousNodes[internalNode] = this.leafNodes[leafNodeIndex];
+        }
+      },
+
+      buildTree: function( startIndex, endIndex ) {
+        var splitAxis, splitIndex, i;
+        var numIndices = endIndex - startIndex;
+        var curIndex = this.curNodeIndex;
+
+        Bump.Assert( numIndices > 0 );
+
+        if ( numIndices === 1 ) {
+          this.assignInternalNodeFromLeafNode( this.curNodeIndex, startIndex );
+
+          ++this.curNodeIndex;
+          return;
+        }
+
+        // calculate Best Splitting Axis and where to split it. Sort the
+        // incoming `leafNodes` array within range `startIndex`/`endIndex`.
+        splitAxis = this.calcSplittingAxis( startIndex, endIndex );
+
+        splitIndex = this.sortAndCalcSplittingIndex( startIndex, endIndex, splitAxis );
+
+        var internalNodeIndex = this.curNodeIndex;
+
+        // set the min aabb to 'inf' or a max value, and set the max aabb to a
+        // -inf/minimum value. The aabb will be expanded during
+        // buildTree/mergeInternalNodeAabb with actual node values.
+        this.setInternalNodeAabbMin( this.curNodeIndex, this.bvhAabbMax ); // can't use Bump.Vector3.create(  Infinity,  Infinity,  Infinity ) because of quantization
+        this.setInternalNodeAabbMax( this.curNodeIndex, this.bvhAabbMin ); // can't use Bump.Vector3.create( -Infinity, -Infinity, -Infinity ) because of quantization
+
+        for ( i = startIndex; i < endIndex; ++i ) {
+          this.mergeInternalNodeAabb( this.curNodeIndex, this.getAabbMin(i), this.getAabbMax(i) );
+        }
+
+        ++this.curNodeIndex;
+
+        var leftChildNodexIndex = this.curNodeIndex;
+
+        // build left child tree
+        this.buildTree( startIndex, splitIndex );
+
+        var rightChildNodexIndex = this.curNodeIndex;
+        // build right child tree
+        this.buildTree( splitIndex, endIndex );
+
+        var escapeIndex = this.curNodeIndex - curIndex;
+
+        if ( this.useQuantization ) {
+          // escapeIndex is the number of nodes of this subtree
+          var sizeQuantizedNode = 16;
+          var treeSizeInBytes = escapeIndex * sizeQuantizedNode;
+          if ( treeSizeInBytes > Bump.MAX_SUBTREE_SIZE_IN_BYTES ) {
+            this.updateSubtreeHeaders( leftChildNodexIndex, rightChildNodexIndex );
+          }
+        } else {
+
+        }
+
+        this.setInternalNodeEscapeIndex( internalNodeIndex, escapeIndex );
+      },
+
       setQuantizationValues: function( bvhAabbMin, bvhAabbMax, quantizationMargin ) {
         // Enlarge the AABB to avoid division by zero when initializing the
         // quantization values.

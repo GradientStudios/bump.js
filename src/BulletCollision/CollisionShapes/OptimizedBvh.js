@@ -148,11 +148,11 @@
 
         // If the entire tree is small then subtree size, we need to create a
         // header info for the tree.
-        if ( this.useQuantization && !this.SubtreeHeaders.lengthj ) {
+        if ( this.useQuantization && !this.SubtreeHeaders.length ) {
           var subtree = this.SubtreeHeaders.expand();
-          subtree.setAabbFromQuantizeNode( this.quantizedContiguousNodes[0] );
+          subtree.setAabbFromQuantizeNode( this.quantizedContiguousNodes.at(0) );
           subtree.rootNodeIndex = 0;
-          subtree.subtreeSize = this.quantizedContiguousNodes[0].isLeafNode() ? 1 : this.quantizedContiguousNodes[0].getEscapeIndex();
+          subtree.subtreeSize = this.quantizedContiguousNodes.at(0).isLeafNode() ? 1 : this.quantizedContiguousNodes.at(0).getEscapeIndex();
         }
 
         //PCK: update the copy of the size
@@ -160,7 +160,8 @@
 
         //PCK: clear m_quantizedLeafNodes and m_leafNodes, they are temporary
         this.quantizedLeafNodes.clear();
-        this.leafNodes.clear();
+        // this.leafNodes.clear();
+        this.leafNodes.length = 0;
       }
 
     }
