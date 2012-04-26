@@ -107,11 +107,14 @@
     init: function StructArray( size, structType ) {
       this._super( Uint8Array, size );
       this.structType = structType;
+      this.__retVal = structType.createRef();
     },
 
     members: {
-      at: function( n ) {
-        return this.structType.create( this.data, this.BYTES_PER_ELEMENT * n );
+      at: function( n, dest ) {
+        if ( !dest ) { dest = this.__retVal; }
+        dest.init( this.data, this.BYTES_PER_ELEMENT * n );
+        return dest;
       },
 
       push: function( struct ) {
@@ -137,7 +140,8 @@
           throw new Error( 'Fill data not implemented yet' );
         }
 
-        return this.at( sz );
+        var newElement = this.structType.createRef();
+        return this.at( sz, newElement );
       }
 
     }

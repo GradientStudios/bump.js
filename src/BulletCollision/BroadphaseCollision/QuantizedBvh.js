@@ -20,6 +20,13 @@
     },
 
     members: {
+      assign: function( other ) {
+        var view = other.__view
+        var buffer = view.buffer;
+        var byteOffset = view.byteOffset;
+        this.init( buffer, byteOffset );
+      },
+
       isLeafNode: function() {
         // skipindex is negative (internal node), triangleindex >=0 (leafnode)
         return this.escapeIndexOrTriangleIndex[0] >= 0;
@@ -41,7 +48,14 @@
         // Get only the highest bits where the part index is stored
         return (this.escapeIndexOrTriangleIndex[0] >> ( 31 - Bump.MAX_NUM_PARTS_IN_BITS ) );
       }
+    },
+
+    typeMembers: {
+      createRef: function() {
+        return Object.create( this.prototype );
+      }
     }
+
   });
 
   Bump.BvhSubtreeInfo = Bump.type({
@@ -62,11 +76,25 @@
     },
 
     members: {
+      assign: function( other ) {
+        var view = other.__view
+        var buffer = view.buffer;
+        var byteOffset = view.byteOffset;
+        this.init( buffer, byteOffset );
+      },
+
       setAabbFromQuantizeNode: function( quantizedNode ) {
         this.quantizedAabbMin.set( quantizedNode.quantizedAabbMin );
         this.quantizedAabbMax.set( quantizedNode.quantizedAabbMax );
       }
+    },
+
+    typeMembers: {
+      createRef: function() {
+        return Object.create( this.prototype );
+      }
     }
+
   });
 
   Bump.QuantizedBvh = Bump.type({
