@@ -23,9 +23,9 @@
       // End initializer list
 
       // Default initializers
-      this._4componentVertices = []; // btVector3
+      this._4componentVertices = Bump.Vector3Array.create();
       this._3componentVertices = []; // float
-      this._32bitIndices = [];       // unsigned int
+      this._32bitIndices = Bump.UnsignedIntArray.create();
       this._16bitIndices = [];       // unsigned short
       // End default initializers
 
@@ -100,20 +100,21 @@
         // return index of new/existing vertex
         // @todo: could use acceleration structure for this
 
-        var i;
+        var i, vec;
         if ( this.use4componentVertices ) {
           var m_4componentVertices = this._4componentVertices;
 
           if ( removeDuplicateVertices ) {
             for ( i = 0; i < m_4componentVertices.length; ++i ) {
-              if ( m_4componentVertices[i].subtract( vertex, tmpV1 ).length2() <= m_weldingThreshold ) {
+              vec = tmpV1.assign( m_4componentVertices.at(i) );
+              if ( vec.subtract( vertex, tmpV1 ).length2() <= m_weldingThreshold ) {
                 return i;
               }
             }
           }
           ++this.indexedMeshes[0].numVertices;
           m_4componentVertices.push( vertex );
-          this.indexedMeshes[0].vertexBase = m_4componentVertices;
+          this.indexedMeshes[0].vertexBase = m_4componentVertices.pointerAt(0);
 
           return m_4componentVertices.length - 1;
         }
@@ -147,7 +148,7 @@
       addIndex: function( index ) {
         if ( this.use32bitIndices ) {
           this._32bitIndices.push( index );
-          this.indexedMeshes[0].triangleIndexBase = this._32bitIndices;
+          this.indexedMeshes[0].triangleIndexBase = this._32bitIndices.pointerAt(0);
         } else {
           this._16bitIndices.push_back(index);
           this.indexedMeshes[0].triangleIndexBase = this._16bitIndices;
