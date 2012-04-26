@@ -1,4 +1,6 @@
 (function( window, Bump ) {
+  var tmpV1 = Bump.Vector3.create();
+  var tmpV2 = Bump.Vector3.create();
 
   Bump.TriangleMesh = Bump.type({
     parent: Bump.TriangleIndexVertexArray,
@@ -71,6 +73,87 @@
     },
 
     members: {
+      addTriangle: function( vertex0, vertex1, vertex2, removeDuplicateVertices ) {
+        ++this.indexedMeshes[0].numTriangles;
+        this.addIndex( this.findOrAddVertex( vertex0, removeDuplicateVertices ) );
+        this.addIndex( this.findOrAddVertex( vertex1, removeDuplicateVertices ) );
+        this.addIndex( this.findOrAddVertex( vertex2, removeDuplicateVertices ) );
+      },
+
+      getNumTriangles: function() {
+        if ( this.use32bitIndices ) {
+          return ~~( this._32bitIndices.length / 3 );
+        }
+        return ~~( this._16bitIndices.length / 3 );
+      },
+
+      preallocateVertices: Bump.noop,
+      preallocateIndices: Bump.noop,
+
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      // - `tmpV2`
+      findOrAddVertex: function( vertex, removeDuplicateVertices ) {
+        var m_weldingThreshold = this.weldingThreshold;
+
+        // return index of new/existing vertex
+        // @todo: could use acceleration structure for this
+
+        var i;
+        if ( this.use4componentVertices ) {
+          var m_4componentVertices = this._4componentVertices;
+
+          if ( removeDuplicateVertices ) {
+            for ( i = 0; i < m_4componentVertices.length; ++i ) {
+              if ( m_4componentVertices[i].subtract( vertex, tmpV1 ).length2() <= m_weldingThreshold ) {
+                return i;
+              }
+            }
+          }
+          ++this.indexedMeshes[0].numVertices;
+          m_4componentVertices.push( vertex );
+          this.indexedMeshes[0].vertexBase = m_4componentVertices;
+
+          return m_4componentVertices.length - 1;
+        }
+
+        else {
+          if ( removeDuplicateVertices ) {
+            var m_3componentVertices = this._3componentVertices;
+            for ( i = 0; i < m_3componentVertices.length; i += 3 ) {
+              var vtx = tmpV1.setValue(
+                m_3componentVertices[ i     ],
+                m_3componentVertices[ i + 1 ],
+                m_3componentVertices[ i + 2 ]
+              );
+
+              if ( vtx.subtract( vertex, tmpV2 ).length2() <= m_weldingThreshold ) {
+                return ~~( i / 3 );
+              }
+            }
+          }
+
+          m_3componentVertices.push( vertex.x );
+          m_3componentVertices.push( vertex.y );
+          m_3componentVertices.push( vertex.z );
+          ++this.indexedMeshes[0].numVertices;
+          this.indexedMeshes[0].vertexBase = m_3componentVertices;
+          return ~~( m_3componentVertices.length / 3 ) - 1;
+        }
+
+      },
+
+      addIndex: function( index ) {
+        if ( this.use32bitIndices ) {
+          this._32bitIndices.push( index );
+          this.indexedMeshes[0].triangleIndexBase = this._32bitIndices;
+        } else {
+          this._16bitIndices.push_back(index);
+          this.indexedMeshes[0].triangleIndexBase = this._16bitIndices;
+        }
+      }
+
     }
 
   });
