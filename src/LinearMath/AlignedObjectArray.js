@@ -9,7 +9,7 @@
     init: function TypedArray( type, bytesPerElement ) {
       this.ownsMemory = true;
 
-      this.type = type;
+      this.type = type || Uint8Array;
       this.BYTES_PER_ELEMENT = bytesPerElement || type.BYTES_PER_ELEMENT;
 
       this.data = null;
@@ -61,6 +61,20 @@
           this.view = newView;
           this.capacity = count;
         }
+      },
+
+      resize: function( newSize, fillData ) {
+        var curSize = this.length;
+
+        if ( newSize > curSize ) {
+          this.reserve( newSize );
+        }
+
+        if ( fillData ) {
+          throw new Error( 'Fill data not implemented yet' );
+        }
+
+        this.length = newSize;
       }
 
     }
@@ -76,6 +90,34 @@
 
   });
 
+  // QuantizedBvhNode
+  Bump.QuantizedNodeArray = Bump.type({
+    parent: Bump.TypedArray,
+
+    init: function QuantizedNodeArray() {
+      this._super( Uint8Array, 16 );
+    },
+
+    members: {
+      at: function( n ) {
+        return Bump.QuantizedBvhNode.create( this.data, this.BYTES_PER_ELEMENT * n );
+      },
+
+      push: function( node ) {
+        var size = this.length;
+        if ( size === this.capacity ) {
+          this.reserve( this.allocSize( size ) );
+        }
+
+        this.view.set( node.__view, size * this.BYTES_PER_ELEMENT );
+
+        ++this.length;
+      }
+
+    }
+  });
+
+  // Vector3
   Bump.Vector3Array = Bump.type({
     parent: Bump.TypedArray,
 

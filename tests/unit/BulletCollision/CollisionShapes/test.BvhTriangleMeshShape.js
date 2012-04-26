@@ -5,8 +5,8 @@ test( 'basic', function() {
 
   mesh.addTriangle(
     Bump.Vector3.create( 0, 0, 0 ),
-    Bump.Vector3.create( 0, 0, 0 ),
-    Bump.Vector3.create( 0, 0, 0 ),
+    Bump.Vector3.create( 1, 1, 0 ),
+    Bump.Vector3.create( 0, 1, 1 ),
     true
   );
 
