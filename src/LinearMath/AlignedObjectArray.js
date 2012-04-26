@@ -5,6 +5,110 @@
 
 (function( window, Bump ) {
 
+  Bump.TypedArray = Bump.type({
+    init: function TypedArray() {
+      this.ownsMemory = true;
+      this.data = null;
+      this.view = null;
+      this.length = 0;
+      this.capacity = 0;
+    },
+
+    members: {
+      size: function() {
+        return this.length;
+      },
+
+      allocSize: function( size ) {
+        return size ? size * 2 : 1;
+      },
+
+      at: function( n ) {
+        return this.view[ n ];
+      },
+
+      push: function( val ) {
+        var size = this.length;
+        if ( size === this.capacity ) {
+          this.reserve( this.allocSize( size ) );
+        }
+
+        this.view[ size ] = val;
+
+        ++this.length;
+      },
+
+      reserve: Bump.abstract
+
+    }
+
+  });
+
+  Bump.Vector3Array = Bump.type({
+    parent: Bump.TypedArray,
+
+    init: function Vector3Array() {
+      this._super();
+      this.__retVal = Bump.Vector3.create();
+
+      this.BYTES_PER_ELEMENT = Float64Array.BYTES_PER_ELEMENT * 4;
+    },
+
+    members: {
+      at: function( n ) {
+        var view = this.view;
+        var retVal = this.__retVal;
+        var idx = n * 4;
+
+        retVal.x = view[ idx ];
+        retVal.y = view[ idx + 1 ];
+        retVal.z = view[ idx + 2 ];
+        retVal.w = view[ idx + 3 ];
+
+        return retVal;
+      },
+
+      pointerAt: function( n ) {
+        return new Float64Array( this.data, n * this.BYTES_PER_ELEMENT );
+      },
+
+      push: function( v ) {
+        var size = this.length;
+        if ( size === this.capacity ) {
+          this.reserve( this.allocSize( size ) );
+        }
+
+        var idx = size * 4;
+        var view = this.view;
+        view[ idx     ] = v.x;
+        view[ idx + 1 ] = v.y;
+        view[ idx + 2 ] = v.z;
+        view[ idx + 3 ] = v.w;
+
+        ++this.length;
+      },
+
+      reserve: function( count ) {
+        if ( this.capacity < count ) {
+          var newData = new ArrayBuffer( this.BYTES_PER_ELEMENT * count );
+          var newView = new Float64Array( newData );
+
+          if ( this.view ) {
+            newView.set( this.view );
+          }
+
+          this.ownsMemory = true;
+
+          this.data = newData;
+          this.view = newView;
+          this.capacity = count;
+        }
+      }
+
+    }
+
+  });
+
   // **quickSortInternal** is a helper function used by `Bump.quickSort`, based
   // on the `quickSortInternal` member function from `btAlignedObjectArray`.
   var quickSortInternal = function( arr, compareFunc, lo, hi ) {
@@ -94,4 +198,5 @@
       arr.pop();
     }
   };
+
 })( this, this.Bump );

@@ -119,8 +119,8 @@
         }
 
         else {
+          var m_3componentVertices = this._3componentVertices;
           if ( removeDuplicateVertices ) {
-            var m_3componentVertices = this._3componentVertices;
             for ( i = 0; i < m_3componentVertices.length; i += 3 ) {
               var vtx = tmpV1.setValue(
                 m_3componentVertices[ i     ],
