@@ -59,9 +59,9 @@
         "src/BulletDynamics/Dynamics/DynamicsWorld.js",
         "src/BulletDynamics/Dynamics/DiscreteDynamicsWorld.js",
 
-        "src/BulletDynamics/Vehicle/RaycastVehicle.js",
         "src/BulletDynamics/Vehicle/VehicleRaycaster.js",
         "src/BulletDynamics/Vehicle/WheelInfo.js",
+        "src/BulletDynamics/Vehicle/RaycastVehicle.js",
 
         "src/BulletCollision/CollisionShapes/CollisionShape.js",
         "src/BulletCollision/CollisionShapes/CompoundShape.js",
