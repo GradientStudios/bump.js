@@ -36,6 +36,57 @@
     },
 
     members: {
+      // Arguments are all pointers or references, so they have been collapsed
+      // to a single `data` object.
+      getLockedReadOnlyVertexIndexBase: function( data, subpart ) {
+        var mesh = this.indexedMeshes[ subpart ];
+
+        data.numVerts = mesh.numVertices;
+        data.vertexbase = mesh.vertexBase;
+
+        data.type = mesh.vertexType;
+
+        data.vertexStride = mesh.vertexStride;
+
+        data.numFaces = mesh.numTriangles;
+        data.indexbase = mesh.triangleIndexBase;
+        data.indexStride = mesh.triangleIndexStride;
+        data.indicesType = mesh.indexType;
+      },
+
+      // `unLockVertexBase` finishes the access to a subpart of the triangle
+      // mesh. Make a call to `unLockVertexBase` when the read and write access
+      // (using `getLockedVertexIndexBase`) is finished.
+      unLockVertexBase: Bump.noop,
+      unLockReadOnlyVertexBase: Bump.noop,
+
+      // `getNumSubParts` returns the number of seperate subparts. Each subpart
+      // has a continuous array of vertices and indices.
+      getNumSubParts: function() {
+        return this.indexedMeshes.length;
+      },
+
+      getIndexedMeshArray: function() {
+        return this.indexedMeshes;
+      },
+
+      preallocateVertices: Bump.noop,
+      preallocateIndices: Bump.noop,
+
+      hasPremadeAabb: function() {
+        return this.hasAabb;
+      },
+
+      setPremadeAabb: function( aabbMin, aabbMax ) {
+        this.aabbMin.assign( aabbMin );
+        this.aabbMax.assign( aabbMax );
+        this.hasAabb = true;
+      },
+
+      getPremadeAabb: function( aabbMin, aabbMax ) {
+        aabbMin.assign( this.aabbMin );
+        aabbMax.assign( this.aabbMax );
+      }
 
     }
 

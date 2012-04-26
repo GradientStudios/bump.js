@@ -37,10 +37,10 @@
       meshIndex.indexType = Bump.PHY_ScalarType.PHY_INTEGER;
       meshIndex.triangleIndexBase = null;
       // meshIndex.triangleIndexStride = 3 * sizeof( int );
-      meshIndex.triangleIndexStride = 3;
-      meshIndex.vertexBase = 0;
+      meshIndex.triangleIndexStride = 3 * Uint32Array.BYTES_PER_ELEMENT;
+      meshIndex.vertexBase = null;
       // meshIndex.vertexStride = sizeof( btVector3 );
-      meshIndex.vertexStride = 4;
+      meshIndex.vertexStride = 4 * Float64Array.BYTES_PER_ELEMENT;
       m_indexedMeshes.push( meshIndex );
 
       var m_indexedMeshes0 = m_indexedMeshes[0];
@@ -49,25 +49,25 @@
         m_indexedMeshes0.triangleIndexBase = null;
         m_indexedMeshes0.indexType = Bump.PHY_ScalarType.PHY_INTEGER;
         // m_indexedMeshes0.triangleIndexStride = 3 * sizeof( int );
-        m_indexedMeshes0.triangleIndexStride = 3;
+        m_indexedMeshes0.triangleIndexStride = 3 * Uint32Array.BYTES_PER_ELEMENT;
       } else {
         m_indexedMeshes0.numTriangles = ~~( this._16bitIndices.length / 3 );
         m_indexedMeshes0.triangleIndexBase = null;
         m_indexedMeshes0.indexType = Bump.PHY_ScalarType.PHY_SHORT;
         // m_indexedMeshes0.triangleIndexStride = 3 * sizeof( short int );
-        m_indexedMeshes0.triangleIndexStride = 3;
+        m_indexedMeshes0.triangleIndexStride = 3 * Uint16Array.BYTES_PER_ELEMENT;
       }
 
       if ( this.use4componentVertices ) {
         m_indexedMeshes0.numVertices = this._4componentVertices.length;
-        m_indexedMeshes0.vertexBase = 0;
+        m_indexedMeshes0.vertexBase = null;
         // m_indexedMeshes0.vertexStride = sizeof( btVector3 );
-        m_indexedMeshes0.vertexStride = 4;
+        m_indexedMeshes0.vertexStride = 4 * Float64Array.BYTES_PER_ELEMENT;
       } else {
         m_indexedMeshes0.numVertices = ~~( this._3componentVertices.length / 3 );
-        m_indexedMeshes0.vertexBase = 0;
-        // m_indexedMeshes0.vertexStride = 3*sizeof( btScalar );
-        m_indexedMeshes0.vertexStride = 3;
+        m_indexedMeshes0.vertexBase = null;
+        // m_indexedMeshes0.vertexStride = 3 * sizeof( btScalar );
+        m_indexedMeshes0.vertexStride = 3 * Float64Array.BYTES_PER_ELEMENT;
       }
 
     },
