@@ -193,6 +193,10 @@
       },
 
       setQuantizationValues: function( bvhAabbMin, bvhAabbMax, quantizationMargin ) {
+        if ( arguments.length < 3 ) {
+          quantizationMargin = 1;
+        }
+
         // Enlarge the AABB to avoid division by zero when initializing the
         // quantization values.
         var clampValue = Bump.Vector3.create( quantizationMargin, quantizationMargin, quantizationMargin );
@@ -217,7 +221,7 @@
         Bump.Assert( point.y >= m_bvhAabbMin.y );
         Bump.Assert( point.z >= m_bvhAabbMin.z );
 
-        var v = point.subtract( m_bvhAabbMin ).multiplyScalar( this.bvhQuantization );
+        var v = point.subtract( m_bvhAabbMin ).multiplyVector( this.bvhQuantization );
         // Make sure rounding is done in a way that unQuantize(quantizeWithClamp(...))
         // is conservative. End-points always set the first bit, so that they
         // are sorted properly (so that neighbouring AABBs overlap properly).
@@ -238,7 +242,6 @@
           out[2] &= 0xfffe;
         }
       }
-
 
     },
 

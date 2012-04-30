@@ -151,8 +151,8 @@
         if ( this.useQuantization && !this.SubtreeHeaders.length ) {
           var subtree = this.SubtreeHeaders.expand();
           subtree.setAabbFromQuantizeNode( this.quantizedContiguousNodes.at(0) );
-          subtree.rootNodeIndex = 0;
-          subtree.subtreeSize = this.quantizedContiguousNodes.at(0).isLeafNode() ? 1 : this.quantizedContiguousNodes.at(0).getEscapeIndex();
+          subtree.rootNodeIndex[0] = 0;
+          subtree.subtreeSize[0] = this.quantizedContiguousNodes.at(0).isLeafNode() ? 1 : this.quantizedContiguousNodes.at(0).getEscapeIndex();
         }
 
         //PCK: update the copy of the size
