@@ -71,6 +71,7 @@
         "src/BulletCollision/CollisionShapes/SphereShape.js",
         "src/BulletCollision/CollisionShapes/BoxShape.js",
         "src/BulletCollision/CollisionShapes/ConcaveShape.js",
+        "src/BulletCollision/CollisionShapes/ScaledBvhTriangleMeshShape.js",
         "src/BulletCollision/CollisionShapes/StridingMeshInterface.js",
         "src/BulletCollision/CollisionShapes/TriangleIndexVertexArray.js",
         "src/BulletCollision/CollisionShapes/TriangleMesh.js",
