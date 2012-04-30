@@ -91,7 +91,7 @@
               break;
 
             default:
-              Bump.Assert( (data.indicesType === PHY_INTEGER) || (data.indicesType === PHY_SHORT) );
+              Bump.Assert( (data.indicesType === Bump.PHY_ScalarType.PHY_INTEGER) || (data.indicesType === Bump.PHY_ScalarType.PHY_SHORT) );
             }
             break;
 
@@ -144,7 +144,7 @@
             break;
 
           default:
-            Bump.Assert( (type === Bump.PHY_ScalarType.PHY_FLOAT) || (type === Bump.PHY_ScalarType.PHY_DOUBLE) );
+            Bump.Assert( (data.type === Bump.PHY_ScalarType.PHY_FLOAT) || (data.type === Bump.PHY_ScalarType.PHY_DOUBLE) );
           }
 
           this.unLockReadOnlyVertexBase( part );

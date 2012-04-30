@@ -21,7 +21,7 @@
 
     members: {
       assign: function( other ) {
-        var view = other.__view
+        var view = other.__view;
         var buffer = view.buffer;
         var byteOffset = view.byteOffset;
         this.init( buffer, byteOffset );
@@ -77,7 +77,7 @@
 
     members: {
       assign: function( other ) {
-        var view = other.__view
+        var view = other.__view;
         var buffer = view.buffer;
         var byteOffset = view.byteOffset;
         this.init( buffer, byteOffset );
@@ -185,9 +185,8 @@
           if ( treeSizeInBytes > Bump.MAX_SUBTREE_SIZE_IN_BYTES ) {
             this.updateSubtreeHeaders( leftChildNodexIndex, rightChildNodexIndex );
           }
-        } else {
-
         }
+        // else { }
 
         this.setInternalNodeEscapeIndex( internalNodeIndex, escapeIndex );
       },

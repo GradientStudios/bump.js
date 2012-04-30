@@ -115,12 +115,12 @@
 
         var numLeafNodes = 0;
 
-
+        var callback;
         if ( this.useQuantization ) {
           // initialize quantization values
           this.setQuantizationValues( bvhAabbMin, bvhAabbMax );
 
-          var callback = QuantizedNodeTriangleCallback.create( this.quantizedLeafNodes, this );
+          callback = QuantizedNodeTriangleCallback.create( this.quantizedLeafNodes, this );
 
           triangles.InternalProcessAllTriangles( callback, this.bvhAabbMin, this.bvhAabbMax );
 
@@ -129,7 +129,7 @@
 
           this.quantizedContiguousNodes.resize( 2 * numLeafNodes );
         } else {
-          var callback = NodeTriangleCallback.create( this.leafNodes );
+          callback = NodeTriangleCallback.create( this.leafNodes );
 
           var aabbMin = Bump.Vector3.create( -Infinity, -Infinity, -Infinity );
           var aabbMax = Bump.Vector3.create(  Infinity,  Infinity,  Infinity );
@@ -137,7 +137,7 @@
           triangles.InternalProcessAllTriangles( callback, aabbMin, aabbMax );
 
           // now we have an array of leafnodes in m_leafNodes
-          numLeafNodes = m_leafNodes.length;
+          numLeafNodes = this.leafNodes.length;
 
           this.contiguousNodes.resize( 2 * numLeafNodes );
         }
