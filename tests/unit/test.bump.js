@@ -23,9 +23,8 @@ test( 'instantiate test 1', 3, function() {
 test( 'constructor', function() {
   var A = Bump.type({
     init: function A() {
-      this.result = 0;
+      this.resultA = 0;
       this.a = 3;
-      this.foo();
       this.foo();
     },
 
@@ -35,7 +34,7 @@ test( 'constructor', function() {
       },
 
       bar: function() {
-        this.result = this.a;
+        this.resultA = this.a;
       }
     }
   });
@@ -45,18 +44,41 @@ test( 'constructor', function() {
 
     init: function B() {
       this._super();
+      this.resultB = 0;
       this.b = 2;
+      this.foo();
     },
 
     members: {
       bar: function() {
-        this.result = this.b;
+        this.resultB = this.b;
       }
     }
   });
 
-  var b = B.create();
-  equal( b.result, 3 );
+  var C = Bump.type({
+    parent: B,
+
+    init: function C() {
+      this._super();
+      this.resultC = 0;
+      this.c = 1;
+    },
+
+    members: {
+      bar: function() {
+        this.resultC = this.c;
+      }
+    }
+  });
+
+  var c = C.create();
+  equal( c.resultA, 3, 'A ctor calls A.bar' );
+  equal( c.resultB, 2, 'B ctor calls B.bar' );
+  equal( c.resultC, 0, 'C.bar is not called' );
+
+  c.foo();
+  equal( c.resultC, 1, 'C.foo calls C.bar' );
 });
 
 test( 'isType', 2, function() {
