@@ -73,17 +73,17 @@ test( 'correctTypes', function() {
 
 module( 'WheelInfo member functions' );
 
-test( 'getSuspensionLength', function() {
+test( 'getSuspensionRestLength', function() {
   var wici = Bump.WheelInfoConstructionInfo.create();
   var wi = Bump.WheelInfo.create( wici );
 
-  ok( wi.getSuspensionLength, 'function exists' );
-  strictEqual( wi.getSuspensionLength(), 0, 'default value correct' );
+  ok( wi.getSuspensionRestLength, 'function exists' );
+  strictEqual( wi.getSuspensionRestLength(), 0, 'default value correct' );
 
   wici.suspensionRestLength = 1;
   wi = Bump.WheelInfo.create( wici );
 
-  strictEqual( wi.getSuspensionLength(), 1, 'value from WheelInfoConstructionInfo correct' );
+  strictEqual( wi.getSuspensionRestLength(), 1, 'value from WheelInfoConstructionInfo correct' );
 });
 
 test( 'updateWheel: test skipped', function() {});

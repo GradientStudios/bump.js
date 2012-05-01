@@ -5,7 +5,7 @@
   Bump.DefaultVehicleRaycaster = Bump.type({
     parent: Bump.VehicleRaycaster,
 
-    init: function( world ) {
+    init: function DefaultVehicleRaycaster( world ) {
       this._super();
       this.dynamicsWorld = world;
     },

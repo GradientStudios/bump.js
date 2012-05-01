@@ -52,7 +52,7 @@
     },
 
     members: {
-      getSuspensionLength: function() {
+      getSuspensionRestLength: function() {
         return this.suspensionRestLength1;
       },
 
