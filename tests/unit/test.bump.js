@@ -20,6 +20,45 @@ test( 'instantiate test 1', 3, function() {
   equal( Object.getPrototypeOf(a), ObjectA.prototype );
 });
 
+test( 'constructor', function() {
+  var A = Bump.type({
+    init: function A() {
+      this.result = 0;
+      this.a = 3;
+      this.foo();
+      this.foo();
+    },
+
+    members: {
+      foo: function() {
+        this.bar();
+      },
+
+      bar: function() {
+        this.result = this.a;
+      }
+    }
+  });
+
+  var B = Bump.type({
+    parent: A,
+
+    init: function B() {
+      this._super();
+      this.b = 2;
+    },
+
+    members: {
+      bar: function() {
+        this.result = this.b;
+      }
+    }
+  });
+
+  var b = B.create();
+  equal( b.result, 3 );
+});
+
 test( 'isType', 2, function() {
   ok( Bump.isType( Bump.type() ) );
   ok( !Bump.isType( {} ) );

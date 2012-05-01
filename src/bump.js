@@ -65,6 +65,9 @@ this.Bump = {};
     return obj instanceof Type;
   };
 
+  var potentiallyProblematicCtors = [];
+  var potentiallyProblematicDetails = [];
+
   // The type function will be used for object inheritance.
   // Objects are instantiated with Object.create()
   Bump.type = function type( options ) {
@@ -82,6 +85,42 @@ this.Bump = {};
         key,
         getset,
         getsetIndex;
+
+    var findThisCalls = function( func ) {
+      if ( typeof func !== 'function' ) {
+        return [];
+      }
+
+      var foundFuncs = [];
+      var funcBody = func.toString();
+      var funcCallRe = /this\s*\.\s*([A-Za-z_$][A-Za-z0-9_$]*)\s*\(/g;
+      var matches;
+      while ( (matches = funcCallRe.exec( funcBody )) !== null ) {
+        if ( matches[1] !== '_super' ) {
+          if ( foundFuncs.indexOf( matches[1] ) === -1 ) {
+            foundFuncs.push( matches[1] );
+          }
+        }
+      }
+      return foundFuncs;
+    };
+
+    var idx = potentiallyProblematicCtors.indexOf( parent.init );
+    if ( idx !== -1 ) {
+      var badFuncs = potentiallyProblematicDetails[ idx ].funcs;
+      for ( var i = 0; i < badFuncs.length; ++i ) {
+        if ( badFuncs[i] in members ) {
+          var parentFuncName = parent.init.name;
+          var childFuncName = options.init.name;
+          console.error( 'Bump.type: Ctor for ' + parentFuncName + ' calls ' + badFuncs[i] +
+                         ' which is overridden in ' + childFuncName + '. This behavior ' +
+                         'is inconsistent with behaviour in C++.' );
+          break;
+        }
+      }
+    }
+
+    var potentiallyProblematicFuncs = findThisCalls( options.init );
 
     function getDescriptor( key, getset, prototype ) {
       var desc = Object.getOwnPropertyDescriptor( prototype, key );
@@ -118,6 +157,21 @@ this.Bump = {};
       }
 
       exports.prototype[ key ] = members[ key ];
+    }
+
+    var tmpMembers = Object.create( exports.prototype );
+    var funcName, stack = potentiallyProblematicFuncs.slice(0);
+    while ( (funcName = stack.pop()) != null ) {
+      var moreFuncs = findThisCalls( tmpMembers[ funcName ] );
+      Array.prototype.push.apply( potentiallyProblematicFuncs, moreFuncs );
+      Array.prototype.push.apply( stack, moreFuncs );
+    }
+
+    if ( potentiallyProblematicFuncs.length ) {
+      potentiallyProblematicCtors.push( options.init );
+      potentiallyProblematicDetails.push({
+        funcs: potentiallyProblematicFuncs
+      });
     }
 
     // If `init` is not specified within the `members` object…
