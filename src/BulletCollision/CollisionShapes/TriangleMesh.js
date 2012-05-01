@@ -73,6 +73,14 @@
     },
 
     members: {
+      getUse32bitIndices: function() {
+        return this.use32bitIndices;
+      },
+
+      getUse4componentVertices: function() {
+        return this.use4componentVertices;
+      },
+
       addTriangle: function( vertex0, vertex1, vertex2, removeDuplicateVertices ) {
         ++this.indexedMeshes[0].numTriangles;
         this.addIndex( this.findOrAddVertex( vertex0, removeDuplicateVertices ) );

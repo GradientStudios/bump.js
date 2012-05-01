@@ -151,6 +151,11 @@
         }
       },
 
+      calculateAabbBruteForce: Bump.notImplemented,
+
+      getLockedVertexIndexBase: Bump.abstract,
+      getLockedReadOnlyVertexIndexBase: Bump.abstract,
+
       // `unLockVertexBase` finishes the access to a subpart of the triangle
       // mesh. Make a call to `unLockVertexBase` when the read and write access
       // (using `getLockedVertexIndexBase`) is finished.

@@ -1,51 +1,5 @@
 (function( window, Bump ) {
 
-  var SupportVertexCallback = Bump.type({
-    parent: Bump.TriangleCallback,
-
-    init: function SupportVertexCallback( supportVecWorld, trans ) {
-      this._super();
-
-      // Initializer list
-      this.supportVertexLocal = Bump.Vector3.create( 0, 0, 0 );
-      this.worldTrans = trans.clone();
-      this.maxDot = -Infinity;
-      // End initializer list
-
-      // Default initializers
-      // this.supportVecLocal = Bump.Vector3.create();
-      // End default initializers
-
-      this.supportVecLocal = this.worldTrans.basis.vectorMultiply( supportVecWorld );
-    },
-
-    members: {
-      processTriangle: function( triangle, partId, triangleIndex ) {
-        for ( var i = 0; i < 3; ++i ) {
-          var dot = this.supportVecLocal.dot( triangle[i] );
-          if ( dot > this.maxDot ) {
-            this.maxDot = dot;
-            this.supportVertexLocal.assign( triangle[i] );
-          }
-        }
-      },
-
-      GetSupportVertexWorldSpace: function() {
-        return this.worldTrans.transform( this.supportVertexLocal );
-      },
-
-      GetSupportVertexLocal: function( dest ) {
-        if ( !dest ) {
-          return this.supportVertexLocal.clone();
-        }
-
-        return dest.assign( this.supportVertexLocal );
-      }
-
-    }
-
-  });
-
   var FilteredCallback = Bump.type({
     parent: Bump.InternalTriangleIndexCallback,
 
@@ -97,16 +51,19 @@
         var ident = Bump.Transform.create();
         ident.setIdentity();
 
-        var supportCallback = SupportVertexCallback.create( vec, ident );
-
+        var supportCallback = Bump.TriangleMeshShape.SupportVertexCallback.create( vec, ident );
         var aabbMax = Bump.Vector3.create( Infinity, Infinity, Infinity );
-
         this.processAllTriangles( supportCallback, aabbMax.negate(), aabbMax );
 
         // supportVertex.assign( supportCallback.GetSupportVertexLocal() );
         supportCallback.GetSupportVertexLocal( supportVertex );
 
         return supportVertex;
+      },
+
+      localGetSupportingVertexWithoutMargin: function( vec, dest ) {
+        Bump.Assert( false );
+        return this.localGetSupportingVertex( vec, dest );
       },
 
       recalcLocalAabb: function() {
@@ -127,14 +84,80 @@
         }
       },
 
+      getAabb: Bump.notImplemented,
+
       processAllTriangles: function( callback, aabbMin, aabbMax ) {
         var filterCallback = FilteredCallback.create( callback, aabbMin, aabbMax );
 
         this.meshInterface.InternalProcessAllTriangles( filterCallback, aabbMin, aabbMax );
+      },
+
+      calculateLocalInertia: Bump.notImplemented,
+      setLocalScaling: Bump.notImplemented,
+      getLocalScaling: Bump.notImplemented,
+
+      getMeshInterface: function() {
+        return this.meshInterface;
+      },
+
+      getLocalAabbMin: function() {
+        return this.localAabbMin;
+      },
+
+      getLocalAabbMax: function() {
+        return this.localAabbMax;
+      },
+
+      getName: function() {
+        return 'TriangleMesh';
       }
 
     }
+  });
 
+  Bump.TriangleMeshShape.SupportVertexCallback = Bump.type({
+    parent: Bump.TriangleCallback,
+
+    init: function SupportVertexCallback( supportVecWorld, trans ) {
+      this._super();
+
+      // Initializer list
+      this.supportVertexLocal = Bump.Vector3.create( 0, 0, 0 );
+      this.worldTrans = trans.clone();
+      this.maxDot = -Infinity;
+      // End initializer list
+
+      // Default initializers
+      // this.supportVecLocal = Bump.Vector3.create();
+      // End default initializers
+
+      this.supportVecLocal = this.worldTrans.basis.vectorMultiply( supportVecWorld );
+    },
+
+    members: {
+      processTriangle: function( triangle, partId, triangleIndex ) {
+        for ( var i = 0; i < 3; ++i ) {
+          var dot = this.supportVecLocal.dot( triangle[i] );
+          if ( dot > this.maxDot ) {
+            this.maxDot = dot;
+            this.supportVertexLocal.assign( triangle[i] );
+          }
+        }
+      },
+
+      GetSupportVertexWorldSpace: function() {
+        return this.worldTrans.transform( this.supportVertexLocal );
+      },
+
+      GetSupportVertexLocal: function( dest ) {
+        if ( !dest ) {
+          return this.supportVertexLocal.clone();
+        }
+
+        return dest.assign( this.supportVertexLocal );
+      }
+
+    }
   });
 
 })( this, this.Bump );

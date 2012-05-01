@@ -94,7 +94,12 @@
         return Object.create( this.prototype );
       }
     }
+  });
 
+  Bump.NodeOverlapCallback = Bump.type({
+    members: {
+      processNode: Bump.abstract
+    }
   });
 
   Bump.QuantizedBvh = Bump.type({

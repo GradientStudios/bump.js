@@ -41,6 +41,41 @@
     },
 
     members: {
+      getAabb: function( trans, aabbMin, aabbMax ) {
+        var m_bvhTriMeshShape = this.bvhTriMeshShape;
+        var m_localScaling = this.localScaling;
+
+        var localAabbMin = m_bvhTriMeshShape.getLocalAabbMin().clone();
+        var localAabbMax = m_bvhTriMeshShape.getLocalAabbMax().clone();
+
+        var tmpLocalAabbMin = localAabbMin.multiplyVector( m_localScaling );
+        var tmpLocalAabbMax = localAabbMax.multiplyVector( m_localScaling );
+
+        localAabbMin.x = ( m_localScaling.x >= 0 ) ? tmpLocalAabbMin.x : tmpLocalAabbMax.x;
+        localAabbMin.y = ( m_localScaling.y >= 0 ) ? tmpLocalAabbMin.y : tmpLocalAabbMax.y;
+        localAabbMin.z = ( m_localScaling.z >= 0 ) ? tmpLocalAabbMin.z : tmpLocalAabbMax.z;
+        localAabbMax.x = ( m_localScaling.x <= 0 ) ? tmpLocalAabbMin.x : tmpLocalAabbMax.x;
+        localAabbMax.y = ( m_localScaling.y <= 0 ) ? tmpLocalAabbMin.y : tmpLocalAabbMax.y;
+        localAabbMax.z = ( m_localScaling.z <= 0 ) ? tmpLocalAabbMin.z : tmpLocalAabbMax.z;
+
+        var localHalfExtents = localAabbMax.subtract( localAabbMin ).multiplyScalar( 0.5 );
+        var margin = m_bvhTriMeshShape.getMargin();
+        localHalfExtents.addSelf( Bump.Vector3.create( margin, margin, margin ) );
+        var localCenter = localAabbMax.add( localAabbMin ).multiplyScalar( 0.5 );
+
+        var abs_b = trans.basis.absolute();
+
+        var center = trans.transform( localCenter );
+
+        var extent = Bump.Vector3.create(
+          abs_b.el0.dot( localHalfExtents ),
+          abs_b.el1.dot( localHalfExtents ),
+          abs_b.el2.dot( localHalfExtents )
+        );
+        center.subtract( extent, aabbMin );
+        center.add( extent, aabbMax );
+      },
+
       processAllTriangles: function( callback, aabbMin, aabbMax ) {
         var m_localScaling = this.localScaling;
 

@@ -11,8 +11,8 @@ this.Bump = {};
   Bump.abstract = function abstract() {
     Bump.Assert( false );
   };
-  Bump.notImplemented = function() {
-    console.log( 'Not implemented (yet)!' );
+  Bump.notImplemented = function notImplemented() {
+    throw new Error( 'Function not implemented (yet)!' );
   };
 
   // This regex is not exhaustive, but will not return false positives.

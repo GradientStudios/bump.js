@@ -36,9 +36,18 @@
     },
 
     members: {
+      addIndexedMesh: Bump.notImplemented,
+
+      // Note: has default arguments
+      getLockedVertexIndexBase: Bump.notImplemented,
+
       // Arguments are all pointers or references, so they have been collapsed
       // to a single `data` object.
       getLockedReadOnlyVertexIndexBase: function( data, subpart ) {
+        if ( arguments.length < 2 ) {
+          subpart = 0;
+        }
+
         var mesh = this.indexedMeshes[ subpart ];
 
         data.numVerts = mesh.numVertices;
@@ -89,7 +98,6 @@
       }
 
     }
-
   });
 
 })( this, this.Bump );
