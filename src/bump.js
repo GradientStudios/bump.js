@@ -109,6 +109,33 @@ this.Bump = {};
       return foundFuncs;
     };
 
+    // Consider the following situation in C++:
+    //
+    //     struct A {
+    //       unsigned int value;
+    //       A() { foo(); }
+    //       virtual void foo() { bar(); }
+    //       virtual void bar() { value = 1; }
+    //     };
+    //
+    //     struct B : public A {
+    //       virtual void bar() { value = 2; }
+    //     };
+    //
+    //     B b;
+    //
+    // What is the value of b.value? In C++, it would be 1. With a normal
+    // prototypal inheritance port, this would probably resolve to be 2. In
+    // efforts to keep more in line with C++ (which is probably A Bad Thing),
+    // the following chunk of code attempts to locate such occurances and
+    // eliminate them by creating copies of functions with mangled names.
+    //
+    // Unfortunately, eval is used here to rewrite the code, and thus the
+    // scoping of the code is actually different than from the original source.
+    // This may prove to be problematic, and is probably Evil. You have been
+    // warned.
+    //
+    // - EL
     var idx = potentiallyProblematicCtors.indexOf( parent.init );
     if ( idx !== -1 ) {
       var badFuncs = potentiallyProblematicDetails[ idx ].funcs;
