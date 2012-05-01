@@ -101,10 +101,9 @@
       if ( Bump.ConvexConvexAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
         this.convexConvexCreateFunc = Bump.ConvexConvexAlgorithm.CreateFunc.create( this.simplexSolver, this.pdSolver );
       }
-      if ( Bump.ConvexConcaveCollisionAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
-        this.convexConcaveCreateFunc = Bump.ConvexConcaveCollisionAlgorithm.CreateFunc.create();
-        this.swappedConvexConcaveCreateFunc = Bump.ConvexConcaveCollisionAlgorithm.SwappedCreateFunc.create();
-      }
+
+      this.convexConcaveCreateFunc = Bump.ConvexConcaveCollisionAlgorithm.CreateFunc.create();
+      this.swappedConvexConcaveCreateFunc = Bump.ConvexConcaveCollisionAlgorithm.SwappedCreateFunc.create();
 
       this.compoundCreateFunc = Bump.CompoundCollisionAlgorithm.CreateFunc.create();
       this.swappedCompoundCreateFunc = Bump.CompoundCollisionAlgorithm.SwappedCreateFunc.create();

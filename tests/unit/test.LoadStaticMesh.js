@@ -38,4 +38,31 @@ test( 'basic load OBJ', function() {
     dynamicsWorld.addRigidBody( body );
   })();
 
+  // Create a dynamic rigidbody
+  (function() {
+    var colShape = Bump.BoxShape.create( Bump.Vector3.create( 1, 1, 1 ) );
+    collisionShapes.push( colShape );
+
+    var startTransform = Bump.Transform.create();
+    startTransform.setIdentity();
+
+    var mass = 1;
+    var isDynamic = ( mass !== 0 );
+    var localInertia = Bump.Vector3.create();
+
+    if ( isDynamic ) {
+      colShape.calculateLocalInertia( mass, localInertia );
+    }
+
+    startTransform.setOrigin( Bump.Vector3.create( 0, 10, 0 ) );
+    var myMotionState = Bump.DefaultMotionState.create( startTransform );
+    var rbInfo = Bump.RigidBody.RigidBodyConstructionInfo.create( mass, myMotionState, colShape, localInertia );
+    var body = Bump.RigidBody.create( rbInfo );
+    dynamicsWorld.addRigidBody(body);
+  })();
+
+  for ( var i = 0; i < 1000; ++i ) {
+    dynamicsWorld.stepSimulation( 1 / 60, 10 );
+  }
+
 });
