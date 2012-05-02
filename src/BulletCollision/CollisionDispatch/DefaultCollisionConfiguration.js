@@ -98,9 +98,7 @@
       }
 
       // Default CreationFunctions, filling the `this.doubleDispatch` table.
-      if ( Bump.ConvexConvexAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
-        this.convexConvexCreateFunc = Bump.ConvexConvexAlgorithm.CreateFunc.create( this.simplexSolver, this.pdSolver );
-      }
+      this.convexConvexCreateFunc = Bump.ConvexConvexAlgorithm.CreateFunc.create( this.simplexSolver, this.pdSolver );
 
       this.convexConcaveCreateFunc = Bump.ConvexConcaveCollisionAlgorithm.CreateFunc.create();
       this.swappedConvexConcaveCreateFunc = Bump.ConvexConcaveCollisionAlgorithm.SwappedCreateFunc.create();
