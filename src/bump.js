@@ -18,12 +18,23 @@ this.Bump = {};
   // This regex is not exhaustive, but will not return false positives.
   var functionNameTest = /^function\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\(/;
 
+  var InvalidSuperError = function InvalidSuperError( message ) {
+    this.name = 'InvalidSuperError';
+    this.message = message || '_super function invoked without parent or function in parent';
+  };
+
+  InvalidSuperError.prototype = new Error();
+  InvalidSuperError.constructor = InvalidSuperError;
+  Bump.InvalidSuperError = InvalidSuperError;
+
+  var badSuperFunc = function _superNotFound() {
+    throw new Bump.InvalidSuperError();
+  };
+
   function superWrap( superFunc, newFunc ) {
     if ( superFunc == null ) {
-      throw {
-        short: 'no parent function',
-        message: 'trying to access _super function without parent or function in parent'
-      };
+      superFunc = badSuperFunc;
+      console.error( '_super call without parent' );
     }
 
     var wrappedFunc = function superWrappedFunc() {
