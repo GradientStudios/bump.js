@@ -1158,9 +1158,9 @@
           rayDir = diff.normalized();
 
           var rayDirectionInverse;
-          rayDirectionInverse.x = rayDir.x === 0 ? Bump.LARGE_FLOAT : 1 / rayDir.x;
-          rayDirectionInverse.y = rayDir.y === 0 ? Bump.LARGE_FLOAT : 1 / rayDir.y;
-          rayDirectionInverse.z = rayDir.z === 0 ? Bump.LARGE_FLOAT : 1 / rayDir.z;
+          rayDirectionInverse.x = rayDir.x === 0 ? Infinity : 1 / rayDir.x;
+          rayDirectionInverse.y = rayDir.y === 0 ? Infinity : 1 / rayDir.y;
+          rayDirectionInverse.z = rayDir.z === 0 ? Infinity : 1 / rayDir.z;
 
           var signs = [
                rayDirectionInverse.x < 0,

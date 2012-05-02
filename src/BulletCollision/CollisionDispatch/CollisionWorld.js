@@ -297,9 +297,9 @@
       ///what about division by zero? --> just set rayDirection[i] to INF/BT_LARGE_FLOAT
       this.rayDirectionInverse = Bump.Vector3.create();
       this.signs = Bump.Vector3.create();
-      this.rayDirectionInverse[ 0 ] = rayDir[ 0 ] === 0 ? Bump.LARGE_FLOAT : 1 / rayDir[ 0 ];
-      this.rayDirectionInverse[ 1 ] = rayDir[ 1 ] === 0 ? Bump.LARGE_FLOAT : 1 / rayDir[ 1 ];
-      this.rayDirectionInverse[ 2 ] = rayDir[ 2 ] === 0 ? Bump.LARGE_FLOAT : 1 / rayDir[ 2 ];
+      this.rayDirectionInverse[ 0 ] = rayDir[ 0 ] === 0 ? Infinity : 1 / rayDir[ 0 ];
+      this.rayDirectionInverse[ 1 ] = rayDir[ 1 ] === 0 ? Infinity : 1 / rayDir[ 1 ];
+      this.rayDirectionInverse[ 2 ] = rayDir[ 2 ] === 0 ? Infinity : 1 / rayDir[ 2 ];
       this.signs[ 0 ] = this.rayDirectionInverse[ 0 ] < 0 ? 1 : 0;
       this.signs[ 1 ] = this.rayDirectionInverse[ 1 ] < 0 ? 1 : 0;
       this.signs[ 2 ] = this.rayDirectionInverse[ 2 ] < 0 ? 1 : 0;
