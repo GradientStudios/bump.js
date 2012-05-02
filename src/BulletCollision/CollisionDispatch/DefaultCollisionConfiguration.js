@@ -88,9 +88,7 @@
       this.simplexSolver = Bump.VoronoiSimplexSolver.create();
 
       if ( constructionInfo.useEpaPenetrationAlgorithm ) {
-        if ( Bump.GjkEpaPenetrationDepthSolver || !Bump.INCOMPLETE_IMPLEMENTATION ) {
-          this.pdSolver = Bump.GjkEpaPenetrationDepthSolver.create();
-        }
+        this.pdSolver = Bump.GjkEpaPenetrationDepthSolver.create();
       } else {
         if ( Bump.MinkowskiPenetrationDepthSolver || !Bump.INCOMPLETE_IMPLEMENTATION ) {
           this.pdSolver = Bump.MinkowskiPenetrationDepthSolver.create();

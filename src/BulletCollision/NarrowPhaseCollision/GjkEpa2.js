@@ -4,11 +4,14 @@
 
     sResults: Bump.type({
       init: function GjkEpaSolver2sResults() {
-        this.witnesses = new Array( 2 );
+        // Default initializers
+        this.witnesses = [
+          Bump.Vector3.create(),
+          Bump.Vector3.create()
+        ];
         this.normal = Bump.Vector3.create();
         this.distance = 0;
-
-        return init;
+        // End default initializers
       },
 
       members: {
@@ -34,16 +37,13 @@
       },
 
       typeMembers: {
-
         eStatus: Bump.Enum([
-          // Shapes doesnt penetrate
-          'Separated',
-          // Shapes are penetrating
-          'Penetrating',
-          // GJK phase fail, no big issue, shapes are probably just 'touching'
-          'GJK_Failed',
-          // EPA phase fail, bigger problem, need to save parameters, and debug
-          'EPA_Failed'
+          'Separated',     // Shapes doesnt penetrate
+          'Penetrating',   // Shapes are penetrating
+          'GJK_Failed',    // GJK phase fail, no big issue, shapes are probably
+                           // just 'touching'.
+          'EPA_Failed'     // EPA phase fail, bigger problem, need to save
+                           // parameters, and debug
         ])
 
       }
@@ -52,7 +52,11 @@
     StackSizeRequirement: function() {
       /* return sizeof( GJK ) + sizeof( EPA ); */
       return 0;
-    }
+    },
+
+    Distance: Bump.notImplemented,
+    Penetration : Bump.notImplemented,
+    SignedDistance: Bump.notImplemented
 
   };
 
