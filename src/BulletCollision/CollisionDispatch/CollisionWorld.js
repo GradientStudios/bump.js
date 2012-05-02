@@ -141,7 +141,7 @@
       // aabb and for each object with ray-aabb overlap, perform an exact ray
       // test.
       rayTest: function( rayFromWorld, rayToWorld, resultCallback ) {
-        var rayCB = Bump.SingleRayCallback.create( rayFromWorld, rayToWorld, this, resultCallback );
+        var rayCB = Bump.CollisionWorld.SingleRayCallback.create( rayFromWorld, rayToWorld, this, resultCallback );
 
         this.broadphasePairCache.rayTest( rayFromWorld, rayToWorld, rayCB );
       },
@@ -300,9 +300,9 @@
       this.rayDirectionInverse[ 0 ] = rayDir[ 0 ] === 0 ? Bump.LARGE_FLOAT : 1 / rayDir[ 0 ];
       this.rayDirectionInverse[ 1 ] = rayDir[ 1 ] === 0 ? Bump.LARGE_FLOAT : 1 / rayDir[ 1 ];
       this.rayDirectionInverse[ 2 ] = rayDir[ 2 ] === 0 ? Bump.LARGE_FLOAT : 1 / rayDir[ 2 ];
-      this.signs[ 0 ] = this.rayDirectionInverse[ 0 ] < 0;
-      this.signs[ 1 ] = this.rayDirectionInverse[ 1 ] < 0;
-      this.signs[ 2 ] = this.rayDirectionInverse[ 2 ] < 0;
+      this.signs[ 0 ] = this.rayDirectionInverse[ 0 ] < 0 ? 1 : 0;
+      this.signs[ 1 ] = this.rayDirectionInverse[ 1 ] < 0 ? 1 : 0;
+      this.signs[ 2 ] = this.rayDirectionInverse[ 2 ] < 0 ? 1 : 0;
 
       this.lambda_max = rayDir.dot( this.rayToWorld.subtract( this.rayFromWorld ));
     },
@@ -380,6 +380,10 @@
     },
 
     members: {
+      hasHit: function() {
+        return this.collisionObject; // !== null;
+      },
+
       needsCollision: function( proxy0 /* btBroadphaseProxy* */) {
 	var collides = ( proxy0.collisionFilterGroup & this.collisionFilterMask ) !== 0;
 	collides = collides && ( this.collisionFilterGroup & proxy0.collisionFilterMask );

@@ -1080,8 +1080,8 @@
             var tmin = 1,
                 lambda_min = 0,
                 result1 = false;
-            result1 = Bump.rayAabb2.create( rayFrom, rayDirectionInverse, signs, bounds,
-                                            tmin, lambda_min, lambda_max );
+            result1 = Bump.RayAabb2( rayFrom, rayDirectionInverse, signs, bounds,
+                                     tmin, lambda_min, lambda_max );
             if ( result1 ) {
               if ( node.isinternal() ) {
                 if ( depth > threshold ) {
