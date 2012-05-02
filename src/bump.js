@@ -11,9 +11,16 @@ this.Bump = {};
   Bump.abstract = function abstract() {
     Bump.Assert( false );
   };
-  Bump.notImplemented = function notImplemented() {
-    throw new Error( 'Function not implemented (yet)!' );
-  };
+
+  // In Chrome, creating its own notImplemented function causes the stack trace
+  // to also say what the function is called as, and therefore lets you know
+  // which function is not implemented without having to look at the caller.
+  // This uses up more memory though.
+  Bump.__defineGetter__( 'notImplemented', function() {
+    return function notImplemented() {
+      throw new Error( 'Function not implemented (yet)!' );
+    };
+  });
 
   // This regex is not exhaustive, but will not return false positives.
   var functionNameTest = /^function\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\(/;
