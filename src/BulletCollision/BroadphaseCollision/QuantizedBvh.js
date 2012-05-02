@@ -3,6 +3,8 @@
   // one actually) triangles each (since the sign bit is reserved)
   Bump.MAX_NUM_PARTS_IN_BITS = 10;
 
+  Bump.__QuantizedBvh__maxIterations = 0;
+
   Bump.QuantizedBvhNode = Bump.type({
     init: function QuantizedBvhNode( buffer, byteOffset ) {
       if ( arguments.length < 2 ) {
@@ -106,7 +108,7 @@
     init: function QuantizedBvh() {
       // Initializer list
       this.useQuantization = false;
-      this.traversalMode = Bump.QuantizedBvh.TRAVERSAL_STACKLESS;
+      this.traversalMode = Bump.QuantizedBvh.TraversalMode.TRAVERSAL_STACKLESS;
       this.subtreeHeaderCount = 0; //PCK: add this line
       // End initializer list
 
@@ -128,6 +130,14 @@
     },
 
     members: {
+      setInternalNodeAabbMin: Bump.notImplemented,
+      setInternalNodeAabbMax: Bump.notImplemented,
+      getAabbMin: Bump.notImplemented,
+      getAabbMax: Bump.notImplemented,
+      setInternalNodeEscapeIndex: Bump.notImplemented,
+      mergeInternalNodeAabb: Bump.notImplemented,
+      swapLeafNodes: Bump.notImplemented,
+
       assignInternalNodeFromLeafNode: function( internalNode, leafNodeIndex ) {
         if ( this.useQuantization ) {
           // this.quantizedContiguousNodes[internalNode] = this.quantizedLeafNodes[leafNodeIndex];
@@ -196,6 +206,60 @@
         this.setInternalNodeEscapeIndex( internalNodeIndex, escapeIndex );
       },
 
+      calcSplittingAxis: Bump.notImplemented,
+      sortAndCalcSplittingIndex: Bump.notImplemented,
+      walkStacklessTree: Bump.notImplemented,
+      walkStacklessQuantizedTreeAgainstRay: Bump.notImplemented,
+
+      walkStacklessQuantizedTree: function( nodeCallback, quantizedQueryAabbMin, quantizedQueryAabbMax, startNodeIndex, endNodeIndex ) {
+        Bump.Assert( this.useQuantization );
+
+        var curIndex = startNodeIndex;
+        var walkIterations = 0;
+        var subTreeSize = endNodeIndex - startNodeIndex;
+
+        var rootNode = Bump.QuantizedBvhNode.createRef();
+        this.quantizedContiguousNodes.at( startNodeIndex, rootNode );
+        var escapeIndex = 0;
+
+        var isLeafNode = false;
+        var aabbOverlap = false;
+
+        while ( curIndex < endNodeIndex ) {
+          // catch bugs in tree data
+          Bump.Assert( walkIterations < subTreeSize );
+
+          ++walkIterations;
+          //PCK: unsigned instead of bool
+          aabbOverlap = Bump.testQuantizedAabbAgainstQuantizedAabb( quantizedQueryAabbMin, quantizedQueryAabbMax, rootNode.quantizedAabbMin, rootNode.quantizedAabbMax );
+          isLeafNode = rootNode.isLeafNode();
+
+          if ( isLeafNode && aabbOverlap ) {
+            nodeCallback.processNode( rootNode.getPartId(), rootNode.getTriangleIndex() );
+          }
+
+          if ( aabbOverlap || isLeafNode ) {
+            ++rootNode;
+            ++curIndex;
+          } else {
+            escapeIndex = rootNode.getEscapeIndex();
+            rootNode += escapeIndex;
+            curIndex += escapeIndex;
+          }
+        }
+
+        if ( Bump.__QuantizedBvh__maxIterations < walkIterations ) {
+          Bump.__QuantizedBvh__maxIterations = walkIterations;
+        }
+
+      },
+
+      walkStacklessTreeAgainstRay: Bump.notImplemented,
+      walkStacklessQuantizedTreeCacheFriendly: Bump.notImplemented,
+      walkRecursiveQuantizedTreeAgainstQueryAabb: Bump.notImplemented,
+      walkRecursiveQuantizedTreeAgainstQuantizedTree: Bump.notImplemented,
+      updateSubtreeHeaders: Bump.notImplemented,
+
       setQuantizationValues: function( bvhAabbMin, bvhAabbMax, quantizationMargin ) {
         if ( arguments.length < 3 ) {
           quantizationMargin = 1;
@@ -210,6 +274,43 @@
         this.bvhQuantization = Bump.Vector3.create( 65533, 65533, 65533 ).divideVector( aabbSize, this.bvhQuantization );
         this.useQuantization = true;
       },
+
+      buildInternal: Bump.notImplemented,
+
+      reportAabbOverlappingNodex: function( nodeCallback, aabbMin, aabbMax ) {
+        // Either choose recursive traversal (walkTree)
+        // or stackless (walkStacklessTree).
+
+        if ( this.useQuantization ) {
+          // quantize query AABB
+          var buffer = new ArrayBuffer( 12 );
+          var quantizedQueryAabbMin = new Uint16Array( buffer, 0, 3 );
+          var quantizedQueryAabbMax = new Uint16Array( buffer, 6, 3 );
+          this.quantizeWithClamp( quantizedQueryAabbMin, aabbMin, false );
+          this.quantizeWithClamp( quantizedQueryAabbMax, aabbMax, true  );
+
+          switch ( this.traversalMode ) {
+          case Bump.QuantizedBvh.TraversalMode.TRAVERSAL_STACKLESS:
+            this.walkStacklessQuantizedTree( nodeCallback, quantizedQueryAabbMin, quantizedQueryAabbMax, 0, this.curNodeIndex );
+            break;
+          case Bump.QuantizedBvh.TraversalMode.TRAVERSAL_STACKLESS_CACHE_FRIENDLY:
+            this.walkStacklessQuantizedTreeCacheFriendly( nodeCallback, quantizedQueryAabbMin, quantizedQueryAabbMax );
+            break;
+          case Bump.QuantizedBvh.TraversalMode.TRAVERSAL_RECURSIVE:
+            var rootNode = this.quantizedContiguousNodes;
+            this.walkRecursiveQuantizedTreeAgainstQueryAabb( rootNode, nodeCallback, quantizedQueryAabbMin, quantizedQueryAabbMax );
+            break;
+          default:
+            // unsupported
+            Bump.Assert( false );
+          }
+        } else {
+          this.walkStacklessTree( nodeCallback, aabbMin, aabbMax );
+        }
+      },
+
+      reportRayOverlappingNodex: Bump.notImplemented,
+      reportBoxCastOverlappingNodex: Bump.notImplemented,
 
       quantize: function( out, point, isMax ) {
         var m_bvhAabbMin = this.bvhAabbMin;
@@ -245,8 +346,23 @@
           out[1] &= 0xfffe;
           out[2] &= 0xfffe;
         }
-      }
+      },
 
+      quantizeWithClamp: function( out, point2, isMax ) {
+        Bump.Assert( this.useQuantization );
+
+        var clampedPoint = point2.clone();
+        clampedPoint.setMax( this.bvhAabbMin );
+        clampedPoint.setMin( this.bvhAabbMax );
+
+        this.quantize( out, clampedPoint, isMax );
+      },
+
+      unQuantize: Bump.notImplemented,
+      setTraversalMode: Bump.notImplemented,
+      getQuantizedNodeArray: Bump.notImplemented,
+      getSubtreeInfoArray: Bump.notImplemented,
+      isQuantized: Bump.notImplemented
     },
 
     typeMembers: {

@@ -244,6 +244,26 @@
 
         ci.dispatcher1 = this;
         ci.manifold = sharedManifold;
+
+        (function() {
+          console.warn( 'TODO: Remove this debug logic' );
+          var shape0 = body0.getCollisionShape().getShapeType();
+          var shape1 = body1.getCollisionShape().getShapeType();
+          if ( this.doubleDispatch[ shape0 ][ shape1 ] == null ) {
+            var type0, type1;
+            for ( var type in Bump.BroadphaseNativeTypes ) {
+              if ( Bump.BroadphaseNativeTypes[ type ] === shape0 ) {
+                type0 = type;
+              }
+
+              if ( Bump.BroadphaseNativeTypes[ type ] === shape1 ) {
+                type1 = type;
+              }
+            }
+            console.error( 'Could not find collision algorithm between ' + type0 + ' and ' + type1 );
+          }
+        }.bind( this ))();
+
         var algo =
           this.doubleDispatch[ body0.getCollisionShape().getShapeType() ][ body1.getCollisionShape().getShapeType() ]
           .CreateCollisionAlgorithm( ci, body0, body1 );
