@@ -689,31 +689,69 @@
 
   tmpVec41 = Bump.Vector4.create();
 
-  Bump.PlaneSpace1 = function( n, p, q ) {
+  // PlaneSpace1 optimized for Vector3s
+  Bump.PlaneSpace1Vector3 = function( n, p, q ) {
+    var n0 = n.x;
+    var n1 = n.y;
+    var n2 = n.z;
+
     var a, k;
 
-    if ( Math.abs( n[2] ) > Bump.SIMDSQRT12 ) {
+    if ( Math.abs( n2 ) > Bump.SIMDSQRT12 ) {
       // Choose p in y-z plane.
-      a = n[1] * n[1] + n[2] * n[2];
+      a = n1 * n1 + n2 * n2;
+      k = Bump.RecipSqrt( a );
+
+      p.x = 0;
+      p.y = -n2 * k;
+      p.z = n1 * k;
+      // Set `q = n x p`.
+      q.x = a * k;
+      q.y = -n0 * p.z;
+      q.z = n0 * p.y;
+    } else {
+      // Choose p in x-y plane.
+      a = n0 * n0 + n1 * n1;
+      k = Bump.RecipSqrt( a );
+      p.x = -n1 * k;
+      p.y = n0 * k;
+      p.z = 0;
+      // Set `q = n x p`.
+      q.x = -n2 * p.y;
+      q.y = n2 * p.x;
+      q.z = a * k;
+    }
+  };
+
+  Bump.PlaneSpace1 = function( n, p, q ) {
+    var n0 = n[0];
+    var n1 = n[1];
+    var n2 = n[2];
+
+    var a, k;
+
+    if ( Math.abs( n2 ) > Bump.SIMDSQRT12 ) {
+      // Choose p in y-z plane.
+      a = n1 * n1 + n2 * n2;
       k = Bump.RecipSqrt( a );
 
       p[0] = 0;
-      p[1] = -n[2] * k;
-      p[2] = n[1] * k;
+      p[1] = -n2 * k;
+      p[2] = n1 * k;
       // Set `q = n x p`.
       q[0] = a * k;
-      q[1] = -n[0] * p[2];
-      q[2] = n[0] * p[1];
+      q[1] = -n0 * p[2];
+      q[2] = n0 * p[1];
     } else {
       // Choose p in x-y plane.
-      a = n[0] * n[0] + n[1] * n[1];
+      a = n0 * n0 + n1 * n1;
       k = Bump.RecipSqrt( a );
-      p[0] = -n[1]*k;
-      p[1] = n[0]*k;
+      p[0] = -n1 * k;
+      p[1] = n0 * k;
       p[2] = 0;
       // Set `q = n x p`.
-      q[0] = -n[2] * p[1];
-      q[1] = n[2] * p[0];
+      q[0] = -n2 * p[1];
+      q[1] = n2 * p[0];
       q[2] = a * k;
     }
   };
