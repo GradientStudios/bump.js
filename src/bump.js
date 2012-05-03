@@ -154,18 +154,21 @@ this.Bump = {};
     // warned.
     //
     // - EL
+    var parentType = options.parent;
     var idx = potentiallyProblematicCtors.indexOf( parent.init );
     if ( idx !== -1 ) {
       var badFuncs = potentiallyProblematicDetails[ idx ].funcs;
       for ( var i = 0; i < badFuncs.length; ++i ) {
         var unmangledFuncName = badFuncs[i].name;
         if ( unmangledFuncName in members ) {
-          var parentUid = options.parent.__uid__;
+          var parentUid = parentType.__uid__;
           var parentTypeName = parent.init.name;
           var childTypeName = options.init.name;
           console.warn( 'Bump.type: Ctor for ' + parentTypeName + ' calls ' + badFuncs[i].name +
                         ' which is overridden in ' + childTypeName + '. This behavior ' +
                         'is inconsistent with behaviour in C++.' );
+          var scopedEval = parentType.__evalInScope__ ||
+            ( !console.warn( '  \u22a2 Using unscoped eval, potentially problematic in minified code' ) && eval );
 
           var funcsToMangle = badFuncs[i].callStack.slice(0);
           funcsToMangle.push( unmangledFuncName );
@@ -185,11 +188,11 @@ this.Bump = {};
             re = new RegExp( '\\bthis\\s*\\.\\s*' + unmangledFuncName + '\\s*\\(', 'g' );
             if ( !callerFunc.__origFunc__ ) {
               newCallerBody = callerBody.replace( re, 'this.' + mangledFuncName + '(' );
-              parent[ mangledCallerName ] = eval( '(' + newCallerBody + ')' );
+              parent[ mangledCallerName ] = scopedEval( '(' + newCallerBody + ')' );
             } else {
               callerBody = callerFunc.__origFunc__.toString();
               newCallerBody = callerBody.replace( re, 'this.' + mangledFuncName + '(' );
-              callerFunc.__origFunc__ = eval( '(' + newCallerBody + ')' );
+              callerFunc.__origFunc__ = scopedEval( '(' + newCallerBody + ')' );
             }
 
             unmangledCallerName = unmangledFuncName;

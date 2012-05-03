@@ -160,4 +160,8 @@
     }
   });
 
+  Bump.TriangleMeshShape.__evalInScope__ = function( string ) {
+    return eval( string );
+  };
+
 })( this, this.Bump );

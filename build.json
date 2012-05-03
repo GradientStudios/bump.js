@@ -38,9 +38,9 @@
         "src/BulletCollision/BroadphaseCollision/DbvtBroadphase.js",
 
         "src/BulletDynamics/ConstraintSolver/JacobianEntry.js",
-        "src/BulletDynamics/ConstraintSolver/ContactConstraint.js",
         "src/BulletDynamics/ConstraintSolver/ContactSolverInfo.js",
         "src/BulletDynamics/ConstraintSolver/TypedConstraint.js",
+        "src/BulletDynamics/ConstraintSolver/ContactConstraint.js",
         "src/BulletDynamics/ConstraintSolver/SolverConstraint.js",
         "src/BulletDynamics/ConstraintSolver/ConstraintSolver.js",
         "src/BulletDynamics/ConstraintSolver/SequentialImpulseConstraintSolver.js",
@@ -65,6 +65,10 @@
         "src/BulletDynamics/Dynamics/ActionInterface.js",
         "src/BulletDynamics/Dynamics/DynamicsWorld.js",
         "src/BulletDynamics/Dynamics/DiscreteDynamicsWorld.js",
+
+        "src/BulletDynamics/Vehicle/VehicleRaycaster.js",
+        "src/BulletDynamics/Vehicle/WheelInfo.js",
+        "src/BulletDynamics/Vehicle/RaycastVehicle.js",
 
         "src/BulletCollision/CollisionShapes/OptimizedBvh.js",
         "src/BulletCollision/CollisionShapes/TriangleCallback.js",
