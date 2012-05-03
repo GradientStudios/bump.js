@@ -110,7 +110,7 @@
                 sepNormalWorldSpace
               );
             } else {
-              //gjkPairDetector.getClosestPoints(input,*resultOut,dispatchInfo.m_debugDraw);
+              // gjkPairDetector.getClosestPoints(input,*resultOut,dispatchInfo.m_debugDraw);
               gjkPairDetector.getClosestPoints( input, dummy, dispatchInfo.debugDraw );
 
               l2 = gjkPairDetector.getCachedSeparatingAxis().length2();
