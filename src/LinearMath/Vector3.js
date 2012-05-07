@@ -408,18 +408,18 @@
       // Note that accessing vector properties using [] notation is slow and
       // should be avoided.
       maxAxis: function() {
-        return this.x > this.y ?
-          ( this.x > this.z ? 0 : 2 ) :
-          ( this.y > this.z ? 1 : 2 );
+        return this.x < this.y ?
+          ( this.y < this.z ? 2 : 1 ) :
+          ( this.x < this.z ? 2 : 0 );
       },
 
       // Returns the member name ('x', 'y', 'z') of the maximum value in `this`.
       // This function was added because property access by name is faster than
       // by array index.
       maxProperty: function() {
-        return this.x > this.y ?
-          ( this.x > this.z ? 'x' : 'z' ) :
-          ( this.y > this.z ? 'y' : 'z' );
+        return this.x < this.y ?
+          ( this.y < this.z ? 'z' : 'y' ) :
+          ( this.x < this.z ? 'z' : 'x' );
       },
 
       // Returns the maximum value stored in `this`.

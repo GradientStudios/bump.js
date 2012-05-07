@@ -23,10 +23,8 @@
 
     members: {
       assign: function( other ) {
-        var view = other.__view;
-        var buffer = view.buffer;
-        var byteOffset = view.byteOffset;
-        this.init( buffer, byteOffset );
+        this.__view.set( other.__view );
+        return this;
       },
 
       isLeafNode: function() {
@@ -79,10 +77,8 @@
 
     members: {
       assign: function( other ) {
-        var view = other.__view;
-        var buffer = view.buffer;
-        var byteOffset = view.byteOffset;
-        this.init( buffer, byteOffset );
+        this.__view.set( other.__view );
+        return this;
       },
 
       setAabbFromQuantizeNode: function( quantizedNode ) {
@@ -130,13 +126,93 @@
     },
 
     members: {
-      setInternalNodeAabbMin: Bump.notImplemented,
-      setInternalNodeAabbMax: Bump.notImplemented,
-      getAabbMin: Bump.notImplemented,
-      getAabbMax: Bump.notImplemented,
-      setInternalNodeEscapeIndex: Bump.notImplemented,
-      mergeInternalNodeAabb: Bump.notImplemented,
-      swapLeafNodes: Bump.notImplemented,
+      setInternalNodeAabbMin: function( nodeIndex, aabbMin ) {
+        if ( this.useQuantization ) {
+          this.quantize( this.quantizedContiguousNodes.at( nodeIndex ).quantizedAabbMin, aabbMin, false );
+        } else {
+          this.contiguousNodes[nodeIndex].aabbMinOrg.assign( aabbMin );
+        }
+      },
+
+      setInternalNodeAabbMax: function( nodeIndex, aabbMax ) {
+        if ( this.useQuantization ) {
+          this.quantize( this.quantizedContiguousNodes.at( nodeIndex ).quantizedAabbMax, aabbMax, true );
+        } else {
+          this.contiguousNodes[nodeIndex].aabbMaxOrg.assign( aabbMax );
+        }
+      },
+
+      getAabbMin: function( nodeIndex ) {
+        if ( this.useQuantization ) {
+          return this.unQuantize( this.quantizedLeafNodes.at( nodeIndex ).quantizedAabbMin );
+        }
+        // non-quantized
+        return this.leafNodes[nodeIndex].aabbMinOrg;
+      },
+
+      getAabbMax: function( nodeIndex ) {
+        if ( this.useQuantization ) {
+          return this.unQuantize( this.quantizedLeafNodes.at( nodeIndex ).quantizedAabbMax );
+        }
+        // non-quantized
+        return this.leafNodes[nodeIndex].aabbMaxOrg;
+      },
+
+      setInternalNodeEscapeIndex: function( nodeIndex, escapeIndex ) {
+        if ( this.useQuantization ) {
+          this.quantizedContiguousNodes.at( nodeIndex ).escapeIndexOrTriangleIndex[0] = -escapeIndex;
+        } else {
+          this.contiguousNodes[nodeIndex].escapeIndex = escapeIndex;
+        }
+      },
+
+      mergeInternalNodeAabb: function( nodeIndex, newAabbMin, newAabbMax ) {
+        if ( this.useQuantization ) {
+          var m_quantizedContiguousNodes = this.quantizedContiguousNodes;
+          var buffer = new ArrayBuffer( 12 );
+
+          var quantizedAabbMin = new Uint16Array( buffer, 0, 3 );
+          var quantizedAabbMax = new Uint16Array( buffer, 6, 3 );
+          this.quantize( quantizedAabbMin, newAabbMin, false );
+          this.quantize( quantizedAabbMax, newAabbMax, true  );
+
+          var node = m_quantizedContiguousNodes.at( nodeIndex );
+          for ( var i = 0; i < 3; ++i ) {
+            if ( node.quantizedAabbMin[i] > quantizedAabbMin[i] ) {
+              node.quantizedAabbMin[i] = quantizedAabbMin[i];
+            }
+
+            if ( node.quantizedAabbMax[i] < quantizedAabbMax[i] ) {
+              node.quantizedAabbMax[i] = quantizedAabbMax[i];
+            }
+          }
+        } else {
+          // non-quantized
+          this.contiguousNodes[nodeIndex].aabbMinOrg.setMin( newAabbMin );
+          this.contiguousNodes[nodeIndex].aabbMaxOrg.setMax( newAabbMax );
+        }
+      },
+
+      swapLeafNodes: function( i, splitIndex ) {
+        // Is this safe to do? I think so, but not sure.
+        if ( i === splitIndex ) { return; }
+
+        var tmp;
+        if ( this.useQuantization ) {
+          var m_quantizedLeafNodes = this.quantizedLeafNodes;
+          tmp = Bump.QuantizedBvhNode.create();
+
+          tmp.assign( m_quantizedLeafNodes.at( i ) );
+          m_quantizedLeafNodes.at( i, Bump.QuantizedBvhNode.createRef() ).assign( m_quantizedLeafNodes.at( splitIndex ) );
+          m_quantizedLeafNodes.at( splitIndex ).assign( tmp );
+        } else {
+          var m_leafNodes = this.leafNodes;
+
+          tmp = m_leafNodes[i];
+          m_leafNodes[i] = m_leafNodes[splitIndex];
+          m_leafNodes[splitIndex] = tmp;
+        }
+      },
 
       assignInternalNodeFromLeafNode: function( internalNode, leafNodeIndex ) {
         if ( this.useQuantization ) {
@@ -165,7 +241,6 @@
         // calculate Best Splitting Axis and where to split it. Sort the
         // incoming `leafNodes` array within range `startIndex`/`endIndex`.
         splitAxis = this.calcSplittingAxis( startIndex, endIndex );
-
         splitIndex = this.sortAndCalcSplittingIndex( startIndex, endIndex, splitAxis );
 
         var internalNodeIndex = this.curNodeIndex;
@@ -206,12 +281,89 @@
         this.setInternalNodeEscapeIndex( internalNodeIndex, escapeIndex );
       },
 
-      calcSplittingAxis: Bump.notImplemented,
-      sortAndCalcSplittingIndex: Bump.notImplemented,
+      calcSplittingAxis: function( startIndex, endIndex ) {
+        var i;
+
+        var means = Bump.Vector3.create( 0, 0, 0 );
+        var variance = Bump.Vector3.create( 0, 0, 0 );
+        var numIndices = endIndex - startIndex;
+
+        var center;
+        var tmpVec = Bump.Vector3.create( 0, 0, 0 );
+        for ( i = startIndex; i < endIndex; ++i ) {
+          center = this.getAabbMax( i ).add( this.getAabbMin( i ), tmpVec ).multiplyScalar( 0.5, tmpVec );
+          means.addSelf( center );
+        }
+        means.multiplyScalarSelf( 1 / numIndices );
+
+        for ( i = startIndex; i < endIndex; ++i ) {
+          center = this.getAabbMax( i ).add( this.getAabbMin( i ), tmpVec ).multiplyScalar( 0.5, tmpVec );
+          var diff2 = center.subtract( means, tmpVec );
+          diff2 = diff2.multiplyVector( diff2, tmpVec );
+          variance.addSelf( diff2 );
+        }
+        variance.multiplyScalarSelf( 1 / (numIndices - 1) );
+
+        return variance.maxProperty();
+      },
+
+      sortAndCalcSplittingIndex: function( startIndex, endIndex, splitAxis ) {
+        var i;
+        var splitIndex = startIndex;
+        var numIndices = endIndex - startIndex;
+        var splitValue = 0;
+
+        var center, tmpVec = Bump.Vector3.create();
+        var means = Bump.Vector3.create( 0, 0, 0 );
+        for ( i = startIndex; i < endIndex; ++i ) {
+          center = this.getAabbMax( i ).add( this.getAabbMin( i ), tmpVec ).multiplyScalar( 0.5, tmpVec );
+          means.addSelf( center );
+        }
+        means.multiplyScalarSelf( 1 / numIndices );
+
+        splitValue = means[splitAxis];
+
+        // sort leafNodes so all values larger then splitValue comes first, and
+        // smaller values start from `splitIndex`.
+        for ( i = startIndex; i < endIndex; ++i ) {
+          center = this.getAabbMax( i ).add( this.getAabbMin( i ), tmpVec ).multiplyScalar( 0.5, tmpVec );
+          if ( center[splitAxis] > splitValue ) {
+            // swap
+            this.swapLeafNodes( i, splitIndex );
+            ++splitIndex;
+          }
+        }
+
+        // If the splitIndex causes unbalanced trees, fix this by using the
+        // center in between `startIndex` and `endIndex`. Otherwise the
+        // tree-building might fail due to stack-overflows in certain cases.
+        // `unbalanced1` is unsafe: it can cause stack overflows
+        // bool unbalanced1 = ((splitIndex==startIndex) || (splitIndex == (endIndex-1)));
+
+        // unbalanced2 should work too: always use center (perfect balanced trees)
+        // bool unbalanced2 = true;
+
+        // this should be safe too:
+        var rangeBalancedIndices = ~~( numIndices / 3 );
+        var unbalanced = ( (splitIndex <= ( startIndex +   rangeBalancedIndices )) ||
+                           (splitIndex >= ( endIndex - 1 - rangeBalancedIndices )) );
+
+        if ( unbalanced ) {
+          splitIndex = startIndex + ( numIndices >> 1 );
+        }
+
+        var unbal = ( splitIndex === startIndex ) || ( splitIndex === endIndex );
+        Bump.Assert( !unbal );
+
+        return splitIndex;
+      },
+
       walkStacklessTree: Bump.notImplemented,
       walkStacklessQuantizedTreeAgainstRay: Bump.notImplemented,
 
       walkStacklessQuantizedTree: function( nodeCallback, quantizedQueryAabbMin, quantizedQueryAabbMax, startNodeIndex, endNodeIndex ) {
+        var m_quantizedContiguousNodes = this.quantizedContiguousNodes;
+
         Bump.Assert( this.useQuantization );
 
         var curIndex = startNodeIndex;
@@ -219,7 +371,8 @@
         var subTreeSize = endNodeIndex - startNodeIndex;
 
         var rootNode = Bump.QuantizedBvhNode.createRef();
-        this.quantizedContiguousNodes.at( startNodeIndex, rootNode );
+        var rootNodeIndex = startNodeIndex;
+        m_quantizedContiguousNodes.at( startNodeIndex, rootNode );
         var escapeIndex = 0;
 
         var isLeafNode = false;
@@ -239,11 +392,11 @@
           }
 
           if ( aabbOverlap || isLeafNode ) {
-            ++rootNode;
+            ++rootNodeIndex; m_quantizedContiguousNodes.at( rootNodeIndex, rootNode );
             ++curIndex;
           } else {
             escapeIndex = rootNode.getEscapeIndex();
-            rootNode += escapeIndex;
+            rootNodeIndex += escapeIndex; m_quantizedContiguousNodes.at( rootNodeIndex, rootNode );
             curIndex += escapeIndex;
           }
         }
@@ -358,7 +511,19 @@
         this.quantize( out, clampedPoint, isMax );
       },
 
-      unQuantize: Bump.notImplemented,
+      unQuantize: function( vecIn ) {
+        Bump.Assert( vecIn instanceof Uint16Array );
+
+        var vecOut = Bump.Vector3.create();
+        vecOut.setValue(
+          vecIn[0] / this.bvhQuantization.x,
+          vecIn[1] / this.bvhQuantization.y,
+          vecIn[2] / this.bvhQuantization.z
+        );
+        vecOut.addSelf( this.bvhAabbMin );
+        return vecOut;
+      },
+
       setTraversalMode: Bump.notImplemented,
       getQuantizedNodeArray: Bump.notImplemented,
       getSubtreeInfoArray: Bump.notImplemented,

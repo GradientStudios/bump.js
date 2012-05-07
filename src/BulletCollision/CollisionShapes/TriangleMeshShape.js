@@ -84,7 +84,23 @@
         }
       },
 
-      getAabb: Bump.notImplemented,
+      getAabb: function( trans, aabbMin, aabbMax ) {
+        var localHalfExtents = this.localAabbMax.subtract( this.localAabbMin ).multiplyScalar( 0.5 );
+        var margin = this.getMargin();
+        localHalfExtents.addSelf( Bump.Vector3.create( margin, margin, margin ) );
+        var localCenter = this.localAabbMax.add( this.localAabbMin ).multiplyScalar( 0.5 );
+
+        var abs_b = trans.basis.absolute();
+        var center = trans.transform( localCenter );
+        var extent = Bump.Vector3.create(
+          abs_b.el0.dot( localHalfExtents ),
+          abs_b.el1.dot( localHalfExtents ),
+          abs_b.el2.dot( localHalfExtents )
+        );
+
+        center.subtract( extent, aabbMin );
+        center.add( extent, aabbMax );
+      },
 
       processAllTriangles: function( callback, aabbMin, aabbMax ) {
         var filterCallback = FilteredCallback.create( callback, aabbMin, aabbMax );
