@@ -38,6 +38,52 @@ module( 'CollisionWorld.performDiscreteCollisionDetection' );
 
 test( 'test skipped', function() {});
 
+
+(function(){
+  var makeTestSingleRayCallback = function() {
+    var from = Bump.Vector3.create( 0, 0, 0 );
+    var to = Bump.Vector3.create( 10, 10, 10 );
+
+    var collisionConfiguration = Bump.DefaultCollisionConfiguration.create();
+    var dispatcher = Bump.CollisionDispatcher.create( collisionConfiguration );
+    var overlappingPairCache = Bump.DbvtBroadphase.create();
+    var world = Bump.CollisionWorld.create( dispatcher, overlappingPairCache, collisionConfiguration );
+    var rrc = Bump.CollisionWorld.RayResultCallback.create();
+
+    return  Bump.CollisionWorld.SingleRayCallback.create( from, to, world, rrc );
+  }
+
+  module( 'CollisionWorld.SingleRayCallback.create' );
+
+  test( 'basic', function() {
+    var src = makeTestSingleRayCallback();
+    ok( src instanceof Bump.CollisionWorld.SingleRayCallback.prototype.constructor );
+  });
+
+  test( 'correct types', function() {
+    var src = makeTestSingleRayCallback();
+
+    var checks = [
+      [ 'rayFromWorld', Bump.Vector3 ],
+      [ 'rayToWorld', Bump.Vector3 ],
+      [ 'hitNormal', Bump.Vector3 ],
+      [ 'world', Bump.CollisionWorld ],
+      [ 'resultCallback', Bump.CollisionWorld.RayResultCallback ],
+      [ 'rayFromTrans', Bump.Transform ],
+      [ 'rayToTrans', Bump.Transform ],
+      [ 'rayDirectionInverse', Bump.Vector3 ],
+      [ 'signs', Bump.Vector3 ],
+      [ 'lambda_max', 'number' ]
+    ];
+
+    checkTypes( src, checks );
+  });
+
+  module( 'CollisionWorld.SingleRayCallback.process' );
+
+  test( 'test skipped', function() {});
+})();
+
 module( 'CollisionWorld.LocalShapeInfo.create' );
 
 test( 'basic', function() {

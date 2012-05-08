@@ -300,11 +300,11 @@
     if ( tstRet !== undefined ) { return tstRet; }
 
     // separating axis = v1, v2, v3
-    tstRet = TST( dDOT41( R2, 0, p ), A[0] * Q11 + A[1] * Q21 + A[2] * Q31 + B[0], R2, 0, 4 );
+    tstRet = TST( dDOT41( R2, 0, p, 0 ), A[0] * Q11 + A[1] * Q21 + A[2] * Q31 + B[0], R2, 0, 4 );
     if ( tstRet !== undefined ) { return tstRet; }
-    tstRet = TST( dDOT41( R2, 1, p ), A[0] * Q12 + A[1] * Q22 + A[2] * Q32 + B[1], R2, 1, 5 );
+    tstRet = TST( dDOT41( R2, 1, p, 0 ), A[0] * Q12 + A[1] * Q22 + A[2] * Q32 + B[1], R2, 1, 5 );
     if ( tstRet !== undefined ) { return tstRet; }
-    tstRet = TST( dDOT41( R2, 2, p ), A[0] * Q13 + A[1] * Q23 + A[2] * Q33 + B[2], R2, 2, 6 );
+    tstRet = TST( dDOT41( R2, 2, p, 0 ), A[0] * Q13 + A[1] * Q23 + A[2] * Q33 + B[2], R2, 2, 6 );
     if ( tstRet !== undefined ) { return tstRet; }
 
     // Note: cross product axes need to be scaled when s is computed.
@@ -394,7 +394,7 @@
       var sign;
       pa.x = p1.x; pa.y = p1.y; pa.z = p1.z;
       for ( j = 0; j < 3; ++j ) {
-        sign = ( dDOT14( normal, R1, j ) > 0 ) ? 1 : -1;
+        sign = ( dDOT14( normal, R1, j, 0 ) > 0 ) ? 1 : -1;
 
         pa.x += sign * A[j] * R1[     j ];
         pa.y += sign * A[j] * R1[ 4 + j ];
@@ -405,7 +405,7 @@
       pb = Bump.Vector3.create();
       pb.x = p2.x; pb.y = p2.y; pb.z = p2.z;
       for ( j = 0; j < 3; ++j ) {
-        sign = ( dDOT14( normal, R2, j ) > 0 ) ? -1 : 1;
+        sign = ( dDOT14( normal, R2, j, 0 ) > 0 ) ? -1 : 1;
 
         pb.x += sign * B[j] * R1[     j ];
         pb.y += sign * B[j] * R1[ 4 + j ];
@@ -644,7 +644,7 @@
           pointInWorld.x = point[ tmp     ] + pa.x - normal.x * dep[j];
           pointInWorld.y = point[ tmp + 1 ] + pa.y - normal.y * dep[j];
           pointInWorld.z = point[ tmp + 2 ] + pa.z - normal.z * dep[j];
-          output.addContactPoint( normal.negate, pointInWorld , -dep[j] );
+          output.addContactPoint( normal.negate(), pointInWorld , -dep[j] );
         }
       }
     } else {
