@@ -347,15 +347,18 @@
       // `crossSelf` function.
       cross: function( vec, dest ) {
         if ( dest ) {
-          dest.x = this.y * vec.z - this.z * vec.y;
-          dest.y = this.z * vec.x - this.x * vec.z;
-          dest.z = this.x * vec.y - this.y * vec.x;
-          return dest;
+          return dest.setValue(
+            this.y * vec.z - this.z * vec.y,
+            this.z * vec.x - this.x * vec.z,
+            this.x * vec.y - this.y * vec.x
+          );
         }
 
-        return Bump.Vector3.create( this.y * vec.z - this.z * vec.y,
-                                    this.z * vec.x - this.x * vec.z,
-                                    this.x * vec.y - this.y * vec.x );
+        return Bump.Vector3.create(
+          this.y * vec.z - this.z * vec.y,
+          this.z * vec.x - this.x * vec.z,
+          this.x * vec.y - this.y * vec.x
+        );
       },
 
       // Computes the cross product of `this` and `vec`, storing the result

@@ -1080,8 +1080,8 @@
             var tmin = 1,
                 lambda_min = 0,
                 result1 = false;
-            result1 = Bump.rayAabb2.create( rayFrom, rayDirectionInverse, signs, bounds,
-                                            tmin, lambda_min, lambda_max );
+            result1 = Bump.RayAabb2( rayFrom, rayDirectionInverse, signs, bounds,
+                                     tmin, lambda_min, lambda_max );
             if ( result1 ) {
               if ( node.isinternal() ) {
                 if ( depth > threshold ) {
@@ -1158,9 +1158,9 @@
           rayDir = diff.normalized();
 
           var rayDirectionInverse;
-          rayDirectionInverse.x = rayDir.x === 0 ? Bump.LARGE_FLOAT : 1 / rayDir.x;
-          rayDirectionInverse.y = rayDir.y === 0 ? Bump.LARGE_FLOAT : 1 / rayDir.y;
-          rayDirectionInverse.z = rayDir.z === 0 ? Bump.LARGE_FLOAT : 1 / rayDir.z;
+          rayDirectionInverse.x = rayDir.x === 0 ? Infinity : 1 / rayDir.x;
+          rayDirectionInverse.y = rayDir.y === 0 ? Infinity : 1 / rayDir.y;
+          rayDirectionInverse.z = rayDir.z === 0 ? Infinity : 1 / rayDir.z;
 
           var signs = [
                rayDirectionInverse.x < 0,

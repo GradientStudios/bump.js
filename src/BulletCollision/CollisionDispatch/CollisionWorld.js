@@ -141,7 +141,7 @@
       // aabb and for each object with ray-aabb overlap, perform an exact ray
       // test.
       rayTest: function( rayFromWorld, rayToWorld, resultCallback ) {
-        var rayCB = Bump.SingleRayCallback.create( rayFromWorld, rayToWorld, this, resultCallback );
+        var rayCB = Bump.CollisionWorld.SingleRayCallback.create( rayFromWorld, rayToWorld, this, resultCallback );
 
         this.broadphasePairCache.rayTest( rayFromWorld, rayToWorld, rayCB );
       },
@@ -270,6 +270,82 @@
     }
   });
 
+
+  Bump.CollisionWorld.SingleRayCallback = Bump.type({
+    parent: Bump.BroadphaseRayCallback,
+
+    init: function SingleRayCallback(
+      rayFromWorld, /* const btVector3& */
+      rayToWorld, /* const btVector3& */
+      world, /* const btCollisionWorld* */
+      resultCallback /* btCollisionWorld::RayResultCallback& */
+    ) {
+      this.rayFromWorld = rayFromWorld.clone();
+      this.rayToWorld = rayToWorld.clone();
+      this.hitNormal = Bump.Vector3.create();
+
+      this.world = world;
+      this.resultCallback = resultCallback; //.clone();
+
+      this.rayFromTrans = Bump.Transform.getIdentity();
+      this.rayFromTrans.setOrigin( this.rayFromWorld );
+      this.rayToTrans = Bump.Transform.getIdentity();
+      this.rayToTrans.setOrigin( this.rayToWorld );
+
+      var rayDir = rayToWorld.subtract( rayFromWorld ).normalize();
+
+      ///what about division by zero? --> just set rayDirection[i] to INF/BT_LARGE_FLOAT
+      this.rayDirectionInverse = Bump.Vector3.create();
+      this.signs = Bump.Vector3.create();
+      this.rayDirectionInverse[ 0 ] = rayDir[ 0 ] === 0 ? Infinity : 1 / rayDir[ 0 ];
+      this.rayDirectionInverse[ 1 ] = rayDir[ 1 ] === 0 ? Infinity : 1 / rayDir[ 1 ];
+      this.rayDirectionInverse[ 2 ] = rayDir[ 2 ] === 0 ? Infinity : 1 / rayDir[ 2 ];
+      this.signs[ 0 ] = this.rayDirectionInverse[ 0 ] < 0 ? 1 : 0;
+      this.signs[ 1 ] = this.rayDirectionInverse[ 1 ] < 0 ? 1 : 0;
+      this.signs[ 2 ] = this.rayDirectionInverse[ 2 ] < 0 ? 1 : 0;
+
+      this.lambda_max = rayDir.dot( this.rayToWorld.subtract( this.rayFromWorld ));
+    },
+
+    members: {
+      process: function( proxy /* const btBroadphaseProxy* */) {
+        ///terminate further ray tests, once the closestHitFraction reached zero
+        if( this.resultCallback.closestHitFraction === 0 ) {
+          return false;
+        }
+        var collisionObject = proxy.clientObject;
+
+        //only perform raycast if filterMask matches
+        if( this.resultCallback.needsCollision( collisionObject.getBroadphaseHandle() )) {
+          //RigidcollisionObject* collisionObject = ctrl.GetRigidcollisionObject();
+          //btVector3 collisionObjectAabbMin,collisionObjectAabbMax;
+          // #if 0
+          // #ifdef RECALCULATE_AABB
+          // btVector3 collisionObjectAabbMin,collisionObjectAabbMax;
+          // collisionObject.getCollisionShape().getAabb(collisionObject.getWorldTransform(),collisionObjectAabbMin,collisionObjectAabbMax);
+          // #else
+          // //getBroadphase().getAabb(collisionObject.getBroadphaseHandle(),collisionObjectAabbMin,collisionObjectAabbMax);
+          // const btVector3& collisionObjectAabbMin = collisionObject.getBroadphaseHandle().aabbMin;
+          // const btVector3& collisionObjectAabbMax = collisionObject.getBroadphaseHandle().aabbMax;
+          // #endif
+          // #endif
+          //btScalar hitLambda = this.resultCallback.closestHitFraction;
+          //culling already done by broadphase
+          //if (btRayAabb(this.rayFromWorld,this.rayToWorld,collisionObjectAabbMin,collisionObjectAabbMax,hitLambda,this.hitNormal))
+          this.world.rayTestSingle(
+            this.rayFromTrans,
+            this.rayToTrans,
+            collisionObject,
+            collisionObject.getCollisionShape(),
+            collisionObject.getWorldTransform(),
+            this.resultCallback
+          );
+        }
+        return true;
+      }
+    }
+  });
+
   // port of btCollisionWorld::LocalShapeInfo
   Bump.CollisionWorld.LocalShapeInfo = Bump.type({
     init: function LocalShapeInfo () {
@@ -304,6 +380,10 @@
     },
 
     members: {
+      hasHit: function() {
+        return this.collisionObject; // !== null;
+      },
+
       needsCollision: function( proxy0 /* btBroadphaseProxy* */) {
         var collides = ( proxy0.collisionFilterGroup & this.collisionFilterMask ) !== 0;
         collides = collides && ( this.collisionFilterGroup & proxy0.collisionFilterMask );
