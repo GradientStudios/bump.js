@@ -449,7 +449,7 @@
       //
       // - `tmpV1`
       applyTorque: function( torque ) {
-        this.totalTorque.addSelf( torque.multiplyScalar( this.angularFactor, tmpV1 ) );
+        this.totalTorque.addSelf( torque.multiplyVector( this.angularFactor, tmpV1 ) );
       },
 
       // Uses the following temporary variables:
@@ -458,7 +458,7 @@
       // - `tmpV2`
       applyForce: function( force, rel_pos ) {
         this.applyCentralForce( force );
-        this.applyTorque( rel_pos.cross( force.multiplyScalar( this.linearFactor, tmpV2 ), tmpV2 ) );
+        this.applyTorque( rel_pos.cross( force.multiplyVector( this.linearFactor, tmpV2 ), tmpV2 ) );
       },
 
       // Uses the following temporary variables:
@@ -467,7 +467,7 @@
       applyCentralImpulse: function( impulse ) {
         this.linearVelocity.addSelf(
           impulse
-            .multiplyScalar( this.linearFactor, tmpV1 )
+            .multiplyVector( this.linearFactor, tmpV1 )
             .multiplyScalar( this.inverseMass, tmpV1 )
         );
       },
@@ -479,7 +479,7 @@
         this.angularVelocity.addSelf(
           this.invInertiaTensorWorld
             .multiplyVector( torque, tmpV1 )
-            .multiplyScalar( this.angularFactor, tmpV1 )
+            .multiplyVector( this.angularFactor, tmpV1 )
         );
       },
 
@@ -494,7 +494,7 @@
           if ( this.angularFactor ) {
             this.applyTorqueImpulse(
               rel_pos.cross(
-                impulse.multiplyScalar( this.linearFactor, tmpV2 ), tmpV2 )
+                impulse.multiplyVector( this.linearFactor, tmpV2 ), tmpV2 )
             );
           }
 
@@ -812,7 +812,7 @@
           );
           this.turnVelocity.addSelf(
             angularComponent
-              .multiplyScalar( impulseMagnitude * this.angularFactor, tmpV1 )
+              .multiplyVector( this.angularFactor.multiplyScalar( impulseMagnitude, tmpV1 ), tmpV1 )
           );
         }
       },
