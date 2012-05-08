@@ -226,7 +226,7 @@
         rel_pos2.cross( cp.normalWorldOnB.negate( tmpVec ), solverConstraint.relpos2CrossNormal );
 
         var vel1 = rb0 ? rb0.getVelocityInLocalPoint( rel_pos1 ) : Bump.Vector3.create(),
-            vel2 = rb1 ? rb1.getVelocityInLocalPoint(rel_pos2) : Bump.Vector3().create();
+            vel2 = rb1 ? rb1.getVelocityInLocalPoint(rel_pos2) : Bump.Vector3.create();
         vel1.subtract( vel2, vel );
         rel_velRef.value = cp.normalWorldOnB.dot( vel );
 
