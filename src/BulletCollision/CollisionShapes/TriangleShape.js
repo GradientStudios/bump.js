@@ -3,28 +3,23 @@
   Bump.TriangleShape = Bump.type({
     parent: Bump.PolyhedralConvexShape,
 
-    init: function TriangleShape() {
+    init: function TriangleShape( p0, p1, p2 ) {
       this._super();
 
-      // Default initializers
-      this.vertices10 = Bump.Vector3.create();
-      this.vertices11 = Bump.Vector3.create();
-      this.vertices12 = Bump.Vector3.create();
-      // End default initializers
+      if ( arguments.length === 3 ) {
+        this.vertices10 = p0.clone();
+        this.vertices11 = p1.clone();
+        this.vertices12 = p2.clone();
+      } else {
+        this.vertices10 = Bump.Vector3.create();
+        this.vertices11 = Bump.Vector3.create();
+        this.vertices12 = Bump.Vector3.create();
+      }
 
       this.shapeType = Bump.BroadphaseNativeTypes.TRIANGLE_SHAPE_PROXYTYPE;
     },
 
     members: {
-      initWithVertices: function( p0, p1, p2 ) {
-        Bump.PolyhedralConvexShape.init.call( this );
-
-        this.shapeType = Bump.BroadphaseNativeTypes.TRIANGLE_SHAPE_PROXYTYPE;
-        this.vertices10 = p0.clone();
-        this.vertices11 = p1.clone();
-        this.vertices12 = p2.clone();
-      },
-
       getNumVertices: function() {
         return 3;
       },

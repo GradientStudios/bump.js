@@ -154,7 +154,6 @@
     },
 
     members: {
-
       removeVertex: function( index ) {
         Bump.Assert( this.numVertices > 0 );
         --this.numVertices;
@@ -262,14 +261,14 @@
             this.closestPtPointTriangle( p, a, b, c, this.cachedBC );
             this.cachedP1.assign(
               this.simplexPointsP[0].multiplyScalar( this.cachedBC.barycentricCoords[0], tmpV2 )
-                .add( this.simplexPointsP[1].multiplyScalar( this.cachedBC.barycentricCoords[1], tmpV2 ), tmpV1 )
-                .add( this.simplexPointsP[2].multiplyScalar( this.cachedBC.barycentricCoords[2], tmpV2 ), tmpV1 )
+                .add( this.simplexPointsP[1].multiplyScalar( this.cachedBC.barycentricCoords[1], tmpV1 ), tmpV2 )
+                .add( this.simplexPointsP[2].multiplyScalar( this.cachedBC.barycentricCoords[2], tmpV1 ), tmpV2 )
             );
 
             this.cachedP2.assign(
               this.simplexPointsQ[0].multiplyScalar( this.cachedBC.barycentricCoords[0], tmpV2 )
-                .add( this.simplexPointsQ[1].multiplyScalar( this.cachedBC.barycentricCoords[1], tmpV2 ), tmpV1 )
-                .add( this.simplexPointsQ[2].multiplyScalar( this.cachedBC.barycentricCoords[2], tmpV2 ), tmpV1 )
+                .add( this.simplexPointsQ[1].multiplyScalar( this.cachedBC.barycentricCoords[1], tmpV1 ), tmpV2 )
+                .add( this.simplexPointsQ[2].multiplyScalar( this.cachedBC.barycentricCoords[2], tmpV1 ), tmpV2 )
             );
 
             this.cachedV.assign( this.cachedP1.subtract( this.cachedP2, tmpV1 ) );
@@ -295,16 +294,16 @@
             if ( hasSeperation ) {
               this.cachedP1.assign(
                 this.simplexPointsP[0].multiplyScalar( this.cachedBC.barycentricCoords[0], tmpV2 )
-                  .add( this.simplexPointsP[1].multiplyScalar( this.cachedBC.barycentricCoords[1], tmpV2 ), tmpV1 )
-                  .add( this.simplexPointsP[2].multiplyScalar( this.cachedBC.barycentricCoords[2], tmpV2 ), tmpV1 )
-                  .add( this.simplexPointsP[3].multiplyScalar( this.cachedBC.barycentricCoords[3], tmpV2 ), tmpV1 )
+                  .add( this.simplexPointsP[1].multiplyScalar( this.cachedBC.barycentricCoords[1], tmpV1 ), tmpV2 )
+                  .add( this.simplexPointsP[2].multiplyScalar( this.cachedBC.barycentricCoords[2], tmpV1 ), tmpV2 )
+                  .add( this.simplexPointsP[3].multiplyScalar( this.cachedBC.barycentricCoords[3], tmpV1 ), tmpV2 )
               );
 
               this.cachedP2.assign(
                 this.simplexPointsQ[0].multiplyScalar( this.cachedBC.barycentricCoords[0], tmpV2 )
-                  .add( this.simplexPointsQ[1].multiplyScalar( this.cachedBC.barycentricCoords[1], tmpV2 ), tmpV1 )
-                  .add( this.simplexPointsQ[2].multiplyScalar( this.cachedBC.barycentricCoords[2], tmpV2 ), tmpV1 )
-                  .add( this.simplexPointsQ[3].multiplyScalar( this.cachedBC.barycentricCoords[3], tmpV2 ), tmpV1 )
+                  .add( this.simplexPointsQ[1].multiplyScalar( this.cachedBC.barycentricCoords[1], tmpV1 ), tmpV2 )
+                  .add( this.simplexPointsQ[2].multiplyScalar( this.cachedBC.barycentricCoords[2], tmpV1 ), tmpV2 )
+                  .add( this.simplexPointsQ[3].multiplyScalar( this.cachedBC.barycentricCoords[3], tmpV1 ), tmpV2 )
               );
 
               this.cachedV.assign( this.cachedP1.subtract( this.cachedP2 ) );

@@ -106,8 +106,7 @@
 
         this.lastUsedMethod = -1;
 
-
-        var squaredDistance = Infinity;
+        var squaredDistance = Bump.LARGE_FLOAT;
         var delta = 0;
 
         var margin = marginA + marginB;

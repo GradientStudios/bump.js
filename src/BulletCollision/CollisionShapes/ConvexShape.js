@@ -36,17 +36,15 @@
             Bump.Fsels( localDir.z, halfExtents.z, -halfExtents.z )
           );
 
-    //     case Bump.BroadphaseNativeTypes.TRIANGLE_SHAPE_PROXYTYPE:
-    //       var triangleShape = this;
-    //       var dir = localDir.clone();;
-    //       var vertices = triangleShape.vertices1[0];
-    //       var dots = Bump.Vector3.create(
-    //         dir.dot( vertices[0] ),
-    //         dir.dot( vertices[1] ),
-    //         dir.dot( vertices[2] )
-    //       );
-    //       var sup = vertices[ dots.maxAxis() ];
-    //       return sup.clone();
+        case Bump.BroadphaseNativeTypes.TRIANGLE_SHAPE_PROXYTYPE:
+          var triangleShape = this;
+          var dir = localDir.clone();
+          var dots = Bump.Vector3.create(
+            dir.dot( triangleShape.vertices10 ),
+            dir.dot( triangleShape.vertices11 ),
+            dir.dot( triangleShape.vertices12 )
+          );
+          return dest.assign( triangleShape[ 'vertices1' + dots.maxAxis() ] );
 
     //     case Bump.BroadphaseNativeTypes.CYLINDER_SHAPE_PROXYTYPE:
     //       var cylShape = this;
