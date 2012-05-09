@@ -272,7 +272,7 @@
 
               if ( lenSqr > ( SIMD_EPSILON * SIMD_EPSILON ) ) {
                 tmpNormalInB.divideScalarSelf( Math.sqrt( lenSqr ) );
-                distance2 = tmpPointOnA.subtract( tmpPointOnB ).negate().length();
+                distance2 = -(tmpPointOnA.subtract( tmpPointOnB ).length());
                 // only replace valid penetrations when the result is deeper (check)
                 if ( !isValid || ( distance2 < distance ) ) {
                   distance = distance2;
