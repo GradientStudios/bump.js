@@ -189,23 +189,29 @@
       // if provided. If not, a new Vector3 is created and returned.
       // This function is analogous to `btVector3`'s `operator/` for `btScalar`.
       divideScalar: function( scalar, dest ) {
+        var inv = 1 / scalar;
+
         if ( dest ) {
-          dest.x = this.x / scalar;
-          dest.y = this.y / scalar;
-          dest.z = this.z / scalar;
+          dest.x = this.x * inv;
+          dest.y = this.y * inv;
+          dest.z = this.z * inv;
           return dest;
         }
-        return Bump.Vector3.create( this.x / scalar,
-                                    this.y / scalar,
-                                    this.z / scalar );
+
+        return Bump.Vector3.create(
+          this.x * inv,
+          this.y * inv,
+          this.z * inv
+        );
       },
 
       // Divides `this` vector by the given `scalar`, storing the result in `this`.
       // This function is analogous to `btVector3`'s `operator/=` for `btScalar`.
       divideScalarSelf: function( scalar ) {
-        this.x /= scalar;
-        this.y /= scalar;
-        this.z /= scalar;
+        var inv = 1 / scalar;
+        this.x *= inv;
+        this.y *= inv;
+        this.z *= inv;
         return this;
       },
 
