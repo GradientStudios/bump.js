@@ -145,7 +145,7 @@
       },
 
       clone: function( dest ) {
-        dest = dest || Bump.RigidBody.create();
+        dest = dest || Bump.RigidBody.create( 0, null, null );
 
         this._super( dest );
 
