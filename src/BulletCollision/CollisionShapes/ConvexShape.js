@@ -169,7 +169,7 @@
         }
 
         // Should never reach here.
-        // `btAssert( 0 );`
+        Bump.Assert( false );
         return dest.setValue( 0, 0, 0 );
       },
 
