@@ -320,9 +320,6 @@
       },
 
       getsupport: function( d, sv ) {
-        Bump.Assert( d instanceof Bump.Vector3.prototype.constructor );
-        Bump.Assert( sv instanceof GJK.sSV.prototype.constructor );
-
         sv.d = d.divideScalar( d.length() );
         sv.w = this.shape.Support( sv.d );
       },
@@ -330,19 +327,12 @@
       removevertice: Bump.notImplemented,
 
       appendvertice: function( simplex, v ) {
-        Bump.Assert( simplex instanceof GJK.sSimplex.prototype.constructor );
-        Bump.Assert( v instanceof Bump.Vector3.prototype.constructor );
-
         simplex.p[ simplex.rank ] = 0;
         simplex.c[ simplex.rank ] = ( this.free[ --this.nfree ] );
         this.getsupport( v, simplex.c[ simplex.rank++ ] );
       },
 
       det: function( a, b, c ) {
-        Bump.Assert( a instanceof Bump.Vector3.prototype.constructor );
-        Bump.Assert( b instanceof Bump.Vector3.prototype.constructor );
-        Bump.Assert( c instanceof Bump.Vector3.prototype.constructor );
-
         return (
           a.y * b.z * c.x + a.z * b.x * c.y -
           a.x * b.z * c.y - a.y * b.x * c.z +
@@ -355,9 +345,6 @@
       },
 
       projectorigin2: function( a, b, w, m ) {
-        Bump.Assert( m instanceof Object );
-        Bump.Assert( typeof m.value === 'number' );
-
         var d = b.subtract( a );
         var l = d.length2();
         if ( l > GJK_SIMPLEX2_EPS ) {
@@ -370,9 +357,6 @@
       },
 
       projectorigin3: function( a, b, c, w, m ) {
-        Bump.Assert( m instanceof Object );
-        Bump.Assert( typeof m.value === 'number' );
-
         var vt = [ a, b, c ];
         var dl = [
           a.subtract( b ),
@@ -417,9 +401,6 @@
       },
 
       projectorigin4: function( a, b, c, d, w, m ) {
-        Bump.Assert( m instanceof Object );
-        Bump.Assert( typeof m.value === 'number' );
-
         var tmp = Bump.Vector3.create();
 
         var vt = [ a, b, c, d ];
@@ -548,9 +529,6 @@
       },
 
       Evaluate: function( gjk, guess ) {
-        Bump.Assert( gjk instanceof GJK.prototype.constructor );
-        Bump.Assert( guess instanceof Bump.Vector3.prototype.constructor );
-
         var tmpVec1    = Bump.Vector3.create();
         var tmpVec2    = Bump.Vector3.create();
         var bind       = EPA.bind;
@@ -682,11 +660,6 @@
       },
 
       newface: function( a, b, c, forced ) {
-        Bump.Assert( a instanceof EPA.sSV.prototype.constructor );
-        Bump.Assert( b instanceof EPA.sSV.prototype.constructor );
-        Bump.Assert( c instanceof EPA.sSV.prototype.constructor );
-        Bump.Assert( typeof forced === 'boolean' );
-
         var eStatus = EPA.eStatus;
         var m_stock = this.stock;
 
@@ -741,12 +714,6 @@
       },
 
       expand: function( pass, w, f, e, horizon ) {
-        Bump.Assert( typeof pass === 'number' );
-        Bump.Assert( w instanceof EPA.sSV.prototype.constructor );
-        Bump.Assert( f instanceof EPA.sFace.prototype.constructor );
-        Bump.Assert( typeof e === 'number' );
-        Bump.Assert( horizon instanceof EPA.sHorizon.prototype.constructor );
-
         if ( f.pass[0] !== pass ) {
           var e1 = i1m3[e];
           if ( ( f.n.dot(w.w) - f.d ) < -EPA_PLANE_EPS ) {
@@ -784,19 +751,11 @@
 
     typeMembers: {
       bind: function( fa, ea, fb, eb ) {
-        Bump.Assert( fa instanceof EPA.sFace.prototype.constructor );
-        Bump.Assert( typeof ea === 'number' );
-        Bump.Assert( fb instanceof EPA.sFace.prototype.constructor );
-        Bump.Assert( typeof eb === 'number' );
-
         fa.e[ea] = eb; fa.f[ea] = fb;
         fb.e[eb] = ea; fb.f[eb] = fa;
       },
 
       append: function( list, face ) {
-        Bump.Assert( list instanceof EPA.sList.prototype.constructor );
-        Bump.Assert( face instanceof EPA.sFace.prototype.constructor );
-
         face.l[0] = null;
         face.l[1] = list.root;
         if ( list.root ) { list.root.l[0] = face; }
@@ -805,9 +764,6 @@
       },
 
       remove: function( list, face ) {
-        Bump.Assert( list instanceof EPA.sList.prototype.constructor );
-        Bump.Assert( face instanceof EPA.sFace.prototype.constructor );
-
         if ( face.l[1] ) { face.l[1].l[0] = face.l[0]; }
         if ( face.l[0] ) { face.l[0].l[1] = face.l[1]; }
         if ( face === list.root ) { list.root = face.l[1]; }
