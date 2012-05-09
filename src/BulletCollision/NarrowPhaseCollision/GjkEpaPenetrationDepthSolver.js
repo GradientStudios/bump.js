@@ -37,14 +37,14 @@
             guessVector, results
           )
         ) {
-          wWitnessOnA.assign( results.witnesses[0] );
-          wWitnessOnB.assign( results.witnesses[1] );
+          wWitnessOnA.assign( results.witnesses0 );
+          wWitnessOnB.assign( results.witnesses1 );
           v.assign( results.normal );
           return true;
         } else {
           if ( GjkEpaSolver2.Distance( pConvexA, transformA, pConvexB, transformB, guessVector, results ) ) {
-            wWitnessOnA.assign( results.witnesses[0] );
-            wWitnessOnB.assign( results.witnesses[1] );
+            wWitnessOnA.assign( results.witnesses0 );
+            wWitnessOnB.assign( results.witnesses1 );
             v.assign( results.normal );
             return false;
           }

@@ -19,6 +19,8 @@
 
   // Used by `projectorigin3` and `projectorigin4`
   var imd3 = new Uint32Array([ 1, 2, 0 ]);
+  var i1m3 = new Uint32Array([ 1, 2, 0 ]);
+  var i2m3 = new Uint32Array([ 2, 0, 1 ]);
 
   var MinkowskiDiff = Bump.type({
     init: function MinkowskiDiff() {
@@ -254,7 +256,73 @@
         return this.status;
       },
 
+      EncloseOrigin: function() {
+        var m_simplex = this.simplex;
+
+        var i, axis;
+        switch ( m_simplex.rank ) {
+        case 1:
+          for ( i = 0; i < 3; ++i ) {
+            axis = Bump.Vector3.create( 0, 0, 0 );
+            axis[i] = 1;
+            this.appendvertice( m_simplex, axis );
+            if ( this.EncloseOrigin() ) { return true; }
+            this.removevertice( m_simplex );
+            this.appendvertice( m_simplex, axis.negate() );
+            if ( this.EncloseOrigin() ) { return true; }
+            this.removevertice( m_simplex );
+          }
+          break;
+
+        case 2:
+          var d = m_simplex.c[1].w.subtract( m_simplex.c[0].w );
+          for ( i = 0; i < 3; ++i ) {
+            axis = Bump.Vector3.create( 0, 0, 0 );
+            axis[i] = 1;
+            var p = d.cross( axis );
+            if ( p.length2() > 0 ) {
+              this.appendvertice( m_simplex, p );
+              if ( this.EncloseOrigin() ) { return true; }
+              this.removevertice( m_simplex );
+              this.appendvertice( m_simplex, p.negate() );
+              if ( this.EncloseOrigin() ) { return true; }
+              this.removevertice( m_simplex );
+            }
+          }
+          break;
+
+        case 3:
+          var n = m_simplex.c[1].w
+            .subtract( m_simplex.c[0].w )
+            .cross( m_simplex.c[2].w.subtract( m_simplex.c[0].w ) );
+          if ( n.length2() > 0 ) {
+            this.appendvertice( m_simplex, n );
+            if ( this.EncloseOrigin() ) { return true; }
+            this.removevertice( m_simplex );
+            this.appendvertice( m_simplex, n.negate() );
+            if ( this.EncloseOrigin() ) { return true; }
+            this.removevertice( m_simplex );
+          }
+          break;
+
+        case    4:
+          if ( Math.abs(
+            this.det( m_simplex.c[0].w.subtract( m_simplex.c[3].w ),
+                      m_simplex.c[1].w.subtract( m_simplex.c[3].w ),
+                      m_simplex.c[2].w.subtract( m_simplex.c[3].w ) )
+          ) > 0 ) {
+            return true;
+          }
+          break;
+
+        }
+        return false;
+      },
+
       getsupport: function( d, sv ) {
+        Bump.Assert( d instanceof Bump.Vector3.prototype.constructor );
+        Bump.Assert( sv instanceof GJK.sSV.prototype.constructor );
+
         sv.d = d.divideScalar( d.length() );
         sv.w = this.shape.Support( sv.d );
       },
@@ -262,12 +330,19 @@
       removevertice: Bump.notImplemented,
 
       appendvertice: function( simplex, v ) {
+        Bump.Assert( simplex instanceof GJK.sSimplex.prototype.constructor );
+        Bump.Assert( v instanceof Bump.Vector3.prototype.constructor );
+
         simplex.p[ simplex.rank ] = 0;
         simplex.c[ simplex.rank ] = ( this.free[ --this.nfree ] );
         this.getsupport( v, simplex.c[ simplex.rank++ ] );
       },
 
       det: function( a, b, c ) {
+        Bump.Assert( a instanceof Bump.Vector3.prototype.constructor );
+        Bump.Assert( b instanceof Bump.Vector3.prototype.constructor );
+        Bump.Assert( c instanceof Bump.Vector3.prototype.constructor );
+
         return (
           a.y * b.z * c.x + a.z * b.x * c.y -
           a.x * b.z * c.y - a.y * b.x * c.z +
@@ -280,6 +355,9 @@
       },
 
       projectorigin2: function( a, b, w, m ) {
+        Bump.Assert( m instanceof Object );
+        Bump.Assert( typeof m.value === 'number' );
+
         var d = b.subtract( a );
         var l = d.length2();
         if ( l > GJK_SIMPLEX2_EPS ) {
@@ -292,6 +370,9 @@
       },
 
       projectorigin3: function( a, b, c, w, m ) {
+        Bump.Assert( m instanceof Object );
+        Bump.Assert( typeof m.value === 'number' );
+
         var vt = [ a, b, c ];
         var dl = [
           a.subtract( b ),
@@ -336,6 +417,9 @@
       },
 
       projectorigin4: function( a, b, c, d, w, m ) {
+        Bump.Assert( m instanceof Object );
+        Bump.Assert( typeof m.value === 'number' );
+
         var tmp = Bump.Vector3.create();
 
         var vt = [ a, b, c, d ];
@@ -349,8 +433,7 @@
           a.dot(
             b.subtract( c )
               .cross(
-                a.subtract( b, tmp ), tmp ) )
-          <= 0;
+                a.subtract( b, tmp ), tmp ) ) <= 0;
         if ( ng && ( Math.abs( vl ) > GJK_SIMPLEX4_EPS ) ) {
           var mindist = -1;
           var subw = [ 0, 0, 0 ];
@@ -409,7 +492,7 @@
       sSimplex: Bump.type({
         init: function sSimplex() {
           this.c = [ null, null, null, null ];
-          this.p = [    0,    0,    0,    0 ];
+          this.p = new Float64Array(4);
           this.rank = 0;
         }
       }),
@@ -423,8 +506,396 @@
     }
   });
 
-  var EPA = Bump.type({
+  // _EPA is for referencing EPA inside of constructor named EPA.
+  var EPA, _EPA;
+  EPA = _EPA = Bump.type({
+    init: function EPA() {
+      var i;
 
+      // Default initializers
+      this.status = 0;
+      this.result = GJK.sSimplex.create();
+      this.normal = Bump.Vector3.create();
+      this.depth  = 0;
+
+      this.sv_store = new Array( EPA_MAX_VERTICES );
+      for ( i = 0; i < this.sv_store.length; ++i ) {
+        this.sv_store[i] = _EPA.sSV.create();
+      }
+
+      this.fc_store = new Array( EPA_MAX_FACES );
+      for ( i = 0; i < this.fc_store.length; ++i ) {
+        this.fc_store[i] = _EPA.sFace.create();
+      }
+
+      this.nextsv = 0;
+      this.hull   = _EPA.sList.create();
+      this.stock  = _EPA.sList.create();
+      // End default initializers
+
+      this.Initialize();
+    },
+
+    members: {
+      Initialize: function() {
+        this.status = EPA.eStatus.Failed;
+        this.normal.setValue( 0, 0, 0 );
+        this.depth  = 0;
+        this.nextsv = 0;
+        for ( var i = 0; i < EPA_MAX_FACES; ++i ) {
+          EPA.append( this.stock, this.fc_store[ EPA_MAX_FACES - i - 1 ] );
+        }
+      },
+
+      Evaluate: function( gjk, guess ) {
+        Bump.Assert( gjk instanceof GJK.prototype.constructor );
+        Bump.Assert( guess instanceof Bump.Vector3.prototype.constructor );
+
+        var tmpVec1    = Bump.Vector3.create();
+        var tmpVec2    = Bump.Vector3.create();
+        var bind       = EPA.bind;
+        var append     = EPA.append;
+        var remove     = EPA.remove;
+        var eStatus    = EPA.eStatus;
+        var m_result   = this.result;
+        var m_hull     = this.hull;
+        var m_stock    = this.stock;
+        var m_sv_store = this.sv_store;
+
+        var simplex = gjk.simplex;
+        if ( ( simplex.rank > 1 ) && gjk.EncloseOrigin() ) {
+          // Clean up
+          while ( m_hull.root ) {
+            var f = m_hull.root;
+            remove( m_hull, f );
+            append( m_stock, f );
+          }
+          this.status = eStatus.Valid;
+          this.nextsv = 0;
+
+          // Orient simplex
+          if ( gjk.det( simplex.c[0].w.subtract( simplex.c[3].w ),
+                        simplex.c[1].w.subtract( simplex.c[3].w ),
+                        simplex.c[2].w.subtract( simplex.c[3].w ) ) < 0 )
+          {
+            var tmp;
+
+            tmp = simplex.c[0];
+            simplex.c[0] = simplex.c[1];
+            simplex.c[1] = tmp;
+
+            tmp = simplex.p[0];
+            simplex.p[0] = simplex.p[1];
+            simplex.p[1] = tmp;
+          }
+
+          // Build initial hull
+          var tetra = [
+            this.newface( simplex.c[0], simplex.c[1], simplex.c[2], true ),
+            this.newface( simplex.c[1], simplex.c[0], simplex.c[3], true ),
+            this.newface( simplex.c[2], simplex.c[1], simplex.c[3], true ),
+            this.newface( simplex.c[0], simplex.c[2], simplex.c[3], true )
+          ];
+
+          if ( m_hull.count === 4 ) {
+            var best  = this.findbest();
+            var outer = best.clone();
+            var pass  = 0;
+            var iterations = 0;
+            bind( tetra[0], 0, tetra[1], 0 );
+            bind( tetra[0], 1, tetra[2], 0 );
+            bind( tetra[0], 2, tetra[3], 0 );
+            bind( tetra[1], 1, tetra[3], 2 );
+            bind( tetra[1], 2, tetra[2], 1 );
+            bind( tetra[2], 2, tetra[3], 1 );
+            this.status = eStatus.Valid;
+            for ( ; iterations < EPA_MAX_ITERATIONS; ++iterations ) {
+              if ( this.nextsv < EPA_MAX_VERTICES ) {
+                var horizon = EPA.sHorizon.create();
+                // w is supposed to be a sSV*, but its never used like an array,
+                // for now.
+                var w = m_sv_store[ this.nextsv++ ];
+                var valid = true;
+                best.pass[0] = ++pass;
+                gjk.getsupport( best.n, w );
+                var wdist = best.n.dot( w.w ) - best.d;
+                if ( wdist > EPA_ACCURACY ) {
+                  for ( var j = 0; ( j < 3 ) && valid; ++j ) {
+                    valid = valid &&
+                      this.expand( pass, w, best.f[j], best.e[j], horizon );
+                  }
+
+                  if ( valid && ( horizon.nf >= 3 ) ) {
+                    bind( horizon.cf, 1, horizon.ff, 2 );
+                    remove( m_hull, best );
+                    append( m_stock, best );
+                    best = this.findbest();
+                    if ( best.p >= outer.p ) { outer.assign( best ); }
+                  } else { this.status = eStatus.InvalidHull; break; }
+                } else { this.status = eStatus.AccuraryReached; break; }
+              } else { this.status = eStatus.OutOfVertices; break; }
+            }
+
+            var projection = outer.n.multiplyScalar( outer.d );
+            this.normal.assign( outer.n );
+            this.depth    = outer.d;
+            m_result.rank = 3;
+            m_result.c[0] = outer.c[0];
+            m_result.c[1] = outer.c[1];
+            m_result.c[2] = outer.c[2];
+            m_result.p[0] = outer.c[1].w
+              .subtract( projection, tmpVec1 )
+              .cross( outer.c[2].w.subtract( projection, tmpVec2 ), tmpVec1 )
+              .length();
+            m_result.p[1] = outer.c[2].w
+              .subtract( projection, tmpVec1 )
+              .cross( outer.c[0].w.subtract( projection, tmpVec2 ), tmpVec1 )
+              .length();
+            m_result.p[2] = outer.c[0].w
+              .subtract( projection, tmpVec1 )
+              .cross( outer.c[1].w.subtract( projection, tmpVec2 ), tmpVec1 )
+              .length();
+
+            var sum        = m_result.p[0] + m_result.p[1] + m_result.p[2];
+            m_result.p[0] /= sum;
+            m_result.p[1] /= sum;
+            m_result.p[2] /= sum;
+            return this.status;
+          }
+        }
+
+        // Fallback
+        var m_normal = this.normal;
+        this.status = eStatus.FallBack;
+        m_normal.assign( guess.negate() );
+        var nl = m_normal.length();
+        if ( nl > 0 ) {
+          m_normal.divideScalarSelf( nl );
+        } else {
+          m_normal.setValue( 1, 0, 0 );
+        }
+        this.depth = 0;
+        m_result.rank = 1;
+        m_result.c[0] = simplex.c[0];
+        m_result.p[0] = 1;
+        return this.status;
+      },
+
+      newface: function( a, b, c, forced ) {
+        Bump.Assert( a instanceof EPA.sSV.prototype.constructor );
+        Bump.Assert( b instanceof EPA.sSV.prototype.constructor );
+        Bump.Assert( c instanceof EPA.sSV.prototype.constructor );
+        Bump.Assert( typeof forced === 'boolean' );
+
+        var eStatus = EPA.eStatus;
+        var m_stock = this.stock;
+
+        if ( m_stock.root ) {
+          var face = m_stock.root;
+          EPA.remove( m_stock, face );
+          EPA.append( this.hull, face );
+          face.pass[0] = 0;
+          face.c[0] = a;
+          face.c[1] = b;
+          face.c[2] = c;
+          face.n.assign( b.w.subtract(a.w).cross( c.w.subtract(a.w) ) );
+
+          var l = face.n.length();
+          var v = l > EPA_ACCURACY;
+          face.p = Math.min(
+            a.w.dot( face.n.cross( a.w.subtract(b.w) ) ),
+            b.w.dot( face.n.cross( b.w.subtract(c.w) ) ),
+            c.w.dot( face.n.cross( c.w.subtract(a.w) ) )
+          ) / ( v ? l : 1 );
+          face.p = face.p >= -EPA_INSIDE_EPS ? 0 : face.p;
+
+          if ( v ) {
+            face.d = a.w.dot( face.n ) / l;
+            face.n.divideScalarSelf( l );
+            if ( forced || ( face.d >= -EPA_PLANE_EPS ) ) {
+              return face;
+            } else { this.status = eStatus.NonConvex; }
+          } else { this.status = eStatus.Degenerated; }
+
+          EPA.remove( this.hull, face );
+          EPA.append( m_stock, face );
+          return null;
+        }
+        this.status = m_stock.root ? eStatus.OutOfVertices : eStatus.OutOfFaces;
+        return null;
+      },
+
+      findbest: function() {
+        var minf = this.hull.root;
+        var mind = minf.d * minf.d;
+        var maxp = minf.p;
+        for ( var f = minf.l[1]; f; f = f.l[1] ) {
+          var sqd = f.d * f.d;
+          if ( ( f.p >= maxp ) && ( sqd < mind ) ) {
+            minf = f;
+            mind = sqd;
+            maxp = f.p;
+          }
+        }
+        return minf;
+      },
+
+      expand: function( pass, w, f, e, horizon ) {
+        Bump.Assert( typeof pass === 'number' );
+        Bump.Assert( w instanceof EPA.sSV.prototype.constructor );
+        Bump.Assert( f instanceof EPA.sFace.prototype.constructor );
+        Bump.Assert( typeof e === 'number' );
+        Bump.Assert( horizon instanceof EPA.sHorizon.prototype.constructor );
+
+        if ( f.pass[0] !== pass ) {
+          var e1 = i1m3[e];
+          if ( ( f.n.dot(w.w) - f.d ) < -EPA_PLANE_EPS ) {
+            var nf = this.newface( f.c[e1], f.c[e], w, false );
+            if ( nf ) {
+              EPA.bind( nf, 0, f, e );
+              if ( horizon.cf ) {
+                EPA.bind( horizon.cf, 1, nf, 2 );
+              } else {
+                horizon.ff = nf;
+              }
+              horizon.cf = nf;
+              ++horizon.nf;
+              return true;
+            }
+          }
+
+          else {
+            var e2 = i2m3[e];
+            f.pass[0] = pass;
+            if ( this.expand( pass, w, f.f[e1], f.e[e1], horizon ) &&
+                 this.expand( pass, w, f.f[e2], f.e[e2], horizon ) )
+            {
+              EPA.remove( this.hull, f );
+              EPA.append( this.stock, f );
+              return true;
+            }
+          }
+        }
+
+        return false;
+      }
+
+    },
+
+    typeMembers: {
+      bind: function( fa, ea, fb, eb ) {
+        Bump.Assert( fa instanceof EPA.sFace.prototype.constructor );
+        Bump.Assert( typeof ea === 'number' );
+        Bump.Assert( fb instanceof EPA.sFace.prototype.constructor );
+        Bump.Assert( typeof eb === 'number' );
+
+        fa.e[ea] = eb; fa.f[ea] = fb;
+        fb.e[eb] = ea; fb.f[eb] = fa;
+      },
+
+      append: function( list, face ) {
+        Bump.Assert( list instanceof EPA.sList.prototype.constructor );
+        Bump.Assert( face instanceof EPA.sFace.prototype.constructor );
+
+        face.l[0] = null;
+        face.l[1] = list.root;
+        if ( list.root ) { list.root.l[0] = face; }
+        list.root = face;
+        ++list.count;
+      },
+
+      remove: function( list, face ) {
+        Bump.Assert( list instanceof EPA.sList.prototype.constructor );
+        Bump.Assert( face instanceof EPA.sFace.prototype.constructor );
+
+        if ( face.l[1] ) { face.l[1].l[0] = face.l[0]; }
+        if ( face.l[0] ) { face.l[0].l[1] = face.l[1]; }
+        if ( face === list.root ) { list.root = face.l[1]; }
+        --list.count;
+      },
+
+      sSV: GJK.sSV,
+
+      sFace: Bump.type({
+        init: function sFace() {
+          this.n = Bump.Vector3.create();
+          this.d = 0;
+          this.p = 0;
+          this.c = [ null, null, null ];
+          this.f = [ null, null, null ];
+          this.l = [ null, null ];
+
+          var buffer = new ArrayBuffer( 4 );
+          this.e    = new Uint8Array( buffer, 0, 3 );
+          this.pass = new Uint8Array( buffer, 3, 1 );
+        },
+
+        members: {
+          clone: function( dest ) {
+            if ( !dest ) { dest = EPA.sFace.create(); }
+            dest.n.assign( this.n );
+            dest.d = this.d;
+            dest.p = this.p;
+            for ( var i = 0; i < 3; ++i ) {
+              dest.c[i] = this.c[i];
+              dest.f[i] = this.f[i];
+            }
+            dest.l[0] = this.l[0];
+            dest.l[1] = this.l[1];
+
+            dest.e.set( this.e );
+            dest.pass.set( this.pass );
+            return dest;
+          },
+
+          assign: function( other ) {
+            this.n.assign( other.n );
+            this.d = other.d;
+            this.p = other.p;
+            for ( var i = 0; i < 3; ++i ) {
+              this.c[i] = other.c[i];
+              this.f[i] = other.f[i];
+            }
+            this.l[0] = other.l[0];
+            this.l[1] = other.l[1];
+
+            this.e.set( other.e );
+            this.pass.set( other.pass );
+            return this;
+          }
+
+        }
+      }),
+
+      sList: Bump.type({
+        init: function sList() {
+          this.root = null;
+          this.count = 0;
+        }
+      }),
+
+      sHorizon: Bump.type({
+        init: function sHorizon() {
+          this.cf = null;
+          this.ff = null;
+          this.nf = 0;
+        }
+      }),
+
+      eStatus: Bump.Enum([
+        'Valid',
+        'Touching',
+        'Degenerated',
+        'NonConvex',
+        'InvalidHull',
+        'OutOfFaces',
+        'OutOfVertices',
+        'AccuraryReached',
+        'FallBack',
+        'Failed'
+      ])
+
+    }
   });
 
   var Initialize = function Initialize(
