@@ -20,6 +20,67 @@ test( 'instantiate test 1', 3, function() {
   equal( Object.getPrototypeOf(a), ObjectA.prototype );
 });
 
+test( 'constructor', function() {
+  var A = Bump.type({
+    init: function A() {
+      this.resultA = 0;
+      this.a = 3;
+      this.foo();
+    },
+
+    members: {
+      foo: function() {
+        this.bar();
+      },
+
+      bar: function() {
+        this.resultA = this.a;
+      }
+    }
+  });
+
+  var B = Bump.type({
+    parent: A,
+
+    init: function B() {
+      this._super();
+      this.resultB = 0;
+      this.b = 2;
+      this.foo();
+    },
+
+    members: {
+      bar: function() {
+        this.resultB = this.b;
+      }
+    }
+  });
+
+  var C = Bump.type({
+    parent: B,
+
+    init: function C() {
+      this._super();
+      this.resultC = 0;
+      this.c = 1;
+    },
+
+    members: {
+      bar: function() {
+        this.resultC = this.c;
+      }
+    }
+  });
+
+  var c = C.create();
+  equal( c.resultA, 3, 'A ctor calls A.bar' );
+  equal( c.resultB, 2, 'B ctor calls B.bar' );
+  equal( c.resultC, 0, 'C.bar is not called' );
+
+  c.foo();
+  equal( c.resultC, 1, 'C.foo calls C.bar' );
+});
+
 test( 'isType', 2, function() {
   ok( Bump.isType( Bump.type() ) );
   ok( !Bump.isType( {} ) );
@@ -133,7 +194,7 @@ test( 'typeProperties', 2, function() {
   notEqual( a.me, 1, 'typeProperty does not appear on instance' );
 });
 
-test( '_super init', 4, function() {
+test( '_super init', 3, function() {
   var A = Bump.type({
         init: function() {
           this.a = 1;
@@ -153,25 +214,28 @@ test( '_super init', 4, function() {
   equal( b.a, a.a, 'B instance initialized with A values' );
   equal( b.b, 2, 'B instance initialized with B values' );
 
+  // Note: The error is now thrown when the function is called, rather than
+  // during Bump.type. This is so that it is easier to isolate which function
+  // is actually causing the problem.
   raises(function() {
     Bump.type({
       init: function() {
         this._super();
       }
-    });
+    }).create();
   }, function( e ) {
-    return e.short == 'no parent function';
-  }, 'type raises error if no parent is defined and using this._super' );
+    return e instanceof Bump.InvalidSuperError;
+  }, 'call to _super raises error if no parent is defined' );
 
-  ok( (function() {
-    Bump.type({
-      parent: Bump.type(),
-      init: function() {
-        this._super();
-      }
-    });
-    return true;
-  })(), 'type does not raise error for _super as parent always has init' );
+  // ok( (function() {
+  //   Bump.type({
+  //     parent: Bump.type(),
+  //     init: function() {
+  //       this._super();
+  //     }
+  //   });
+  //   return true;
+  // })(), 'type does not raise error for _super as parent always has init' );
 });
 
 test( '_super methods', 3, function() {
@@ -198,10 +262,10 @@ test( '_super methods', 3, function() {
       members: {
         get: function() { return this._super(); }
       }
-    });
+    }).create().get();
   }, function( e ) {
-    return e.short == 'no parent function';
-  }, 'type raises error if no parent is defined and using this._super' );
+    return e instanceof Bump.InvalidSuperError;
+  }, 'call to _super raises error if no parent is defined' );
 
   raises(function() {
     Bump.type({
@@ -209,10 +273,10 @@ test( '_super methods', 3, function() {
       members: {
         set: function( value ) { this._super( value ); }
       }
-    });
+    }).create().set( 'foo' );
   }, function( e ) {
-    return e.short == 'no parent function';
-  }, 'type raises error if parent does not contain method for _super' );
+    return e instanceof Bump.InvalidSuperError;
+  }, 'call to _super raises error if no parent is defined' );
 });
 
 test( 'nested _super', function() {
@@ -267,10 +331,10 @@ test( '_super properties', 3, function() {
           get: function() { return this._super(); }
         }
       }
-    });
+    }).create().name;
   }, function( e ) {
-    return e.short == 'no parent function';
-  }, 'type raises error if no parent is defined and using this._super' );
+    return e instanceof Bump.InvalidSuperError;
+  }, 'call to _super raises error if no parent is defined' );
 
   raises(function() {
     Bump.type({
@@ -282,10 +346,10 @@ test( '_super properties', 3, function() {
           }
         }
       }
-    });
+    }).create().name;
   }, function( e ) {
-    return e.short == 'no parent function';
-  }, 'type raises error if parent does not contain property for _super' );
+    return e instanceof Bump.InvalidSuperError;
+  }, 'call to _super raises error if parent does not contain property for _super' );
 });
 
 test( 'typeMembers', 1, function() {

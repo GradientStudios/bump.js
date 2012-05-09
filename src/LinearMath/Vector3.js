@@ -417,18 +417,18 @@
       // Note that accessing vector properties using [] notation is slow and
       // should be avoided.
       maxAxis: function() {
-        return this.x > this.y ?
-          ( this.x > this.z ? 0 : 2 ) :
-          ( this.y > this.z ? 1 : 2 );
+        return this.x < this.y ?
+          ( this.y < this.z ? 2 : 1 ) :
+          ( this.x < this.z ? 2 : 0 );
       },
 
       // Returns the member name ('x', 'y', 'z') of the maximum value in `this`.
       // This function was added because property access by name is faster than
       // by array index.
       maxProperty: function() {
-        return this.x > this.y ?
-          ( this.x > this.z ? 'x' : 'z' ) :
-          ( this.y > this.z ? 'y' : 'z' );
+        return this.x < this.y ?
+          ( this.y < this.z ? 'z' : 'y' ) :
+          ( this.x < this.z ? 'z' : 'x' );
       },
 
       // Returns the maximum value stored in `this`.
@@ -698,31 +698,69 @@
 
   tmpVec41 = Bump.Vector4.create();
 
-  Bump.PlaneSpace1 = function( n, p, q ) {
+  // PlaneSpace1 optimized for Vector3s
+  Bump.PlaneSpace1Vector3 = function( n, p, q ) {
+    var n0 = n.x;
+    var n1 = n.y;
+    var n2 = n.z;
+
     var a, k;
 
-    if ( Math.abs( n[2] ) > Bump.SIMDSQRT12 ) {
+    if ( Math.abs( n2 ) > Bump.SIMDSQRT12 ) {
       // Choose p in y-z plane.
-      a = n[1] * n[1] + n[2] * n[2];
+      a = n1 * n1 + n2 * n2;
+      k = Bump.RecipSqrt( a );
+
+      p.x = 0;
+      p.y = -n2 * k;
+      p.z = n1 * k;
+      // Set `q = n x p`.
+      q.x = a * k;
+      q.y = -n0 * p.z;
+      q.z = n0 * p.y;
+    } else {
+      // Choose p in x-y plane.
+      a = n0 * n0 + n1 * n1;
+      k = Bump.RecipSqrt( a );
+      p.x = -n1 * k;
+      p.y = n0 * k;
+      p.z = 0;
+      // Set `q = n x p`.
+      q.x = -n2 * p.y;
+      q.y = n2 * p.x;
+      q.z = a * k;
+    }
+  };
+
+  Bump.PlaneSpace1 = function( n, p, q ) {
+    var n0 = n[0];
+    var n1 = n[1];
+    var n2 = n[2];
+
+    var a, k;
+
+    if ( Math.abs( n2 ) > Bump.SIMDSQRT12 ) {
+      // Choose p in y-z plane.
+      a = n1 * n1 + n2 * n2;
       k = Bump.RecipSqrt( a );
 
       p[0] = 0;
-      p[1] = -n[2] * k;
-      p[2] = n[1] * k;
+      p[1] = -n2 * k;
+      p[2] = n1 * k;
       // Set `q = n x p`.
       q[0] = a * k;
-      q[1] = -n[0] * p[2];
-      q[2] = n[0] * p[1];
+      q[1] = -n0 * p[2];
+      q[2] = n0 * p[1];
     } else {
       // Choose p in x-y plane.
-      a = n[0] * n[0] + n[1] * n[1];
+      a = n0 * n0 + n1 * n1;
       k = Bump.RecipSqrt( a );
-      p[0] = -n[1]*k;
-      p[1] = n[0]*k;
+      p[0] = -n1 * k;
+      p[1] = n0 * k;
       p[2] = 0;
       // Set `q = n x p`.
-      q[0] = -n[2] * p[1];
-      q[1] = n[2] * p[0];
+      q[0] = -n2 * p[1];
+      q[1] = n2 * p[0];
       q[2] = a * k;
     }
   };

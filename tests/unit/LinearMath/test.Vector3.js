@@ -519,25 +519,29 @@ test( 'min', 7, function() {
   equal( Bump.Vector3.create( -1, -3, -2 ).min(), -3 );
 });
 
-test( 'maxAxis', 7, function() {
-  equal( Bump.Vector3.create().maxAxis(), 2 );
-  equal( Bump.Vector3.create( -1, 0, 0 ).maxAxis(), 2 );
-  equal( Bump.Vector3.create( 0, -1, 0 ).maxAxis(), 2 );
-  equal( Bump.Vector3.create( 0, 0, -1 ).maxAxis(), 1 );
-  equal( Bump.Vector3.create( 0, 2, 3 ).maxAxis(), 2 );
-  equal( Bump.Vector3.create( 0, 3, -4 ).maxAxis(), 1 );
+module( 'Vector3.maxAxis' );
+test( 'basic', 7, function() {
+  equal( Bump.Vector3.create().maxAxis(), 0 );
+  equal( Bump.Vector3.create( -1 , 0,  0 ).maxAxis(), 1 );
+  equal( Bump.Vector3.create(  0, -1,  0 ).maxAxis(), 0 );
+  equal( Bump.Vector3.create(  0,  0, -1 ).maxAxis(), 0 );
+  equal( Bump.Vector3.create(  0,  2,  3 ).maxAxis(), 2 );
+  equal( Bump.Vector3.create(  0,  3, -4 ).maxAxis(), 1 );
   equal( Bump.Vector3.create( -1, -3, -2 ).maxAxis(), 0 );
 });
 
-test( 'maxProperty', 7, function() {
-  equal( Bump.Vector3.create().maxProperty(), 'z' );
-  equal( Bump.Vector3.create( -1, 0, 0 ).maxProperty(), 'z' );
-  equal( Bump.Vector3.create( 0, -1, 0 ).maxProperty(), 'z' );
-  equal( Bump.Vector3.create( 0, 0, -1 ).maxProperty(), 'y' );
-  equal( Bump.Vector3.create( 0, 2, 3 ).maxProperty(), 'z' );
-  equal( Bump.Vector3.create( 0, 3, -4 ).maxProperty(), 'y' );
+module( 'Vector3.maxProperty' );
+test( 'basic', 7, function() {
+  equal( Bump.Vector3.create().maxProperty(), 'x' );
+  equal( Bump.Vector3.create( -1,  0,  0 ).maxProperty(), 'y' );
+  equal( Bump.Vector3.create(  0, -1,  0 ).maxProperty(), 'x' );
+  equal( Bump.Vector3.create(  0,  0, -1 ).maxProperty(), 'x' );
+  equal( Bump.Vector3.create(  0,  2,  3 ).maxProperty(), 'z' );
+  equal( Bump.Vector3.create(  0,  3, -4 ).maxProperty(), 'y' );
   equal( Bump.Vector3.create( -1, -3, -2 ).maxProperty(), 'x' );
 });
+
+module( 'Bump.Vector3 math functions' );
 
 test( 'max', 7, function() {
   equal( Bump.Vector3.create().max(), 0 );
@@ -570,32 +574,26 @@ test( 'furthest', 7, function() {
   equal( Bump.Vector3.create( -2, -3, -1 ).furthest(), 1 );
 });
 
-test( 'closestAxis', 7, function() {
-  equal( Bump.Vector3.create().closestAxis(), 2 );
-  equal( Bump.Vector3.create( 0, 1, 1 ).closestAxis(), 2 );
-  equal( Bump.Vector3.create( 1, 0, 1 ).closestAxis(), 2 );
-  equal( Bump.Vector3.create( 1, 1, 0 ).closestAxis(), 1 );
-  equal( Bump.Vector3.create( 0, 2, 3 ).closestAxis(), 2 );
-  equal( Bump.Vector3.create( 4, 1, -3 ).closestAxis(), 0 );
+module( 'Vector3.closestAxis' );
+test( 'basic', 7, function() {
+  equal( Bump.Vector3.create().closestAxis(), 0 );
+  equal( Bump.Vector3.create(  0,  1,  1 ).closestAxis(), 1 );
+  equal( Bump.Vector3.create(  1,  0,  1 ).closestAxis(), 0 );
+  equal( Bump.Vector3.create(  1,  1,  0 ).closestAxis(), 0 );
+  equal( Bump.Vector3.create(  0,  2,  3 ).closestAxis(), 2 );
+  equal( Bump.Vector3.create(  4,  1, -3 ).closestAxis(), 0 );
   equal( Bump.Vector3.create( -2, -3, -1 ).closestAxis(), 1 );
 });
 
-test( 'closest', 13, function() {
-  // equal( Bump.Vector3.create().closest(), 0 );
-  // equal( Bump.Vector3.create( 0, 1, 1 ).closest(), 1 );
-  // equal( Bump.Vector3.create( 1, 0, 1 ).closest(), 1 );
-  // equal( Bump.Vector3.create( 1, 1, 0 ).closest(), 1 );
-  // equal( Bump.Vector3.create( 0, 2, 3 ).closest(), 3 );
-  // equal( Bump.Vector3.create( 4, 1, -3 ).closest(), 4 );
-  // equal( Bump.Vector3.create( -2, -3, -1 ).closest(), 3 );
-
+module( 'Vector3.closest' );
+test( 'basic', 13, function() {
   testFunc( Bump.Vector3, 'closest', {
     objects: [
-      Bump.Vector3.create( 0, 1, 1 ),
-      Bump.Vector3.create( 1, 0, 1 ),
-      Bump.Vector3.create( 1, 1, 0 ),
-      Bump.Vector3.create( 0, 2, 3 ),
-      Bump.Vector3.create( 4, 1, -3 ),
+      Bump.Vector3.create(  0,  1,  1 ),
+      Bump.Vector3.create(  1,  0,  1 ),
+      Bump.Vector3.create(  1,  1,  0 ),
+      Bump.Vector3.create(  0,  2,  3 ),
+      Bump.Vector3.create(  4,  1, -3 ),
       Bump.Vector3.create( -2, -3, -1 )
     ],
 
@@ -609,6 +607,8 @@ test( 'closest', 13, function() {
     ]
   });
 });
+
+module( 'Bump.Vector3 math functions' );
 
 test( 'setInterpolate3', 5, function() {
   var right = Bump.Vector3.create( 1, 0, 0 ),
