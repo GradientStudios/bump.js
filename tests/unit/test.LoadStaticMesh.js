@@ -63,11 +63,11 @@ test( 'basic load OBJ', function() {
   var trans = Bump.Transform.create();
 
   var checkOrigin = function( expected ) {
-    return epsilonNumberCheck( trans.origin, expected, epsilon, shapeName + ': Frame ' + i );
+    deepEqual( trans.origin, expected, shapeName + '.origin: Frame ' + i );
   };
 
   var checkBasis = function( expected ) {
-    return epsilonNumberCheck( trans.basis, expected, epsilon, shapeName + ': Frame ' + i );
+    deepEqual( trans.basis, expected, shapeName + '.basis: Frame ' + i );
   };
 
   for ( var i = 0; i < 1000; ++i ) {
@@ -76,15 +76,13 @@ test( 'basic load OBJ', function() {
     // Get box's transform
     dynamicsWorld.getCollisionObjectArray()[ 1 ].getMotionState().getWorldTransform( trans );
 
-    var epsilon = Math.pow( 2, -52 );
     var shapeName = 'BoxShape';
-
     switch ( i ) {
     case 78:
-      checkOrigin( Bump.Vector3.create(  2.00000000000000000000,  1.39777777777777911794,  0.50000000000000000000 ) );
-      checkBasis( Bump.Matrix3x3.create(  1.00000000000000000000,  0.00000000000000000000,  0.00000000000000000000,
-                                          0.00000000000000000000,  1.00000000000000000000,  0.00000000000000000000,
-                                          0.00000000000000000000,  0.00000000000000000000,  1.00000000000000000000 ) );
+      checkOrigin( Bump.Vector3.create( 2, 1.39777777777777911794, 0.5 ) );
+      checkBasis( Bump.Matrix3x3.create( 1, 0, 0,
+                                         0, 1, 0,
+                                         0, 0, 1 ) );
       break;
 
     case 79:

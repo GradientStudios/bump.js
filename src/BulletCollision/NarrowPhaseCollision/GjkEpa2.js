@@ -965,11 +965,7 @@
       }
     }),
 
-    StackSizeRequirement: function() {
-      // return sizeof( GJK ) + sizeof( EPA );
-      return 0;
-    },
-
+    StackSizeRequirement: Bump.notImplemented,
     Distance: Bump.notImplemented,
 
     Penetration: function(
