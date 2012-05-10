@@ -57,7 +57,25 @@ test( 'rayTest', function() {
   rayCallback.collisionFilterMask = FilterGroups.AllFilter ^ FilterGroups.DebrisFilter;
 
   dynamicsWorld.rayTest( from, to, rayCallback );
+
+  var epsilon = Math.pow( 2, -52 );
   ok( rayCallback.hasHit(), 'has hit' );
+  epsilonNumberCheck( rayCallback.hitPointWorld,
+                      Bump.Vector3.create( -2.000000000000000000000000000000,
+                                           -9.999999999971644015772653801832,
+                                           -1.555560000000000053788085097040 ),
+                      epsilon,
+                      'correct hitPointWorld' );
+  epsilonNumberCheck( rayCallback.hitNormalWorld,
+                      Bump.Vector3.create( 0.000000000000008326724726718211,
+                                           1.000000000000000000000000000000,
+                                           -0.000000000000048503171533133580 ),
+                      epsilon,
+                      'correct hitNormalWorld' );
+  epsilonNumberCheck( { val: rayCallback.closestHitFraction },
+                      { val: 0.969726171835015082756115134544 },
+                      epsilon,
+                      'correct closestHitFraction' );
 
   // if( rayCallback.hasHit() ) {
   //   console.log( 'rayCallback has hit!' );
