@@ -679,7 +679,6 @@
 
         this.getSolverInfo().timeStep = timeStep;
 
-
         // Solve contact and other joint constraints
         this.solveConstraints( this.getSolverInfo() );
 

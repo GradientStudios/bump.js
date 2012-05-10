@@ -11,26 +11,44 @@ this.Bump = {};
   Bump.abstract = function abstract() {
     Bump.Assert( false );
   };
-  Bump.notImplemented = function() {
-    console.log( 'Not implemented (yet)!' );
-  };
+
+  // In Chrome, creating its own notImplemented function causes the stack trace
+  // to also say what the function is called as, and therefore lets you know
+  // which function is not implemented without having to look at the caller.
+  // This uses up more memory though.
+  Bump.__defineGetter__( 'notImplemented', function() {
+    return function notImplemented() {
+      throw new Error( 'Function not implemented (yet)!' );
+    };
+  });
 
   // This regex is not exhaustive, but will not return false positives.
   var functionNameTest = /^function\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\(/;
 
+  var InvalidSuperError = function InvalidSuperError( message ) {
+    this.name = 'InvalidSuperError';
+    this.message = message || '_super function invoked without parent or function in parent';
+  };
+
+  InvalidSuperError.prototype = new Error();
+  InvalidSuperError.constructor = InvalidSuperError;
+  Bump.InvalidSuperError = InvalidSuperError;
+
+  var badSuperFunc = function _superNotFound() {
+    throw new Bump.InvalidSuperError();
+  };
+
   function superWrap( superFunc, newFunc ) {
     if ( superFunc == null ) {
-      throw {
-        short: 'no parent function',
-        message: 'trying to access _super function without parent or function in parent'
-      };
+      superFunc = badSuperFunc;
+      console.error( '_super call without parent' );
     }
 
-    var superWrappedFunc = function superWrappedFunc() {
+    var wrappedFunc = function superWrappedFunc() {
       var ret;
 
       this._super = superFunc;
-      ret = newFunc.apply( this, arguments );
+      ret = superWrappedFunc.__origFunc__.apply( this, arguments );
       delete this._super;
 
       return ret;
@@ -39,12 +57,14 @@ this.Bump = {};
     var matches = functionNameTest.exec( newFunc );
     if ( matches !== null ) {
       var functionName = matches[1];
-      var superWrappedFuncBody = superWrappedFunc.toString();
-      var newFuncBody = superWrappedFuncBody.replace( 'superWrappedFunc', functionName );
-      return eval( '(' + newFuncBody + ')' );
+      var wrappedFuncBody = wrappedFunc.toString();
+      var newFuncBody = wrappedFuncBody.replace( new RegExp( 'superWrappedFunc', 'g' ), functionName );
+      wrappedFunc = eval( '(' + newFuncBody + ')' );
     }
 
-    return superWrappedFunc;
+    wrappedFunc.__origFunc__ = newFunc;
+
+    return wrappedFunc;
   }
 
   function walkProtoChain( prototype, func ) {
@@ -65,6 +85,11 @@ this.Bump = {};
     return obj instanceof Type;
   };
 
+  var potentiallyProblematicCtors = [];
+  var potentiallyProblematicDetails = [];
+
+  var uid = 0;
+
   // The type function will be used for object inheritance.
   // Objects are instantiated with Object.create()
   Bump.type = function type( options ) {
@@ -82,6 +107,111 @@ this.Bump = {};
         key,
         getset,
         getsetIndex;
+
+    var findThisCalls = function( func ) {
+      if ( typeof func !== 'function' ) {
+        return [];
+      }
+
+      var foundFuncs = [];
+      var funcBody = func.toString();
+      var funcCallRe = /this\s*\.\s*([A-Za-z_$][A-Za-z0-9_$]*)\s*\(/g;
+      var matches;
+      while ( (matches = funcCallRe.exec( funcBody )) !== null ) {
+        if ( matches[1] !== '_super' ) {
+          if ( foundFuncs.indexOf( matches[1] ) === -1 ) {
+            foundFuncs.push( matches[1] );
+          }
+        }
+      }
+      return foundFuncs;
+    };
+
+    // Consider the following situation in C++:
+    //
+    //     struct A {
+    //       unsigned int value;
+    //       A() { foo(); }
+    //       virtual void foo() { bar(); }
+    //       virtual void bar() { value = 1; }
+    //     };
+    //
+    //     struct B : public A {
+    //       virtual void bar() { value = 2; }
+    //     };
+    //
+    //     B b;
+    //
+    // What is the value of b.value? In C++, it would be 1. With a normal
+    // prototypal inheritance port, this would probably resolve to be 2. In
+    // efforts to keep more in line with C++ (which is probably A Bad Thing),
+    // the following chunk of code attempts to locate such occurances and
+    // eliminate them by creating copies of functions with mangled names.
+    //
+    // Unfortunately, eval is used here to rewrite the code, and thus the
+    // scoping of the code is actually different than from the original source.
+    // This may prove to be problematic, and is probably Evil. You have been
+    // warned.
+    //
+    // - EL
+    var parentType = options.parent;
+    var idx = potentiallyProblematicCtors.indexOf( parent.init );
+    if ( idx !== -1 ) {
+      var badFuncs = potentiallyProblematicDetails[ idx ].funcs;
+      for ( var i = 0; i < badFuncs.length; ++i ) {
+        var unmangledFuncName = badFuncs[i].name;
+        if ( unmangledFuncName in members ) {
+          var parentUid = parentType.__uid__;
+          var parentTypeName = parent.init.name;
+          var childTypeName = options.init.name;
+          console.warn( 'Bump.type: Ctor for ' + parentTypeName + ' calls ' + badFuncs[i].name +
+                        ' which is overridden in ' + childTypeName + '. This behavior ' +
+                        'is inconsistent with behaviour in C++.' );
+          var scopedEval = parentType.__evalInScope__ ||
+            ( !console.warn( '  \u22a2 Using unscoped eval, potentially problematic in minified code' ) && eval );
+
+          var funcsToMangle = badFuncs[i].callStack.slice(0);
+          funcsToMangle.push( unmangledFuncName );
+
+          var re, callerBody, callerFunc, newCallerBody, mangledFuncName;
+          var unmangledCallerName = 'init', mangledCallerName = 'init';
+          while ( funcsToMangle.length ) {
+            unmangledFuncName = funcsToMangle.shift();
+            mangledFuncName = '__' + parentTypeName + parentUid + '_' + unmangledFuncName + '__';
+            if ( mangledCallerName in parent ) {
+              callerFunc = parent[ mangledCallerName ];
+            } else {
+              callerFunc = parent[ unmangledCallerName ];
+            }
+            callerBody = callerFunc.toString();
+
+            re = new RegExp( '\\bthis\\s*\\.\\s*' + unmangledFuncName + '\\s*\\(', 'g' );
+            if ( !callerFunc.__origFunc__ ) {
+              newCallerBody = callerBody.replace( re, 'this.' + mangledFuncName + '(' );
+              parent[ mangledCallerName ] = scopedEval( '(' + newCallerBody + ')' );
+            } else {
+              callerBody = callerFunc.__origFunc__.toString();
+              newCallerBody = callerBody.replace( re, 'this.' + mangledFuncName + '(' );
+              callerFunc.__origFunc__ = scopedEval( '(' + newCallerBody + ')' );
+            }
+
+            unmangledCallerName = unmangledFuncName;
+            mangledCallerName = mangledFuncName;
+          }
+
+          if ( !( mangledCallerName in parent ) ) {
+            parent[ mangledCallerName ] = parent[ unmangledCallerName ];
+          }
+        }
+      }
+    }
+
+    var potentiallyProblematicFuncs = findThisCalls( options.init ).map(function( elem ) {
+      return {
+        name: elem,
+        callStack: []
+      };
+    });
 
     function getDescriptor( key, getset, prototype ) {
       var desc = Object.getOwnPropertyDescriptor( prototype, key );
@@ -120,6 +250,41 @@ this.Bump = {};
       exports.prototype[ key ] = members[ key ];
     }
 
+    var tmpMembers = Object.create( exports.prototype );
+    var stack = potentiallyProblematicFuncs.slice(0);
+    var funcInfo, funcName;
+    var moreFuncMapper = function( elem ) {
+      var callStack = funcInfo.callStack.slice(0);
+      callStack.push( funcName );
+      return {
+        name: elem,
+        // callStack: funcInfo.callStack.slice(0).push( funcName )
+        callStack: callStack
+      };
+    };
+
+    while ( (funcInfo = stack.pop()) != null ) {
+      funcName = funcInfo.name;
+
+      if ( funcInfo.callStack.indexOf( funcName ) !== -1 ) {
+        continue;
+      }
+
+      var moreFuncs = findThisCalls( tmpMembers[ funcName ] );
+      if ( moreFuncs.length ) {
+        moreFuncs = moreFuncs.map( moreFuncMapper );
+        Array.prototype.push.apply( potentiallyProblematicFuncs, moreFuncs );
+        Array.prototype.push.apply( stack, moreFuncs );
+      }
+    }
+
+    if ( potentiallyProblematicFuncs.length ) {
+      potentiallyProblematicCtors.push( options.init );
+      potentiallyProblematicDetails.push({
+        funcs: potentiallyProblematicFuncs
+      });
+    }
+
     // If `init` is not specified within the `members` object…
     if ( !exports.prototype.hasOwnProperty( 'init' ) ) {
       // …but is defined separately, or no parent has an `init`…
@@ -140,6 +305,8 @@ this.Bump = {};
         return o;
       };
     }
+
+    exports.__uid__ = uid++;
 
     return exports;
   };
