@@ -629,7 +629,7 @@
       var pointInWorld = Bump.Vector3.create();
       if ( code < 4 ) {
         // We have less contacts than we need, so we use them all.
-        for ( j = 0; j < cnum; ++j) {
+        for ( j = 0; j < cnum; ++j ) {
           tmp = j * 3;
           pointInWorld.x = point[ tmp     ] + pa.x;
           pointInWorld.y = point[ tmp + 1 ] + pa.y;

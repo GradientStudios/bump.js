@@ -42,8 +42,8 @@
             srcIndex = 0,
             dstIndex = 0;
 
-        while(
-          ! ( ret = ( src.charCodeAt( srcIndex ) - dst.charCodeAt( dstIndex ) ) ) &&
+        while (
+          !( ret = ( src.charCodeAt( srcIndex ) - dst.charCodeAt( dstIndex ) ) ) &&
             dstIndex < dst.length
         ) {
           ++srcIndex;

@@ -96,7 +96,7 @@
         }
 
         this.curIter = 0;
-        var gGjkMaxIter = 1000; //this is to catch invalid input, perhaps check for #NaN?
+        var gGjkMaxIter = 1000; // this is to catch invalid input, perhaps check for #NaN?
         m_cachedSeparatingAxis.setValue( 0, 1, 0 );
 
         var isValid = false;
@@ -139,7 +139,7 @@
             break;
           }
 
-          //exit 0: the new point is already in the simplex, or we didn't come any closer
+          // exit 0: the new point is already in the simplex, or we didn't come any closer
           if ( m_simplexSolver.inSimplex( w ) ) {
             this.degenerateSimplex = 1;
             checkSimplex = true;

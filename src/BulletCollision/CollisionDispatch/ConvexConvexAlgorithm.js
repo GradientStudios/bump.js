@@ -55,24 +55,26 @@
           Bump.notImplemented();
         }
 
-        // if ((min0->getShapeType() == CAPSULE_SHAPE_PROXYTYPE) && (min1->getShapeType() == CAPSULE_SHAPE_PROXYTYPE)) {
-        //   btCapsuleShape* capsuleA = (btCapsuleShape*) min0;
-        //   btCapsuleShape* capsuleB = (btCapsuleShape*) min1;
+        // if ( (min0.getShapeType() === CAPSULE_SHAPE_PROXYTYPE) && (min1.getShapeType() === CAPSULE_SHAPE_PROXYTYPE) ) {
+        //   var capsuleA = min0;
+        //   var capsuleB = min1;
         //   btVector3 localScalingA = capsuleA->getLocalScaling();
         //   btVector3 localScalingB = capsuleB->getLocalScaling();
         //
         //   btScalar threshold = m_manifoldPtr->getContactBreakingThreshold();
         //
-        //   btScalar dist = capsuleCapsuleDistance(normalOnB,       pointOnBWorld,capsuleA->getHalfHeight(),capsuleA->getRadius(),
-        //                                          capsuleB->getHalfHeight(),capsuleB->getRadius(),capsuleA->getUpAxis(),capsuleB->getUpAxis(),
-        //                                          body0->getWorldTransform(),body1->getWorldTransform(),threshold);
+        //   btScalar dist = capsuleCapsuleDistance( normalOnB, pointOnBWorld,
+        //                                           capsuleA.getHalfHeight(),  capsuleA.getRadius(),
+        //                                           capsuleB.getHalfHeight(),  capsuleB.getRadius(),
+        //                                           capsuleA.getUpAxis(),      capsuleB.getUpAxis(),
+        //                                           body0.getWorldTransform(), body1.getWorldTransform(),
+        //                                           threshold );
         //
-        //   if (dist<threshold)
-        //   {
-        //     btAssert(normalOnB.length2()>=(SIMD_EPSILON*SIMD_EPSILON));
-        //     resultOut->addContactPoint(normalOnB,pointOnBWorld,dist);
+        //   if ( dist < threshold ) {
+        //     Bump.Assert( normalOnB.length2() >= SIMD_EPSILON * SIMD_EPSILON );
+        //     resultOut.addContactPoint( normalOnB, pointOnBWorld, dist );
         //   }
-        //   resultOut->refreshContactPoints();
+        //   resultOut.refreshContactPoints();
         //   return;
         // }
 

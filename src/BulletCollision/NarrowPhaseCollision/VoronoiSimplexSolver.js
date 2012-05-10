@@ -653,7 +653,7 @@
         return this.numVertices === 4;
       },
 
-      getSimplex: function( pBuf, qBuf, yBuf) {
+      getSimplex: function( pBuf, qBuf, yBuf ) {
         var i;
         for ( i = 0; i < this.numVertices; ++i ) {
           yBuf[i] = this.simplexVectorW[i];
@@ -675,7 +675,7 @@
         }
 
         // Check in case `lastW` is already removed.
-        if ( w === this.lastW) {
+        if ( w === this.lastW ) {
           return true;
         }
 

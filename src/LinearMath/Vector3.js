@@ -1,8 +1,6 @@
-/*
- * Vector3 provides vector math functionality with an API similar
- * to Three.js : Math operations are member functions that use the
- * context Vector3 object as the destination.
- */
+ // Vector3 provides vector math functionality with an API similar
+ // to Three.js : Math operations are member functions that use the
+ // context Vector3 object as the destination.
 (function( window, Bump ) {
 
   var trunc = function( v ) {
@@ -438,9 +436,7 @@
           ( this.y > this.z ? this.y : this.z );
       },
 
-      /* Note: the furthestAxis and closestAxis functions seem
-       *  backwards...
-       */
+      // Note: the furthestAxis and closestAxis functions seem backwards...
       // Returns the array index (0, 1, or 2) of the "furthest" value in `this`,
       // which `btVector3` defines as the axis with the least absolute value.
       // Note that accessing vector properties using [] notation is slow and

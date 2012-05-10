@@ -8,7 +8,7 @@
       this.contactNormal = Bump.Vector3.create();
 
       this.relpos2CrossNormal = Bump.Vector3.create();
-        //btVector3             contactNormal2;//usually contactNormal2 == -contactNormal
+      // btVector3 contactNormal2; // usually contactNormal2 == -contactNormal
 
       this.angularComponentA = Bump.Vector3.create();
       this.angularComponentB = Bump.Vector3.create();

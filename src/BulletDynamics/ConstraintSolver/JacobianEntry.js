@@ -1,11 +1,11 @@
-//notes:
+// notes:
 // Another memory optimization would be to store m_minvJt1 in the remaining 3 w components
 // which makes the btJacobianEntry memory layout 16 bytes
 // if you only are interested in angular part, just feed massInvA and massInvB zero
 
-/// Jacobian entry is an abstraction that allows to describe constraints
-/// it can be used in combination with a constraint solver
-/// Can be used to relate the effect of an impulse to the constraint error
+// Jacobian entry is an abstraction that allows to describe constraints
+// it can be used in combination with a constraint solver
+// Can be used to relate the effect of an impulse to the constraint error
 
 (function( window, Bump ) {
 
@@ -19,7 +19,7 @@
       this.bJ = bJ || Bump.Vector3.create();
       this.minvJt0 = minvJt0 || Bump.Vector3.create();
       this.minvJt1 = minvJt1 || Bump.Vector3.create();
-      //Optimization: can be stored in the w/last component of one of the vectors
+      // Optimization: can be stored in the w/last component of one of the vectors
       this.Adiag = Adiag || 0;
     },
 
@@ -41,12 +41,12 @@
 
       // for two constraints on sharing two same rigidbodies (for example two contact points between two rigidbodies)
       _getNonDiagonalTwoRigidBodies: function(
-        jacB, // const btJacobianEntry&
-        massInvA, // const btScalar
-        massInvB // const btScalar
+        jacB,                   // const btJacobianEntry&
+        massInvA,               // const btScalar
+        massInvB                // const btScalar
       ) {
         var jacA = this;
-        var lin = jacA.m_linearJointAxis * jacB.m_linearJointAxis; /* btVector3 */
+        var lin = jacA.m_linearJointAxis * jacB.m_linearJointAxis; // btVector3
         var ang0 = jacA.m_minvJt0.multiplyVector( jacB.aJ );
         var ang1 = jacA.m_minvJt1.multiplyVector( jacB.bJ );
         var lin0 = lin.multiplyScalar( massInvA );
@@ -58,19 +58,19 @@
       getNonDiagonal: function(
         jacB,
         massInvA,
-        _massInvB // optional
+        _massInvB               // optional
       ) {
-        if( _massInvB === undefined ) {
+        if ( _massInvB === undefined ) {
           return this._getNonDiagonalSingleRigidBody.call( jacB, massInvA );
         }
         return this._getNonDiagonalTwoRigidBodies.call( jacB, massInvA, _massInvB );
       },
 
       getRelativeVelocity: function(
-        linvelA, // const btVector3&
-        angvelA, // const btVector3&
-        linvelB, // const btVector3&
-        angvelB // const btVector3&
+        linvelA,                // const btVector3&
+        angvelA,                // const btVector3&
+        linvelB,                // const btVector3&
+        angvelB                 // const btVector3&
       ) {
         var linrel = linvelA.subtract( linvelB );
         var angvela = angvelA.subtract( this.aJ );
@@ -87,19 +87,19 @@
       create: function() {
         // call correct `create` based on number of arguments
         var context = Bump.JacobianEntry;
-        if( arguments.length === 0 ) {
+        if ( arguments.length === 0 ) {
           return context._create0.apply( context, arguments );
         }
-        if( arguments.length === 4 ) {
+        if ( arguments.length === 4 ) {
           return context._create4.apply( context, arguments );
         }
-        if( arguments.length === 5 ) {
+        if ( arguments.length === 5 ) {
           return context._create5.apply( context, arguments );
         }
-        if( arguments.length === 6 ) {
+        if ( arguments.length === 6 ) {
           return context._create6.apply( context, arguments );
         }
-        if( arguments.length === 9 ) {
+        if ( arguments.length === 9 ) {
           return context._create9.apply( context, arguments );
         }
 
@@ -112,17 +112,17 @@
         return je.init();
       },
 
-      //constraint between two different rigidbodies
+      // constraint between two different rigidbodies
       _create9: function(
-        world2A, /* const btMatrix3x3& */
-        world2B, /* const btMatrix3x3& */
-        rel_pos1, /* const btVector3& */
-        rel_pos2, /* const btVector3& */
-        jointAxis, /* const btVector3& */
-        inertiaInvA, /* const btVector3& */
-        massInvA, /* const btScalar */
-        inertiaInvB, /* const btVector3& */
-        massInvB /* const btScalar */
+        world2A,                // const btMatrix3x3&
+        world2B,                // const btMatrix3x3&
+        rel_pos1,               // const btVector3&
+        rel_pos2,               // const btVector3&
+        jointAxis,              // const btVector3&
+        inertiaInvA,            // const btVector3&
+        massInvA,               // const btScalar
+        inertiaInvB,            // const btVector3&
+        massInvB                // const btScalar
       ) {
         var je = Object.create( Bump.JacobianEntry.prototype );
 
@@ -138,19 +138,19 @@
         Bump.Assert( Adiag > 0.0 );
       },
 
-      //angular constraint between two different rigidbodies
+      // angular constraint between two different rigidbodies
       _create5: function(
-        jointAxis, // const btVector3&
-        world2A, // const btMatrix3x3&
-        world2B, // const btMatrix3x3&
-        inertiaInvA, // const btVector3&
-        inertiaInvB // const btVector3&
+        jointAxis,              // const btVector3&
+        world2A,                // const btMatrix3x3&
+        world2B,                // const btMatrix3x3&
+        inertiaInvA,            // const btVector3&
+        inertiaInvB             // const btVector3&
       ) {
         var je = Object.create( Bump.JacobianEntry.prototype );
 
-        var linearJointAxis = Bump.Vector3.create( 0.0, 0.0, 0.0);
+        var linearJointAxis = Bump.Vector3.create( 0, 0, 0 );
         var aJ = world2A.multiplyVector( jointAxis );
-        var bJ = world2B.multiplyVector( jointAxis.multiplyScalar( -1 ));
+        var bJ = world2B.multiplyVector( jointAxis.multiplyScalar( -1 ) );
         var minvJt0 = inertiaInvA.multipleVector( aJ );
         var minvJt1 = inertiaInvB.multiplyVector( bJ );
         var Adiag = minvJt0.dot( aJ ) + minvJt1.dot( bJ );
@@ -160,12 +160,12 @@
         Bump.Assert( Adiag > 0.0 );
       },
 
-      //angular constraint between two different rigidbodies
+      // angular constraint between two different rigidbodies
       _create4: function(
-        axisInA, // const btVector3&
-        axisInB, // const btVector3&
-        inertiaInvA, // const btVector3&
-        inertiaInvB // const btVector3&
+        axisInA,                // const btVector3&
+        axisInB,                // const btVector3&
+        inertiaInvA,            // const btVector3&
+        inertiaInvB             // const btVector3&
       ) {
         var je = Object.create( Bump.JacobianEntry.prototype );
 
@@ -181,23 +181,23 @@
         Bump.Assert( Adiag > 0.0);
       },
 
-      //constraint on one rigidbody
+      // constraint on one rigidbody
       _create6: function(
-        world2A, // const btMatrix3x3&
-        rel_pos1, // const btVector3&
-        rel_pos2, // const btVector3&
-        jointAxis, // const btVector3&
-        inertiaInvA, // const btVector3&
-        massInvA //const btScalar
+        world2A,                // const btMatrix3x3&
+        rel_pos1,               // const btVector3&
+        rel_pos2,               // const btVector3&
+        jointAxis,              // const btVector3&
+        inertiaInvA,            // const btVector3&
+        massInvA                // const btScalar
       ) {
         var je = Object.create( Bump.JacobianEntry.prototype );
 
         var linearJointAxis = jointAxis.clone();
-        var aJ = world2A.multiplyVector( rel_pos1.cross( jointAxis, tmpVec1 ));
+        var aJ = world2A.multiplyVector( rel_pos1.cross( jointAxis, tmpVec1 ) );
         var bJ = world2A.multipleVector( rel_pos2.cross(
-          jointAxis.multiplyScalar( -1, tmpVec1)), tmpVec1 );
+          jointAxis.multiplyScalar( -1, tmpVec1) ), tmpVec1 );
         var minvJt0 = inertiaInvA.multiplyVector( aJ );
-        var minvJt1 = Bump.Vector3.create( 0.0, 0.0, 0.0 );
+        var minvJt1 = Bump.Vector3.create( 0, 0, 0 );
         var Adiag = massInvA + minvJt0.dot( aJ );
 
         je.init( linearJointAxis, aJ, bJ, minvJt0, minvJt1, Adiag );

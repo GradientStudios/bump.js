@@ -16,7 +16,7 @@
       'CONVEX_HULL_SHAPE_PROXYTYPE',
       'CONVEX_POINT_CLOUD_SHAPE_PROXYTYPE',
       'CUSTOM_POLYHEDRAL_SHAPE_TYPE',
-//implicit convex shapes
+// implicit convex shapes
 'IMPLICIT_CONVEX_SHAPES_START_HERE',
       'SPHERE_SHAPE_PROXYTYPE',
       'MULTI_SPHERE_SHAPE_PROXYTYPE',
@@ -30,18 +30,18 @@
       'BOX_2D_SHAPE_PROXYTYPE',
       'CONVEX_2D_SHAPE_PROXYTYPE',
       'CUSTOM_CONVEX_SHAPE_TYPE',
-//concave shapes
+// concave shapes
 'CONCAVE_SHAPES_START_HERE',
-      //keep all the convex shapetype below here', for the check IsConvexShape in broadphase proxy!
+      // keep all the convex shapetype below here', for the check IsConvexShape in broadphase proxy!
       'TRIANGLE_MESH_SHAPE_PROXYTYPE',
       'SCALED_TRIANGLE_MESH_SHAPE_PROXYTYPE',
-      ///used for demo integration FAST/Swift collision library and Bullet
+      // used for demo integration FAST/Swift collision library and Bullet
       'FAST_CONCAVE_MESH_PROXYTYPE',
-      //terrain
+      // terrain
       'TERRAIN_SHAPE_PROXYTYPE',
-///Used for GIMPACT Trimesh integration
+// Used for GIMPACT Trimesh integration
       'GIMPACT_SHAPE_PROXYTYPE',
-///Multimaterial mesh
+// Multimaterial mesh
   'MULTIMATERIAL_TRIANGLE_MESH_PROXYTYPE',
 
       'EMPTY_SHAPE_PROXYTYPE',
@@ -171,7 +171,7 @@
         DebrisFilter: 8,
         SensorTrigger: 16,
         CharacterFilter: 32,
-        AllFilter: -1 //all bits sets: DefaultFilter | StaticFilter | KinematicFilter | DebrisFilter | SensorTrigger
+        AllFilter: -1 // all bits sets: DefaultFilter | StaticFilter | KinematicFilter | DebrisFilter | SensorTrigger
       }
 
     }
@@ -199,7 +199,7 @@
       // lumped into a union, meaning that only one value can be used at a time. However, comments
       // suggest that these values should not be used.
 
-      //don't use this data, it will be removed in future version.
+      // don't use this data, it will be removed in future version.
       this.internalInfo1 = null;
       this.internalTmpValue = 0;
     },

@@ -129,43 +129,42 @@
 
       // Calculate maximum element size, big enough to fit any collision
       // algorithm in the memory pool.
-      /*
-      var maxSize  = sizeof( Bump.ConvexConvexAlgorithm );
-      var maxSize2 = sizeof( Bump.ConvexConcaveCollisionAlgorithm );
-      var maxSize3 = sizeof( Bump.CompoundCollisionAlgorithm );
-      var sl       = sizeof( Bump.ConvexSeparatingDistanceUtil );
-      sl = sizeof( Bump.GjkPairDetector );
-      var collisionAlgorithmMaxElementSize = Math.max(
-        maxSize,
-        maxSize2,
-        maxSize3,
-        constructionInfo.customCollisionAlgorithmMaxElementSize
-      );
 
-      if ( constructionInfo.stackAlloc !== null ) {
-        this.ownsStackAllocator = false;
-        this.stackAlloc = constructionInfo.stackAlloc;
-      } else {
-        this.ownsStackAllocator = true;
-        this.stackAlloc = Bump.StackAlloc( constructionInfo.defaultStackAllocatorSize );
-      }
+      // var maxSize  = sizeof( Bump.ConvexConvexAlgorithm );
+      // var maxSize2 = sizeof( Bump.ConvexConcaveCollisionAlgorithm );
+      // var maxSize3 = sizeof( Bump.CompoundCollisionAlgorithm );
+      // var sl       = sizeof( Bump.ConvexSeparatingDistanceUtil );
+      // sl = sizeof( Bump.GjkPairDetector );
+      // var collisionAlgorithmMaxElementSize = Math.max(
+      //   maxSize,
+      //   maxSize2,
+      //   maxSize3,
+      //   constructionInfo.customCollisionAlgorithmMaxElementSize
+      // );
 
-      if ( constructionInfo.persistentManifoldPool !== null ) {
-        this.ownsPersistentManifoldPool = false;
-        this.persistentManifoldPool = constructionInfo.persistentManifoldPool;
-      } else {
-        this.ownsPersistentManifoldPool = true;
-        this.persistentManifoldPool = Bump.PoolAllocator( sizeof( Bump.PersistentManifold ), constructionInfo.defaultMaxPersistentManifoldPoolSize );
-      }
+      // if ( constructionInfo.stackAlloc !== null ) {
+      //   this.ownsStackAllocator = false;
+      //   this.stackAlloc = constructionInfo.stackAlloc;
+      // } else {
+      //   this.ownsStackAllocator = true;
+      //   this.stackAlloc = Bump.StackAlloc( constructionInfo.defaultStackAllocatorSize );
+      // }
 
-      if ( constructionInfo.collisionAlgorithmPool !== null ) {
-        this.ownsCollisionAlgorithmPool = false;
-        this.collisionAlgorithmPool = constructionInfo.collisionAlgorithmPool;
-      } else {
-        this.ownsCollisionAlgorithmPool = true;
-        this.collisionAlgorithmPool = Bump.PoolAllocator( collisionAlgorithmMaxElementSize, constructionInfo.defaultMaxCollisionAlgorithmPoolSize );
-      }
-      */
+      // if ( constructionInfo.persistentManifoldPool !== null ) {
+      //   this.ownsPersistentManifoldPool = false;
+      //   this.persistentManifoldPool = constructionInfo.persistentManifoldPool;
+      // } else {
+      //   this.ownsPersistentManifoldPool = true;
+      //   this.persistentManifoldPool = Bump.PoolAllocator( sizeof( Bump.PersistentManifold ), constructionInfo.defaultMaxPersistentManifoldPoolSize );
+      // }
+
+      // if ( constructionInfo.collisionAlgorithmPool !== null ) {
+      //   this.ownsCollisionAlgorithmPool = false;
+      //   this.collisionAlgorithmPool = constructionInfo.collisionAlgorithmPool;
+      // } else {
+      //   this.ownsCollisionAlgorithmPool = true;
+      //   this.collisionAlgorithmPool = Bump.PoolAllocator( collisionAlgorithmMaxElementSize, constructionInfo.defaultMaxCollisionAlgorithmPoolSize );
+      // }
 
       return this;
     },

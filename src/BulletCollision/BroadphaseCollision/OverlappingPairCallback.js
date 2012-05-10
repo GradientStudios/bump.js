@@ -5,9 +5,9 @@
   Bump.OverlappingPairCallback = Bump.type({
     init: function OverlappingPairCallback() {},
     members: {
-      addOverlappingPair: function( proxy0, proxy1 ) {},
-      removeOverlappingPair: function( proxy0, proxy1, dispatcher ) {},
-      removeOverlappingPairsContainingProxy: function( proxy0, dispatcher ) {}
+      addOverlappingPair: Bump.abstract,
+      removeOverlappingPair: Bump.abstract,
+      removeOverlappingPairsContainingProxy: Bump.abstract
     }
   });
 

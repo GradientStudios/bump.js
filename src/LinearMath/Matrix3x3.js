@@ -256,7 +256,7 @@
           // from difference of angles formula
           var delta = Math.atan2( this.el0.x, this.el0.z );
 
-          //gimbal locked up
+          // gimbal locked up
           if ( this.el2.x  > 0 ) {
             eulerOut1.pitch = Math.PI / 2;
             eulerOut2.pitch = Math.PI / 2;

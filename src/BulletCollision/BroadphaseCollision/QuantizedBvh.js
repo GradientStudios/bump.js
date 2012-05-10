@@ -105,7 +105,7 @@
       // Initializer list
       this.useQuantization = false;
       this.traversalMode = Bump.QuantizedBvh.TraversalMode.TRAVERSAL_STACKLESS;
-      this.subtreeHeaderCount = 0; //PCK: add this line
+      this.subtreeHeaderCount = 0; // PCK: add this line
       // End initializer list
 
       // Default initializers
@@ -383,7 +383,7 @@
           Bump.Assert( walkIterations < subTreeSize );
 
           ++walkIterations;
-          //PCK: unsigned instead of bool
+          // PCK: unsigned instead of bool
           aabbOverlap = Bump.testQuantizedAabbAgainstQuantizedAabb( quantizedQueryAabbMin, quantizedQueryAabbMax, rootNode.quantizedAabbMin, rootNode.quantizedAabbMax );
           isLeafNode = rootNode.isLeafNode();
 

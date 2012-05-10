@@ -77,7 +77,7 @@
     //       }
 
     //       // default:
-    //       //   // `btAssert( 0 );`
+    //       //   Bump.Assert( false );
     //       //   break;
     //       // }
 
@@ -218,7 +218,7 @@
         }
 
         // Should never reach here.
-        // `btAssert( 0 );`
+        Bump.Assert( false );
         return 0;
       },
 

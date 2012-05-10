@@ -19,7 +19,7 @@
   });
 
   Bump.WheelInfo = Bump.type({
-    init: function WheelInfo( ci /* WheelInfoConstructionInfo */) {
+    init: function WheelInfo( ci ) {
       this.suspensionRestLength1 = ci.suspensionRestLength;
       this.maxSuspensionTravelCm = ci.maxSuspensionTravelCm;
 
@@ -46,7 +46,7 @@
 
       this.clippedInvContactDotSuspension = 0;
       this.suspensionRelativeVelocity = 0;
-      //calculated by suspension
+      // calculated by suspension
       this.wheelsSuspensionForce = 0;
       this.skidInfo = 0;
     },
@@ -57,17 +57,17 @@
       },
 
       updateWheel: function(
-        chassis, /* const btRigidBody& */
-        raycastInfo /* RaycastInfo& */
+        chassis,                // const btRigidBody&
+        raycastInfo             // RaycastInfo&
       ) {
 
-        if( this.raycastInfo.isInContact ) {
+        if ( this.raycastInfo.isInContact ) {
           var project = this.raycastInfo.contactNormalWS.dot( this.raycastInfo.wheelDirectionWS );
           var chassis_velocity_at_contactPoint = Bump.Vector3.create();
           var relpos = this.raycastInfo.contactPointWS.subtract( chassis.getCenterOfMassPosition() );
           chassis_velocity_at_contactPoint = chassis.getVelocityInLocalPoint( relpos );
           var projVel = this.raycastInfo.contactNormalWS.dot( chassis_velocity_at_contactPoint );
-          if ( project >= -0.1) {
+          if ( project >= -0.1 ) {
             this.suspensionRelativeVelocity = 0.0;
             this.clippedInvContactDotSuspension = 1.0 / 0.1;
           }
