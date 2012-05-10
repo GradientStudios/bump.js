@@ -350,7 +350,7 @@
       // note: rayTestSingle is "static", but at times is called from an instance, so this is a hack
       // to facilitate that
       rayTestSingle: function() {
-        Bump.CollisionWorld.rayTestSingle.apply( this /* context doesn't actually matter */, arguments );
+        Bump.CollisionWorld.rayTestSingle.apply( undefined, arguments );
       },
 
       objectQuerySingle: Bump.notImplemented,
