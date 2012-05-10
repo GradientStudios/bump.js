@@ -4,7 +4,7 @@
     parent: Bump.CollisionAlgorithm,
 
     init: function ActivatingCollisionAlgorithm( ci ) {
-      return Bump.CollisionAlgorithm.prototype.initWithInfo.apply( this, [ ci ] );
+      return Bump.CollisionAlgorithm.prototype.initWithInfo.call( this, ci );
     },
 
     members: {

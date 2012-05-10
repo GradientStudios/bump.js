@@ -88,9 +88,7 @@
       this.simplexSolver = Bump.VoronoiSimplexSolver.create();
 
       if ( constructionInfo.useEpaPenetrationAlgorithm ) {
-        if ( Bump.GjkEpaPenetrationDepthSolver || !Bump.INCOMPLETE_IMPLEMENTATION ) {
-          this.pdSolver = Bump.GjkEpaPenetrationDepthSolver.create();
-        }
+        this.pdSolver = Bump.GjkEpaPenetrationDepthSolver.create();
       } else {
         if ( Bump.MinkowskiPenetrationDepthSolver || !Bump.INCOMPLETE_IMPLEMENTATION ) {
           this.pdSolver = Bump.MinkowskiPenetrationDepthSolver.create();
@@ -98,13 +96,10 @@
       }
 
       // Default CreationFunctions, filling the `this.doubleDispatch` table.
-      if ( Bump.ConvexConvexAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
-        this.convexConvexCreateFunc = Bump.ConvexConvexAlgorithm.CreateFunc.create( this.simplexSolver, this.pdSolver );
-      }
-      if ( Bump.ConvexConcaveCollisionAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
-        this.convexConcaveCreateFunc = Bump.ConvexConcaveCollisionAlgorithm.CreateFunc.create();
-        this.swappedConvexConcaveCreateFunc = Bump.ConvexConcaveCollisionAlgorithm.SwappedCreateFunc.create();
-      }
+      this.convexConvexCreateFunc = Bump.ConvexConvexAlgorithm.CreateFunc.create( this.simplexSolver, this.pdSolver );
+
+      this.convexConcaveCreateFunc = Bump.ConvexConcaveCollisionAlgorithm.CreateFunc.create();
+      this.swappedConvexConcaveCreateFunc = Bump.ConvexConcaveCollisionAlgorithm.SwappedCreateFunc.create();
 
       this.compoundCreateFunc = Bump.CompoundCollisionAlgorithm.CreateFunc.create();
       this.swappedCompoundCreateFunc = Bump.CompoundCollisionAlgorithm.SwappedCreateFunc.create();

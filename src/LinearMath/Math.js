@@ -5,6 +5,7 @@
   Bump.SIMDSQRT12 = Math.sqrt( 1 / 2 );
   Bump.SIMD_2_PI = 6.283185307179586232;
   Bump.SIMD_PI = Math.PI;
+  Bump.LARGE_FLOAT = 1e30;
 
   // Arccosine calculation with bounds checking.
   // Port of `btAcos` from `btScalar.h`.
