@@ -70,7 +70,7 @@ test( 'basic load OBJ', function() {
     deepEqual( trans.basis, expected, shapeName + '.basis: Frame ' + i );
   };
 
-  for ( var i = 0; i < 1000; ++i ) {
+  for ( var i = 0; i < 255; ++i ) {
     dynamicsWorld.stepSimulation( 1 / 60, 10 );
 
     // Get box's transform

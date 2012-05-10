@@ -128,7 +128,7 @@ test( 'basic', function() {
     deepEqual( trans.basis, expected, shapeName + '.basis: Frame ' + i );
   };
 
-  for( var i = 0; i < 1000; i++ ) {
+  for( var i = 0; i < 250; i++ ) {
     // Step simulation
     dynamicsWorld.stepSimulation( 1 / 60, 10 );
 
