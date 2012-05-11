@@ -2,6 +2,8 @@
  // to Three.js : Math operations are member functions that use the
  // context Vector3 object as the destination.
 (function( window, Bump ) {
+  var tmpVec1, tmpVec2, tmpVec3;
+
   Bump.Vector3 = Bump.type({
     init: function Vector3( x, y, z, w ) {
       this.x = x || 0;
@@ -96,9 +98,12 @@
           dest.z = this.z - vec.z;
           return dest;
         }
-        return Bump.Vector3.create( this.x - vec.x,
-                                    this.y - vec.y,
-                                    this.z - vec.z );
+
+        return Bump.Vector3.create(
+          this.x - vec.x,
+          this.y - vec.y,
+          this.z - vec.z
+        );
       },
 
       // Subtract `v` from `this`, storing the result in `this`.
@@ -120,9 +125,11 @@
           dest.z = this.z * scalar;
           return dest;
         }
-        return Bump.Vector3.create( this.x * scalar,
-                                    this.y * scalar,
-                                    this.z * scalar );
+        return Bump.Vector3.create(
+          this.x * scalar,
+          this.y * scalar,
+          this.z * scalar
+        );
       },
 
       // Multiply `this` by the given `scalar`, storing the result in `this`.
@@ -145,9 +152,12 @@
           dest.z = this.z * vec.z;
           return dest;
         }
-        return Bump.Vector3.create( this.x * vec.x,
-                                    this.y * vec.y,
-                                    this.z * vec.z );
+
+        return Bump.Vector3.create(
+          this.x * vec.x,
+          this.y * vec.y,
+          this.z * vec.z
+        );
       },
 
       // Performs in-place element-wise multiplication, multiply the elements of
@@ -230,9 +240,7 @@
 
       // Computes and returns the magnitude of `this` vector.
       length: function() {
-        return Math.sqrt( this.x * this.x +
-                          this.y * this.y +
-                          this.z * this.z );
+        return Math.sqrt( this.x * this.x + this.y * this.y + this.z * this.z );
       },
 
       // Computes and returns the squared distance between
@@ -253,14 +261,13 @@
       safeNormalize: function( ) {
         // Altered slightly from `btVector3`'s original source to to
         // avoid index [] notation, which is slow.
-        var absMax = this.absolute().max();
+        var absMax = this.absolute( tmpVec1 ).max();
 
         if ( absMax > 0 ) {
           this.divideScalarSelf( absMax );
           return this.divideScalarSelf( this.length() );
         }
-        this.setValue( 1, 0, 0 );
-        return this;
+        return this.setValue( 1, 0, 0 );
       },
 
       // Normalizes `this` vector in place.
@@ -278,12 +285,15 @@
       // Returns a rotated version of `this` vector, rotating around `wAxis` by `angle`.
       // Stores result in `dest` if provided. If not, creates and returns a new Vector3.
       rotate: function( wAxis, angle, dest ) {
-        // wAxis must be a unit length vector
-        var o = wAxis.multiplyScalar( wAxis.dot( this ), dest ), // new temp if dest unspecified
-        x = this.subtract( o ).multiplyScalarSelf( Math.cos( angle ) ), // new temp
-        y = wAxis.cross( this ).multiplyScalarSelf( Math.sin( angle ) ); // new temp
+        if ( !dest ) { dest = Bump.Vector3.create(); }
 
-        return o.addSelf( x.add( y ) );
+        var o = wAxis.multiplyScalar( wAxis.dot( this ), tmpVec1 );
+        var x = this.subtract( o, tmpVec2 );
+        var y = wAxis.cross( this, tmpVec3 );
+
+        return o
+          .add( x.multiplyScalar( Math.cos( angle ), tmpVec2 ), dest )
+          .add( y.multiplyScalarSelf( Math.sin( angle ) ), dest );
       },
 
       // Returns angle between `this` vector and `vec`.
@@ -318,9 +328,12 @@
 
           return dest;
         }
-        return Bump.Vector3.create( Math.abs( this.x ),
-                                    Math.abs( this.y ),
-                                    Math.abs( this.z ) );
+
+        return Bump.Vector3.create(
+          Math.abs( this.x ),
+          Math.abs( this.y ),
+          Math.abs( this.z )
+        );
       },
 
       // Computes the cross product of `this` and `vec`, storing the result in
@@ -409,9 +422,9 @@
 
       // Returns the maximum value stored in `this`.
       max: function() {
-        return this.x > this.y ?
-          ( this.x > this.z ? this.x : this.z ) :
-          ( this.y > this.z ? this.y : this.z );
+        return this.x < this.y ?
+          ( this.y < this.z ? this.z : this.y ) :
+          ( this.x < this.z ? this.z : this.x );
       },
 
       // Note: the furthestAxis and closestAxis functions seem backwards...
@@ -420,12 +433,12 @@
       // Note that accessing vector properties using [] notation is slow and
       // should be avoided.
       furthestAxis: function() {
-        return this.absolute().minAxis();
+        return this.absolute( tmpVec1 ).minAxis();
       },
 
       // Returns the "furthest" value stored in `this`.
       furthest: function() {
-        return this.absolute().min();
+        return this.absolute( tmpVec1 ).min();
       },
 
       // Returns the array index (0, 1, or 2) of the "closest" value in `this`,
@@ -433,12 +446,12 @@
       // Note that accessing vector properties using [] notation is slow and
       // should be avoided.
       closestAxis: function() {
-        return this.absolute().maxAxis();
+        return this.absolute( tmpVec1 ).maxAxis();
       },
 
       // Returns the "closest" value stored in `this`.
       closest: function() {
-        return this.absolute().max();
+        return this.absolute( tmpVec1 ).max();
       },
 
       // Linearly interpolate between the vectors `vec` and `vec2`, using `rt`
@@ -730,5 +743,9 @@
       q[2] = a * k;
     }
   };
+
+  tmpVec1 = Bump.Vector3.create();
+  tmpVec2 = Bump.Vector3.create();
+  tmpVec3 = Bump.Vector3.create();
 
 })( this, this.Bump );
