@@ -16,78 +16,148 @@ test( 'rayTest', function() {
   var dynamicsWorld = Bump.DiscreteDynamicsWorld.create( dispatcher, overlappingPairCache, solver, collisionConfiguration );
   ok( dynamicsWorld instanceof Bump.DiscreteDynamicsWorld.prototype.constructor );
 
+  var collisionShapes = [];
+
   // make a box shape
-  var groundShape = Bump.BoxShape.create( Bump.Vector3.create( 500, 500, 500 ) );
-  ok( groundShape instanceof Bump.BoxShape.prototype.constructor );
+  (function(){
+    var boxShape = Bump.BoxShape.create( Bump.Vector3.create( 500, 500, 500 ) );
+    ok( boxShape instanceof Bump.BoxShape.prototype.constructor );
 
-  var collisionShapes = [ groundShape ];
+    var boxTransform = Bump.Transform.create();
+    ok( boxTransform instanceof Bump.Transform.prototype.constructor );
+    boxTransform.setIdentity();
+    boxTransform.setOrigin( Bump.Vector3.create( 0, -510, 0 ) );
 
-  var groundTransform = Bump.Transform.create();
-  ok( groundTransform instanceof Bump.Transform.prototype.constructor );
-  groundTransform.setIdentity();
-  groundTransform.setOrigin( Bump.Vector3.create( 0, -510, 0 ) );
+    var mass = 0;
+    var isDynamic = ( mass !== 0 );
+    var localInertia = Bump.Vector3.create();
 
-  var mass = 0;
-  var isDynamic = ( mass !== 0 );
-  var localInertia = Bump.Vector3.create();
+    if ( isDynamic ) {
+      boxShape.calculateLocalInertia( mass, localInertia );
+    }
 
-  if ( isDynamic ) {
-    groundShape.calculateLocalInertia( mass, localInertia );
+    var myMotionState = Bump.DefaultMotionState.create( boxTransform );
+    ok( myMotionState instanceof Bump.DefaultMotionState.prototype.constructor );
+
+    var rbInfo = Bump.RigidBody.RigidBodyConstructionInfo.create( mass, myMotionState, boxShape, localInertia );
+    ok( rbInfo instanceof Bump.RigidBody.RigidBodyConstructionInfo.prototype.constructor );
+
+    var body = Bump.RigidBody.create( rbInfo );
+    ok( body instanceof Bump.RigidBody.prototype.constructor );
+
+    dynamicsWorld.addRigidBody( body );
+  })();
+
+  // make a compound shape
+  (function(){
+    var compoundShape = Bump.CompoundShape.create();
+    ok( compoundShape instanceof Bump.CompoundShape.prototype.constructor );
+
+    // make a child box shape
+    var boxShape = Bump.BoxShape.create( Bump.Vector3.create( 10, 10, 10 ) );
+    ok( boxShape instanceof Bump.BoxShape.prototype.constructor );
+    var boxTransform = Bump.Transform.create();
+    ok( boxTransform instanceof Bump.Transform.prototype.constructor );
+    boxTransform.setIdentity();
+
+    compoundShape.addChildShape( boxTransform, boxShape );
+
+    var compoundTransform = Bump.Transform.create();
+    ok( compoundTransform instanceof Bump.Transform.prototype.constructor );
+    compoundTransform.setIdentity();
+    compoundTransform.setOrigin( Bump.Vector3.create( 50, 0, 0 ) );
+
+    var mass = 0;
+    var isDynamic = ( mass !== 0 );
+    var localInertia = Bump.Vector3.create();
+
+    if ( isDynamic ) {
+      compoundShape.calculateLocalInertia( mass, localInertia );
+    }
+
+    var myMotionState = Bump.DefaultMotionState.create( compoundTransform );
+    ok( myMotionState instanceof Bump.DefaultMotionState.prototype.constructor );
+
+    var rbInfo = Bump.RigidBody.RigidBodyConstructionInfo.create( mass, myMotionState, compoundShape, localInertia );
+    ok( rbInfo instanceof Bump.RigidBody.RigidBodyConstructionInfo.prototype.constructor );
+
+    var body = Bump.RigidBody.create( rbInfo );
+    ok( body instanceof Bump.RigidBody.prototype.constructor );
+
+    dynamicsWorld.addRigidBody( body );
+  })();
+
+  // test params
+  var testNum = 0;
+  var epsilon = Math.pow( 2, -52 );
+
+  // function for running ray tests and comparing with provided output using epsilonNumberCheck
+  var raycastTest = function( opts ) {
+    var rayCallback = Bump.CollisionWorld.ClosestRayResultCallback.create( opts.from, opts.to );
+    if( opts.mask ) {
+      rayCallback.collisionFilterMask = opts.mask;
+    }
+    dynamicsWorld.rayTest( opts.from, opts.to, rayCallback );
+
+    if( opts.hasHit ) {
+      ok( rayCallback.hasHit(), 'Test ' + testNum + ' has a hit.' );
+      epsilonNumberCheck( rayCallback.hitPointWorld, opts.hitPointWorld,
+                          epsilon, 'Test ' + testNum + ' has correct hitPointWorld.' );
+      epsilonNumberCheck( rayCallback.hitNormalWorld, opts.hitNormalWorld,
+                          epsilon, 'Test ' + testNum + ' has correct hitNormalWorld.' );
+      epsilonNumberCheck( { closestHitFraction: rayCallback.closestHitFraction },
+                          { closestHitFraction: opts.closestHitFraction },
+                          epsilon, 'Test ' + testNum + ' has correct' );
+    }
+    else {
+      ok( !rayCallback.hasHit(), 'Test ' + testNum + ' does not have a hit.' );
+    }
+    testNum++;
   }
 
-  var myMotionState = Bump.DefaultMotionState.create( groundTransform );
-  ok( myMotionState instanceof Bump.DefaultMotionState.prototype.constructor );
+  // run the actual tests
+  raycastTest({
+    from: Bump.Vector3.create( -2, -8.93334, -1.55556 ),
+    to: Bump.Vector3.create( -2, -10.0333, -1.55556 ),
+    mask: -1,
+    hasHit: true,
+    hitPointWorld: Bump.Vector3.create( -2.00000000000000000000, -9.99999999997164401577, -1.55556000000000005379 ),
+    hitNormalWorld: Bump.Vector3.create( 0.00000000000000832672, 1.00000000000000000000, -0.00000000000004850317 ),
+    closestHitFraction: 0.96972617183501508276
+  });
 
-  var rbInfo = Bump.RigidBody.RigidBodyConstructionInfo.create( mass, myMotionState, groundShape, localInertia );
-  ok( rbInfo instanceof Bump.RigidBody.RigidBodyConstructionInfo.prototype.constructor );
+  raycastTest({
+    from: Bump.Vector3.create( 0.00000000000000000000, 0.00000000000000000000, 0.00000000000000000000 ),
+    to: Bump.Vector3.create( 50.00000000000000000000, 0.00000000000000000000, 0.00000000000000000000 ),
+    mask: -1,
+    hasHit: true,
+    hitPointWorld: Bump.Vector3.create( 40.00000000000000000000, 0.00000000000000000000, 0.00000000000000000000 ),
+    hitNormalWorld: Bump.Vector3.create( -1.00000000000000000000, 0.00000000000000000000, 0.00000000000000000000 ),
+    closestHitFraction: 0.80000000000000004441
+  });
 
-  var body = Bump.RigidBody.create( rbInfo );
-  ok( body instanceof Bump.RigidBody.prototype.constructor );
+  raycastTest({
+    from: Bump.Vector3.create( 0.00000000000000000000, 0.00000000000000000000, 0.00000000000000000000 ),
+    to: Bump.Vector3.create( 40.10000000000000142109, 0.00000000000000000000, 0.00000000000000000000 ),
+    mask: -1,
+    hasHit: true,
+    hitPointWorld: Bump.Vector3.create( 40.00000000000000000000, 0.00000000000000000000, 0.00000000000000000000 ),
+    hitNormalWorld: Bump.Vector3.create( -1.00000000000000000000, 0.00000000000000000000, 0.00000000000000000000 ),
+    closestHitFraction: 0.99750623441396502056
+  });
 
-  dynamicsWorld.addRigidBody( body );
+  raycastTest({
+    from: Bump.Vector3.create( 0.00000000000000000000, 0.00000000000000000000, 0.00000000000000000000 ),
+    to: Bump.Vector3.create( 40.00000000000000000000, 0.00000000000000000000, 0.00000000000000000000 ),
+    mask: -1,
+    hasHit: false
+  });
 
-  // do the actual ray test
-  var from = Bump.Vector3.create( -2, -8.93334, -1.55556 );
-  var to = Bump.Vector3.create( -2, -10.0333, -1.55556 );
-  // var mask = -9;
-
-  var FilterGroups = Bump.BroadphaseProxy.CollisionFilterGroups;
-
-  var rayCallback = Bump.CollisionWorld.ClosestRayResultCallback.create( from, to );
-  rayCallback.collisionFilterMask = FilterGroups.AllFilter ^ FilterGroups.DebrisFilter;
-
-  dynamicsWorld.rayTest( from, to, rayCallback );
-
-  var epsilon = Math.pow( 2, -52 );
-  ok( rayCallback.hasHit(), 'has hit' );
-  epsilonNumberCheck( rayCallback.hitPointWorld,
-                      Bump.Vector3.create( -2.000000000000000000000000000000,
-                                           -9.999999999971644015772653801832,
-                                           -1.555560000000000053788085097040 ),
-                      epsilon,
-                      'correct hitPointWorld' );
-  epsilonNumberCheck( rayCallback.hitNormalWorld,
-                      Bump.Vector3.create( 0.000000000000008326724726718211,
-                                           1.000000000000000000000000000000,
-                                           -0.000000000000048503171533133580 ),
-                      epsilon,
-                      'correct hitNormalWorld' );
-  epsilonNumberCheck( { val: rayCallback.closestHitFraction },
-                      { val: 0.969726171835015082756115134544 },
-                      epsilon,
-                      'correct closestHitFraction' );
-
-  // if( rayCallback.hasHit() ) {
-  //   console.log( 'rayCallback has hit!' );
-
-    // var bodyHit = rayCallback.collisionObject;
-    // if( bodyHit && bodyHit.hasContactResponse() ) {
-    //   result.hitPointInWorld = rayCallback.hitPointWorld;
-    //   result.hitNormalInWorld = rayCallback.hitNormalWorld;
-    //   result.hitNormalInWorld.normalize();
-    //   result.distFraction = rayCallback.closestHitFraction;
-    //   return body;
-    // }
-  // }
+  raycastTest({
+    from: Bump.Vector3.create( 0.00000000000000000000, 0.00000000000000000000, 0.00000000000000000000 ),
+    to: Bump.Vector3.create( 30.00000000000000000000, 0.00000000000000000000, 0.00000000000000000000 ),
+    mask: -1,
+    hasHit: false
+  });
 
 });
