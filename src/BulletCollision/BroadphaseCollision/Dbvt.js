@@ -1157,35 +1157,36 @@
           var diff = rayTo.subtract( rayFrom ),
           rayDir = diff.normalized();
 
-          var rayDirectionInverse;
-          rayDirectionInverse.x = rayDir.x === 0 ? Infinity : 1 / rayDir.x;
-          rayDirectionInverse.y = rayDir.y === 0 ? Infinity : 1 / rayDir.y;
-          rayDirectionInverse.z = rayDir.z === 0 ? Infinity : 1 / rayDir.z;
+          var rayDirectionInverse = Bump.Vector3.create(
+            rayDir.x === 0 ? Infinity : 1 / rayDir.x,
+            rayDir.y === 0 ? Infinity : 1 / rayDir.y,
+            rayDir.z === 0 ? Infinity : 1 / rayDir.z
+          );
 
           var signs = [
-               rayDirectionInverse.x < 0,
-               rayDirectionInverse.y < 0,
-               rayDirectionInverse.z < 0
-             ],
-             lambda_max = rayDir.dot( diff ),
-             resultNormal,
-             stack = [],
-             depth = -1,
-             threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 2;
+            rayDirectionInverse.x < 0 ? 1 : 0,
+            rayDirectionInverse.y < 0 ? 1 : 0,
+            rayDirectionInverse.z < 0 ? 1 : 0
+          ];
+          var lambda_max = rayDir.dot( diff );
+          var resultNormal;
+          var stack = [];
+          var depth = 1;
+          var threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 2;
 
           stack[ Bump.Dbvt.DOUBLE_STACKSIZE - 1 ] = undefined;
           stack[ 0 ] = root;
 
-          var bounds = [];
+          var bounds = [ Bump.Vector3.create(), Bump.Vector3.create() ];
 
           do {
             var node = stack[ --depth ];
             bounds[ 0 ] = node.volume.Mins();
             bounds[ 1 ] = node.volume.Maxs();
 
-            var tmin = 1,
+            var tmin = { tmin: 1 },
             lambda_min = 0,
-            result1 = Bump.rayAabb2( rayFrom, rayDirectionInverse, signs,
+            result1 = Bump.RayAabb2( rayFrom, rayDirectionInverse, signs,
                                      bounds, tmin, lambda_min, lambda_max );
 /*
 #ifdef COMPARE_BTRAY_AABB
@@ -1204,7 +1205,7 @@
                 stack[ depth++ ] = node.childs[ 1 ];
               }
               else {
-                policy.Process( node );
+                policy.ProcessNode( node );
               }
             }
           } while( depth );
