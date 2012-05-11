@@ -87,20 +87,21 @@
       create: function() {
         // call correct `create` based on number of arguments
         var context = Bump.JacobianEntry;
-        if( arguments.length === 0 ) {
-          return context._create0.apply( context, arguments );
+        var args = Array.prototype.slice.call( arguments );
+        if( args.length === 0 ) {
+          return context._create0.apply( context, args );
         }
-        if( arguments.length === 4 ) {
-          return context._create4.apply( context, arguments );
+        if( args.length === 4 ) {
+          return context._create4.apply( context, args );
         }
-        if( arguments.length === 5 ) {
-          return context._create5.apply( context, arguments );
+        if( args.length === 5 ) {
+          return context._create5.apply( context, args );
         }
-        if( arguments.length === 6 ) {
-          return context._create6.apply( context, arguments );
+        if( args.length === 6 ) {
+          return context._create6.apply( context, args );
         }
-        if( arguments.length === 9 ) {
-          return context._create9.apply( context, arguments );
+        if( args.length === 9 ) {
+          return context._create9.apply( context, args );
         }
 
         console.error( 'JacobianEntry created with invalid number of arguments.' );
@@ -109,7 +110,8 @@
 
       _create0: function() {
         var je = Object.create( Bump.JacobianEntry.prototype );
-        return je.init();
+        je.init();
+        return je;
       },
 
       //constraint between two different rigidbodies
@@ -136,6 +138,8 @@
         je.init( linearJointAxis, aJ, bJ, minvJt0, minvJt1, Adiag );
 
         Bump.Assert( Adiag > 0.0 );
+
+        return je;
       },
 
       //angular constraint between two different rigidbodies
@@ -158,6 +162,8 @@
         je.init( linearJointAxis, aJ, bJ, minvJt0, minvJt1, Adiag );
 
         Bump.Assert( Adiag > 0.0 );
+
+        return je;
       },
 
       //angular constraint between two different rigidbodies
@@ -179,6 +185,8 @@
         je.init( linearJointAxis, aJ, bJ, minvJt0, minvJt1, Adiag );
 
         Bump.Assert( Adiag > 0.0);
+
+        return je;
       },
 
       //constraint on one rigidbody
@@ -203,6 +211,8 @@
         je.init( linearJointAxis, aJ, bJ, minvJt0, minvJt1, Adiag );
 
         Bump.Assert( Adiag > 0.0 );
+
+        return je;
       }
     }
   });
