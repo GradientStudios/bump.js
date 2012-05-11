@@ -2,22 +2,7 @@
  // to Three.js : Math operations are member functions that use the
  // context Vector3 object as the destination.
 (function( window, Bump ) {
-
-  var trunc = function( v ) {
-    return Math.floor( v * 1000 ) / 1000;
-  };
-
-  Bump.printVector3 = function( vec, message, precision ) {
-    message = message || '';
-    precision = ( precision === undefined ) ? 20 : precision;
-
-    console.log( message + ' ' + vec.x.toFixed( precision ) + ' ' +
-                 vec.y.toFixed( precision ) + ' ' +
-                 vec.z.toFixed( precision ) );
-  };
-
   Bump.Vector3 = Bump.type({
-
     init: function Vector3( x, y, z, w ) {
       this.x = x || 0;
       this.y = y || 0;
@@ -55,13 +40,6 @@
 
     // ## Member functions
     members: {
-      // ### JSON Helper
-
-      // create a basic representation of btQuaternion for quick JSON stringify
-      toJSON: function() {
-        return [ trunc( this.x ), trunc( this.y ), trunc( this.z ) ];
-      },
-
       // Clones `this` vector into `dest`. If `dest` is not provided,
       // a new Vector3 is created and returned.
       clone: function( dest ) {
@@ -576,14 +554,6 @@
       // its squared magnitude is less than `Bump.SIMD_EPSILON`.
       fuzzyZero: function() {
         return this.length2() < Bump.SIMD_EPSILON;
-      },
-
-      toString: function() {
-        var precision = 6;
-        return ( '{ x: ' + this.x.toFixed( precision ) +
-                 ', y: ' + this.y.toFixed( precision ) +
-                 ', z: ' + this.z.toFixed( precision ) +
-                 ' }' );
       }
     },
 
