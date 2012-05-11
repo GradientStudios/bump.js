@@ -95,7 +95,7 @@
   ) {
 
     var normalLenSqr = normal.length2();
-    Bump.Assert( Math.Abs( normalLenSqr ) < 1.1 );
+    Bump.Assert( Math.abs( normalLenSqr ) < 1.1 );
 
     if( normalLenSqr > 1.1 ) {
       impulseRef.value = 0;
