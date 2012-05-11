@@ -11,16 +11,6 @@
       this.el0 = Bump.Vector3.create( xx, xy, xz );
       this.el1 = Bump.Vector3.create( yx, yy, yz );
       this.el2 = Bump.Vector3.create( zx, zy, zz );
-
-      this.el = [
-        Bump.Vector3.create( xx, xy, xz ),
-        Bump.Vector3.create( yx, yy, yz ),
-        Bump.Vector3.create( zx, zy, zz )
-      ];
-
-      this.setValue( xx, xy, xz,
-                     yx, yy, yz,
-                     zx, zy, zz );
     },
 
     // ## Properties
@@ -63,15 +53,6 @@
         this.el0.assign( other.el0 );
         this.el1.assign( other.el1 );
         this.el2.assign( other.el2 );
-
-        for ( var i = 0; i < 3; ++i ) {
-          this.el[i].assign( other.el[i] );
-        }
-
-        this.setValue( other.m11, other.m12, other.m13,
-                       other.m21, other.m22, other.m23,
-                       other.m31, other.m32, other.m33 );
-
         return this;
       },
 
@@ -107,16 +88,6 @@
         this.el0.setValue( xx, xy, xz );
         this.el1.setValue( yx, yy, yz );
         this.el2.setValue( zx, zy, zz );
-
-        this.el[0].setValue( xx, xy, xz );
-        this.el[1].setValue( yx, yy, yz );
-        this.el[2].setValue( zx, zy, zz );
-
-        this.m11 = xx; this.m12 = xy; this.m13 = xz;
-        this.m21 = yx; this.m22 = yy; this.m23 = yz;
-        this.m31 = zx; this.m32 = zy; this.m33 = zz;
-
-        this.m = [ xx, xy, xz, yx, yy, yz, zx, zy, zz ];
 
         return this;
       },
@@ -632,16 +603,6 @@
         this.el0 = Bump.Vector3.clone( vecA );
         this.el1 = Bump.Vector3.clone( vecB );
         this.el2 = Bump.Vector3.clone( vecC );
-
-        this.el = [
-          Bump.Vector3.clone( vecA ),
-          Bump.Vector3.clone( vecB ),
-          Bump.Vector3.clone( vecC )
-        ];
-
-        this.setValue( vecA.x, vecA.y, vecA.z,
-                       vecB.x, vecB.y, vecB.z,
-                       vecC.x, vecC.y, vecC.z );
       }
     },
 
