@@ -405,9 +405,9 @@ test( 'basic', 19, function() {
 
   testFunc( Bump.Vector3, 'rotate', {
     objects: v0,
-    args: [ [ zAxis, Math.PI / 2 ] ],
+    args: [ [ zAxis, Math.PI / 2.5 ] ],
     expected: [
-      Bump.Vector3.create( 6.12323399573676604e-17, 1, 0 )
+      Bump.Vector3.create( 0.309016994374947451, 0.951056516295153531, 0 )
     ],
     destType: Bump.Vector3
   });
