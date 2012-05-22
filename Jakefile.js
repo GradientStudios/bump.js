@@ -40,8 +40,6 @@ var $$ = {},
 
         // JSHint Optional Settings
         jshint: {
-          unused: true,
-          unuseds: true,
           devel: true,
           undef: true,
           noempty: true,
@@ -51,14 +49,6 @@ var $$ = {},
           eqnull: true,
           curly: true,
           browser: true
-          // onevar: true,
-          // eqnull': true,
-          // immed': true,
-          // newcap': true,
-          // noarg': true,
-          // undef': true,
-          // browser': true,
-          // predef': [ 'jQuery' ]
         },
 
         // Uglify Optional Settings
