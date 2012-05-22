@@ -140,7 +140,7 @@
           index = this.next[ index ];
         }
 
-        if ( previous != BT_NULL_PAIR ) {
+        if ( previous !== BT_NULL_PAIR ) {
           // Bump.Assert( next[previous] === pairIndex );
           this.next[ previous ] = this.next[ pairIndex ];
         } else {
@@ -305,8 +305,8 @@
         // `BT_NULL_PAIR`s.
         var index = this.hashTable[ hash ];
         index = index === undefined ? BT_NULL_PAIR : index;
-        while ( index != BT_NULL_PAIR && this.equalsPair( this.overlappingPairArray[index],
-                                                          proxyId1, proxyId2 ) === false ) {
+        while ( index !== BT_NULL_PAIR && this.equalsPair( this.overlappingPairArray[index],
+                                                           proxyId1, proxyId2 ) === false ) {
           index = this.next[ index ];
           index = index === undefined ? BT_NULL_PAIR : index;
         }
@@ -388,7 +388,7 @@
       },
 
       equalsPair: function( pair, proxyId1, proxyId2 ) {
-        return ( pair.pProxy0.getUid() == proxyId1 ) && ( pair.pProxy1.getUid() == proxyId2 );
+        return ( pair.pProxy0.getUid() === proxyId1 ) && ( pair.pProxy1.getUid() === proxyId2 );
       },
 
       // // Thomas Wang's hash, see: http://www.concentric.net/~Ttwang/tech/inthash.htm
@@ -424,13 +424,13 @@
             proxyId2 = proxy1.getUid(),
             index = this.hashTable[ hash ];
         index = index === undefined ? BT_NULL_PAIR : index;
-        while ( index != BT_NULL_PAIR &&
+        while ( index !== BT_NULL_PAIR &&
                 this.equalsPair( this.overlappingPairArray[ index ], proxyId1, proxyId2 ) === false ) {
           index = this.next[index];
           index = index === undefined ? BT_NULL_PAIR : index;
         }
 
-        if ( index == BT_NULL_PAIR ) {
+        if ( index === BT_NULL_PAIR ) {
           return undefined;
         }
 

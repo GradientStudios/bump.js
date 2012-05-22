@@ -60,7 +60,7 @@
       },
 
       equals: function( other ) {
-        return ( this.string == other.string ) ||
+        return ( this.string === other.string ) ||
           ( 0 === this.portableStringCompare( this.string, other.string ) );
       }
     }

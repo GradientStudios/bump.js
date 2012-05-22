@@ -40,6 +40,7 @@ var $$ = {},
 
         // JSHint Optional Settings
         jshint: {
+          eqeqeq: true,
           devel: true,
           undef: true,
           noempty: true,

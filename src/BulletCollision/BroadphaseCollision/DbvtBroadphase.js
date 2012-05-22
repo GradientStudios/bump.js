@@ -61,7 +61,7 @@
     members: {
       ProcessNode2: function( na, nb ) {
         // this._super( na, nb );
-        if ( na != nb ) {
+        if ( na !== nb ) {
           var pa = na.data,
               pb = nb.data;
 

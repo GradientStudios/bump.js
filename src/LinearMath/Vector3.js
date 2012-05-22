@@ -487,7 +487,7 @@
       // Note that values are compared directly, with no consideration of floating point
       // rounding errors. Also note that the comparison ignores w values.
       equal: function( vec ) {
-        return ( this.x == vec.x ) && ( this.y == vec.y ) && ( this.z == vec.z );
+        return ( this.x === vec.x ) && ( this.y === vec.y ) && ( this.z === vec.z );
       },
 
       // Perform element-wise comparison of `this` and `vec`, and return true if
@@ -496,7 +496,7 @@
       // Note that values are compared directly, with no consideration of floating point
       // rounding errors. Also note that the comparison ignores w values.
       notEqual: function( vec ) {
-        return ( this.x != vec.x ) || ( this.y != vec.y ) || ( this.z != vec.z );
+        return ( this.x !== vec.x ) || ( this.y !== vec.y ) || ( this.z !== vec.z );
       },
 
       // Clamp each value of `this` to be less than or equal to the maximum value

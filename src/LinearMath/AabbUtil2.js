@@ -116,7 +116,7 @@
           bit = 1;
 
       for ( j = 0; j < 2; ++j ) {
-        for ( i = 0; i != 3; ++i ) {
+        for ( i = 0; i !== 3; ++i ) {
           if ( sourceOutcode & bit ) {
             lambda = ( -source[i] - aabbHalfExtent[i] * normSign ) / r[i];
             if ( lambda_enter <= lambda ) {

@@ -63,7 +63,7 @@
       getMotorFactor: function( pos, lowLim, uppLim, vel, timeFact ) {
         if ( lowLim > uppLim ) {
           return 1;
-        } else if ( lowLim == uppLim ) {
+        } else if ( lowLim === uppLim ) {
           return 0;
         }
 

@@ -360,12 +360,12 @@
 
   Bump.NotEqual = {};
   Bump.NotEqual.DbvtAabbMm2 = function( a, b ) {
-    return( (a.mi.x != b.mi.x ) ||
-            (a.mi.y != b.mi.y ) ||
-            (a.mi.z != b.mi.z ) ||
-            (a.mx.x != b.mx.x ) ||
-            (a.mx.y != b.mx.y ) ||
-            (a.mx.z != b.mx.z ) );
+    return (( a.mi.x !== b.mi.x ) ||
+            ( a.mi.y !== b.mi.y ) ||
+            ( a.mi.z !== b.mi.z ) ||
+            ( a.mx.x !== b.mx.x ) ||
+            ( a.mx.y !== b.mx.y ) ||
+            ( a.mx.z !== b.mx.z ));
   };
   Bump.NotEqual.DbvtVolume2 = Bump.NotEqual.DbvtAabbMm2; // typedef consistency
 
@@ -457,9 +457,11 @@
       recursedeletenode( pdbvt, node.childs[ 0 ] );
       recursedeletenode( pdbvt, node.childs[ 1 ] );
     }
-    if ( node == pdbvt.root ) {
+
+    if ( node === pdbvt.root ) {
       pdbvt.root = 0;
     }
+
     deletenode( pdbvt, node );
   },
 
@@ -1232,7 +1234,7 @@
               }
             }
             if ( !out ) {
-              if ( (se.mask != inside ) && ( se.node.isinternal() ) ) {
+              if ( (se.mask !== inside) && (se.node.isinternal()) ) {
                 stack.push( Bump.Dbvt.sStkNP.create( se.node.childs[0],se.mask ) );
                 stack.push( Bump.Dbvt.sStkNP.create( se.node.childs[1],se.mask ) );
               }
@@ -1279,7 +1281,7 @@
             se = stock[ id ];
             stack.pop();
             ifree.push( id );
-            if ( se.mask != inside ) {
+            if ( se.mask !== inside ) {
               var out = false;
               for ( i=0, j=1; ( !out ) && ( i < count ); ++i, j <<= 1 ) {
                 if ( 0 === ( se.mask & j ) ) {
