@@ -187,9 +187,11 @@
           // SPC(this.profiling.cleanup);
           var pairs = this.paircache.getOverlappingPairArray();
           if ( pairs.length > 0 ) {
-            var ni = Math.min( pairs.length,
-                               Math.max( this.newpairs,
-                                         Math.floor( (pairs.length * this.cupdates ) / 100 ) ));
+            var ni = Math.min(
+              pairs.length,
+              Math.max( this.newpairs, ~~(( pairs.length * this.cupdates ) / 100) )
+            );
+
             for (var i = 0; i < ni; ++i ) {
               var p = pairs[ ( this.cid + i ) % pairs.length ], // btBroadphasePair&
                   pa = p.pProxy0, // btDbvtProxy*
