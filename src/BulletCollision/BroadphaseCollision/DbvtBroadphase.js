@@ -140,16 +140,16 @@
     },
 
     members: {
-
       collide: function( dispatcher ) {
         // SPC(this.profiling.total); // not defined without DBVT_BP_PROFILE
         // optimize
-        this.sets[ 0 ].optimizeIncremental( 1 + ( this.sets[ 0 ].leaves * this.dupdates ) / 100 );
+        this.sets[ 0 ].optimizeIncremental( 1 + ~~(( this.sets[ 0 ].leaves * this.dupdates ) / 100) );
         if ( this.fixedleft ) {
-          var count = 1 + ( this.sets[ 1 ].leaves * this.fupdates ) / 100;
-          this.sets[ 1 ].optimizeIncremental( 1 + ( this.sets[ 1 ].leaves * this.fupdates ) / 100 );
+          var count = 1 + ~~(( this.sets[ 1 ].leaves * this.fupdates ) / 100);
+          this.sets[ 1 ].optimizeIncremental( 1 + ~~(( this.sets[ 1 ].leaves * this.fupdates ) / 100) );
           this.fixedleft = Math.max( 0, this.fixedleft - count );
         }
+
         // dynamic -> fixed set
         this.stageCurrent = ( this.stageCurrent + 1 ) % Bump.DbvtBroadphase.Stages.STAGECOUNT;
         var current = this.stageRoots[ this.stageCurrent ];
@@ -168,20 +168,23 @@
           this.fixedleft = this.sets[ 1 ].leaves;
           this.needcleanup = true;
         }
+
         // collide dynamics
         var collider2 = Bump.DbvtTreeCollider.create( this );
         if ( this.deferedcollide ) {
           // SPC(this.profiling.fdcollide);
           this.sets[ 0 ].collideTTpersistentStack( this.sets[ 0 ].root,
-                                                     this.sets[ 1 ].root,
-                                                     collider2 );
+                                                   this.sets[ 1 ].root,
+                                                   collider2 );
         }
+
         if ( this.deferedcollide ) {
           // SPC(this.profiling.ddcollide);
           this.sets[ 0 ].collideTTpersistentStack( this.sets[ 0 ].root,
-                                                     this.sets[ 0 ].root,
-                                                     collider2 );
+                                                   this.sets[ 0 ].root,
+                                                   collider2 );
         }
+
         // clean up
         if ( this.needcleanup ) {
           // SPC(this.profiling.cleanup);
@@ -192,7 +195,7 @@
               Math.max( this.newpairs, ~~(( pairs.length * this.cupdates ) / 100) )
             );
 
-            for (var i = 0; i < ni; ++i ) {
+            for ( var i = 0; i < ni; ++i ) {
               var p = pairs[ ( this.cid + i ) % pairs.length ], // btBroadphasePair&
                   pa = p.pProxy0, // btDbvtProxy*
                   pb = p.pProxy1;
@@ -202,26 +205,25 @@
                 --i;
               }
             }
+
             if ( pairs.length > 0 ) {
               this.cid = ( this.cid + ni ) % pairs.length;
-            }
-            else {
+            } else {
               this.cid = 0;
             }
           }
         }
+
         ++this.pid;
         this.newpairs = 1;
         this.needcleanup = false;
         if ( this.updates_call > 0 ) {
-          this.updates_ratio = this.updates_done / this.updates_call;
-        }
-        else {
+          this.updates_ratio = ~~( this.updates_done / this.updates_call );
+        } else {
           this.updates_ratio = 0;
         }
-        this.updates_done /= 2;
-        this.updates_call /= 2;
-
+        this.updates_done = ~~( this.updates_done / 2 );
+        this.updates_call = ~~( this.updates_call / 2 );
       },
 
       optimize: function() {
