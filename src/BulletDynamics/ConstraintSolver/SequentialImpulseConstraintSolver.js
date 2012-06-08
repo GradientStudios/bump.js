@@ -24,30 +24,36 @@
     parent: Bump.ConstraintSolver,
 
     init: function SequentialImpulseConstraintSolver() {
-      // btSeed2 is used for re-arranging the constraint rows. improves convergence/quality of friction
+      // btSeed2 is used for re-arranging the constraint rows. Improves
+      // convergence/quality of friction.
       this.btSeed2 = 0; // unsigned long
 
       this.tmpSolverContactConstraintPool = []; // Bump.SolverConstraint
       this.tmpSolverNonContactConstraintPool = []; // Bump.SolverConstraint
       this.tmpSolverContactFrictionConstraintPool = []; // Bump.SolverConstraint
-      this.orderTmpConstraintPool = [];      // int
-      this.orderFrictionConstraintPool = []; // int
+
+      this.orderTmpConstraintPool = [];        // int
+      this.orderNonContactConstraintPool = []; // int
+      this.orderFrictionConstraintPool = [];   // int
+
       this.tmpConstraintSizesPool = []; // Bump.TypedConstraint.ConstraintInfo1
     },
 
     members: {
-      setupFrictionConstraint: function( solverConstraint,
-                                         normalAxis,
-                                         solverBodyA,
-                                         solverBodyIdB,
-                                         cp,
-                                         rel_pos1,
-                                         rel_pos2,
-                                         colObj0,
-                                         colObj1,
-                                         relaxation,
-                                         desiredVelocity,
-                                         cfmSlip ) {
+      setupFrictionConstraint: function(
+        solverConstraint,
+        normalAxis,
+        solverBodyA,
+        solverBodyIdB,
+        cp,
+        rel_pos1,
+        rel_pos2,
+        colObj0,
+        colObj1,
+        relaxation,
+        desiredVelocity,
+        cfmSlip
+      ) {
         desiredVelocity = desiredVelocity || 0;
         cfmSlip = cfmSlip || 0;
 
@@ -366,7 +372,7 @@
         }
       },
 
-      //        void    initSolverBody: function(btSolverBody* solverBody, btCollisionObject* collisionObject);
+      // void initSolverBody: function(btSolverBody* solverBody, btCollisionObject* collisionObject);
       restitutionCurve: function( rel_vel, restitution ) {
         var rest = restitution * -rel_vel;
         return rest;
@@ -379,15 +385,15 @@
         colObj0 = manifold.getBody0();
         colObj1 = manifold.getBody1();
 
-        var solverBodyA = Bump.RigidBody.upcast( colObj0 ),
-            solverBodyB = Bump.RigidBody.upcast( colObj1 );
+        var solverBodyA = Bump.RigidBody.upcast( colObj0 );
+        var solverBodyB = Bump.RigidBody.upcast( colObj1 );
 
         // avoid collision response between two static objects
         if ( ( !solverBodyA || !solverBodyA.getInvMass() ) && ( !solverBodyB || !solverBodyB.getInvMass() ) ) {
           return;
         }
 
-        for ( var j = 0 ; j < manifold.getNumContacts(); ++j ) {
+        for ( var j = 0; j < manifold.getNumContacts(); ++j ) {
           var cp = manifold.getContactPoint( j ); // btManifoldPoint&
 
           if ( cp.getDistance() <= manifold.getContactProcessingThreshold() ) {
@@ -624,19 +630,21 @@
         this.resolveSingleConstraintRowLowerLimit( body1, body2, contactConstraint );
       },
 
-      solveGroupCacheFriendlySplitImpulseIterations: function( bodies,
-                                                               numBodies,
-                                                               manifoldPtr,
-                                                               numManifolds,
-                                                               constras,
-                                                               numConstras,
-                                                               infoGlobal,
-                                                               debugDrawer,
-                                                               stackAlloc ) {
-        var iteration,
-            numPoolConstraints,
-            j,
-            solveManifold; // const btSolverConstraint&
+      solveGroupCacheFriendlySplitImpulseIterations: function(
+        bodies,
+        numBodies,
+        manifoldPtr,
+        numManifolds,
+        constras,
+        numConstras,
+        infoGlobal,
+        debugDrawer,
+        stackAlloc
+      ) {
+        var iteration;
+        var numPoolConstraints;
+        var j;
+        var solveManifold; // const btSolverConstraint&
 
         if ( infoGlobal.splitImpulse ) {
           if ( infoGlobal.solverMode & Bump.SolverMode.SOLVER_SIMD ) {
@@ -666,20 +674,24 @@
         }
       },
 
-      solveGroupCacheFriendlyFinish: function( bodies,
-                                               numBodies,
-                                               manifoldPtr,
-                                               numManifolds,
-                                               constraints,
-                                               numConstraints,
-                                               infoGlobal,
-                                               debugDrawer,
-                                               stackAlloc ) {
-        var i, j, numPoolConstraints = this.tmpSolverContactConstraintPool.length;
+      solveGroupCacheFriendlyFinish: function(
+        bodies,
+        numBodies,
+        manifoldPtr,
+        numManifolds,
+        constraints,
+        numConstraints,
+        infoGlobal,
+        debugDrawer,
+        stackAlloc
+      ) {
+        var i, j;
+        var numPoolConstraints = this.tmpSolverContactConstraintPool.length;
 
         for ( j = 0; j < numPoolConstraints; j++ ) {
-          var solveManifold = this.tmpSolverContactConstraintPool[ j ], // const btSolverConstraint&
-              pt = solveManifold.originalContactPoint; // btManifoldPoint*
+          var solveManifold = this.tmpSolverContactConstraintPool[ j ]; // const btSolverConstraint&
+          var pt = solveManifold.originalContactPoint; // btManifoldPoint*
+
           Bump.Assert( pt );
           pt.appliedImpulse = solveManifold.appliedImpulse;
           if ( infoGlobal.solverMode & Bump.SolverMode.SOLVER_USE_FRICTION_WARMSTARTING ) {
@@ -702,10 +714,10 @@
           }
         }
 
-        var body;
+        var body;               // btRigidBody*
         if ( infoGlobal.splitImpulse ) {
           for ( i = 0; i < numBodies; i++ ) {
-            body = Bump.RigidBody.upcast( bodies[ i ] );
+            body = Bump.RigidBody.upcast( bodies[ i ] ); // btRigidBody*
             if ( body ) {
               body.internalWritebackVelocity( infoGlobal.timeStep );
             }
@@ -719,7 +731,6 @@
           }
         }
 
-        // not sure if splice( 0 ) is the best thing to do here
         Bump.resize( this.tmpSolverContactConstraintPool, 0 );
         Bump.resize( this.tmpSolverNonContactConstraintPool, 0 );
         Bump.resize( this.tmpSolverContactFrictionConstraintPool, 0 );
@@ -727,18 +738,28 @@
         return 0;
       },
 
-      solveSingleIteration: function( iteration,
-                                      bodies,
-                                      numBodies,
-                                      manifoldPtr,
-                                      numManifolds,
-                                      constraints,
-                                      numConstraints,
-                                      infoGlobal,
-                                      debugDrawer,
-                                      stackAlloc ) {
-        var numConstraintPool = this.tmpSolverContactConstraintPool.length,
-            numFrictionPool = this.tmpSolverContactFrictionConstraintPool.length;
+      solveSingleIteration: function(
+        iteration,
+        bodies,
+        numBodies,
+        manifoldPtr,
+        numManifolds,
+        constraints,
+        numConstraints,
+        infoGlobal,
+        debugDrawer,
+        stackAlloc
+      ) {
+        var m_tmpSolverNonContactConstraintPool = this.tmpSolverNonContactConstraintPool;
+        var m_tmpSolverContactConstraintPool = this.tmpSolverContactConstraintPool;
+        var m_tmpSolverContactFrictionConstraintPool = this.tmpSolverContactFrictionConstraintPool;
+        var m_orderNonContactConstraintPool = this.orderNonContactConstraintPool;
+        var m_orderTmpConstraintPool = this.orderTmpConstraintPool;
+        var m_orderFrictionConstraintPool = this.orderFrictionConstraintPool;
+
+        var numNonContactPool = m_tmpSolverNonContactConstraintPool.length;
+        var numConstraintPool = m_tmpSolverContactConstraintPool.length;
+        var numFrictionPool   = m_tmpSolverContactFrictionConstraintPool.length;
 
         var j,
             tmp,
@@ -749,123 +770,163 @@
             solveManifold;      // const btSolverConstraint&
 
         if ( infoGlobal.solverMode & Bump.SolverMode.SOLVER_RANDMIZE_ORDER ) {
-          if ( ( iteration & 7 ) === 0 ) {
-            for ( j = 0; j < numConstraintPool; ++j ) {
-              tmp = this.orderTmpConstraintPool[ j ];
-              swapi = this.randInt2( j + 1 );
-              this.orderTmpConstraintPool[ j ] = this.orderTmpConstraintPool[ swapi ];
-              this.orderTmpConstraintPool[ swapi ] = tmp;
+          if ( ( iteration & 7) === 0 ) {
+            var btRandInt2 = this.randInt2;
+
+            for ( j = 0; j < numNonContactPool; ++j ) {
+              tmp = m_orderNonContactConstraintPool[ j ];
+              swapi = btRandInt2( j + 1 );
+              m_orderNonContactConstraintPool[ j ] = m_orderNonContactConstraintPool[ swapi ];
+              m_orderNonContactConstraintPool[ swapi ] = tmp;
             }
 
-            for ( j = 0; j < numFrictionPool; ++j ) {
-              tmp = this.orderFrictionConstraintPool[ j ];
-              swapi = this.randInt2( j + 1 );
-              this.orderFrictionConstraintPool[ j ] = this.orderFrictionConstraintPool [swapi ];
-              this.orderFrictionConstraintPool[ swapi ] = tmp;
+            // Contact/friction constraints are not solved more than.
+            if ( iteration < infoGlobal.numIterations ) {
+              for ( j = 0; j < numConstraintPool; ++j ) {
+                tmp = m_orderTmpConstraintPool[ j ];
+                swapi = btRandInt2( j + 1 );
+                m_orderTmpConstraintPool[ j ] = m_orderTmpConstraintPool[ swapi ];
+                m_orderTmpConstraintPool[ swapi ] = tmp;
+              }
+
+              for ( j = 0; j < numFrictionPool; ++j ) {
+                tmp = m_orderFrictionConstraintPool[ j ];
+                swapi = btRandInt2( j + 1 );
+                m_orderFrictionConstraintPool[ j ] = m_orderFrictionConstraintPool[ swapi ];
+                m_orderFrictionConstraintPool[ swapi ] = tmp;
+              }
             }
+
           }
         }
 
         if ( infoGlobal.solverMode & Bump.SolverMode.SOLVER_SIMD ) {
           // solve all joint constraints, using SIMD, if available
-          for ( j = 0; j < this.tmpSolverNonContactConstraintPool.length; j++ ) {
-            constraint = this.tmpSolverNonContactConstraintPool[ j ]; // btSolverConstraint&
-            this.resolveSingleConstraintRowGenericSIMD( constraint.solverBodyA, constraint.solverBodyB, constraint );
-          }
-
-          for ( j = 0; j < numConstraints; j++ ) {
-            constraints[ j ].solveConstraintObsolete( constraints[ j ].getRigidBodyA(),
-                                                      constraints[j].getRigidBodyB(),
-                                                      infoGlobal.timeStep );
-          }
-
-          // solve all contact constraints using SIMD, if available
-          numPoolConstraints = this.tmpSolverContactConstraintPool.length;
-          for ( j = 0; j < numPoolConstraints; j++ ) {
-            // const btSolverConstraint&
-            solveManifold = this.tmpSolverContactConstraintPool[ this.orderTmpConstraintPool[ j ] ];
-            this.resolveSingleConstraintRowLowerLimitSIMD( solveManifold.solverBodyA,
-                                                           solveManifold.solverBodyB,
-                                                           solveManifold );
-          }
-          // solve all friction constraints, using SIMD, if available
-          numFrictionPoolConstraints = this.tmpSolverContactFrictionConstraintPool.length;
-          for ( j = 0; j < numFrictionPoolConstraints; j++ ) {
-            // btSolverConstraint&
-            solveManifold = this.tmpSolverContactFrictionConstraintPool[ this.orderFrictionConstraintPool[ j ] ];
-            totalImpulse = this.tmpSolverContactConstraintPool[ solveManifold.frictionIndex ].appliedImpulse;
-
-            if ( totalImpulse > 0 ) {
-              solveManifold.lowerLimit = -( solveManifold.friction * totalImpulse );
-              solveManifold.upperLimit = solveManifold.friction * totalImpulse;
-
-              this.resolveSingleConstraintRowGenericSIMD( solveManifold.solverBodyA,
-                                                          solveManifold.solverBodyB,
-                                                          solveManifold );
+          for ( j = 0; j < m_tmpSolverNonContactConstraintPool.length; j++ ) {
+            constraint = m_tmpSolverNonContactConstraintPool[ m_orderNonContactConstraintPool[ j ] ]; // btSolverConstraint&
+            if ( iteration < constraint.overrideNumSolverIterations ) {
+              this.resolveSingleConstraintRowGenericSIMD( constraint.solverBodyA, constraint.solverBodyB, constraint );
             }
           }
+
+          if ( iteration < infoGlobal.numIterations ) {
+
+            for ( j = 0; j < numConstraints; j++ ) {
+              constraints[ j ].solveConstraintObsolete(
+                constraints[ j ].getRigidBodyA(),
+                constraints[ j ].getRigidBodyB(),
+                infoGlobal.timeStep
+              );
+            }
+
+            // solve all contact constraints using SIMD, if available
+            numPoolConstraints = m_tmpSolverContactConstraintPool.length;
+            for ( j = 0; j < numPoolConstraints; j++ ) {
+              // const btSolverConstraint&
+              solveManifold = m_tmpSolverContactConstraintPool[ m_orderTmpConstraintPool[ j ] ];
+              this.resolveSingleConstraintRowLowerLimitSIMD(
+                solveManifold.solverBodyA,
+                solveManifold.solverBodyB,
+                solveManifold
+              );
+            }
+
+            // solve all friction constraints, using SIMD, if available
+            numFrictionPoolConstraints = m_tmpSolverContactFrictionConstraintPool.length;
+            for ( j = 0; j < numFrictionPoolConstraints; j++ ) {
+              // btSolverConstraint&
+              solveManifold = m_tmpSolverContactFrictionConstraintPool[ m_orderFrictionConstraintPool[ j ] ];
+              totalImpulse = m_tmpSolverContactConstraintPool[ solveManifold.frictionIndex ].appliedImpulse;
+
+              if ( totalImpulse > 0 ) {
+                solveManifold.lowerLimit = -( solveManifold.friction * totalImpulse );
+                solveManifold.upperLimit = solveManifold.friction * totalImpulse;
+
+                this.resolveSingleConstraintRowGenericSIMD(
+                  solveManifold.solverBodyA,
+                  solveManifold.solverBodyB,
+                  solveManifold
+                );
+              }
+            }
+          }
+
         }
 
         else {
-
           // solve all joint constraints
-          for ( j = 0; j < this.tmpSolverNonContactConstraintPool.length; j++ ) {
-            constraint = this.tmpSolverNonContactConstraintPool[ j ]; // btSolverConstraint&
-            this.resolveSingleConstraintRowGeneric( constraint.solverBodyA, constraint.solverBodyB, constraint );
-          }
-
-          for ( j = 0; j < numConstraints; j++ ) {
-            constraints[j].solveConstraintObsolete( constraints[j].getRigidBodyA(),
-                                                    constraints[j].getRigidBodyB(),
-                                                    infoGlobal.timeStep );
-          }
-
-          // solve all contact constraints
-          numPoolConstraints = this.tmpSolverContactConstraintPool.length;
-          for ( j = 0; j < numPoolConstraints; j++ ) {
-            // const btSolverConstraint&
-            solveManifold = this.tmpSolverContactConstraintPool[ this.orderTmpConstraintPool[ j ] ];
-            this.resolveSingleConstraintRowLowerLimit( solveManifold.solverBodyA,
-                                                       solveManifold.solverBodyB,
-                                                       solveManifold );
-          }
-
-          // solve all friction constraints
-          var numFrictionPoolConstraints = this.tmpSolverContactFrictionConstraintPool.length;
-          for ( j = 0; j < numFrictionPoolConstraints; j++ ) {
-            // btSolverConstraint&
-            solveManifold = this.tmpSolverContactFrictionConstraintPool[ this.orderFrictionConstraintPool[ j ] ];
-            totalImpulse = this.tmpSolverContactConstraintPool[ solveManifold.frictionIndex ].appliedImpulse;
-
-            if ( totalImpulse > 0 ) {
-              solveManifold.lowerLimit = -( solveManifold.friction * totalImpulse );
-              solveManifold.upperLimit = solveManifold.friction * totalImpulse;
-
-              this.resolveSingleConstraintRowGeneric( solveManifold.solverBodyA,
-                                                      solveManifold.solverBodyB,
-                                                      solveManifold );
+          for ( j = 0; j < m_tmpSolverNonContactConstraintPool.length; j++ ) {
+            constraint = m_tmpSolverNonContactConstraintPool[ m_orderNonContactConstraintPool[ j ] ]; // btSolverConstraint&
+            if ( iteration < constraint.overrideNumSolverIterations ) {
+              this.resolveSingleConstraintRowGeneric( constraint.solverBodyA, constraint.solverBodyB, constraint );
             }
           }
+
+          if ( iteration < infoGlobal.numIterations ) {
+            for ( j = 0; j < numConstraints; j++ ) {
+              constraints[j].solveConstraintObsolete(
+                constraints[j].getRigidBodyA(),
+                constraints[j].getRigidBodyB(),
+                infoGlobal.timeStep
+              );
+            }
+
+            // solve all contact constraints
+            numPoolConstraints = m_tmpSolverContactConstraintPool.length;
+            for ( j = 0; j < numPoolConstraints; j++ ) {
+              // const btSolverConstraint&
+              solveManifold = m_tmpSolverContactConstraintPool[ this.orderTmpConstraintPool[ j ] ];
+              this.resolveSingleConstraintRowLowerLimit(
+                solveManifold.solverBodyA,
+                solveManifold.solverBodyB,
+                solveManifold
+              );
+            }
+
+            // solve all friction constraints
+            var numFrictionPoolConstraints = m_tmpSolverContactFrictionConstraintPool.length;
+            for ( j = 0; j < numFrictionPoolConstraints; j++ ) {
+              // btSolverConstraint&
+              solveManifold = m_tmpSolverContactFrictionConstraintPool[ this.orderFrictionConstraintPool[ j ] ];
+              totalImpulse = m_tmpSolverContactConstraintPool[ solveManifold.frictionIndex ].appliedImpulse;
+
+              if ( totalImpulse > 0 ) {
+                solveManifold.lowerLimit = -( solveManifold.friction * totalImpulse );
+                solveManifold.upperLimit = solveManifold.friction * totalImpulse;
+
+                this.resolveSingleConstraintRowGeneric(
+                  solveManifold.solverBodyA,
+                  solveManifold.solverBodyB,
+                  solveManifold
+                );
+              }
+            }
+          }
+
         }
 
         return 0;
       },
 
-      solveGroupCacheFriendlySetup: function( bodies,
-                                              numBodies,
-                                              manifoldPtr,
-                                              numManifolds,
-                                              constraints,
-                                              numConstraints,
-                                              infoGlobal,
-                                              debugDrawer,
-                                              stackAlloc ) {
-        if ( ( numConstraints + numManifolds ) === 0 ) {
+      solveGroupCacheFriendlySetup: function(
+        bodies,
+        numBodies,
+        manifoldPtr,
+        numManifolds,
+        constraints,
+        numConstraints,
+        infoGlobal,
+        debugDrawer,
+        stackAlloc
+      ) {
+        this.maxOverrideNumSolverIterations = 0;
+
+        if ( numConstraints + numManifolds === 0 ) {
           // console.log( 'empty' );
           return 0;
         }
 
-        var i, body;
+        var body, i;
 
         if ( infoGlobal.splitImpulse ) {
           for ( i = 0; i < numBodies; ++i ) {
@@ -929,18 +990,27 @@
             // btSolverConstraint*
             var currentConstraintRow = this.tmpSolverNonContactConstraintPool[ currentRow ];
             constraint = constraints[ i ]; // btTypedConstraint*
+            var rbA = constraint.getRigidBodyA(); // btRigidBody&
+            var rbB = constraint.getRigidBodyB(); // btRigidBody&
 
-            var rbA = constraint.getRigidBodyA(), // btRigidBody&
-                rbB = constraint.getRigidBodyB(); // btRigidBody&
+            var overrideNumSolverIterations = constraint.getOverrideNumSolverIterations() > 0 ?
+              constraint.getOverrideNumSolverIterations() :
+              infoGlobal.numIterations;
+            if ( overrideNumSolverIterations > this.maxOverrideNumSolverIterations ) {
+              this.maxOverrideNumSolverIterations = overrideNumSolverIterations;
+            }
 
-            for ( j = 0; j < info1.numConstraintRows; j++ ) {
-              currentConstraintRow[ j ].setZero(); // replacement for memset
-              currentConstraintRow[ j ].lowerLimit = -Bump.SIMD_INFINITY;
-              currentConstraintRow[ j ].upperLimit = Bump.SIMD_INFINITY;
-              currentConstraintRow[ j ].appliedImpulse = 0;
-              currentConstraintRow[ j ].appliedPushImpulse = 0;
-              currentConstraintRow[ j ].solverBodyA = rbA;
-              currentConstraintRow[ j ].solverBodyB = rbB;
+            for ( j = 0; j < info1.numConstraintRows; ++j ) {
+              var currentConstraint = currentConstraintRow[ j ];
+              currentConstraint.setZero(); // replacement for memset
+              currentConstraint.lowerLimit = -Bump.SIMD_INFINITY;
+              currentConstraint.upperLimit = Bump.SIMD_INFINITY;
+              currentConstraint.appliedImpulse = 0;
+              currentConstraint.appliedPushImpulse = 0;
+              currentConstraint.solverBodyA = rbA;
+              currentConstraint.solverBodyB = rbB;
+              currentConstraint.solverBodyB = rbB;
+              currentConstraint.overrideNumSolverIterations = overrideNumSolverIterations;
             }
 
             rbA.internalGetDeltaLinearVelocity().setValue( 0, 0, 0 );
@@ -957,8 +1027,11 @@
             info2.J2angularAxis = currentConstraintRow.relpos2CrossNormal;
             // TODO: figure out what to do about this
             // info2.rowskip = sizeof(btSolverConstraint)/sizeof(btScalar); // check this
-            info2.rowskip = 38; // for now, this is the "correct" number, but what its used for
-                                // is probably not JavaScript-friendly
+
+            // For now, this is the "correct" number, but what its used for is
+            // probably not JavaScript-friendly.
+            info2.rowskip = 38;
+
             // the size of btSolverConstraint needs be a multiple of btScalar
             // Bump.Assert( info2.rowskip * sizeof(btScalar) === sizeof(btSolverConstraint) );
             info2.constraintError = currentConstraintRow.rhs;
@@ -1038,63 +1111,82 @@
 
 
         var manifold = null;
-
         for ( i = 0; i < numManifolds; i++ ) {
           manifold = manifoldPtr[ i ];
           this.convertContact( manifold, infoGlobal );
         }
 
-        var info = infoGlobal,  // btContactSolverInfo
+        var info = infoGlobal, // btContactSolverInfo
+            numNonContactPool = this.tmpSolverNonContactConstraintPool.length,
             numConstraintPool = this.tmpSolverContactConstraintPool.length,
             numFrictionPool = this.tmpSolverContactFrictionConstraintPool.length;
 
-        // @todo: use stack allocator for such temporarily memory, same for solver bodies/constraints
+        // TODO: use stack allocator for such temporarily memory, same for solver bodies/constraints
+        Bump.resize( this.orderNonContactConstraintPool, numNonContactPool, 0 ); // needed?
         Bump.resize( this.orderTmpConstraintPool, numConstraintPool, 0 ); // needed?
         Bump.resize( this.orderFrictionConstraintPool, numFrictionPool, 0 ); // needed?
 
-        for ( i = 0; i < numConstraintPool; i++ ) {
+        for ( i = 0; i < numNonContactPool; ++i ) {
+          this.orderNonContactConstraintPool[i] = i;
+        }
+        for ( i = 0; i < numConstraintPool; ++i ) {
           this.orderTmpConstraintPool[i] = i;
         }
-        for ( i = 0 ; i < numFrictionPool; i++ ) {
+        for ( i = 0 ; i < numFrictionPool; ++i ) {
           this.orderFrictionConstraintPool[i] = i;
         }
 
         return 0;
       },
 
-      solveGroupCacheFriendlyIterations: function( bodies,
-                                                   numBodies,
-                                                   manifoldPtr,
-                                                   numManifolds,
-                                                   constraints,
-                                                   numConstraints,
-                                                   infoGlobal,
-                                                   debugDrawer,
-                                                   stackAlloc ) {
-        // should traverse the contacts random order...
-        var iteration;
-        this.solveGroupCacheFriendlySplitImpulseIterations( bodies, numBodies, manifoldPtr, numManifolds,
-                                                            constraints, numConstraints, infoGlobal,
-                                                            debugDrawer, stackAlloc );
+      solveGroupCacheFriendlyIterations: function(
+        bodies,
+        numBodies,
+        manifoldPtr,
+        numManifolds,
+        constraints,
+        numConstraints,
+        infoGlobal,
+        debugDrawer,
+        stackAlloc
+      ) {
+        // This is a special step to resolve penetrations (just for contacts).
+        this.solveGroupCacheFriendlySplitImpulseIterations(
+          bodies, numBodies,
+          manifoldPtr, numManifolds,
+          constraints, numConstraints,
+          infoGlobal, debugDrawer, stackAlloc
+        );
 
-        for ( iteration = 0; iteration < infoGlobal.numIterations; iteration++ ) {
-          this.solveSingleIteration( iteration, bodies, numBodies, manifoldPtr, numManifolds, constraints,
-                                     numConstraints,infoGlobal,debugDrawer,stackAlloc );
+        var maxIterations = this.maxOverrideNumSolverIterations > infoGlobal.numIterations ?
+          this.maxOverrideNumSolverIterations :
+          infoGlobal.numIterations;
+
+        for ( var iteration = 0; iteration < maxIterations; ++iteration ) {
+          this.solveSingleIteration(
+            iteration,
+            bodies, numBodies,
+            manifoldPtr, numManifolds,
+            constraints, numConstraints,
+            infoGlobal, debugDrawer, stackAlloc
+          );
         }
 
         return 0;
       },
 
-      solveGroup: function( bodies,
-                            numBodies,
-                            manifoldPtr,
-                            numManifolds,
-                            constraints,
-                            numConstraints,
-                            infoGlobal,
-                            debugDrawer,
-                            stackAlloc,
-                            dispatcher ) {
+      solveGroup: function(
+        bodies,
+        numBodies,
+        manifoldPtr,
+        numManifolds,
+        constraints,
+        numConstraints,
+        infoGlobal,
+        debugDrawer,
+        stackAlloc,
+        dispatcher
+      ) {
         // You need to provide at least some bodies.
         Bump.Assert( bodies );
         Bump.Assert( numBodies );
@@ -1118,7 +1210,8 @@
         return this.btSeed2;
       },
 
-      // Red flags here... this probably does not evaluate to the same as the original C++
+      // Red flags here... this probably does not evaluate to the same as the
+      // original C++.
       randInt2: function( n ) {
         // seems good; xor-fold and modulus
         var un = n << 0,

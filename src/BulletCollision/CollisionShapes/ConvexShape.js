@@ -129,7 +129,7 @@
 
     //       // vtx = pos + vec * (radius);
     //       vtx = pos
-    //         .add( vec.multiplyScalar( capsuleShape.getLocalScalingNV() * radius ) )
+    //         .add( vec.multiplyScalar( radius ) )
     //         .subtract( vec.multiplyScalar( capsuleShape.getMarginNV() ) );
     //       newDot = vec.dot( vtx );
 
@@ -143,7 +143,7 @@
 
     //       // vtx = pos +vec*(radius);
     //       vtx = pos
-    //         .add( vec.multiplyScalar( capsuleShape.getLocalScalingNV() * radius ) )
+    //         .add( vec.multiplyScalar( radius ) )
     //         .subtract( vec.multiplyScalar( capsuleShape.getMarginNV() ) );
     //       newDot = vec.dot( vtx );
     //       if ( newDot > maxDot ) {

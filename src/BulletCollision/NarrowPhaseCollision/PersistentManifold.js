@@ -10,10 +10,49 @@
   Bump.gContactDestroyedCallback = null;
   Bump.gContactProcessedCallback = null;
 
+  // `gContactCalcArea3Points` will approximate the convex hull area using 3
+  // points. When setting it to false, it will use 4 points to compute the area:
+  // it is more accurate but slower.
+  Bump.gContactCalcArea3Points = true;
+
   Bump.ContactManifoldTypes = Bump.Enum([
     { id: 'MIN_CONTACT_MANIFOLD_TYPE', value: 1024 },
     'BT_PERSISTENT_MANIFOLD_TYPE'
   ]);
+
+  var calcArea4Points = Bump.calcArea4Points = (function() {
+    var a = [
+      Bump.Vector3.create(),
+      Bump.Vector3.create(),
+      Bump.Vector3.create()
+    ];
+    var b = [
+      Bump.Vector3.create(),
+      Bump.Vector3.create(),
+      Bump.Vector3.create()
+    ];
+    var tmp0 = Bump.Vector3.create();
+    var tmp1 = Bump.Vector3.create();
+    var tmp2 = Bump.Vector3.create();
+
+    return function( p0, p1, p2, p3 ) {
+      // It calculates possible 3 area constructed from random 4 points and returns the biggest one.
+
+      a[0] = p0.subtract( p1, a[0] );
+      a[1] = p0.subtract( p2, a[1] );
+      a[2] = p0.subtract( p3, a[2] );
+      b[0] = p2.subtract( p3, b[0] );
+      b[1] = p1.subtract( p3, b[1] );
+      b[2] = p1.subtract( p2, b[2] );
+
+      // TODO: Following 3 cross production can be easily optimized by SIMD.
+      tmp0 = a[0].cross( b[0], tmp0 );
+      tmp1 = a[1].cross( b[1], tmp1 );
+      tmp2 = a[2].cross( b[2], tmp2 );
+
+      return Math.max( tmp0.length2(), tmp1.length2(), tmp2.length2() );
+    };
+  })();
 
   Bump.PersistentManifold = Bump.type({
     parent: Bump.TypedObject,
@@ -320,47 +359,70 @@
       // - `tmpV4`
       // - `tmpVec41`
       sortCachedPoints: function( pt ) {
+        var m_pointCache = this.pointCache;
+
         var maxPenetrationIndex = -1;
 
         var maxPenetration = pt.getDistance();
         for ( var i = 0; i < 4; ++i ) {
-          if ( this.pointCache[i].getDistance() < maxPenetration ) {
+          if ( m_pointCache[i].getDistance() < maxPenetration ) {
             maxPenetrationIndex = i;
-            maxPenetration = this.pointCache[i].getDistance();
+            maxPenetration = m_pointCache[i].getDistance();
           }
         }
 
         var res0 = 0, res1 = 0, res2 = 0, res3 = 0, cross;
-        if ( maxPenetrationIndex !== 0 ) {
-          var a0 = pt.localPointA.subtract( this.pointCache[1].localPointA, tmpV1 ),
-              b0 = this.pointCache[3].localPointA.subtract( this.pointCache[2].localPointA, tmpV2 );
-          cross = a0.cross( b0, tmpV3 );
-          res0 = cross.length2();
+
+        if ( Bump.gContactCalcArea3Points ) {
+          if ( maxPenetrationIndex !== 0 ) {
+            var a0 = pt.localPointA.subtract( m_pointCache[1].localPointA, tmpV1 ),
+            b0 = m_pointCache[3].localPointA.subtract( m_pointCache[2].localPointA, tmpV2 );
+            cross = a0.cross( b0, tmpV3 );
+            res0 = cross.length2();
+          }
+
+          if ( maxPenetrationIndex !== 1 ) {
+            var a1 = pt.localPointA.subtract( m_pointCache[0].localPointA, tmpV1 ),
+            b1 = m_pointCache[3].localPointA.subtract( m_pointCache[2].localPointA, tmpV2 );
+            cross = a1.cross( b1, tmpV3 );
+            res1 = cross.length2();
+          }
+
+          if ( maxPenetrationIndex !== 2 ) {
+            var a2 = pt.localPointA.subtract( m_pointCache[0].localPointA, tmpV1 ),
+            b2 = m_pointCache[3].localPointA.subtract( m_pointCache[1].localPointA, tmpV2 );
+            cross = a2.cross( b2, tmpV3 );
+            res2 = cross.length2();
+          }
+
+          if ( maxPenetrationIndex !== 3 ) {
+            var a3 = pt.localPointA.subtract( m_pointCache[0].localPointA, tmpV1 ),
+            b3 = m_pointCache[2].localPointA.subtract( m_pointCache[1].localPointA, tmpV2 );
+            cross = a3.cross( b3, tmpV3 );
+            res3 = cross.length2();
+          }
         }
 
-        if ( maxPenetrationIndex !== 1 ) {
-          var a1 = pt.localPointA.subtract( this.pointCache[0].localPointA, tmpV1 ),
-              b1 = this.pointCache[3].localPointA.subtract( this.pointCache[2].localPointA, tmpV2 );
-          cross = a1.cross( b1, tmpV3 );
-          res1 = cross.length2();
+        else {
+          if ( maxPenetrationIndex !== 0 ) {
+            res0 = calcArea4Points( pt.localPointA, m_pointCache[1].localPointA, m_pointCache[2].localPointA, m_pointCache[3].localPointA );
+          }
+
+          if ( maxPenetrationIndex !== 1 ) {
+            res1 = calcArea4Points( pt.localPointA, m_pointCache[0].localPointA, m_pointCache[2].localPointA, m_pointCache[3].localPointA );
+          }
+
+          if ( maxPenetrationIndex !== 2 ) {
+            res2 = calcArea4Points( pt.localPointA, m_pointCache[0].localPointA, m_pointCache[1].localPointA, m_pointCache[3].localPointA );
+          }
+
+          if ( maxPenetrationIndex !== 3 ) {
+            res3 = calcArea4Points( pt.localPointA, m_pointCache[0].localPointA, m_pointCache[1].localPointA, m_pointCache[2].localPointA );
+          }
         }
 
-        if ( maxPenetrationIndex !== 2 ) {
-          var a2 = pt.localPointA.subtract( this.pointCache[0].localPointA, tmpV1 ),
-              b2 = this.pointCache[3].localPointA.subtract( this.pointCache[1].localPointA, tmpV2 );
-          cross = a2.cross( b2, tmpV3 );
-          res2 = cross.length2();
-        }
-
-        if ( maxPenetrationIndex !== 3 ) {
-          var a3 = pt.localPointA.subtract( this.pointCache[0].localPointA, tmpV1 ),
-              b3 = this.pointCache[2].localPointA.subtract( this.pointCache[1].localPointA, tmpV2 );
-          cross = a3.cross( b3, tmpV3 );
-          res3 = cross.length2();
-        }
-
-        var maxvec = tmpVec41.setValue( res0, res1, res2, res3 ),
-            biggestarea = maxvec.closestAxis4();
+        var maxvec = tmpVec41.setValue( res0, res1, res2, res3 );
+        var biggestarea = maxvec.closestAxis4();
         return biggestarea;
       }
 

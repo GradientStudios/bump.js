@@ -737,12 +737,17 @@
   // underlying data structure.
   Bump.Dbvt = Bump.type({
     init: function Dbvt() {
-      this.root = 0; // DbvtNode
-      this.free = 0; // DbvtNode
-      this.lkhd = -1; // int
-      this.leaves = 0; // int
-      this.opath = 0; // unsigned
-      this.stkStack = []; // array of `Dbvt.sStkNN`
+      // Default initializers
+      this.stkStack = [];       // array of `Dbvt.sStkNN`
+      this.rayTestStack = [];   // array of `DbvtNode`
+      // End default initializers
+
+      // !!!: The pointers should be `null`! >:o
+      this.root   = 0;          // DbvtNode*
+      this.free   = 0;          // DbvtNode*
+      this.lkhd   = -1;         // int
+      this.leaves = 0;          // int
+      this.opath  = 0;          // unsigned
     },
 
     members: {
@@ -939,7 +944,7 @@
           var depth = 1,
               threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 4,
               stkStack = [];
-          stkStack[ Bump.Dbvt.DOUBE_STACKSIZE - 1 ] = undefined; // stkStack.resize( DOUBLE_STACKSIZE );
+          stkStack[ Bump.Dbvt.DOUBLE_STACKSIZE - 1 ] = undefined; // stkStack.resize( DOUBLE_STACKSIZE );
           stkStack[ 0 ] = Bump.Dbvt.sStkNN.create( root0, root1 );
 
           do {
@@ -986,7 +991,7 @@
         if ( root0 && root1 ) {
           var depth = 1,
               threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 4;
-          this.stkStack[ Bump.Dbvt.DOUBE_STACKSIZE - 1 ] = undefined; // stkStack.resize( DOUBLE_STACKSIZE );
+          this.stkStack[ Bump.Dbvt.DOUBLE_STACKSIZE - 1 ] = undefined; // stkStack.resize( DOUBLE_STACKSIZE );
           this.stkStack[ 0 ] = Bump.Dbvt.sStkNN.create( root0, root1 );
           do {
             var p = this.stkStack[ --depth ];
@@ -1052,22 +1057,25 @@
         }
       },
 
-      rayTestInternal: function( root,
-                                 rayFrom,
-                                 rayTo,
-                                 rayDirectionInverse,
-                                 signs,
-                                 lambda_max,
-                                 aabbMin,
-                                 aabbMax,
-                                 policy ) {
+      rayTestInternal: function(
+        root,
+        rayFrom,
+        rayTo,
+        rayDirectionInverse,
+        signs,
+        lambda_max,
+        aabbMin,
+        aabbMax,
+        policy
+      ) {
         if ( root ) {
-          var resultNormal = Bump.Vector3.create(),
-              depth = 1,
+          var resultNormal = Bump.Vector3.create();
+
+          var depth = 1,
               threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 2,
-              stack = [],
+              stack = this.rayTestStack,
               bounds = [ Bump.Vector3.create(), Bump.Vector3.create() ];
-          stack[ Bump.Dbvt.DOUBE_STACKSIZE - 1 ] = undefined; // stack.resize( DOUBLE_STACKSIZE );
+          Bump.resize( stack, Bump.Dbvt.DOUBLE_STACKSIZE, undefined );
           stack[ 0 ] = root;
           do {
             var node = stack[ --depth ];
@@ -1087,13 +1095,16 @@
                 stack[ depth++ ] = node.childs[ 0 ];
                 stack[ depth++ ] = node.childs[ 1 ];
               }
+
               else {
                 policy.ProcessNode( node );
               }
             }
           } while ( depth );
+
         }
       }
+
     },
 
     typeMembers: {
