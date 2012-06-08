@@ -1,7 +1,9 @@
 // file for generic inheritance code and some base classes
 
 // the main library object
-this.Bump = {};
+this.Bump = {
+  version: '0.2.0'
+};
 
 (function( window, Bump ) {
 
