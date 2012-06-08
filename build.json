@@ -1,21 +1,108 @@
 {
-	"files": {
-		"dist/bump": {
-			"src": [
-				"src/bump.js"
-			],
-			"prehint": true,
-			"posthint": true,
-			"debug": true,
+  "files": {
+    "dist/bump": {
+      "src": [
+        "src/bump.js",
+        "src/LinearMath/Math.js",
 
-			"meta": {
-				"label": "Bump",
-				"author": "Gradient Studios",
-				"version": "0.0.0",
-				"homeurl": "",
-				"license": [],
-				"copyright": ""
-			}
-		}
-	}
+        "src/LinearMath/Vector3.js",
+        "src/LinearMath/Quaternion.js",
+        "src/LinearMath/Matrix3x3.js",
+        "src/LinearMath/Transform.js",
+
+        "src/LinearMath/TransformUtil.js",
+        "src/LinearMath/AabbUtil2.js",
+        "src/LinearMath/HashMap.js",
+        "src/LinearMath/AlignedObjectArray.js",
+
+        "src/LinearMath/MotionState.js",
+        "src/LinearMath/DefaultMotionState.js",
+
+        "src/BulletCollision/NarrowPhaseCollision/RaycastCallback.js",
+        "src/BulletCollision/NarrowPhaseCollision/ConvexCast.js",
+        "src/BulletCollision/NarrowPhaseCollision/SubSimplexConvexCast.js",
+        "src/BulletCollision/NarrowPhaseCollision/DiscreteCollisionDetectorInterface.js",
+        "src/BulletCollision/NarrowPhaseCollision/ManifoldPoint.js",
+        "src/BulletCollision/NarrowPhaseCollision/PersistentManifold.js",
+        "src/BulletCollision/NarrowPhaseCollision/VoronoiSimplexSolver.js",
+        "src/BulletCollision/NarrowPhaseCollision/GjkPairDetector.js",
+        "src/BulletCollision/NarrowPhaseCollision/GjkEpa2.js",
+        "src/BulletCollision/NarrowPhaseCollision/ConvexPenetrationDepthSolver.js",
+        "src/BulletCollision/NarrowPhaseCollision/GjkEpaPenetrationDepthSolver.js",
+
+        "src/BulletCollision/BroadphaseCollision/QuantizedBvh.js",
+        "src/BulletCollision/BroadphaseCollision/CollisionAlgorithm.js",
+        "src/BulletCollision/BroadphaseCollision/Dispatcher.js",
+        "src/BulletCollision/BroadphaseCollision/OverlappingPairCallback.js",
+        "src/BulletCollision/BroadphaseCollision/OverlappingPairCache.js",
+        "src/BulletCollision/BroadphaseCollision/BroadphaseInterface.js",
+        "src/BulletCollision/BroadphaseCollision/BroadphaseProxy.js",
+        "src/BulletCollision/BroadphaseCollision/Dbvt.js",
+        "src/BulletCollision/BroadphaseCollision/DbvtBroadphase.js",
+
+        "src/BulletDynamics/ConstraintSolver/JacobianEntry.js",
+        "src/BulletDynamics/ConstraintSolver/ContactSolverInfo.js",
+        "src/BulletDynamics/ConstraintSolver/TypedConstraint.js",
+        "src/BulletDynamics/ConstraintSolver/ContactConstraint.js",
+        "src/BulletDynamics/ConstraintSolver/SolverConstraint.js",
+        "src/BulletDynamics/ConstraintSolver/ConstraintSolver.js",
+        "src/BulletDynamics/ConstraintSolver/SequentialImpulseConstraintSolver.js",
+
+        "src/BulletCollision/CollisionDispatch/CollisionAlgorithmCreateFunc.js",
+        "src/BulletCollision/CollisionDispatch/UnionFind.js",
+        "src/BulletCollision/CollisionDispatch/CollisionConfiguration.js",
+        "src/BulletCollision/CollisionDispatch/DefaultCollisionConfiguration.js",
+        "src/BulletCollision/CollisionDispatch/CollisionDispatcher.js",
+        "src/BulletCollision/CollisionDispatch/CollisionObject.js",
+        "src/BulletCollision/CollisionDispatch/ActivatingCollisionAlgorithm.js",
+        "src/BulletCollision/CollisionDispatch/BoxBoxDetector.js",
+        "src/BulletCollision/CollisionDispatch/BoxBoxCollisionAlgorithm.js",
+        "src/BulletCollision/CollisionDispatch/ConvexConvexAlgorithm.js",
+        "src/BulletCollision/CollisionDispatch/ConvexConcaveCollisionAlgorithm.js",
+        "src/BulletCollision/CollisionDispatch/CompoundCollisionAlgorithm.js",
+        "src/BulletCollision/CollisionDispatch/ManifoldResult.js",
+        "src/BulletCollision/CollisionDispatch/CollisionWorld.js",
+        "src/BulletCollision/CollisionDispatch/SimulationIslandManager.js",
+
+        "src/BulletDynamics/Dynamics/RigidBody.js",
+        "src/BulletDynamics/Dynamics/ActionInterface.js",
+        "src/BulletDynamics/Dynamics/DynamicsWorld.js",
+        "src/BulletDynamics/Dynamics/DiscreteDynamicsWorld.js",
+
+        "src/BulletDynamics/Vehicle/VehicleRaycaster.js",
+        "src/BulletDynamics/Vehicle/WheelInfo.js",
+        "src/BulletDynamics/Vehicle/RaycastVehicle.js",
+
+        "src/BulletCollision/CollisionShapes/OptimizedBvh.js",
+        "src/BulletCollision/CollisionShapes/TriangleCallback.js",
+        "src/BulletCollision/CollisionShapes/CollisionShape.js",
+        "src/BulletCollision/CollisionShapes/CompoundShape.js",
+        "src/BulletCollision/CollisionShapes/ConvexShape.js",
+        "src/BulletCollision/CollisionShapes/ConvexInternalShape.js",
+        "src/BulletCollision/CollisionShapes/ConvexPolyhedron.js",
+        "src/BulletCollision/CollisionShapes/PolyhedralConvexShape.js",
+        "src/BulletCollision/CollisionShapes/TriangleShape.js",
+        "src/BulletCollision/CollisionShapes/SphereShape.js",
+        "src/BulletCollision/CollisionShapes/BoxShape.js",
+        "src/BulletCollision/CollisionShapes/ConcaveShape.js",
+        "src/BulletCollision/CollisionShapes/ScaledBvhTriangleMeshShape.js",
+        "src/BulletCollision/CollisionShapes/StridingMeshInterface.js",
+        "src/BulletCollision/CollisionShapes/TriangleIndexVertexArray.js",
+        "src/BulletCollision/CollisionShapes/TriangleMesh.js",
+        "src/BulletCollision/CollisionShapes/TriangleMeshShape.js",
+        "src/BulletCollision/CollisionShapes/BvhTriangleMeshShape.js"
+      ],
+      "prehint": true,
+      "posthint": true,
+      "debug": true,
+      "meta": {
+        "label": "Bump",
+        "author": "Gradient Studios",
+        "version": "0.0.0",
+        "homeurl": "",
+        "license": [],
+        "copyright": ""
+      }
+    }
+  }
 }

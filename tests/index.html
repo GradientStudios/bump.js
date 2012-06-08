@@ -6,21 +6,152 @@
 
   <!-- Bump -->
   <script src="../src/bump.js"></script>
-  
+  <script src="../src/LinearMath/Math.js"></script>
+  <script src="../src/LinearMath/AlignedObjectArray.js"></script>
+  <script src="../src/LinearMath/Vector3.js"></script>
+  <script src="../src/LinearMath/Quaternion.js"></script>
+  <script src="../src/LinearMath/Matrix3x3.js"></script>
+  <script src="../src/LinearMath/Transform.js"></script>
+  <script src="../src/LinearMath/TransformUtil.js"></script>
+  <script src="../src/LinearMath/AabbUtil2.js"></script>
+  <script src="../src/LinearMath/HashMap.js"></script>
+  <script src="../src/LinearMath/MotionState.js"></script>
+  <script src="../src/LinearMath/DefaultMotionState.js"></script>
+
+  <script src="../src/BulletCollision/NarrowPhaseCollision/RaycastCallback.js"></script>
+  <script src="../src/BulletCollision/NarrowPhaseCollision/ConvexCast.js"></script>
+  <script src="../src/BulletCollision/NarrowPhaseCollision/SubSimplexConvexCast.js"></script>
+  <script src="../src/BulletCollision/NarrowPhaseCollision/DiscreteCollisionDetectorInterface.js"></script>
+  <script src="../src/BulletCollision/NarrowPhaseCollision/ManifoldPoint.js"></script>
+  <script src="../src/BulletCollision/NarrowPhaseCollision/PersistentManifold.js"></script>
+  <script src="../src/BulletCollision/NarrowPhaseCollision/VoronoiSimplexSolver.js"></script>
+  <script src="../src/BulletCollision/NarrowPhaseCollision/GjkPairDetector.js"></script>
+  <script src="../src/BulletCollision/NarrowPhaseCollision/GjkEpa2.js"></script>
+  <script src="../src/BulletCollision/NarrowPhaseCollision/ConvexPenetrationDepthSolver.js"></script>
+  <script src="../src/BulletCollision/NarrowPhaseCollision/GjkEpaPenetrationDepthSolver.js"></script>
+
+  <script src="../src/BulletCollision/BroadphaseCollision/QuantizedBvh.js"></script>
+  <script src="../src/BulletCollision/BroadphaseCollision/CollisionAlgorithm.js"></script>
+  <script src="../src/BulletCollision/BroadphaseCollision/Dispatcher.js"></script>
+  <script src="../src/BulletCollision/BroadphaseCollision/OverlappingPairCallback.js"></script>
+  <script src="../src/BulletCollision/BroadphaseCollision/OverlappingPairCache.js"></script>
+  <script src="../src/BulletCollision/BroadphaseCollision/BroadphaseInterface.js"></script>
+  <script src="../src/BulletCollision/BroadphaseCollision/BroadphaseProxy.js"></script>
+  <script src="../src/BulletCollision/BroadphaseCollision/Dbvt.js"></script>
+  <script src="../src/BulletCollision/BroadphaseCollision/DbvtBroadphase.js"></script>
+
+  <script src="../src/BulletDynamics/ConstraintSolver/JacobianEntry.js"></script>
+  <script src="../src/BulletDynamics/ConstraintSolver/ContactSolverInfo.js"></script>
+  <script src="../src/BulletDynamics/ConstraintSolver/TypedConstraint.js"></script>
+  <script src="../src/BulletDynamics/ConstraintSolver/ContactConstraint.js"></script>
+  <script src="../src/BulletDynamics/ConstraintSolver/SolverConstraint.js"></script>
+  <script src="../src/BulletDynamics/ConstraintSolver/ConstraintSolver.js"></script>
+  <script src="../src/BulletDynamics/ConstraintSolver/SequentialImpulseConstraintSolver.js"></script>
+
+  <script src="../src/BulletCollision/CollisionDispatch/CollisionAlgorithmCreateFunc.js"></script>
+  <script src="../src/BulletCollision/CollisionDispatch/UnionFind.js"></script>
+  <script src="../src/BulletCollision/CollisionDispatch/CollisionConfiguration.js"></script>
+  <script src="../src/BulletCollision/CollisionDispatch/DefaultCollisionConfiguration.js"></script>
+  <script src="../src/BulletCollision/CollisionDispatch/CollisionDispatcher.js"></script>
+  <script src="../src/BulletCollision/CollisionDispatch/CollisionObject.js"></script>
+  <script src="../src/BulletCollision/CollisionDispatch/ActivatingCollisionAlgorithm.js"></script>
+  <script src="../src/BulletCollision/CollisionDispatch/BoxBoxDetector.js"></script>
+  <script src="../src/BulletCollision/CollisionDispatch/BoxBoxCollisionAlgorithm.js"></script>
+  <script src="../src/BulletCollision/CollisionDispatch/ConvexConvexAlgorithm.js"></script>
+  <script src="../src/BulletCollision/CollisionDispatch/ConvexConcaveCollisionAlgorithm.js"></script>
+  <script src="../src/BulletCollision/CollisionDispatch/CompoundCollisionAlgorithm.js"></script>
+  <script src="../src/BulletCollision/CollisionDispatch/ManifoldResult.js"></script>
+  <script src="../src/BulletCollision/CollisionDispatch/CollisionWorld.js"></script>
+  <script src="../src/BulletCollision/CollisionDispatch/SimulationIslandManager.js"></script>
+
+  <script src="../src/BulletDynamics/Dynamics/RigidBody.js"></script>
+  <script src="../src/BulletDynamics/Dynamics/ActionInterface.js"></script>
+  <script src="../src/BulletDynamics/Dynamics/DynamicsWorld.js"></script>
+  <script src="../src/BulletDynamics/Dynamics/DiscreteDynamicsWorld.js"></script>
+
+  <script src="../src/BulletDynamics/Vehicle/VehicleRaycaster.js"></script>
+  <script src="../src/BulletDynamics/Vehicle/WheelInfo.js"></script>
+  <script src="../src/BulletDynamics/Vehicle/RaycastVehicle.js"></script>
+
+  <script src="../src/BulletCollision/CollisionShapes/OptimizedBvh.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/TriangleCallback.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/CollisionShape.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/CompoundShape.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/ConvexShape.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/ConvexInternalShape.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/ConvexPolyhedron.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/PolyhedralConvexShape.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/TriangleShape.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/SphereShape.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/BoxShape.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/ConcaveShape.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/ScaledBvhTriangleMeshShape.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/StridingMeshInterface.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/TriangleIndexVertexArray.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/TriangleMesh.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/TriangleMeshShape.js"></script>
+  <script src="../src/BulletCollision/CollisionShapes/BvhTriangleMeshShape.js"></script>
+
   <!-- qunit js and css -->
   <script src="qunit/qunit/qunit.js"></script>
   <link rel="Stylesheet" media="screen" href="qunit/qunit/qunit.css" />
-  
+
+  <!-- helper functions for testing -->
+  <script src="unit/test.helpers.js"></script>
+
   <!-- tests -->
   <script src="unit/test.bump.js"></script>
+  <script src="unit/LinearMath/test.AlignedObjectArray.js"></script>
+  <script src="unit/LinearMath/test.Vector3.js"></script>
+  <script src="unit/LinearMath/test.Quaternion.js"></script>
+  <script src="unit/LinearMath/test.Matrix3x3.js"></script>
+  <script src="unit/LinearMath/test.Transform.js"></script>
+  <script src="unit/LinearMath/test.TransformUtil.js"></script>
+  <script src="unit/LinearMath/test.AabbUtil2.js"></script>
+  <script src="unit/LinearMath/test.HashMap.js"></script>
+  <script src="unit/LinearMath/test.DefaultMotionState.js"></script>
+  <script src="unit/BulletCollision/NarrowPhaseCollision/test.ManifoldPoint.js"></script>
+  <script src="unit/BulletCollision/NarrowPhaseCollision/test.PersistentManifold.js"></script>
+  <script src="unit/BulletCollision/BroadphaseCollision/test.BroadphaseInterface.js"></script>
+  <script src="unit/BulletCollision/BroadphaseCollision/test.BroadphaseProxy.js"></script>
+  <script src="unit/BulletCollision/BroadphaseCollision/test.Dbvt.js"></script>
+  <script src="unit/BulletCollision/BroadphaseCollision/test.DbvtBroadphase.js"></script>
+  <script src="unit/BulletCollision/BroadphaseCollision/test.OverlappingPairCache.js"></script>
+  <script src="unit/BulletDynamics/ConstraintSolver/test.TypedConstraint.js"></script>
+  <script src="unit/BulletDynamics/ConstraintSolver/test.SolverConstraint.js"></script>
+  <script src="unit/BulletDynamics/ConstraintSolver/test.ConstraintSolver.js"></script>
+  <script src="unit/BulletDynamics/ConstraintSolver/test.SequentialImpulseConstraintSolver.js"></script>
+  <script src="unit/BulletCollision/CollisionDispatch/test.UnionFind.js"></script>
+  <script src="unit/BulletCollision/CollisionDispatch/test.DefaultCollisionConfiguration.js"></script>
+  <script src="unit/BulletCollision/CollisionDispatch/test.CollisionDispatcher.js"></script>
+  <script src="unit/BulletCollision/CollisionDispatch/test.CollisionObject.js"></script>
+  <script src="unit/BulletCollision/CollisionDispatch/test.ManifoldResult.js"></script>
+  <script src="unit/BulletCollision/CollisionDispatch/test.CollisionWorld.js"></script>
+  <script src="unit/BulletCollision/CollisionDispatch/test.SimulationIslandManager.js"></script>
+  <script src="unit/BulletDynamics/Dynamics/test.RigidBody.js"></script>
+  <script src="unit/BulletDynamics/Dynamics/test.ActionInterface.js"></script>
+  <script src="unit/BulletDynamics/Dynamics/test.DynamicsWorld.js"></script>
+  <script src="unit/BulletDynamics/Dynamics/test.DiscreteDynamicsWorld.js"></script>
+  <script src="unit/BulletDynamics/Vehicle/test.VehicleRaycaster.js"></script>
+  <script src="unit/BulletDynamics/Vehicle/test.WheelInfo.js"></script>
+  <script src="unit/BulletDynamics/Vehicle/test.RaycastVehicle.js"></script>
+  <script src="unit/BulletCollision/CollisionShapes/test.ConvexPolyhedron.js"></script>
+  <script src="unit/BulletCollision/CollisionShapes/test.SphereShape.js"></script>
+  <script src="unit/BulletCollision/CollisionShapes/test.BoxShape.js"></script>
+  <script src="unit/BulletCollision/CollisionShapes/test.TriangleMesh.js"></script>
+  <script src="unit/BulletCollision/CollisionShapes/test.BvhTriangleMeshShape.js"></script>
+
+  <script src="unit/test.HelloWorld.js"></script>
+  <script src="unit/test.LoadStaticMesh.js"></script>
+  <script src="unit/test.CrabCar.js"></script>
 </head>
 <body>
- <h1 id="qunit-header">Bump Unit Tests</h1>
- <h2 id="qunit-banner"></h2>
- <div id="qunit-testrunner-toolbar"></div>
- <h2 id="qunit-userAgent"></h2>
- <ol id="qunit-tests"></ol>
- <div id="qunit-fixture">test markup, will be hidden</div>
+  <h1 id="qunit-header">Bump Unit Tests</h1>
+  <h2 id="qunit-banner"></h2>
+  <div id="qunit-testrunner-toolbar"></div>
+  <h2 id="qunit-userAgent"></h2>
+  <ol id="qunit-tests"></ol>
+  <div id="qunit-fixture">test markup, will be hidden</div>
 
 </body>
 </html>
