@@ -12,7 +12,7 @@
 
     members: {
       processTriangle: function(
-        triangle, /* originally btVector3*, ported as array */
+        triangle, // originally btVector3*, ported as array
         partId,
         triangleIndex
       ) {
@@ -37,7 +37,7 @@
 
         //@BP Mod - Backface filtering
         var EFlags = Bump.TriangleRaycastCallback.EFlags;
-        if ((( this.flags & EFlags.kF_FilterBackfaces) !== 0) && (dist_a > 0)) {
+        if (( ( this.flags & EFlags.kF_FilterBackfaces ) !== 0 ) && ( dist_a > 0 )) {
           // Backface, skip check
           return;
         }
@@ -72,11 +72,10 @@
                 triangleNormal.normalize();
 
                 //@BP Mod - Allow for unflipped normal when raycasting against backfaces
-                if ((( this.flags & EFlags.kF_KeepUnflippedNormal ) !== 0 ) || (dist_a <= 0.0 )) {
+                if ( (( this.flags & EFlags.kF_KeepUnflippedNormal ) !== 0 ) || (dist_a <= 0) ) {
                   this.hitFraction = this.reportHit( triangleNormal.negate(),
                                                      distance, partId, triangleIndex );
-                }
-                else {
+                } else {
                   this.hitFraction = this.reportHit( triangleNormal, distance, partId, triangleIndex );
                 }
               }

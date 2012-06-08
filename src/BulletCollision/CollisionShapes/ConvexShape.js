@@ -257,7 +257,7 @@
     //     case Bump.BroadphaseNativeTypes.TRIANGLE_SHAPE_PROXYTYPE:
     //       var triangleShape = this;
     //       btScalar margin = triangleShape.getMarginNonVirtual();
-    //       for (var i = 0; i < 3; ++i ) {
+    //       for ( var i = 0; i < 3; ++i ) {
     //         btVector3 vec(btScalar(0.),btScalar(0.),btScalar(0.));
     //         vec[i] = btScalar(1.);
 
@@ -292,6 +292,7 @@
     //       break;
 
         default:
+          console.warn( 'Defaulting for unknown proxy type' );
           this.getAabb( t, aabbMin, aabbMax );
           break;
         }

@@ -1075,7 +1075,7 @@
               iMJaA = rbA.getInvInertiaTensorWorld().multiplyVector( solverConstraint.relpos1CrossNormal ),
               iMJlB = solverConstraint.contactNormal.multiplyScalar( rbB.getInvMass() ), // sign of normal?
               iMJaB = rbB.getInvInertiaTensorWorld().multiplyVector( solverConstraint.relpos2CrossNormal ),
-              sum = iMJlA.dot( solverConstraint.contactNormal); // btScalar
+              sum = iMJlA.dot( solverConstraint.contactNormal ); // btScalar
 
               sum += iMJaA.dot( solverConstraint.relpos1CrossNormal );
               sum += iMJlB.dot( solverConstraint.contactNormal );

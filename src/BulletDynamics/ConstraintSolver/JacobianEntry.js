@@ -88,24 +88,28 @@
         // call correct `create` based on number of arguments
         var context = Bump.JacobianEntry;
         var args = Array.prototype.slice.call( arguments );
-        if( args.length === 0 ) {
-          return context._create0.apply( context, args );
-        }
-        if( args.length === 4 ) {
-          return context._create4.apply( context, args );
-        }
-        if( args.length === 5 ) {
-          return context._create5.apply( context, args );
-        }
-        if( args.length === 6 ) {
-          return context._create6.apply( context, args );
-        }
-        if( args.length === 9 ) {
-          return context._create9.apply( context, args );
-        }
 
-        console.error( 'JacobianEntry created with invalid number of arguments.' );
-        Bump.Assert( false );
+        switch ( args.length ) {
+        case 0:
+          return context._create0.apply( context, args );
+
+        case 4:
+          return context._create4.apply( context, args );
+
+        case 5:
+          return context._create5.apply( context, args );
+
+        case 6:
+          return context._create6.apply( context, args );
+
+        case 9:
+          return context._create9.apply( context, args );
+
+        default:
+          console.error( 'JacobianEntry created with invalid number of arguments.' );
+          Bump.Assert( false );
+          break;
+        }
       },
 
       _create0: function() {
@@ -184,7 +188,7 @@
 
         je.init( linearJointAxis, aJ, bJ, minvJt0, minvJt1, Adiag );
 
-        Bump.Assert( Adiag > 0.0);
+        Bump.Assert( Adiag > 0 );
 
         return je;
       },

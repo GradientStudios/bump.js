@@ -10,9 +10,9 @@
     parent: Bump.ConvexCast,
 
     init: function SubsimplexConvexCast (
-      convexA, // Bump.ConvexShape
-      convexB, // Bump.ConvexShape
-      simplexSolver // Bump.SimplexSolverInterface
+      convexA,                  // Bump.ConvexShape
+      convexB,                  // Bump.ConvexShape
+      simplexSolver             // Bump.SimplexSolverInterface
     ) {
       this.simplexSolver = simplexSolver;
       this.convexA = convexA;
@@ -21,11 +21,11 @@
 
     members: {
       calcTimeOfImpact: function(
-        fromA, // Bump.Transform
-        toA, // Bump.Transform
-        fromB, // Bump.Transform
-        toB, // Bump.Transform
-        result // CastResult
+        fromA,                  // Bump.Transform
+        toA,                    // Bump.Transform
+        fromB,                  // Bump.Transform
+        toB,                    // Bump.Transform
+        result                  // CastResult
       ) {
 
         this.simplexSolver.reset();
@@ -38,7 +38,7 @@
         var interpolatedTransA = fromA.clone();
         var interpolatedTransB = fromB.clone();
 
-        ///take relative motion
+        // take relative motion
         var r = linVelA.subtract( linVelB );
         var v;
 
@@ -97,7 +97,7 @@
 
           supVertexA.subtract( supVertexB, w );
 
-          var VdotW = v.dot(w);
+          var VdotW = v.dot( w );
 
           if ( lambda > 1.0) {
             return false;
@@ -111,12 +111,12 @@
             }
             else {
               lambda = lambda - VdotW / VdotR;
-              //interpolate to next lambda
-              //        x = s + lambda * r;
+              // interpolate to next lambda
+              // x = s + lambda * r;
               interpolatedTransA.getOrigin().setInterpolate3( fromA.getOrigin(), toA.getOrigin(), lambda );
               interpolatedTransB.getOrigin().setInterpolate3( fromB.getOrigin(), toB.getOrigin(), lambda );
-              //m_simplexSolver->reset();
-              //check next line
+              // m_simplexSolver->reset();
+              // check next line
               supVertexA.subtract( supVertexB, w );
               lastLambda = lambda;
               n.assign( v );
@@ -124,7 +124,7 @@
             }
           }
 
-          ///Just like regular GJK only add the vertex if it isn't already (close) to current vertex, it would lead to divisions by zero and NaN etc.
+          // Just like regular GJK only add the vertex if it isn't already (close) to current vertex, it would lead to divisions by zero and NaN etc.
           if ( !this.simplexSolver.inSimplex( w ) ) {
             this.simplexSolver.addVertex( w, supVertexA , supVertexB );
           }
@@ -132,22 +132,21 @@
           if ( this.simplexSolver.closest( v ) ) {
             dist2 = v.length2();
             hasResult = true;
-            //todo: check this normal for validity
-            //n=v;
-            //printf("V=%f , %f, %f\n",v[0],v[1],v[2]);
-            //printf("DIST2=%f\n",dist2);
-            //printf("numverts = %i\n",m_simplexSolver->numVertices());
+            // todo: check this normal for validity
+            // n=v;
+            // printf("V=%f , %f, %f\n",v[0],v[1],v[2]);
+            // printf("DIST2=%f\n",dist2);
+            // printf("numverts = %i\n",m_simplexSolver->numVertices());
           }
           else {
             dist2 = 0;
           }
         }
 
-        //int numiter = MAX_ITERATIONS - maxIter;
-        //      printf("number of iterations: %d", numiter);
+        // int numiter = MAX_ITERATIONS - maxIter;
+        // printf("number of iterations: %d", numiter);
 
-        //don't report a time of impact when moving 'away' from the hitnormal
-
+        // don't report a time of impact when moving 'away' from the hitnormal
 
         result.fraction = lambda;
         if ( n.length2() >= ( Bump.SIMD_EPSILON * Bump.SIMD_EPSILON ) ) {
@@ -157,7 +156,7 @@
           result.normal.setValue( 0.0, 0.0, 0.0 );
         }
 
-        //don't report time of impact for motion away from the contact normal (or causes minor penetration)
+        // don't report time of impact for motion away from the contact normal (or causes minor penetration)
         if ( result.normal.dot( r ) >= -result.allowedPenetration ) {
           return false;
         }

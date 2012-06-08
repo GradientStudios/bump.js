@@ -609,9 +609,9 @@
     while ( leaves.length > 1 ) {
       var minsize = Bump.SIMD_INFINITY,
       minidx = [ -1, -1 ];
-      for (var i = 0; i < leaves.length; ++i ) {
-        for (var j = i + 1; j < leaves.length; ++j ) {
-          var sz = size( merge( leaves[ i ].volume, leaves[ j ].volume ) );
+      for ( var i = 0; i < leaves.length; ++i ) {
+        for ( var j = i + 1; j < leaves.length; ++j ) {
+          var sz = size( merge( leaves[i].volume, leaves[j].volume ) );
           if ( sz < minsize ) {
             minsize = sz;
             minidx[ 0 ] = i;
@@ -619,53 +619,57 @@
           }
         }
       }
-      var n = [ leaves[ minidx[ 0 ] ], leaves[ minidx[ 1 ] ] ],
-          p = createnodeTreeParentVolume2Data( pdbvt, 0, n[ 0 ].volume, n[ 1 ].volume, 0 );
-      p.childs[ 0 ] = n[ 0 ];
-      p.childs[ 1 ] = n[ 1 ];
-      n[ 0 ].parent = p;
-      n[ 1 ].parent = p;
-      leaves[ minidx[ 0 ] ] = p;
-      leaves[ minidx[ 1 ] ] = leaves[ leaves.length - 1 ]; // instead of swap
+      var n = [ leaves[ minidx[0] ], leaves[ minidx[1] ] ],
+          p = createnodeTreeParentVolume2Data( pdbvt, 0, n[0].volume, n[1].volume, 0 );
+      p.childs[0] = n[0];
+      p.childs[1] = n[1];
+      n[0].parent = p;
+      n[1].parent = p;
+      leaves[ minidx[0] ] = p;
+      leaves[ minidx[1] ] = leaves[ leaves.length - 1 ]; // instead of swap
       leaves.pop();
     }
   },
 
   topdown = function( pdbvt, leaves, bu_threshold ) {
-    var axis = [ Bump.Vector3.create( 1, 0, 0 ),
-                 Bump.Vector3.create( 0, 1, 0 ),
-                 Bump.Vector3.create( 0, 0, 1 )
-               ];
+    var axis = [
+      Bump.Vector3.create( 1, 0, 0 ),
+      Bump.Vector3.create( 0, 1, 0 ),
+      Bump.Vector3.create( 0, 0, 1 )
+    ];
+
     if ( leaves.length > 1 ) {
       if ( leaves.length > bu_threshold ) {
         var vol = bounds( leaves ),
-        org = vol.Center().clone(),
-        sets = [],
-        bestaxis = -1,
-        bestmidp = leaves.length,
-        splitcount = [ [ 0, 0 ], [ 0, 0 ], [ 0, 0 ] ],
-        i;
+            org = vol.Center().clone(),
+            sets = [],
+            bestaxis = -1,
+            bestmidp = leaves.length,
+            splitcount = [ [ 0, 0 ], [ 0, 0 ], [ 0, 0 ] ],
+            i;
+
         for ( i = 0; i < leaves.length; ++i ) {
-          var x= leaves[i].volume.Center().subtract( org );
+          var x = leaves[i].volume.Center().subtract( org );
           for ( var j = 0; j < 3; ++j ) {
             ++splitcount[ j ][ x.dot( axis[j] ) > 0 ? 1 : 0 ];
           }
         }
+
         for ( i = 0; i < 3; ++i ) {
-          if ( ( splitcount[ i ][ 0 ] > 0 ) && ( splitcount[ i ][ 1 ] > 0 ) ) {
-            var midp = Math.abs( splitcount[ i ][ 0 ] - splitcount[ i ][ 1 ] );
+          if ( ( splitcount[i][0] > 0 ) && ( splitcount[i][1] > 0 ) ) {
+            var midp = Math.abs( splitcount[i][0] - splitcount[i][1] );
             if ( midp < bestmidp ) {
               bestaxis = i;
               bestmidp = midp;
             }
           }
         }
+
         if ( bestaxis >= 0 ) {
           // sets[ 0 ].reserve( splitcount[ bestaxis ][ 0 ] );
           // sets[ 1 ].reserve( splitcount[ bestaxis ][ 1 ] );
-          split( leaves, sets[ 0 ], sets[ 1 ], org, axis[ bestaxis ] );
-        }
-        else {
+          split( leaves, sets[0], sets[1], org, axis[ bestaxis ] );
+        } else {
           // sets[0].reserve(leaves.size()/2+1);
           // sets[1].reserve(leaves.size()/2);
           for ( var k = 0, ni = leaves.length; k < ni; ++k ) {
@@ -673,13 +677,12 @@
           }
         }
         var node = createnodeTreeParentVolumeData( pdbvt, 0, vol, 0 );
-        node.childs[ 0 ] = topdown( pdbvt, sets[ 0 ], bu_threshold );
-        node.childs[ 1 ] = topdown( pdbvt, sets[ 1 ], bu_threshold );
-        node.childs[ 0 ].parent = node;
-        node.childs[ 1 ].parent = node;
+        node.childs[0] = topdown( pdbvt, sets[0], bu_threshold );
+        node.childs[1] = topdown( pdbvt, sets[1], bu_threshold );
+        node.childs[0].parent = node;
+        node.childs[1].parent = node;
         return( node );
-      }
-      else{
+      } else {
         bottomup( pdbvt, leaves );
         return leaves[0];
       }

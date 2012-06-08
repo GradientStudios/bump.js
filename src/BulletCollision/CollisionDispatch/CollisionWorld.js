@@ -71,23 +71,30 @@
   var LocalInfoAdder2 = Bump.type({
     parent: RayResultCallback,
 
-    init: function LocalInfoAdder2( i, user /* RayResultCallback */ ) {
+    init: function LocalInfoAdder2(
+      i,
+      user                      // RayResultCallback
+    ) {
       this.userCallback = user;
       this.i = i;
       this.closestHitFraction = this.userCallback.closestHitFraction;
     },
 
     members: {
-      needsCollision: function( p /* Bump.BroadphaseProxy */ ) {
+      needsCollision: function(
+        p                       // Bump.BroadphaseProxy
+      ) {
         return this.userCallback.needsCollision( p );
       },
 
-      addSingleResult: function( r, /* Bump.CollisionWorld.LocalRayResult */
-                                 b /* bool */ ) {
+      addSingleResult: function(
+        r,                      // Bump.CollisionWorld.LocalRayResult
+        b                       // bool
+      ) {
         var shapeInfo = Bump.CollisionWorld.LocalShapeInfo.create();
         shapeInfo.shapePart = -1;
         shapeInfo.triangleIndex = this.i;
-        if( !r.localShapeInfo /* == NULL */) {
+        if ( !r.localShapeInfo ) {
           r.localShapeInfo = shapeInfo;
         }
 
@@ -102,12 +109,12 @@
     parent: Bump.Dbvt.ICollide,
 
     init: function RayTester(
-      collisionObject, /* btCollisionObject* */
-      compoundShape, /* const btCompoundShape* */
-      colObjWorldTransform, /* const btTransform& */
-      rayFromTrans, /* const btTransform& */
-      rayToTrans, /* const btTransform& */
-      resultCallback /* RayResultCallback& */
+      collisionObject,          // btCollisionObject*
+      compoundShape,            // const btCompoundShape*
+      colObjWorldTransform,     // const btTransform&
+      rayFromTrans,             // const btTransform&
+      rayToTrans,               // const btTransform&
+      resultCallback            // RayResultCallback&
     ) {
       this.collisionObject = collisionObject;
       this.compoundShape = compoundShape;
@@ -144,8 +151,7 @@
         this.collisionObject.internalSetTemporaryCollisionShape( saveCollisionShape );
       },
 
-      ProcessNode: function( leaf )
-      {
+      ProcessNode: function( leaf ) {
         this.Process( leaf.dataAsInt );
       }
     }
@@ -439,8 +445,7 @@
 
         var worldTocollisionObject, rayFromLocal, rayToLocal, rcb;
 
-        if( collisionShape.isConvex() ) {
-          // BT_PROFILE("rayTestConvex");
+        if ( collisionShape.isConvex() ) {
           var castResult = Bump.ConvexCast.CastResult.create();
           castResult.fraction = resultCallback.closestHitFraction;
 
@@ -455,21 +460,23 @@
           //            //btContinuousConvexCollision convexCaster(castShape,convexShape,&simplexSolver,0);
           // #endif //#USE_SUBSIMPLEX_CONVEX_CAST
 
-          if( convexCaster.calcTimeOfImpact( rayFromTrans,
-                                             rayToTrans,
-                                             colObjWorldTransform,
-                                             colObjWorldTransform,
-                                             castResult )) {
-            //add hit
-            if( castResult.normal.length2() > 0.0001 ) {
-              if( castResult.fraction < resultCallback.closestHitFraction ) {
+          if (
+            convexCaster.calcTimeOfImpact(
+              rayFromTrans, rayToTrans,
+              colObjWorldTransform, colObjWorldTransform,
+              castResult
+            )
+          ) {
+            // add hit
+            if ( castResult.normal.length2() > 0.0001 ) {
+              if ( castResult.fraction < resultCallback.closestHitFraction ) {
                 // #ifdef USE_SUBSIMPLEX_CONVEX_CAST
-                //rotate normal into worldspace
+                // rotate normal into worldspace
                 rayFromTrans.getBasis().multiplyVector( castResult.normal, castResult.normal );
                 // #endif //USE_SUBSIMPLEX_CONVEX_CAST
 
                 castResult.normal.normalize();
-                var  localRayResult = Bump.CollisionWorld.LocalRayResult.create(
+                var localRayResult = Bump.CollisionWorld.LocalRayResult.create(
                   collisionObject,
                   0,
                   castResult.normal,
@@ -483,17 +490,17 @@
             }
           }
         }
+
         else {
-          if( collisionShape.isConcave() ) {
-            // BT_PROFILE("rayTestConcave");
-            if( collisionShape.getShapeType() === Bump.BroadphaseNativeTypes.TRIANGLE_MESH_SHAPE_PROXYTYPE ) {
-              ///optimized version for btBvhTriangleMeshShape
+          if ( collisionShape.isConcave() ) {
+            if ( collisionShape.getShapeType() === Bump.BroadphaseNativeTypes.TRIANGLE_MESH_SHAPE_PROXYTYPE ) {
+              // optimized version for btBvhTriangleMeshShape
               var triangleMesh = collisionShape;
               worldTocollisionObject = colObjWorldTransform.inverse();
               rayFromLocal = worldTocollisionObject.transform( rayFromTrans.getOrigin() );
               rayToLocal = worldTocollisionObject.transform( rayToTrans.getOrigin() );
 
-              //ConvexCast::CastResult
+              // ConvexCast::CastResult
               // ASD: in-function declaration of BridgeTriangleRaycastCallback went here
 
               rcb = BridgeTriangleRaycastCallback.create(
@@ -508,8 +515,9 @@
               rcb.hitFraction = resultCallback.closestHitFraction;
               triangleMesh.performRaycast( rcb, rayFromLocal, rayToLocal );
             }
+
             else {
-              //generic (slower) case
+              // generic (slower) case
               var concaveShape = collisionShape;
 
               worldTocollisionObject = colObjWorldTransform.inverse();
@@ -517,7 +525,7 @@
               rayFromLocal = worldTocollisionObject.multiplyVector( rayFromTrans.getOrigin() );
               rayToLocal = worldTocollisionObject.multiplyVector( rayToTrans.getOrigin() );
 
-              //ConvexCast::CastResult
+              // ConvexCast::CastResult
               // ASD: There was another in-function declaration of BridgeTriangleRaycastCallback here,
               // but since it was line-for-line identical to the first declaration, the two were
               // were consolidated into a single Bump.type() outside of CollisionWorld.
@@ -540,9 +548,9 @@
               concaveShape.processAllTriangles( rcb, rayAabbMinLocal, rayAabbMaxLocal );
             }
           }
+
           else {
-            // BT_PROFILE("rayTestCompound");
-            if( collisionShape.isCompound() ) {
+            if ( collisionShape.isCompound() ) {
               // ASD: in-function declaration of struct LocalInfoAdder2 went here
               // ASD: in-function declaration of struct RayTester went here
 
@@ -558,21 +566,20 @@
                 rayToTrans,
                 resultCallback
               );
-              // #ifndef DISABLE_DBVT_COMPOUNDSHAPE_RAYCAST_ACCELERATION
-              if( dbvt ) {
+
+              if ( dbvt ) {
                 var localRayFrom = colObjWorldTransform.inverseTimes( rayFromTrans ).getOrigin().clone();
                 var localRayTo = colObjWorldTransform.inverseTimes( rayToTrans ).getOrigin().clone();
                 Bump.Dbvt.rayTest( dbvt.root, localRayFrom, localRayTo, rayCB );
-              }
-              else
-                // #endif //DISABLE_DBVT_COMPOUNDSHAPE_RAYCAST_ACCELERATION
-              {
-                for( var i = 0, n = compoundShape.getNumChildShapes(); i < n; ++i ) {
+              } else {
+                for ( var i = 0, n = compoundShape.getNumChildShapes(); i < n; ++i ) {
                   rayCB.Process( i );
                 }
               }
+
             }
           }
+
         }
       }
     }
@@ -628,7 +635,7 @@
           // btVector3 collisionObjectAabbMin,collisionObjectAabbMax;
           // btScalar hitLambda = this.resultCallback.closestHitFraction;
           // culling already done by broadphase
-          // if (btRayAabb(this.rayFromWorld,this.rayToWorld,collisionObjectAabbMin,collisionObjectAabbMax,hitLambda,this.hitNormal))
+          // if ( btRayAabb( this.rayFromWorld, this.rayToWorld, collisionObjectAabbMin, collisionObjectAabbMax, hitLambda, this.hitNormal ) )
           this.world.rayTestSingle(
             this.rayFromTrans,
             this.rayToTrans,

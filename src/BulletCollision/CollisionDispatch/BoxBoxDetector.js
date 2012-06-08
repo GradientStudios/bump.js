@@ -662,7 +662,7 @@
       var iret = new Array( 8 );
       cullPoints2( cnum, ret, maxc, i1, iret );
 
-      for (j = 0; j < maxc; ++j ) {
+      for ( j = 0; j < maxc; ++j ) {
         var posInWorld = Bump.Vector3.create();
 
         tmp = iret[j] * 3;

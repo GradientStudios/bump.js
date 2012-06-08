@@ -50,7 +50,7 @@
     var vel1 = body1.getVelocityInLocalPoint( rel_pos1 );
     var vel2 = body2 ? body2.getVelocityInLocalPoint( rel_pos2 ) : Bump.Vector3.create( 0, 0, 0 );
     var vel = vel1.subtract( vel2 );
-    var rel_vel = normal.dot(vel);
+    var rel_vel = normal.dot( vel );
 
     var combinedRestitution = body1.getRestitution() * colObj2.getRestitution();
     var restitution = combinedRestitution * -rel_vel;

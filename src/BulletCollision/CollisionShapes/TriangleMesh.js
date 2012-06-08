@@ -158,7 +158,7 @@
           this._32bitIndices.push( index );
           this.indexedMeshes[0].triangleIndexBase = this._32bitIndices.pointerAt(0);
         } else {
-          this._16bitIndices.push_back(index);
+          this._16bitIndices.push_back( index );
           this.indexedMeshes[0].triangleIndexBase = this._16bitIndices;
         }
       }

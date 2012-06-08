@@ -109,8 +109,8 @@
         var proxyId1 = proxy0.getUid(),
             proxyId2 = proxy1.getUid();
 
-        // if (proxyId1 > proxyId2)
-        //   btSwap(proxyId1, proxyId2);
+        // if ( proxyId1 > proxyId2 )
+        //   btSwap( proxyId1, proxyId2 );
 
         // int  hash = static_cast<int>(getHash(static_cast<unsigned int>(proxyId1),static_cast<unsigned int>(proxyId2)) & (overlappingPairArray.capacity()-1));
         var hash = ( this.getHash( proxyId1 << 0, proxyId2 << 0 ) & ( CAPACITY - 1 ) ) << 0,
@@ -285,8 +285,8 @@
         var proxyId1 = proxy0.getUid(),
             proxyId2 = proxy1.getUid(),
 
-        // if (proxyId1 > proxyId2)
-        //   btSwap(proxyId1, proxyId2);
+        // if ( proxyId1 > proxyId2 )
+        //   btSwap( proxyId1, proxyId2 );
 
         // int hash = static_cast<int>(getHash(static_cast<unsigned int>(proxyId1),
         //                                     static_cast<unsigned int>(proxyId2)) & (overlappingPairArray.capacity()-1));
@@ -338,16 +338,17 @@
 
       internalAddPair: function( proxy0, proxy1 ) {
         if ( proxy0.uniqueId > proxy1.uniqueId ) {
-          // btSwap(proxy0,proxy1);
+          // btSwap( proxy0, proxy1 );
           var tmp = proxy0;
           proxy0 = proxy1;
           proxy1 = tmp;
         }
+
         var proxyId1 = proxy0.getUid(),
             proxyId2 = proxy1.getUid();
 
-        // if (proxyId1 > proxyId2)
-        //   btSwap(proxyId1, proxyId2);
+        // if ( proxyId1 > proxyId2 )
+        //   btSwap( proxyId1, proxyId2 );
 
         // int hash = static_cast<int>(getHash(static_cast<unsigned int>(proxyId1),static_cast<unsigned int>(proxyId2)) & (overlappingPairArray.capacity()-1));      // New hash value with new mask
 
@@ -357,12 +358,13 @@
         if ( pair !== undefined ) {
           return pair;
         }
-        // for (int i=0;i<overlappingPairArray.size();++i) {
-        //   if ( ( overlappingPairArray[i].pProxy0==proxy0 ) &&
-        //        ( overlappingPairArray[i].pProxy1==proxy1 ) )
+
+        // for ( int i=0; i < overlappingPairArray.size(); ++i ) {
+        //   if ( (overlappingPairArray[i].pProxy0 === proxy0) &&
+        //        (overlappingPairArray[i].pProxy1 === proxy1) )
         //   {
         //     printf("Adding duplicated %u<>%u\r\n",proxyId1,proxyId2);
-        //     internalFindPair(proxy0, proxy1, hash);
+        //     internalFindPair( proxy0, proxy1, hash );
         //   }
         // }
 
