@@ -2,8 +2,8 @@
 
   var getIslandId = function( lhs ) {
     var islandId,
-    rcolObj0 = lhs.getBody0(), /* const btCollisionObject* */
-    rcolObj1 = lhs.getBody1(); /* const btCollisionObject* */
+    rcolObj0 = lhs.getBody0(), // const btCollisionObject*
+    rcolObj1 = lhs.getBody1(); // const btCollisionObject*
     islandId = rcolObj0.getIslandTag() >= 0 ? rcolObj0.getIslandTag() : rcolObj1.getIslandTag();
     return islandId;
   };
@@ -177,7 +177,7 @@
 
             if ( !islandSleeping ) {
               callback.processIsland( this.islandBodies, this.islandBodies.length, startManifold, numIslandManifolds, islandId );
-              /* console.log( 'Island callback of size:' + this.islandBodies.length + 'bodies, ' + numIslandManifolds + ' manifolds' ); */
+              // console.log( 'Island callback of size:' + this.islandBodies.length + 'bodies, ' + numIslandManifolds + ' manifolds' );
             }
 
             if ( numIslandManifolds ) {

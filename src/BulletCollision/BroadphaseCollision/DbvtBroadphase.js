@@ -13,9 +13,9 @@
     }
   });
 
-  ///
-  /// Helpers
-  ///
+  //
+  // Helpers
+  //
   // There don't need to be publicly accessible outside of DbvtBroadphase.js
 
   // listRef is an object with property `list` to simulate by-reference passing of pointer
@@ -40,7 +40,7 @@
   },
   listcount = function( root ) {
     var n = 0;
-    while( root ) {
+    while ( root ) {
       ++n;
       root = root.links[ 1 ];
     }
@@ -60,19 +60,11 @@
 
     members: {
       ProcessNode2: function( na, nb ) {
-        /* this._super( na, nb ); */
-        if ( na != nb ) {
+        // this._super( na, nb );
+        if ( na !== nb ) {
           var pa = na.data,
               pb = nb.data;
 
-/* #if DBVT_BP_SORTPAIRS
-          if ( pa.uniqueId > pb.uniqueId ) {
-            //btSwap(pa,pb);
-            var tmp = pa;
-            pa = pb;
-            pb = pa;
-          }
-#endif */
           this.pbp.paircache.addOverlappingPair( pa, pb );
           ++this.pbp.newpairs;
         }
@@ -88,7 +80,7 @@
     parent: Bump.Dbvt.ICollide,
 
     init: function BroadphaseRayTester( orgCallback ) {
-      this.rayCallback = orgCallback; /* BroadphaseRayCallback */
+      this.rayCallback = orgCallback; // BroadphaseRayCallback
     },
 
     members: {
@@ -118,20 +110,20 @@
     parent: Bump.BroadphaseInterface,
 
     init: function DbvtBroadphase( paircache ) {
-      /* Fields */
+      // Fields
       this.deferedcollide = false; // Defere dynamic/static collision to collide call
-      this.needcleanup = true; // Need to run cleanup?
+      this.needcleanup = true;     // Need to run cleanup?
       this.releasepaircache = paircache ? false : true; // Release pair cache on delete
-      this.prediction = 0; // Velocity prediction (btScalar)
-      this.stageCurrent = 0; // Current stage (int)
-      this.fixedleft = 0; // Fixed optimization left (int)
-      this.fupdates = 1; // % of fixed updates per frame (int)
-      this.dupdates = 0; // % of dynamic updates per frame (int)
-      this.cupdates = 10; // % of cleanup updates per frame (int)
-      this.newpairs = 1; // Number of pairs created (int)
-      this.updates_call = 0; // Number of updates call (unsigned)
-      this.updates_done = 0; // Number of updates done (unsigned)
-      this.updates_ratio = 0; // updates_done/updates_call (btScalar)
+      this.prediction = 0;     // Velocity prediction (btScalar)
+      this.stageCurrent = 0;   // Current stage (int)
+      this.fixedleft = 0;      // Fixed optimization left (int)
+      this.fupdates = 1;       // % of fixed updates per frame (int)
+      this.dupdates = 0;       // % of dynamic updates per frame (int)
+      this.cupdates = 10;      // % of cleanup updates per frame (int)
+      this.newpairs = 1;       // Number of pairs created (int)
+      this.updates_call = 0;   // Number of updates call (unsigned)
+      this.updates_done = 0;   // Number of updates done (unsigned)
+      this.updates_ratio = 0;  // updates_done/updates_call (btScalar)
 
       // Pair cache (btOverlappingPairCache*)
       this.paircache = paircache || Bump.HashedOverlappingPairCache.create();
@@ -145,39 +137,20 @@
       }
 
       this.sets = [ Bump.Dbvt.create(), Bump.Dbvt.create() ]; // Dbvt sets
-
-/* omitting for now
-#if DBVT_BP_PROFILE
-        clear(profiling);
-#endif */
-
     },
 
     members: {
-
-/* omitting for now
-#if DBVT_BP_PROFILE
-        btClock clock;
-        struct  {
-                unsigned long total;
-                unsigned long ddcollide;
-                unsigned long fdcollide;
-                unsigned long cleanup;
-                unsigned long jobcount;
-        } profiling;
-#endif
-*/
-
       collide: function( dispatcher ) {
-        /* SPC(this.profiling.total); // not defined without DBVT_BP_PROFILE */
-        /* optimize                             */
-        this.sets[ 0 ].optimizeIncremental( 1 + ( this.sets[ 0 ].leaves * this.dupdates ) / 100 );
+        // SPC(this.profiling.total); // not defined without DBVT_BP_PROFILE
+        // optimize
+        this.sets[ 0 ].optimizeIncremental( 1 + ~~(( this.sets[ 0 ].leaves * this.dupdates ) / 100) );
         if ( this.fixedleft ) {
-          var count = 1 + ( this.sets[ 1 ].leaves * this.fupdates ) / 100;
-          this.sets[ 1 ].optimizeIncremental( 1 + ( this.sets[ 1 ].leaves * this.fupdates ) / 100 );
+          var count = 1 + ~~(( this.sets[ 1 ].leaves * this.fupdates ) / 100);
+          this.sets[ 1 ].optimizeIncremental( 1 + ~~(( this.sets[ 1 ].leaves * this.fupdates ) / 100) );
           this.fixedleft = Math.max( 0, this.fixedleft - count );
         }
-        /* dynamic -> fixed set */
+
+        // dynamic -> fixed set
         this.stageCurrent = ( this.stageCurrent + 1 ) % Bump.DbvtBroadphase.Stages.STAGECOUNT;
         var current = this.stageRoots[ this.stageCurrent ];
         if ( current ) {
@@ -186,76 +159,71 @@
             var next = current.links[ 1 ];
             listremove( current, this.stageRoots[ current.stage ] );
             listappend( current, this.stageRoots[ Bump.DbvtBroadphase.Stages.STAGECOUNT ] );
-/*#if DBVT_BP_ACCURATESLEEPING
-                        this.paircache.removeOverlappingPairsContainingProxy(current,dispatcher);
-                        collider.proxy=current;
-                        btDbvt::collideTV(this.sets[0].root,current.aabb,collider);
-                        btDbvt::collideTV(this.sets[1].root,current.aabb,collider);
-#endif*/
             this.sets[ 0 ].remove( current.leaf );
             var curAabb = Bump.DbvtVolume.FromMM( current.aabbMin, current.aabbMax );
             current.leaf = this.sets[ 1 ].insert( curAabb, current );
             current.stage = Bump.DbvtBroadphase.Stages.STAGECOUNT;
             current = next;
-          } while( current );
+          } while ( current );
           this.fixedleft = this.sets[ 1 ].leaves;
           this.needcleanup = true;
         }
-        /* collide dynamics */
+
+        // collide dynamics
         var collider2 = Bump.DbvtTreeCollider.create( this );
         if ( this.deferedcollide ) {
-          /* SPC(this.profiling.fdcollide); */
+          // SPC(this.profiling.fdcollide);
           this.sets[ 0 ].collideTTpersistentStack( this.sets[ 0 ].root,
-                                                     this.sets[ 1 ].root,
-                                                     collider2 );
+                                                   this.sets[ 1 ].root,
+                                                   collider2 );
         }
+
         if ( this.deferedcollide ) {
-          /* SPC(this.profiling.ddcollide); */
+          // SPC(this.profiling.ddcollide);
           this.sets[ 0 ].collideTTpersistentStack( this.sets[ 0 ].root,
-                                                     this.sets[ 0 ].root,
-                                                     collider2 );
+                                                   this.sets[ 0 ].root,
+                                                   collider2 );
         }
-        /* clean up */
+
+        // clean up
         if ( this.needcleanup ) {
-          /* SPC(this.profiling.cleanup); */
+          // SPC(this.profiling.cleanup);
           var pairs = this.paircache.getOverlappingPairArray();
           if ( pairs.length > 0 ) {
-            var ni = Math.min( pairs.length,
-                               Math.max( this.newpairs, (pairs.length * this.cupdates ) / 100 ) );
-            for (var i = 0; i < ni; ++i ) {
-              var p = pairs[ ( this.cid + i ) % pairs.length ], /* btBroadphasePair& */
-                  pa = p.pProxy0, /* btDbvtProxy* */
+            var ni = Math.min(
+              pairs.length,
+              Math.max( this.newpairs, ~~(( pairs.length * this.cupdates ) / 100) )
+            );
+
+            for ( var i = 0; i < ni; ++i ) {
+              var p = pairs[ ( this.cid + i ) % pairs.length ], // btBroadphasePair&
+                  pa = p.pProxy0, // btDbvtProxy*
                   pb = p.pProxy1;
               if ( !Bump.Intersect.DbvtVolume2( pa.leaf.volume, pb.leaf.volume ) ) {
-/*#if DBVT_BP_SORTPAIRS
-                                        if (pa.uniqueId>pb.uniqueId)
-                                                btSwap(pa,pb);
-#endif*/
                 this.paircache.removeOverlappingPair( pa, pb, dispatcher );
                 --ni;
                 --i;
               }
             }
+
             if ( pairs.length > 0 ) {
               this.cid = ( this.cid + ni ) % pairs.length;
-            }
-            else {
+            } else {
               this.cid = 0;
             }
           }
         }
+
         ++this.pid;
         this.newpairs = 1;
         this.needcleanup = false;
         if ( this.updates_call > 0 ) {
-          this.updates_ratio = this.updates_done / this.updates_call;
-        }
-        else {
+          this.updates_ratio = ~~( this.updates_done / this.updates_call );
+        } else {
           this.updates_ratio = 0;
         }
-        this.updates_done /= 2;
-        this.updates_call /= 2;
-
+        this.updates_done = ~~( this.updates_done / 2 );
+        this.updates_call = ~~( this.updates_call / 2 );
       },
 
       optimize: function() {
@@ -277,7 +245,7 @@
                                            collisionFilterMask ),
             aabb = Bump.DbvtVolume.FromMM( aabbMin, aabbMax );
 
-        //bproxy->aabb                  =       btDbvtVolume::FromMM(aabbMin,aabbMax);
+        // bproxy->aabb = btDbvtVolume::FromMM(aabbMin,aabbMax);
         proxy.stage = this.stageCurrent;
         proxy.uniqueId = ++this.gid;
         proxy.leaf = this.sets[ 0 ].insert( aabb, proxy );
@@ -301,28 +269,25 @@
         }
         listremove( proxy, this.stageRoots[ proxy.stage ] );
         this.paircache.removeOverlappingPairsContainingProxy( proxy, dispatcher );
-        /* btAlignedFree( proxy ); */
+        // btAlignedFree( proxy );
         this.needcleanup = true;
       },
 
       setAabb: function( absproxy, aabbMin, aabbMax, dispatcher ) {
         var proxy = absproxy,
         aabb = Bump.DbvtVolume.FromMM( aabbMin, aabbMax );
-// #if DBVT_BP_PREVENTFALSEUPDATE
-//         if (NotEqual(aabb,proxy->leaf->volume)) {
-// #endif
         var docollide = false;
         if ( proxy.stage === Bump.DbvtBroadphase.Stages.STAGECOUNT ) {
-          /* fixed . dynamic set */
+          // fixed . dynamic set
           this.sets[ 1 ].remove( proxy.leaf );
           proxy.leaf = this.sets[ 0 ].insert( aabb, proxy );
           docollide = true;
         }
         else {
-          /* dynamic set */
+          // dynamic set
           ++this.updates_call;
           if ( Bump.Intersect.DbvtVolume2( proxy.leaf.volume, aabb ) ) {
-            /* Moving */
+            // Moving
             var delta = aabbMin.subtract( proxy.aabbMin ),
                 velocity = proxy.aabbMax.subtract( proxy.aabbMin )
                   .divideScalarSelf( 2 )
@@ -338,14 +303,10 @@
               velocity.z = -velocity.z;
             }
             if (
-// #ifdef DBVT_BP_MARGIN
               this.sets[0].updateLeafVolumeVelocityMargin( proxy.leaf,
-                                                             aabb,
-                                                             velocity,
-                                                             Bump.DBVT_BP_MARGIN )
-// #else
-//               sets[0].updateLeafVolumeVelocity( proxy.leaf, aabb, velocity )
-// #endif
+                                                           aabb,
+                                                           velocity,
+                                                           Bump.DBVT_BP_MARGIN )
             ) {
               ++this.updates_done;
               docollide = true;
@@ -406,7 +367,7 @@
         var callback = aabbCallback,
         bounds = Bump.DbvtVolume.FromMM( aabbMin, aabbMax );
 
-        //process all children, that overlap with  the given AABB bounds
+        // process all children, that overlap with  the given AABB bounds
         this.sets[ 0 ].collideTV( this.sets[ 0 ].root, bounds, callback );
         this.sets[ 1 ].collideTV( this.sets[ 1 ].root, bounds, callback );
       },
@@ -419,27 +380,6 @@
 
       calculateOverlappingPairs: function( dispatcher ) {
         this.collide( dispatcher );
-/*
-#if DBVT_BP_PROFILE
-        if (0==(pid%DBVT_BP_PROFILING_RATE))
-        {
-                printf("fixed(%u) dynamics(%u) pairs(%u)\r\n",sets[1].leaves,sets[0].leaves,paircache->getNumOverlappingPairs());
-                unsigned int    total=profiling.total;
-                if (total<=0) total=1;
-                printf("ddcollide: %u%% (%uus)\r\n",(50+profiling.ddcollide*100)/total,profiling.ddcollide/DBVT_BP_PROFILING_RATE);
-                printf("fdcollide: %u%% (%uus)\r\n",(50+profiling.fdcollide*100)/total,profiling.fdcollide/DBVT_BP_PROFILING_RATE);
-                printf("cleanup:   %u%% (%uus)\r\n",(50+profiling.cleanup*100)/total,profiling.cleanup/DBVT_BP_PROFILING_RATE);
-                printf("total:     %uus\r\n",total/DBVT_BP_PROFILING_RATE);
-                const unsigned long     sum=profiling.ddcollide+
-                        profiling.fdcollide+
-                        profiling.cleanup;
-                printf("leaked: %u%% (%uus)\r\n",100-((50+sum*100)/total),(total-sum)/DBVT_BP_PROFILING_RATE);
-                printf("job counts: %u%%\r\n",(profiling.jobcount*100)/((sets[0].leaves+sets[1].leaves)*DBVT_BP_PROFILING_RATE));
-                clear(profiling);
-                clock.reset();
-        }
-#endif
-*/
         this.performDeferredRemoval( dispatcher );
       },
 
@@ -463,22 +403,22 @@
           this.sets[1].root.volume.clone( bounds );
         }
         else {
-          /* TODO : could optimize this to avoid object creation by
-             adding a destination param to FromCR */
+          // TODO : could optimize this to avoid object creation by
+          // adding a destination param to FromCR
           bounds = Bump.DbvtVolume.FromCR( Bump.Vector3.create( 0, 0, 0 ), 0 );
         }
         bounds.Mins().clone( aabbMin );
         bounds.Maxs().clone( aabbMax );
       },
 
-      printStats: function() {},
+      printStats: Bump.noop,
 
-      ///reset broadphase internal structures, to ensure determinism/reproducability
+      // reset broadphase internal structures, to ensure determinism/reproducability
       resetPool: function( dispatcher ) {
 
         var totalObjects = this.sets[ 0 ].leaves + this.sets[ 1 ].leaves;
         if ( totalObjects === 0 ) {
-          //reset internal dynamic tree data structures
+          // reset internal dynamic tree data structures
           this.sets[ 0 ].clear();
           this.sets[ 1 ].clear();
 
@@ -508,7 +448,7 @@
         if ( this.paircache.hasDeferredRemoval() ) {
 
           var overlappingPairArray = this.paircache.getOverlappingPairArray();
-          //perform a sort, to find duplicates and to sort 'invalid' pairs to the end
+          // perform a sort, to find duplicates and to sort 'invalid' pairs to the end
           Bump.quickSort( overlappingPairArray, Bump.BroadphasePairSortPredicate.create() );
 
           var invalidPair = 0,
@@ -519,24 +459,24 @@
           previousPair.algorithm = 0;
 
           for ( i = 0; i < overlappingPairArray.length; i++ ) {
-            var pair = overlappingPairArray[i], /* btBroadphasePair& */
+            var pair = overlappingPairArray[i], // btBroadphasePair&
                 isDuplicate = ( pair.equal( previousPair ) );
 
             previousPair = pair;
 
             var needsRemoval = false;
             if ( !isDuplicate ) {
-              //important to perform AABB check that is consistent with the broadphase
-              var pa = pair.pProxy0, /* (btDbvtProxy*) */
+              // important to perform AABB check that is consistent with the broadphase
+              var pa = pair.pProxy0, // btDbvtProxy*
                   pb = pair.pProxy1,
                   hasOverlap = Bump.Intersect.DbvtVolume2( pa.leaf.volume, pb.leaf.volume );
 
               needsRemoval = !hasOverlap;
             }
             else {
-              //remove duplicate
+              // remove duplicate
               needsRemoval = true;
-              //should have no algorithm
+              // should have no algorithm
               Bump.Assert( !pair.algorithm );
             }
             if ( needsRemoval ) {
@@ -547,9 +487,9 @@
             }
           }
 
-          //perform a sort, to sort 'invalid' pairs to the end
+          // perform a sort, to sort 'invalid' pairs to the end
           Bump.quickSort( overlappingPairArray, Bump.BroadphasePairSortPredicate.create() );
-          /* overlappingPairArray.resize(overlappingPairArray.size() - invalidPair); */
+          // overlappingPairArray.resize(overlappingPairArray.size() - invalidPair);
         }
       },
 
@@ -561,25 +501,25 @@
         return this.prediction;
       },
 
-      ///this setAabbForceUpdate is similar to setAabb but always forces the aabb update.
-      ///it is not part of the btBroadphaseInterface but specific to btDbvtBroadphase.
-      ///it bypasses certain optimizations that prevent aabb updates (when the aabb shrinks), see
-      ///http://code.google.com/p/bullet/issues/detail?id=223
+      // this setAabbForceUpdate is similar to setAabb but always forces the aabb update.
+      // it is not part of the btBroadphaseInterface but specific to btDbvtBroadphase.
+      // it bypasses certain optimizations that prevent aabb updates (when the aabb shrinks), see
+      // http://code.google.com/p/bullet/issues/detail?id=223
       setAabbForceUpdate: function( absproxy, aabbMin, aabbMax, dispatcher ) {
         var proxy = absproxy,
             aabb = Bump.DbvtVolume.FromMM( aabbMin, aabbMax ),
             docollide = false;
 
         if ( proxy.stage  === Bump.DbvtBroadphase.Stages.STAGECOUNT ) {
-          /* fixed . dynamic set */
+          // fixed . dynamic set
           this.sets[ 1 ].remove( proxy.leaf );
           proxy.leaf = this.sets[ 0 ].insert( aabb, proxy );
           docollide = true;
         }
         else {
-          /* dynamic set */
+          // dynamic set
           ++this.updates_call;
-          /* Teleporting */
+          // Teleporting
           this.sets[ 0 ].update( proxy.leaf, aabb );
           ++this.updates_done;
           docollide = true;
@@ -602,12 +542,12 @@
 
     typeMembers: {
       Stages: Bump.Enum([
-        { id: 'DYNAMIC_SET' },
-        { id: 'FIXED_SET' },
-        { id: 'STAGECOUNT' }
+        'DYNAMIC_SET',
+        'FIXED_SET',
+        'STAGECOUNT'
       ]),
 
-      benchmark: function( broadphaseInterface ) {}
+      benchmark: Bump.noop
     }
   });
 })( this, this.Bump );

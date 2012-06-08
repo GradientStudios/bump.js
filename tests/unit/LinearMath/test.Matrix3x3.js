@@ -16,29 +16,9 @@ test( 'basic' , function() {
   ok( a !== b, 'creates different objects' );
   deepEqual( a, b, 'creates similar objects' );
 
-  if ( a.el0 ) {
-    ok( a.el0.x === 0 && a.el0.y === 0 && a.el0.z === 0 &&
-        a.el1.x === 0 && a.el1.y === 0 && a.el1.z === 0 &&
-        a.el2.x === 0 && a.el2.y === 0 && a.el2.z === 0 );
-  }
-
-  if ( a.el ) {
-    ok( a.el[0].x === 0 && a.el[0].y === 0 && a.el[0].z === 0 &&
-        a.el[1].x === 0 && a.el[1].y === 0 && a.el[1].z === 0 &&
-        a.el[2].x === 0 && a.el[2].y === 0 && a.el[2].z === 0 );
-  }
-
-  if ( a.m ) {
-    deepEqual( a.m, [ 0, 0, 0,
-                      0, 0, 0,
-                      0, 0, 0 ] );
-  }
-
-  if ( a.m11 ) {
-    ok( a.m11 === 0 && a.m12 === 0 && a.m13 === 0 &&
-        a.m21 === 0 && a.m22 === 0 && a.m23 === 0 &&
-        a.m31 === 0 && a.m32 === 0 && a.m33 === 0 );
-  }
+  ok( a.el0.x === 0 && a.el0.y === 0 && a.el0.z === 0 &&
+      a.el1.x === 0 && a.el1.y === 0 && a.el1.z === 0 &&
+      a.el2.x === 0 && a.el2.y === 0 && a.el2.z === 0 );
 
   var c = Bump.Matrix3x3.create(
     1, 2, 3,
@@ -46,29 +26,10 @@ test( 'basic' , function() {
     7, 8/*0*/
   );
 
-  if ( c.el0 ) {
-    ok( c.el0.x === 1 && c.el0.y === 2 && c.el0.z === 3 &&
-        c.el1.x === 4 && c.el1.y === 5 && c.el1.z === 6 &&
-        c.el2.x === 7 && c.el2.y === 8 && c.el2.z === 0 );
-  }
+  ok( c.el0.x === 1 && c.el0.y === 2 && c.el0.z === 3 &&
+      c.el1.x === 4 && c.el1.y === 5 && c.el1.z === 6 &&
+      c.el2.x === 7 && c.el2.y === 8 && c.el2.z === 0 );
 
-  if ( c.el ) {
-    ok( c.el[0].x === 1 && c.el[0].y === 2 && c.el[0].z === 3 &&
-        c.el[1].x === 4 && c.el[1].y === 5 && c.el[1].z === 6 &&
-        c.el[2].x === 7 && c.el[2].y === 8 && c.el[2].z === 0 );
-  }
-
-  if ( c.m ) {
-    deepEqual( c.m, [ 1, 2, 3,
-                      4, 5, 6,
-                      7, 8, 0 ] );
-  }
-
-  if ( c.m11 ) {
-    ok( c.m11 === 1 && c.m12 === 2 && c.m13 === 3 &&
-        c.m21 === 4 && c.m22 === 5 && c.m23 === 6 &&
-        c.m31 === 7 && c.m32 === 8 && c.m33 === 0 );
-  }
 });
 
 module( 'Matrix3x3.assign' );
@@ -81,22 +42,10 @@ test( 'basic', function() {
   m1.assign( m0 );
   deepEqual( m0, m1 );
 
-  if ( m0.el0 ) {
-    notStrictEqual( m0.el0, m1.el0 );
-    notStrictEqual( m0.el1, m1.el1 );
-    notStrictEqual( m0.el2, m1.el2 );
-  }
+  notStrictEqual( m0.el0, m1.el0 );
+  notStrictEqual( m0.el1, m1.el1 );
+  notStrictEqual( m0.el2, m1.el2 );
 
-  if ( m0.el ) {
-    notStrictEqual( m0.el, m1.el );
-    notStrictEqual( m0.el[0], m1.el[0] );
-    notStrictEqual( m0.el[1], m1.el[1] );
-    notStrictEqual( m0.el[2], m1.el[2] );
-  }
-
-  if ( m0.m ) {
-    notStrictEqual( m0.m, m1.m );
-  }
 });
 
 module( 'Matrix3x3 basic' );
@@ -111,29 +60,10 @@ test( 'getIdentity', function() {
   ok( c !== d, 'creates different objects' );
   deepEqual( c, d, 'creates similar objects' );
 
-  if ( c.el0 ) {
-    ok( c.el0.x === 1 && c.el0.y === 0 && c.el0.z === 0 &&
-        c.el1.x === 0 && c.el1.y === 1 && c.el1.z === 0 &&
-        c.el2.x === 0 && c.el2.y === 0 && c.el2.z === 1 );
-  }
+  ok( c.el0.x === 1 && c.el0.y === 0 && c.el0.z === 0 &&
+      c.el1.x === 0 && c.el1.y === 1 && c.el1.z === 0 &&
+      c.el2.x === 0 && c.el2.y === 0 && c.el2.z === 1 );
 
-  if ( c.el ) {
-    ok( c.el[0].x === 1 && c.el[0].y === 0 && c.el[0].z === 0 &&
-        c.el[1].x === 0 && c.el[1].y === 1 && c.el[1].z === 0 &&
-        c.el[2].x === 0 && c.el[2].y === 0 && c.el[2].z === 1 );
-  }
-
-  if ( c.m ) {
-    deepEqual( c.m, [ 1, 0, 0,
-                      0, 1, 0,
-                      0, 0, 1 ] );
-  }
-
-  if ( c.m11 ) {
-    ok( c.m11 === 1 && c.m12 === 0 && c.m13 === 0 &&
-        c.m21 === 0 && c.m22 === 1 && c.m23 === 0 &&
-        c.m31 === 0 && c.m32 === 0 && c.m33 === 1 );
-  }
 });
 
 test( 'setValue', function() {

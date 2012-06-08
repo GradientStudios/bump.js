@@ -1,20 +1,21 @@
 (function( window, Bump ) {
 
-///btContactConstraint can be automatically created to solve contact constraints using the unified btTypedConstraint interface
+  // btContactConstraint can be automatically created to solve contact
+  // constraints using the unified btTypedConstraint interface
   Bump.ContactConstraint = Bump.type({
     parent: Bump.TypedConstraint,
 
     init: function ContactConstraint(
-      contactManifold, /* btPersistentManifold* */
-      rbA, /* btRigidBody& */
-      rbB /* btRigidBody& */
+      contactManifold,          // btPersistentManifold*
+      rbA,                      // btRigidBody&
+      rbB                       // btRigidBody&
     ) {
       this._super( Bump.TypedConstraintType.CONTACT_CONSTRAINT_TYPE, rbA, rbB );
-      this.contactManifold = contactManifold.clone(); /* btPersistentManifold */
+      this.contactManifold = contactManifold.clone(); // btPersistentManifold
     },
 
     members: {
-      setContactManifold: function( contactManifold /* btPersistentManifold* */ ) {
+      setContactManifold: function( contactManifold ) {
         this.contactManifold = contactManifold.clone();
       },
 
@@ -24,29 +25,22 @@
 
       // virtual ~btContactConstraint();
 
-      getInfo1: function ( info /* btConstraintInfo1* */ ) {
-        // blank in original
-      },
+      getInfo1: Bump.noop,
+      getInfo2: Bump.noop,
 
-      getInfo2: function ( info /* btConstraintInfo2* */ ) {
-        // blank in original
-      },
-
-      ///obsolete methods
-      buildJacobian: function() {
-        // blank in original
-      }
+      // obsolete methods
+      buildJacobian: Bump.noop
     }
   });
 
-  ///very basic collision resolution without friction
+  // very basic collision resolution without friction
   Bump.resolveSingleCollision = function (
-    body1, /* btRigidBody* */
-    colObj2, /* class btCollisionObject* */
-    contactPositionWorld, /* const btVector3& */
-    contactNormalOnB, /* const btVector3& */
-    solverInfo, /* const struct btContactSolverInfo& */
-    distance /* btScalar */
+    body1,                      // btRigidBody*
+    colObj2,                    // class btCollisionObject*
+    contactPositionWorld,       // const btVector3&
+    contactNormalOnB,           // const btVector3&
+    solverInfo,                 // const struct btContactSolverInfo&
+    distance                    // btScalar
   ) {
     var body2 = colObj2;
     var normal = contactNormalOnB;
@@ -82,22 +76,22 @@
   };
 
 
-  ///resolveSingleBilateral is an obsolete methods used for vehicle friction between two dynamic objects
+  // resolveSingleBilateral is an obsolete methods used for vehicle friction between two dynamic objects
   Bump.resolveSingleBilateral = function (
-    body1, /* btRigidBody& */
-    pos1, /* const btVector3& */
-    body2, /* btRigidBody& */
-    pos2, /* const btVector3& */
-    distance, /* btScalar */
-    normal, /* const btVector3& */
-    impulseRef, /* btScalar&, originally a pass by reference, so here an object with .value property */
-    timeStep /* btScalar */
+    body1,                      // btRigidBody&
+    pos1,                       // const btVector3&
+    body2,                      // btRigidBody&
+    pos2,                       // const btVector3&
+    distance,                   // btScalar
+    normal,                     // const btVector3&
+    impulseRef,                 // btScalar&
+    timeStep                    // btScalar
   ) {
 
     var normalLenSqr = normal.length2();
-    Bump.Assert( Math.Abs( normalLenSqr ) < 1.1 );
+    Bump.Assert( Math.abs( normalLenSqr ) < 1.1 );
 
-    if( normalLenSqr > 1.1 ) {
+    if ( normalLenSqr > 1.1 ) {
       impulseRef.value = 0;
       return impulseRef.value;
     }
@@ -139,16 +133,16 @@
 
     rel_vel = normal.dot( vel );
 
-    //todo: move this into proper structure
+    // todo: move this into proper structure
     var contactDamping = 0.2;
 
-    // #ifdef ONLY_USE_LINEAR_MASS
-    //     var massTerm = 1.0 / ( body1.getInvMass() + body2.getInvMass() );
-    //     impulseRef.value = -contactDamping * rel_vel * massTerm;
-    // #else
+// #ifdef ONLY_USE_LINEAR_MASS
+//     var massTerm = 1.0 / ( body1.getInvMass() + body2.getInvMass() );
+//     impulseRef.value = -contactDamping * rel_vel * massTerm;
+// #else
     var velocityImpulse = -contactDamping * rel_vel * jacDiagABInv;
     impulseRef.value = velocityImpulse;
-    // #endif
+// #endif
 
     return impulseRef.value;
   };

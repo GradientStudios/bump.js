@@ -15,11 +15,7 @@ test( 'correctTypes', function() {
   var rv = Bump.DefaultVehicleRaycaster.create( dw );
 
   var checks = [
-    [ 'dynamicsWorld', Bump.DynamicsWorld ],
-    [ 'distFraction', 'number' ],
-    [ 'hitPointInWorld', Bump.Vector3 ],
-    [ 'hitNormalInWorld', Bump.Vector3 ],
-    [ 'distFraction', 'number' ]
+    [ 'dynamicsWorld', Bump.DynamicsWorld ]
   ];
 
   checkTypes( rv, checks );

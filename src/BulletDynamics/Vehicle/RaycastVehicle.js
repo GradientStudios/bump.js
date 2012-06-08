@@ -12,9 +12,9 @@
 
     members: {
       castRay: function(
-        from, /* const btVector3& */
-        to, /* const btVector3& */
-        result /* btVehicleRaycasterResult& */
+        from,                   // const btVector3&
+        to,                     // const btVector3&
+        result                  // btVehicleRaycasterResult&
       ) {
         // RayResultCallback& resultCallback;
 
@@ -22,10 +22,10 @@
 
         this.dynamicsWorld.rayTest( from, to, rayCallback );
 
-        if( rayCallback.hasHit() ) {
+        if ( rayCallback.hasHit() ) {
 
           var body = rayCallback.collisionObject;
-          if( body && body.hasContactResponse() ) {
+          if ( body && body.hasContactResponse() ) {
             result.hitPointInWorld = rayCallback.hitPointWorld;
             result.hitNormalInWorld = rayCallback.hitNormalWorld;
             result.hitNormalInWorld.normalize();

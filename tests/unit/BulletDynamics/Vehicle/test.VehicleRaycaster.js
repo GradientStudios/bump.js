@@ -6,8 +6,16 @@ test( 'basic', function() {
   ok( vr instanceof Bump.VehicleRaycaster.prototype.constructor );
 });
 
+module( 'VehicleRaycaster.VehicleRaycasterResult.create' );
+
+test( 'basic', function() {
+  var vrr = Bump.VehicleRaycaster.VehicleRaycasterResult.create();
+
+  ok( vrr instanceof Bump.VehicleRaycaster.VehicleRaycasterResult.prototype.constructor );
+});
+
 test( 'correctTypes', function() {
-  var vr = Bump.VehicleRaycaster.create();
+  var vrr = Bump.VehicleRaycaster.VehicleRaycasterResult.create();
 
   var checks = [
     [ 'distFraction', 'number' ],
@@ -16,5 +24,5 @@ test( 'correctTypes', function() {
     [ 'distFraction', 'number' ]
   ];
 
-  checkTypes( vr, checks );
+  checkTypes( vrr, checks );
 });

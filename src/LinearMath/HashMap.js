@@ -42,8 +42,8 @@
             srcIndex = 0,
             dstIndex = 0;
 
-        while(
-          ! ( ret = ( src.charCodeAt( srcIndex ) - dst.charCodeAt( dstIndex ) ) ) &&
+        while (
+          !( ret = ( src.charCodeAt( srcIndex ) - dst.charCodeAt( dstIndex ) ) ) &&
             dstIndex < dst.length
         ) {
           ++srcIndex;
@@ -60,7 +60,7 @@
       },
 
       equals: function( other ) {
-        return ( this.string == other.string ) ||
+        return ( this.string === other.string ) ||
           ( 0 === this.portableStringCompare( this.string, other.string ) );
       }
     }

@@ -1,4 +1,4 @@
-module( 'Bump.Vector3' );
+module( 'Vector3' );
 
 test( 'Bump.Vector3 exists', 1, function() {
   ok( Bump.Vector3, 'Bump.Vector3 exists' );
@@ -82,9 +82,9 @@ test( 'basic', function() {
   deepEqual( v0, v1 );
 });
 
-module( 'Bump.Vector3' );
+module( 'Vector3 properties' );
 
-test( 'properties', 16, function() {
+test( 'basic', 16, function() {
   var v0 = Bump.Vector3.create(),
       v1 = Bump.Vector3.create( 1, 2, 3 );
 
@@ -115,411 +115,509 @@ test( 'properties', 16, function() {
 
 });
 
-module( 'Bump.Vector3 math functions' );
+module( 'Vector3.add' );
 
-test( 'add', 4, function() {
+test( 'basic', 15, function() {
   var v0 = Bump.Vector3.create( 1, 2, 3 ),
-      v1 = Bump.Vector3.create( 1, -2, 0 ),
-      v2 = Bump.Vector3.create(),
-      ret;
+      v1 = Bump.Vector3.create( 1, -2, 0 );
 
-  ret = v0.add( v1, v2 );
-  ok( ret === v2, 'return value references correct vector' );
-  deepEqual( v0, Bump.Vector3.create( 1, 2, 3), 'input vector unchanged' );
-  deepEqual( v1, Bump.Vector3.create( 1, -2, 0), 'input vector unchanged' );
-  deepEqual( v2, Bump.Vector3.create( 2, 0, 3 ), 'correct result' );
-});
-
-test( 'addSelf', 3, function() {
-  var v0 = Bump.Vector3.create( 1, 2, 3 ),
-  v1 = Bump.Vector3.create( 1, -2, 0 ),
-  ret;
-
-  ret = v0.addSelf( v1 );
-  ok( ret === v0, 'return value references correct vector' );
-  deepEqual( v1, Bump.Vector3.create( 1, -2, 0), 'input vector unchanged' );
-  deepEqual( v0, Bump.Vector3.create( 2, 0, 3), 'correctResult' );
-});
-
-test( 'subtract', 4, function() {
-  var v0 = Bump.Vector3.create( 1, 2, 3 ),
-  v1 = Bump.Vector3.create( 1, -2, 0 ),
-  v2 = Bump.Vector3.create(),
-  ret;
-
-  ret = v0.subtract( v1, v2 );
-  ok( ret === v2, 'return value references correct vector' );
-  deepEqual( v0, Bump.Vector3.create( 1, 2, 3), 'input vector unchanged' );
-  deepEqual( v1, Bump.Vector3.create( 1, -2, 0), 'input vector unchanged' );
-  deepEqual( v2, Bump.Vector3.create( 0, 4, 3 ), 'correct result' );
-});
-
-test( 'subtractSelf', 3, function() {
-  var v0 = Bump.Vector3.create( 1, 2, 3 ),
-  v1 = Bump.Vector3.create( 1, -2, 0 ),
-  ret;
-
-  ret = v0.subtractSelf( v1 );
-  ok( ret === v0, 'return value references correct vector' );
-  deepEqual( v1, Bump.Vector3.create( 1, -2, 0), 'input vector unchanged' );
-  deepEqual( v0, Bump.Vector3.create( 0, 4, 3), 'correctResult' );
-});
-
-test( 'multiplyScalar', 3, function() {
-  var v0 = Bump.Vector3.create( 1, 2, 3 ),
-  v1 = Bump.Vector3.create(),
-  ret;
-
-  ret = v0.multiplyScalar( 2, v1 );
-  ok( ret === v1, 'return value references correct vector' );
-  deepEqual( v0, Bump.Vector3.create( 1, 2, 3), 'input vector unchanged' );
-  deepEqual( v1, Bump.Vector3.create( 2, 4, 6 ), 'correct result' );
-});
-
-test( 'multiplyScalarSelf', 2, function() {
-  var v0 = Bump.Vector3.create( 1, 2, 3 ),
-  ret;
-
-  ret = v0.multiplyScalarSelf( 2 );
-  ok( ret === v0, 'return value references correct vector' );
-  deepEqual( v0, Bump.Vector3.create( 2, 4, 6 ), 'correctResult' );
-});
-
-test( 'multiplyVector', 4, function() {
-  var v0 = Bump.Vector3.create( 1, 2, 3 ),
-  v1 = Bump.Vector3.create( 2, -1, 0 ),
-  v2 = Bump.Vector3.create(),
-  ret;
-
-  ret = v0.multiplyVector( v1, v2 );
-  ok( ret === v2, 'return value references correct vector' );
-  deepEqual( v0, Bump.Vector3.create( 1, 2, 3 ), 'input vector unchanged' );
-  deepEqual( v1, Bump.Vector3.create( 2, -1, 0 ), 'input vector unchanged' );
-  deepEqual( v2, Bump.Vector3.create( 2, -2, 0 ), 'correct result' );
-});
-
-test( 'multiplyVectorSelf', 3, function() {
-  var v0 = Bump.Vector3.create( 1, 2, 3 ),
-  v1 = Bump.Vector3.create( 2, -1, 0 ),
-  ret;
-
-  ret = v0.multiplyVectorSelf( v1 );
-  ok( ret === v0, 'return value references correct vector' );
-  deepEqual( v1, Bump.Vector3.create( 2, -1, 0 ), 'input vector unchanged' );
-  deepEqual( v0, Bump.Vector3.create( 2, -2, 0 ), 'correctResult' );
-});
-
-test( 'divideScalar', 3, function() {
-  var v0 = Bump.Vector3.create( 1, 2, 3 ),
-  v1 = Bump.Vector3.create(),
-  ret;
-
-  ret = v0.divideScalar( 2, v1 );
-  ok( ret === v1, 'return value references correct vector' );
-  deepEqual( v0, Bump.Vector3.create( 1, 2, 3 ), 'input vector unchanged' );
-  deepEqual( v1, Bump.Vector3.create( 0.5, 1, 1.5 ), 'correct result' );
-});
-
-test( 'divideScalarSelf', 2, function() {
-  var v0 = Bump.Vector3.create( 1, 2, 3 ),
-  ret;
-
-  ret = v0.divideScalarSelf( 2 );
-  ok( ret === v0, 'return value references correct vector' );
-  deepEqual( v0, Bump.Vector3.create( 0.5, 1, 1.5 ), 'correctResult' );
-});
-
-test( 'divideVector', 15, function() {
-  // var v0 = Bump.Vector3.create( 1, 2, 3 ),
-  // v1 = Bump.Vector3.create( 2, 1, -3 ),
-  // v2 = Bump.Vector3.create(),
-  // ret;
-
-  // ret = v0.inverseScale( v1, v2 );
-  // ok( ret === v2, 'return value references correct vector' );
-  // deepEqual( v0, Bump.Vector3.create( 1, 2, 3 ), 'input vector unchanged' );
-  // deepEqual( v1, Bump.Vector3.create( 2, 1, -3 ), 'input vector unchanged' );
-  // deepEqual( v2, Bump.Vector3.create( 0.5, 2, -1 ), 'correct result' );
-
-  testFunc( Bump.Vector3, 'divideVector', {
-    objects: Bump.Vector3.create( 1, 2, 3 ),
-
-    args: [
-      [ Bump.Vector3.create( 2, 1, -3 ) ]
-    ],
-
-    expected: [
-      Bump.Vector3.create( 0.5, 2, -1 )
-    ],
-
+  testFunc( Bump.Vector3, 'add', {
+    objects: v0,
+    args: [ [ v1 ] ],
+    expected: [ Bump.Vector3.create( 2, 0, 3 ) ],
     destType: Bump.Vector3
   });
 });
 
-test( 'divideVectorSelf', 3, function() {
+module( 'Vector3.addSelf' );
+
+test( 'basic', 4, function() {
   var v0 = Bump.Vector3.create( 1, 2, 3 ),
-  v1 = Bump.Vector3.create( 2, 1, -3 ),
-  ret;
+      v1 = Bump.Vector3.create( 1, -2, 0 );
 
-  ret = v0.divideVectorSelf( v1 );
-  ok( ret === v0, 'return value references correct vector' );
-  deepEqual( v1, Bump.Vector3.create( 2, 1, -3 ), 'input vector unchanged' );
-  deepEqual( v0, Bump.Vector3.create( 0.5, 2, -1 ), 'correctResult' );
+  testFunc( Bump.Vector3, 'addSelf', {
+    objects: v0,
+    args: [ [ v1 ] ],
+    expected: [ Bump.Vector3.create( 2, 0, 3 ) ],
+    modifiesSelf: true
+  });
 });
 
-test( 'dot function', 1, function() {
-  var v1 = Bump.Vector3.create( 1, 1, 1 ),
-  v2 = Bump.Vector3.create( 2, 2, 2 );
+module( 'Vector3.subtract' );
 
-  equal( v1.dot( v2 ), 6, 'correct result' );
+test( 'subtract', 15, function() {
+  var v0 = Bump.Vector3.create( 1, 2, 3 ),
+      v1 = Bump.Vector3.create( 1, -2, 0 );
+
+  testFunc( Bump.Vector3, 'subtract', {
+    objects: v0,
+    args: [ [ v1 ] ],
+    expected: [ Bump.Vector3.create( 0, 4, 3 ) ],
+    destType: Bump.Vector3
+  });
 });
 
-test( 'length2 function', 1, function() {
-  var v1 = Bump.Vector3.create( 1, 2, 3 );
-  equal( v1.length2(), 14, 'correct result' );
+module( 'Vector3.subtractSelf' );
+
+test( 'basic', 4, function() {
+  var v0 = Bump.Vector3.create( 1, 2, 3 ),
+      v1 = Bump.Vector3.create( 1, -2, 0 );
+
+  testFunc( Bump.Vector3, 'subtractSelf', {
+    objects: v0,
+    args: [ [ v1 ] ],
+    expected: [ Bump.Vector3.create( 0, 4, 3 ) ],
+    modifiesSelf: true
+  });
 });
 
-test( 'length function', 1, function() {
-  var v1 = Bump.Vector3.create( 1, 2, 3 );
-  equal( v1.length(), Math.sqrt( 14 ), 'correct result' );
+module( 'Vector3.multiplyScalar' );
+
+test( 'basic', 11, function() {
+  var v0 = Bump.Vector3.create( 1, 2, 3 );
+
+  testFunc( Bump.Vector3, 'multiplyScalar', {
+    objects: v0,
+    args: [ [ 2 ] ],
+    expected: [ Bump.Vector3.create( 2, 4, 6 ) ],
+    destType: Bump.Vector3
+  });
 });
 
-test( 'distance2 function', 1, function() {
-  var v1 = Bump.Vector3.create( 2, 2, 2 ),
-  v2 = Bump.Vector3.create( -1, -1, -1 );
-  equal( v1.distance2( v2 ), 27, 'correct result' );
+module( 'Vector3.multiplyScalarSelf' );
+
+test( 'basic', 4, function() {
+  var v0 = Bump.Vector3.create( 1, 2, 3 );
+
+  testFunc( Bump.Vector3, 'multiplyScalarSelf', {
+    objects: v0,
+    args: [ [ 2 ] ],
+    expected: [ Bump.Vector3.create( 2, 4, 6 ) ],
+    modifiesSelf: true
+  });
 });
 
-test( 'distance function', 1, function() {
-  var v1 = Bump.Vector3.create( 2, 2, 2 ),
-  v2 = Bump.Vector3.create( -1, -1, -1 );
-  equal( v1.distance( v2 ), Math.sqrt( 27 ), 'correct result' );
+module( 'Vector3.multiplyVector' );
+
+test( 'basic', 15, function() {
+  var v0 = Bump.Vector3.create( 1, 2, 3 ),
+      v1 = Bump.Vector3.create( 2, -1, 0 );
+
+  testFunc( Bump.Vector3, 'multiplyVector', {
+    objects: v0,
+    args: [ [ v1 ] ],
+    expected: [ Bump.Vector3.create( 2, -2, 0 ) ],
+    destType: Bump.Vector3
+  });
 });
 
-test( 'safeNormalize', 3, function() {
-  var v1 = Bump.Vector3.create( 2, 0, 0 ).safeNormalize(),
-  v2 = Bump.Vector3.create( 0, 1, -1 ),
-  v3 = Bump.Vector3.create().safeNormalize();
+module( 'Vector3.multiplyVectorSelf' );
 
-  v2.safeNormalize();
+test( 'basic', 4, function() {
+  var v0 = Bump.Vector3.create( 1, 2, 3 ),
+      v1 = Bump.Vector3.create( 2, -1, 0 );
 
-  deepEqual( v1, Bump.Vector3.create( 1, 0, 0 ) );
-  deepEqual( v2, Bump.Vector3.create( 0, 1 / Math.sqrt( 2 ), -1 / Math.sqrt( 2 ) ) );
-  deepEqual( v3, Bump.Vector3.create( 1, 0, 0 ) );
+  testFunc( Bump.Vector3, 'multiplyVectorSelf', {
+    objects: v0,
+    args: [ [ v1 ] ],
+    expected: [ Bump.Vector3.create( 2, -2, 0 ) ],
+    modifiesSelf: true
+  });
 });
 
-test( 'normalize', 4, function() {
-  var v1 = Bump.Vector3.create( 2, 0, 0 ),
-  v2 = Bump.Vector3.create( 0, 1, -1 ),
-  ret;
+module( 'Vector3.divideScalar' );
 
-  ret = v1.normalize();
+test( 'basic', 11, function() {
+  var v0 = Bump.Vector3.create( 1, 2, 3 );
 
-  ok( ret === v1, 'return value references correct vector' );
-  deepEqual( v1, Bump.Vector3.create( 1, 0, 0 ), 'correct result' );
-
-  ret = v2.normalize();
-
-  ok( ret === v2, 'return value references correct vector' );
-  deepEqual( v2, Bump.Vector3.create( 0, 1/Math.sqrt( 2 ), -1/Math.sqrt( 2 ) ), 'correct result' );
+  testFunc( Bump.Vector3, 'divideScalar', {
+    objects: v0,
+    args: [ [ 2 ] ],
+    expected: [ Bump.Vector3.create( 0.5, 1, 1.5 ) ],
+    destType: Bump.Vector3
+  });
 });
 
-test( 'normalized', 5, function() {
-  var v1 = Bump.Vector3.create( 2, 0, 0 ),
-  v2 = Bump.Vector3.create( 0, 1, -1 ),
-  v3 = Bump.Vector3.create(),
-  ret;
+module( 'Vector3.divideScalarSelf' );
 
-  ret = v1.normalized( v3 );
+test( 'basic', 4, function() {
+  var v0 = Bump.Vector3.create( 1, 2, 3 );
 
-  ok( ret === v3, 'with destination : return value references correct vector' );
-  deepEqual( v1, Bump.Vector3.create( 2, 0, 0 ), 'original unchanged' );
-  deepEqual( v3, Bump.Vector3.create( 1, 0, 0 ), 'correct result' );
-
-  ret = v2.normalized();
-
-  deepEqual( v2, Bump.Vector3.create( 0, 1, -1 ), 'without destinatoin original unchanged' );
-  deepEqual( ret, Bump.Vector3.create( 0, 1/Math.sqrt( 2 ), -1/Math.sqrt( 2 ) ),
-             'correct result' );
+  testFunc( Bump.Vector3, 'divideScalarSelf', {
+    objects: v0,
+    args: [ [ 2 ] ],
+    expected: [ Bump.Vector3.create( 0.5, 1, 1.5 ) ],
+    modifiesSelf: true
+  });
 });
+
+module( 'Vector3.divideVector' );
+
+test( 'divideVector', 15, function() {
+  var v0 = Bump.Vector3.create( 1, 2, 3 ),
+      v1 = Bump.Vector3.create( 2, 1, -3 );
+
+  testFunc( Bump.Vector3, 'divideVector', {
+    objects: v0,
+    args: [ [ v1 ] ],
+    expected: [ Bump.Vector3.create( 0.5, 2, -1 ) ],
+    destType: Bump.Vector3
+  });
+});
+
+module( 'Vector3.divideVectorSelf' );
+
+test( 'basic', 4, function() {
+  var v0 = Bump.Vector3.create( 1, 2, 3 ),
+      v1 = Bump.Vector3.create( 2, 1, -3 );
+
+  testFunc( Bump.Vector3, 'divideVectorSelf', {
+    objects: v0,
+    args: [ [ v1 ] ],
+    expected: [ Bump.Vector3.create( 0.5, 2, -1 ) ],
+    modifiesSelf: true
+  });
+});
+
+module( 'Vector3.dot' );
+
+test( 'basic', 4, function() {
+  var v0 = Bump.Vector3.create( 1, 1, 1 ),
+      v1 = Bump.Vector3.create( 2, 2, 2 );
+
+  testFunc( Bump.Vector3, 'dot', {
+    objects: v0,
+    args: [ [ v1 ] ],
+    expected: [ 6 ]
+  });
+});
+
+module( 'Vector3.length2' );
+
+test( 'basic', 3, function() {
+  var v0 = Bump.Vector3.create( 1, 2, 3 );
+
+  testFunc( Bump.Vector3, 'length2', {
+    objects: v0,
+    expected: [ 14 ]
+  });
+});
+
+module( 'Vector3.length' );
+
+test( 'length function', 5, function() {
+  var v0 = Bump.Vector3.create( 1, 2, 3 );
+
+  testFunc( Bump.Vector3, 'length', {
+    objects: [
+      Bump.Vector3.create( 1, 2, 3 ),
+      Bump.Vector3.create( 0, 1, -1 )
+    ],
+    expected: [
+      Math.sqrt( 14 ),
+      Math.sqrt( 2 )
+    ]
+  });
+});
+
+module( 'Vector3.distance2' );
+
+test( 'basic', 4, function() {
+  var v0 = Bump.Vector3.create( 2, 2, 2 ),
+      v1 = Bump.Vector3.create( -1, -1, -1 );
+
+  testFunc( Bump.Vector3, 'distance2', {
+    objects: v0,
+    args: [ [ v1 ] ],
+    expected: [ 27 ]
+  });
+});
+
+module( 'Vector3.distance' );
+
+test( 'distance function', 4, function() {
+  var v0 = Bump.Vector3.create( 2, 2, 2 ),
+      v1 = Bump.Vector3.create( -1, -1, -1 );
+
+  testFunc( Bump.Vector3, 'distance', {
+    objects: v0,
+    args: [ [ v1 ] ],
+    expected: [ Math.sqrt( 27 ) ]
+  });
+});
+
+module( 'Vector3.safeNormalize' );
+
+test( 'safeNormalize', 7, function() {
+  testFunc( Bump.Vector3, 'safeNormalize', {
+    objects: [
+      Bump.Vector3.create( 2, 0, 0 ),
+      Bump.Vector3.create( 0, 1, -1 ),
+      Bump.Vector3.create( 0, 0, 0 )
+    ],
+    expected: [
+      Bump.Vector3.create( 1, 0, 0 ),
+      Bump.Vector3.create( 0, 7.07106781186547462e-01, -7.07106781186547462e-01 ),
+      Bump.Vector3.create( 1, 0, 0 )
+    ],
+    modifiesSelf: true
+  });
+});
+
+module( 'Vector3.normalize' );
+
+test( 'basic', 5, function() {
+  testFunc( Bump.Vector3, 'normalize', {
+    objects: [
+      Bump.Vector3.create( 2, 0, 0 ),
+      Bump.Vector3.create( 0, 1, -1 )
+    ],
+    expected: [
+      Bump.Vector3.create( 1, 0, 0 ),
+      Bump.Vector3.create( 0, 7.07106781186547462e-01, -7.07106781186547462e-01 )
+    ],
+    modifiesSelf: true
+  });
+});
+
+module( 'Vector3.normalized' );
+
+test( 'basic', 15, function() {
+  var v0 = Bump.Vector3.create( 2, 0, 0 ),
+      v1 = Bump.Vector3.create( 0, 1, -1 );
+
+  testFunc( Bump.Vector3, 'normalized', {
+    objects: [ v0, v1 ],
+    expected: [
+      Bump.Vector3.create( 1, 0, 0 ),
+      Bump.Vector3.create( 0, 7.07106781186547462e-01, -7.07106781186547462e-01 )
+    ],
+    destType: Bump.Vector3
+  });
+});
+
+module( 'Vector3.rotate' );
 
 // definitely should add more tests for this one
-test( 'rotate', 9, function() {
-  var v1 = Bump.Vector3.create( 1, 0, 0 ),
-  zAxis = Bump.Vector3.create( 0, 0, 1 ),
-  vRot = Bump.Vector3.create(),
-  ret;
+test( 'basic', 19, function() {
+  var v0 = Bump.Vector3.create( 1, 0, 0 ),
+      zAxis = Bump.Vector3.create( 0, 0, 1 );
 
-  ret = v1.rotate( zAxis, Math.PI/2, vRot );
-
-  ok( ret === vRot, 'with destination : return value references correct vector' );
-  deepEqual( v1, Bump.Vector3.create( 1, 0, 0 ), 'with destination : input unchanged' );
-  ok( Math.abs( vRot[0] ) < Bump.SIMD_EPSILON, 'correct result : x is close to 0' );
-  ok( Math.abs( vRot[1] - 1 ) < Bump.SIMD_EPSILON, 'correct result : y is close to 1' );
-  ok( Math.abs( vRot[2] ) < Bump.SIMD_EPSILON, 'correct result: z is close to 0' );
-
-  ret = v1.rotate( zAxis, Math.PI );
-  deepEqual( v1, Bump.Vector3.create( 1, 0, 0 ), 'without destination : input unchanged' );
-  ok( Math.abs( ret[0] + 1 ) < Bump.SIMD_EPSILON, 'correct result : x is close to -1' );
-  ok( Math.abs( ret[1] ) < Bump.SIMD_EPSILON, 'correct result : y is close to 0' );
-  ok( Math.abs( ret[2] ) < Bump.SIMD_EPSILON, 'correct result: z is close to 0' );
-
+  testFunc( Bump.Vector3, 'rotate', {
+    objects: v0,
+    args: [ [ zAxis, Math.PI / 2.5 ] ],
+    expected: [
+      Bump.Vector3.create( 0.309016994374947451, 0.951056516295153531, 0 )
+    ],
+    destType: Bump.Vector3
+  });
 });
 
-test( 'angle', 12, function() {
+module( 'Vector3.angle' );
+
+test( 'basic', 22, function() {
   var right = Bump.Vector3.create( 1, 0, 0 ),
-  up = Bump.Vector3.create( 0, 1, 0 ),
-  left = Bump.Vector3.create( -1, 0, 0 ),
-  forward = Bump.Vector3.create( 0, 0, 1 ),
-  upRight = Bump.Vector3.create( 1, 1, 0 );
+      up = Bump.Vector3.create( 0, 1, 0 ),
+      left = Bump.Vector3.create( -1, 0, 0 ),
+      forward = Bump.Vector3.create( 0, 0, 1 ),
+      upRight = Bump.Vector3.create( 1, 1, 0 );
 
-  ok( Math.abs( right.angle( up ) - Math.PI / 2 ) < Bump.SIMD_EPSILON,
-    'angle( right, up ) is close to pi/2' );
-  ok( Math.abs( right.angle( forward ) - Math.PI / 2 ) < Bump.SIMD_EPSILON,
-    'angle( right, forward ) is close to pi/2' );
-  ok( Math.abs( right.angle( left ) - Math.PI ) < Bump.SIMD_EPSILON,
-    'angle( right, left ) is close to pi' );
-  ok( Math.abs( right.angle( upRight ) - Math.PI / 4 ) < Bump.SIMD_EPSILON,
-    'angle( right, up + right ) is close to pi/4' );
-  ok( Math.abs( left.angle( upRight ) - 3 * Math.PI / 4 ) < Bump.SIMD_EPSILON,
-    'angle( left, up + right ) is close to 3*pi/4' );
-  ok( Math.abs( up.angle( upRight ) - Math.PI / 4 ) < Bump.SIMD_EPSILON,
-    'angle( up, up + right ) is close to pi/4' );
-  ok( Math.abs( forward.angle( upRight ) - Math.PI / 2 ) < Bump.SIMD_EPSILON,
-    'angle( forward, up + right ) is close to pi/2' );
-
-  deepEqual( right, Bump.Vector3.create( 1, 0, 0 ), 'right unchanged' );
-  deepEqual( up, Bump.Vector3.create( 0, 1, 0 ), 'up unchanged' );
-  deepEqual( left, Bump.Vector3.create( -1, 0, 0 ), 'left unchanged' );
-  deepEqual( forward, Bump.Vector3.create( 0, 0, 1 ), 'forward unchanged' );
-  deepEqual( upRight, Bump.Vector3.create( 1, 1, 0 ), 'up + right unchanged' );
+  testFunc( Bump.Vector3, 'angle', {
+    objects: [
+      right,
+      right,
+      right,
+      right,
+      left,
+      up,
+      forward
+    ],
+    args: [
+      [ up ],
+      [ forward ],
+      [ left ],
+      [ upRight ],
+      [ upRight ],
+      [ upRight ],
+      [ upRight ]
+    ],
+    expected: [
+      1.57079632679489656e+00,
+      1.57079632679489656e+00,
+      3.14159265358979312e+00,
+      7.85398163397448390e-01,
+      2.35619449019234484e+00,
+      7.85398163397448390e-01,
+      1.57079632679489656e+00
+    ]
+  });
 });
 
-test( 'negate', 5, function() {
-  var v1 = Bump.Vector3.create( -1, -2, 3 ),
-  v2 = Bump.Vector3.create(),
-  ret;
+module( 'Vector3.negate' );
 
-  ret = v1.negate( v2 );
+test( 'basic', 8, function() {
+  var v0 = Bump.Vector3.create( -1, -2, 3 );
 
-  ok( ret === v2, 'with destinaton : return value references correct vector' );
-  deepEqual( v1, Bump.Vector3.create( -1, -2, 3 ), 'input unchanged' );
-  deepEqual( v2, Bump.Vector3.create( 1, 2, -3 ), 'correct result' );
-
-  ret = v1.negate();
-  deepEqual( v1, Bump.Vector3.create( -1, -2, 3 ), 'without destination: input unchanged' );
-  deepEqual( ret, Bump.Vector3.create( 1, 2, -3 ), 'without destination: correct result' );
-
+  testFunc( Bump.Vector3, 'negate', {
+    objects: v0,
+    expected: [ Bump.Vector3.create( 1, 2, -3 ) ],
+    destType: Bump.Vector3
+  });
 });
 
-test( 'absolute', 5, function() {
-  var v1 = Bump.Vector3.create( -1, -2, 3 ),
-  v2 = Bump.Vector3.create(),
-  ret;
+module( 'Vector3.absolute' );
 
-  ret = v1.absolute( v2 );
+test( 'basic', 8, function() {
+  var v0 = Bump.Vector3.create( -1, -2, 3 );
 
-  ok( ret === v2, 'with destinaton : return value references correct vector' );
-  deepEqual( v1, Bump.Vector3.create( -1, -2, 3 ), 'input unchanged' );
-  deepEqual( v2, Bump.Vector3.create( 1, 2, 3 ), 'correct result' );
-
-  ret = v1.absolute();
-  deepEqual( v1, Bump.Vector3.create( -1, -2, 3 ), 'without destination: input unchanged' );
-  deepEqual( ret, Bump.Vector3.create( 1, 2, 3 ), 'without destination: correct result' );
-
+  testFunc( Bump.Vector3, 'absolute', {
+    objects: v0,
+    expected: [ Bump.Vector3.create( 1, 2, 3 ) ],
+    destType: Bump.Vector3
+  });
 });
 
-test( 'cross and crossSelf', 15, function() {
+module( 'Vector3.cross' );
 
+test( 'basic', 426, function() {
   // given params for a "right", "up" and "forward" perpendicular vectors,
   // checks cross products between them (5 tests total)
   var crossTest = function( right, up, forward ) {
-    var rightCrossUp = Bump.Vector3.create(),
-    diff = Bump.Vector3.create(),
-    ret;
-
     right.safeNormalize();
     up.safeNormalize();
     forward.safeNormalize();
 
-    //ok( Math.abs( Bump.Vector3.length( right ) - 1) < Bump.SIMD_EPSILON );
-    //ok( Math.abs( Bump.Vector3.length( up ) - 1 ) < Bump.SIMD_EPSILON );
-    //ok( Math.abs( Bump.Vector3.length( forward ) - 1 ) < Bump.SIMD_EPSILON );
-
-    ret = right.cross( up, rightCrossUp );
-    //console.log( "( " + right + " ), ( " + up + " ), ( " + rightCrossUp + " ) " );
-    rightCrossUp.subtract( forward, diff );
-    //console.log( "( " + diff + " ) " );
-    ok( ret === rightCrossUp, "cross with destination : return value references correct vector" );
-    ok( diff.fuzzyZero(), "right cross up : correct result" );
-
-    ret = up.cross( forward );
-    ret.subtract( right, diff );
-    ok( diff.fuzzyZero(), "up cross forward : correct result" );
-
-    ret = forward.crossSelf( right );
-    forward.subtract( up, diff );
-    ok( ret === forward, "crossSelf: return value references correct vector" );
-    ok( diff.fuzzyZero(), "forward cross right : correct result" );
-
+    testFunc( Bump.Vector3, 'cross', {
+      objects: [ right, up, forward ],
+      args: [ [ up ], [ forward ], [ right ] ],
+      expected: [ forward, right, up ],
+      epsilon: Math.pow( 2, -48 ),
+      destType: Bump.Vector3
+    });
   }
 
-  // TODO : add more ground truths
-  crossTest( Bump.Vector3.create(1, 0, 0 ),
-             Bump.Vector3.create(0, 1, 0 ),
-             Bump.Vector3.create(0, 0, 1 )
-           );
-  crossTest( Bump.Vector3.create(1, 1, 0 ),
-             Bump.Vector3.create(-1, 1, 0 ),
-             Bump.Vector3.create(0, 0, 1 )
-           );
-  crossTest( Bump.Vector3.create(1, 0, 1 ),
-             Bump.Vector3.create(0, 1, 0 ),
-             Bump.Vector3.create(-1, 0, 1 )
-           );
+  crossTest(
+    Bump.Vector3.create( 1, 0, 0 ),
+    Bump.Vector3.create( 0, 1, 0 ),
+    Bump.Vector3.create( 0, 0, 1 )
+  );
+  crossTest(
+    Bump.Vector3.create( 1, 1, 0 ),
+    Bump.Vector3.create(-1, 1, 0 ),
+    Bump.Vector3.create( 0, 0, 1 )
+  );
+  crossTest(
+    Bump.Vector3.create( 1, 0, 1 ),
+    Bump.Vector3.create( 0, 1, 0 ),
+    Bump.Vector3.create(-1, 0, 1 )
+  );
 });
 
-test( 'triple', 2, function() {
-  equal( Bump.Vector3.create( 1, 0, 0 ).triple( Bump.Vector3.create( 1, 0, 0 ),
-                                                Bump.Vector3.create( 0, 1, 0 ) ),
-         0);
-  equal( Bump.Vector3.create( 0, 1, 0 ).triple( Bump.Vector3.create( 0, 0, 1 ),
-                                                Bump.Vector3.create( 1, 0, 0 ) ),
-         1 );
+module( 'Vector3.crossSelf' );
+
+test( 'basic', 111, function() {
+  // given params for a "right", "up" and "forward" perpendicular vectors,
+  // checks cross products between them (5 tests total)
+  var crossTest = function( right, up, forward ) {
+    right.safeNormalize();
+    up.safeNormalize();
+    forward.safeNormalize();
+
+    testFunc( Bump.Vector3, 'crossSelf', {
+      objects: [ right, up, forward ],
+      args: [ [ up ], [ forward ], [ right ] ],
+      expected: [ forward, right, up ],
+      epsilon: Math.pow( 2, -48 ),
+      modifiesSelf: true
+    });
+  }
+
+  crossTest(
+    Bump.Vector3.create( 1, 0, 0 ),
+    Bump.Vector3.create( 0, 1, 0 ),
+    Bump.Vector3.create( 0, 0, 1 )
+  );
+  crossTest(
+    Bump.Vector3.create( 1, 1, 0 ),
+    Bump.Vector3.create(-1, 1, 0 ),
+    Bump.Vector3.create( 0, 0, 1 )
+  );
+  crossTest(
+    Bump.Vector3.create( 1, 0, 1 ),
+    Bump.Vector3.create( 0, 1, 0 ),
+    Bump.Vector3.create(-1, 0, 1 )
+  );
 });
 
-test( 'minAxis', 7, function() {
-  equal( Bump.Vector3.create().minAxis(),  2 );
-  equal( Bump.Vector3.create( 1, 0, 0 ).minAxis(), 2 );
-  equal( Bump.Vector3.create( 0, 1, 0 ).minAxis(), 2 );
-  equal( Bump.Vector3.create( 0, 0, 1 ).minAxis(), 1 );
-  equal( Bump.Vector3.create( 0, 2, 3 ).minAxis(), 0 );
-  equal( Bump.Vector3.create( 0, 3, -4 ).minAxis(), 2 );
-  equal( Bump.Vector3.create( -1, -3, -2 ).minAxis(), 1 );
+module( 'Vector3.triple' );
+
+test( 'basic', 9, function() {
+  testFunc( Bump.Vector3, 'triple', {
+    objects: [
+      Bump.Vector3.create( 1, 0, 0 ),
+      Bump.Vector3.create( 0, 1, 0 )
+    ],
+    args: [
+      [ Bump.Vector3.create( 1, 0, 0 ), Bump.Vector3.create( 0, 1, 0 ) ],
+      [ Bump.Vector3.create( 0, 0, 1 ), Bump.Vector3.create( 1, 0, 0 ) ]
+    ],
+    expected: [ 0, 1 ]
+  });
 });
 
-test( 'minProperty', 7, function() {
-  equal( Bump.Vector3.create().minProperty(),  'z' );
-  equal( Bump.Vector3.create( 1, 0, 0 ).minProperty(), 'z' );
-  equal( Bump.Vector3.create( 0, 1, 0 ).minProperty(), 'z' );
-  equal( Bump.Vector3.create( 0, 0, 1 ).minProperty(), 'y' );
-  equal( Bump.Vector3.create( 0, 2, 3 ).minProperty(), 'x' );
-  equal( Bump.Vector3.create( 0, 3, -4 ).minProperty(), 'z' );
-  equal( Bump.Vector3.create( -1, -3, -2 ).minProperty(), 'y' );
+module( 'Vector3.minAxis' );
+
+test( 'basic', 15, function() {
+  testFunc( Bump.Vector3, 'minAxis', {
+    objects: [
+      Bump.Vector3.create( 0, 0, 0 ),
+      Bump.Vector3.create( 1, 0, 0 ),
+      Bump.Vector3.create( 0, 1, 0 ),
+      Bump.Vector3.create( 0, 0, 1 ),
+      Bump.Vector3.create( 0, 2, 3 ),
+      Bump.Vector3.create( 0, 3, -4 ),
+      Bump.Vector3.create( -1, -3, -2 )
+    ],
+    expected: [ 2, 2, 2, 1, 0, 2, 1 ]
+  });
 });
 
+module( 'Vector3.minProperty' );
 
-test( 'min', 7, function() {
-  equal( Bump.Vector3.create().min(),  0 );
-  equal( Bump.Vector3.create( 1, 0, 0 ).min(), 0 );
-  equal( Bump.Vector3.create( 0, 1, 0 ).min(), 0 );
-  equal( Bump.Vector3.create( 0, 0, 1 ).min(), 0 );
-  equal( Bump.Vector3.create( 0, 2, 3 ).min(), 0 );
-  equal( Bump.Vector3.create( 0, 3, -4 ).min(), -4 );
-  equal( Bump.Vector3.create( -1, -3, -2 ).min(), -3 );
+test( 'basic', 15, function() {
+  testFunc( Bump.Vector3, 'minProperty', {
+    objects: [
+      Bump.Vector3.create( 0, 0, 0 ),
+      Bump.Vector3.create( 1, 0, 0 ),
+      Bump.Vector3.create( 0, 1, 0 ),
+      Bump.Vector3.create( 0, 0, 1 ),
+      Bump.Vector3.create( 0, 2, 3 ),
+      Bump.Vector3.create( 0, 3, -4 ),
+      Bump.Vector3.create( -1, -3, -2 )
+    ],
+    expected: [ 'z', 'z', 'z', 'y', 'x', 'z', 'y' ]
+  });
+});
+
+module( 'Vector3.min' );
+
+test( 'basic', 15, function() {
+  testFunc( Bump.Vector3, 'min', {
+    objects: [
+      Bump.Vector3.create( 0, 0, 0 ),
+      Bump.Vector3.create( 1, 0, 0 ),
+      Bump.Vector3.create( 0, 1, 0 ),
+      Bump.Vector3.create( 0, 0, 1 ),
+      Bump.Vector3.create( 0, 2, 3 ),
+      Bump.Vector3.create( 0, 3, -4 ),
+      Bump.Vector3.create( -1, -3, -2 )
+    ],
+    expected: [ 0, 0, 0, 0, 0, -4, -3 ]
+  });
 });
 
 module( 'Vector3.maxAxis' );
+
 test( 'basic', 7, function() {
   equal( Bump.Vector3.create().maxAxis(), 0 );
   equal( Bump.Vector3.create( -1 , 0,  0 ).maxAxis(), 1 );
@@ -531,6 +629,7 @@ test( 'basic', 7, function() {
 });
 
 module( 'Vector3.maxProperty' );
+
 test( 'basic', 7, function() {
   equal( Bump.Vector3.create().maxProperty(), 'x' );
   equal( Bump.Vector3.create( -1,  0,  0 ).maxProperty(), 'y' );
@@ -541,40 +640,44 @@ test( 'basic', 7, function() {
   equal( Bump.Vector3.create( -1, -3, -2 ).maxProperty(), 'x' );
 });
 
-module( 'Bump.Vector3 math functions' );
+module( 'Vector3.max' );
 
-test( 'max', 7, function() {
+test( 'basic', 7, function() {
   equal( Bump.Vector3.create().max(), 0 );
-  equal( Bump.Vector3.create( -1, 0, 0 ).max(), 0 );
-  equal( Bump.Vector3.create( 0, -1, 0 ).max(), 0 );
-  equal( Bump.Vector3.create( 0, 0, -1 ).max(), 0 );
-  equal( Bump.Vector3.create( 0, 2, 3 ).max(), 3 );
-  equal( Bump.Vector3.create( 0, 3, -4 ).max(), 3 );
+  equal( Bump.Vector3.create( -1,  0,  0 ).max(),  0 );
+  equal( Bump.Vector3.create(  0, -1,  0 ).max(),  0 );
+  equal( Bump.Vector3.create(  0,  0, -1 ).max(),  0 );
+  equal( Bump.Vector3.create(  0,  2,  3 ).max(),  3 );
+  equal( Bump.Vector3.create(  0,  3, -4 ).max(),  3 );
   equal( Bump.Vector3.create( -1, -3, -2 ).max(), -1 );
 });
 
+module( 'Vector3.furthestAxis' );
 
-test( 'furthestAxis', 7, function() {
+test( 'basic', 7, function() {
   equal( Bump.Vector3.create().furthestAxis(), 2 );
-  equal( Bump.Vector3.create( 1, 0, 0 ).furthestAxis(), 2 );
-  equal( Bump.Vector3.create( 0, 1, 0 ).furthestAxis(), 2 );
-  equal( Bump.Vector3.create( 0, 0, 1 ).furthestAxis(), 1 );
-  equal( Bump.Vector3.create( 0, 2, 3 ).furthestAxis(), 0 );
-  equal( Bump.Vector3.create( 4, 1, -3 ).furthestAxis(), 1 );
+  equal( Bump.Vector3.create(  1,  0,  0 ).furthestAxis(), 2 );
+  equal( Bump.Vector3.create(  0,  1,  0 ).furthestAxis(), 2 );
+  equal( Bump.Vector3.create(  0,  0,  1 ).furthestAxis(), 1 );
+  equal( Bump.Vector3.create(  0,  2,  3 ).furthestAxis(), 0 );
+  equal( Bump.Vector3.create(  4,  1, -3 ).furthestAxis(), 1 );
   equal( Bump.Vector3.create( -2, -3, -1 ).furthestAxis(), 2 );
 });
 
-test( 'furthest', 7, function() {
+module( 'Vector3.furthest' );
+
+test( 'basic', 7, function() {
   equal( Bump.Vector3.create().furthest(), 0 );
-  equal( Bump.Vector3.create( 1, 0, 0 ).furthest(), 0 );
-  equal( Bump.Vector3.create( 0, 1, 0 ).furthest(), 0 );
-  equal( Bump.Vector3.create( 0, 0, 1 ).furthest(), 0 );
-  equal( Bump.Vector3.create( 0, 2, 3 ).furthest(), 0 );
-  equal( Bump.Vector3.create( 4, 1, -3 ).furthest(), 1 );
+  equal( Bump.Vector3.create(  1,  0,  0 ).furthest(), 0 );
+  equal( Bump.Vector3.create(  0,  1,  0 ).furthest(), 0 );
+  equal( Bump.Vector3.create(  0,  0,  1 ).furthest(), 0 );
+  equal( Bump.Vector3.create(  0,  2,  3 ).furthest(), 0 );
+  equal( Bump.Vector3.create(  4,  1, -3 ).furthest(), 1 );
   equal( Bump.Vector3.create( -2, -3, -1 ).furthest(), 1 );
 });
 
 module( 'Vector3.closestAxis' );
+
 test( 'basic', 7, function() {
   equal( Bump.Vector3.create().closestAxis(), 0 );
   equal( Bump.Vector3.create(  0,  1,  1 ).closestAxis(), 1 );
@@ -586,6 +689,7 @@ test( 'basic', 7, function() {
 });
 
 module( 'Vector3.closest' );
+
 test( 'basic', 13, function() {
   testFunc( Bump.Vector3, 'closest', {
     objects: [
@@ -596,123 +700,162 @@ test( 'basic', 13, function() {
       Bump.Vector3.create(  4,  1, -3 ),
       Bump.Vector3.create( -2, -3, -1 )
     ],
-
-    expected: [
-      1,
-      1,
-      1,
-      3,
-      4,
-      3
-    ]
+    expected: [ 1, 1, 1, 3, 4, 3 ]
   });
 });
 
-module( 'Bump.Vector3 math functions' );
+module( 'Vector3.setInterpolate3' );
 
-test( 'setInterpolate3', 5, function() {
+test( 'basic', 10, function() {
   var right = Bump.Vector3.create( 1, 0, 0 ),
       up = Bump.Vector3.create( 0, 1, 0 ),
       forward = Bump.Vector3.create( 0, 0, 1 ),
-      lerped = Bump.Vector3.create(),
-      ret;
+      lerped = Bump.Vector3.create();
 
-  ret = lerped.setInterpolate3( right, up, 0.5 );
-  ok( ret === lerped, "return value references correct vector" );
-  deepEqual( right, Bump.Vector3.create( 1, 0, 0 ), "original unchanged" );
-  ok( lerped.subtractSelf( Bump.Vector3.create( 0.5, 0.5, 0 ) ).fuzzyZero(),
-      "correct result" );
-
-  ret = up.setInterpolate3( up, forward, 0.3 );
-  ok( ret === up, "return value references correct vector" );
-  ok( up.subtractSelf( Bump.Vector3.create( 0, 0.7, 0.3 ) ).fuzzyZero(),
-      "in place: correct result" );
+  testFunc( Bump.Vector3, 'setInterpolate3', {
+    objects: [ lerped, up ],
+    args: [ [ right, up, 0.5 ], [ up, forward, 0.3 ] ],
+    expected: [
+      Bump.Vector3.create( 0.5, 0.5, 0 ),
+      Bump.Vector3.create( 0, 0.699999999999999956, 0.299999999999999989 )
+    ],
+    modifiesSelf: true
+  });
 });
 
-test( 'lerp', 3, function() {
+module( 'Vector3.lerp' );
+
+test( 'basic', 37, function() {
   var right = Bump.Vector3.create( 1, 0, 0 ),
-  up = Bump.Vector3.create( 0, 1, 0 ),
-  forward = Bump.Vector3.create( 0, 0, 1 ),
-  dest = Bump.Vector3.create(),
-  ret;
+      up = Bump.Vector3.create( 0, 1, 0 ),
+      forward = Bump.Vector3.create( 0, 0, 1 );
 
-  ret = right.lerp( up, 0.5, dest );
-  ok( ret === dest, "with destination: return value references correct vector" );
-  ok( dest.subtractSelf( Bump.Vector3.create( 0.5, 0.5, 0 ) ).fuzzyZero(),
-      "with destination: correct result" );
-
-  ret = up.lerp( forward, 0.3 );
-  //ok( ret === up, "return value references correct vector" );
-  ok( ret.subtractSelf( Bump.Vector3.create( 0, 0.7, 0.3 ) ).fuzzyZero(),
-      "without destination: correct result" );
+  testFunc( Bump.Vector3, 'lerp', {
+    objects: [ right, up ],
+    args: [ [ up, 0.5 ], [ forward, 0.3 ] ],
+    expected: [
+      Bump.Vector3.create( 0.5, 0.5, 0 ),
+      Bump.Vector3.create( 0, 0.699999999999999956, 0.299999999999999989 )
+    ],
+    destType: Bump.Vector3
+  });
 });
 
-test( 'equal', 4, function() {
-  ok( Bump.Vector3.create().equal( Bump.Vector3.create() ) );
-  ok( !Bump.Vector3.create( Bump.SIMD_EPSILON, 0, 0 ).equal( Bump.Vector3.create() ) );
-  ok( !Bump.Vector3.create( 0, Bump.SIMD_EPSILON, 0 ).equal( Bump.Vector3.create() ) );
-  ok( !Bump.Vector3.create( 0, 0, Bump.SIMD_EPSILON ).equal( Bump.Vector3.create() ) );
+module( 'Vector3.equal' );
+
+test( 'basic', 13, function() {
+  testFunc( Bump.Vector3, 'equal', {
+    objects: [
+      Bump.Vector3.create(),
+      Bump.Vector3.create( Bump.SIMD_EPSILON, 0, 0 ),
+      Bump.Vector3.create( 0, Bump.SIMD_EPSILON, 0 ),
+      Bump.Vector3.create( 0, 0, Bump.SIMD_EPSILON )
+    ],
+    args: [
+      [ Bump.Vector3.create() ],
+      [ Bump.Vector3.create() ],
+      [ Bump.Vector3.create() ],
+      [ Bump.Vector3.create() ]
+    ],
+    expected: [ true, false, false, false ]
+  });
 });
 
-test( 'notEqual', 4, function() {
-  ok( !Bump.Vector3.create().notEqual( Bump.Vector3.create() ) );
-  ok( Bump.Vector3.create( Bump.SIMD_EPSILON, 0, 0 ).notEqual( Bump.Vector3.create() ) );
-  ok( Bump.Vector3.create( 0, Bump.SIMD_EPSILON, 0 ).notEqual( Bump.Vector3.create() ) );
-  ok( Bump.Vector3.create( 0, 0, Bump.SIMD_EPSILON ).notEqual( Bump.Vector3.create() ) );
+module( 'Vector3.notEqual' );
+
+test( 'basic', 13, function() {
+  testFunc( Bump.Vector3, 'notEqual', {
+    objects: [
+      Bump.Vector3.create(),
+      Bump.Vector3.create( Bump.SIMD_EPSILON, 0, 0 ),
+      Bump.Vector3.create( 0, Bump.SIMD_EPSILON, 0 ),
+      Bump.Vector3.create( 0, 0, Bump.SIMD_EPSILON )
+    ],
+    args: [
+      [ Bump.Vector3.create() ],
+      [ Bump.Vector3.create() ],
+      [ Bump.Vector3.create() ],
+      [ Bump.Vector3.create() ]
+    ],
+    expected: [ false, true, true, true ]
+  });
 });
 
-test( 'setMax', 2, function() {
-  var v = Bump.Vector3.create( 1, 4, 9 ),
-  ret;
+module( 'Vector3.setMax' );
 
-  ret = v.setMax( Bump.Vector3.create( 5, 1, 9 ) );
-  ok( ret === v, "return value has correct reference" );
-  deepEqual( v, Bump.Vector3.create( 5, 4, 9 ), "correct result" );
+test( 'basic', 4, function() {
+  var v0 = Bump.Vector3.create( 1, 4, 9 );
+
+  testFunc( Bump.Vector3, 'setMax', {
+    objects: v0,
+    args: [ [ Bump.Vector3.create( 5, 1, 9 ) ] ],
+    expected: [ Bump.Vector3.create( 5, 4, 9 ) ],
+    modifiesSelf: true
+  });
 });
 
-test( 'setMin', 2, function() {
-  var v = Bump.Vector3.create( 1, 4, 9 ),
-  ret;
+module( 'Vector3.setMin' );
 
-  ret = v.setMin( Bump.Vector3.create( 5, 1, 9 ) );
-  ok( ret === v, "return value has correct reference" );
-  deepEqual( v, Bump.Vector3.create( 1, 1, 9 ), "correct result" );
+test( 'basic', 4, function() {
+  var v0 = Bump.Vector3.create( 1, 4, 9 );
+
+  testFunc( Bump.Vector3, 'setMin', {
+    objects: v0,
+    args: [ [ Bump.Vector3.create( 5, 1, 9 ) ] ],
+    expected: [ Bump.Vector3.create( 1, 1, 9 ) ],
+    modifiesSelf: true
+  });
 });
 
-test( 'setValue', 2, function() {
-  var v = Bump.Vector3.create( 1, 4, 9 ),
-  ret;
+module( 'Vector3.setValue' );
 
-  v.w = 7; // w value should get set to 0 by setValue() method
+test( 'basic', 6, function() {
+  var v = Bump.Vector3.create( 1, 4, 9, 7 );
 
-  ret = v.setValue( 5, 1, 9 );
-  ok( ret === v, "return value has correct reference" );
-  deepEqual( v, Bump.Vector3.create( 5, 1, 9 ), "correct result" );
+  testFunc( Bump.Vector3, 'setValue', {
+    objects: v,
+    args: [ [ 5, 1, 9 ] ],
+    expected: [ Bump.Vector3.create( 5, 1, 9 ) ],
+    modifiesSelf: true
+  });
 });
 
-test( 'getSkewSymmetricMatrix', 80, function() {
-  var v0 = Bump.Vector3.create(),
-  v1 = Bump.Vector3.create(),
-  v2 = Bump.Vector3.create(),
-  vec,
-  x,
-  y,
-  z;
+module( 'Vector3.getSkewSymmetricMatrix' );
 
-  for ( var i = 0; i < 20; i++ ) {
-    x = Math.random();
-    y = Math.random();
-    z = Math.random();
-    vec = Bump.Vector3.create( x, y, z );
-    vec.getSkewSymmetricMatrix( v0, v1, v2 );
-    deepEqual( vec, Bump.Vector3.create( x, y, z ), "context vector unchanged" );
-    deepEqual( v0, Bump.Vector3.create( 0, -z, y ), "matrix column 0 correct" );
-    deepEqual( v1, Bump.Vector3.create( z, 0, -x ), "matrix column 1 correct" );
-    deepEqual( v2, Bump.Vector3.create( -y, x, 0 ), "matrix column 2 correct" );
+test( 'basic', 101, function() {
+  var objects = [];
+  var args = [];
+  for ( var i = 0; i < 20; ++i ) {
+    var argSet = [];
+    var x = Math.random();
+    var y = Math.random();
+    var z = Math.random();
+
+    objects.push( Bump.Vector3.create( x, y, z ) );
+    argSet.push({
+      param: Bump.Vector3.create(),
+      expected: Bump.Vector3.create( 0, -z, y )
+    });
+    argSet.push({
+      param: Bump.Vector3.create(),
+      expected: Bump.Vector3.create( z, 0, -x )
+    });
+    argSet.push({
+      param: Bump.Vector3.create(),
+      expected: Bump.Vector3.create( -y, x, 0 )
+    });
+    args.push( argSet );
   }
+
+  testFunc( Bump.Vector3, 'getSkewSymmetricMatrix', {
+    objects: objects,
+    args: args
+  });
 });
 
-test( 'setZero', 10, function() {
+module( 'Vector3.setZero' );
+
+test( 'basic', 10, function() {
   for ( var i = 0; i < 5; i++ ) {
     var v = Bump.Vector3.create( Math.random(), Math.random(), Math.random() ),
     ret = v.setZero();
@@ -721,7 +864,9 @@ test( 'setZero', 10, function() {
   }
 });
 
-test( 'isZero (and setZero)', 6, function() {
+module( 'Vector3.isZero' );
+
+test( 'basic', 6, function() {
   var v = Bump.Vector3.create();
 
   ok( v.isZero() );
@@ -733,17 +878,18 @@ test( 'isZero (and setZero)', 6, function() {
   ok( !v.isZero() );
   v.setZero();
   ok( v.isZero() );
-
 });
 
-test( 'fuzzyZero', 7, function() {
+module( 'Vector3.fuzzyZero' );
+
+test( 'basic', 7, function() {
   ok( Bump.Vector3.create( 0, 0, 0 ).fuzzyZero() );
   ok( !Bump.Vector3.create( Math.sqrt( Bump.SIMD_EPSILON ), 0, 0 ).fuzzyZero() );
   ok( !Bump.Vector3.create( 0, Math.sqrt( Bump.SIMD_EPSILON ), 0 ).fuzzyZero() );
   ok( !Bump.Vector3.create( 0, 0, Math.sqrt( Bump.SIMD_EPSILON ) ).fuzzyZero() );
   ok( Bump.Vector3.create( Bump.SIMD_EPSILON, 0, 0 ).fuzzyZero() );
   ok( Bump.Vector3.create( 0, Bump.SIMD_EPSILON, 0 ).fuzzyZero() );
-  ok( Bump.Vector3.create( 0, 0, Bump.SIMD_EPSILON).fuzzyZero() );
+  ok( Bump.Vector3.create( 0, 0, Bump.SIMD_EPSILON ).fuzzyZero() );
 });
 
 module( 'Vector4' );

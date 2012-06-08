@@ -11,16 +11,6 @@
       this.el0 = Bump.Vector3.create( xx, xy, xz );
       this.el1 = Bump.Vector3.create( yx, yy, yz );
       this.el2 = Bump.Vector3.create( zx, zy, zz );
-
-      this.el = [
-        Bump.Vector3.create( xx, xy, xz ),
-        Bump.Vector3.create( yx, yy, yz ),
-        Bump.Vector3.create( zx, zy, zz )
-      ];
-
-      this.setValue( xx, xy, xz,
-                     yx, yy, yz,
-                     zx, zy, zz );
     },
 
     // ## Properties
@@ -52,26 +42,16 @@
       // Clones `this` matrix into `dest`.
       clone: function( dest ) {
         dest = dest || Bump.Matrix3x3.create();
-        return dest.setValue(
-          this.el0.x, this.el0.y, this.el0.z,
-          this.el1.x, this.el1.y, this.el1.z,
-          this.el2.x, this.el2.y, this.el2.z
-        );
+        dest.el0.assign( this.el0 );
+        dest.el1.assign( this.el1 );
+        dest.el2.assign( this.el2 );
+        return dest;
       },
 
       assign: function( other ) {
         this.el0.assign( other.el0 );
         this.el1.assign( other.el1 );
         this.el2.assign( other.el2 );
-
-        for ( var i = 0; i < 3; ++i ) {
-          this.el[i].assign( other.el[i] );
-        }
-
-        this.setValue( other.m11, other.m12, other.m13,
-                       other.m21, other.m22, other.m23,
-                       other.m31, other.m32, other.m33 );
-
         return this;
       },
 
@@ -108,16 +88,6 @@
         this.el1.setValue( yx, yy, yz );
         this.el2.setValue( zx, zy, zz );
 
-        this.el[0].setValue( xx, xy, xz );
-        this.el[1].setValue( yx, yy, yz );
-        this.el[2].setValue( zx, zy, zz );
-
-        this.m11 = xx; this.m12 = xy; this.m13 = xz;
-        this.m21 = yx; this.m22 = yy; this.m23 = yz;
-        this.m31 = zx; this.m32 = zy; this.m33 = zz;
-
-        this.m = [ xx, xy, xz, yx, yy, yz, zx, zy, zz ];
-
         return this;
       },
 
@@ -130,13 +100,12 @@
 
       // Set `this` matrix to be a rotation matrix from `quat` quaternion.
       setRotation: function( quat ) {
-        var d = quat.length2();
-        // `btFullAssert( d !== 0 );`
-        var s = 2 / d,
-            xs = quat.x * s,  ys = quat.y * s,  zs = quat.z * s,
-            wx = quat.w * xs, wy = quat.w * ys, wz = quat.w * zs,
-            xx = quat.x * xs, xy = quat.x * ys, xz = quat.x * zs,
-            yy = quat.y * ys, yz = quat.y * zs, zz = quat.z * zs;
+        var d  = quat.length2();
+        var s  = 2 / d;
+        var xs = quat.x * s,  ys = quat.y * s,  zs = quat.z * s;
+        var wx = quat.w * xs, wy = quat.w * ys, wz = quat.w * zs;
+        var xx = quat.x * xs, xy = quat.x * ys, xz = quat.x * zs;
+        var yy = quat.y * ys, yz = quat.y * zs, zz = quat.z * zs;
 
         return this.setValue(
           1 - ( yy + zz ), xy - wz, xz + wy,
@@ -154,16 +123,16 @@
       // Set `this` matrix to be a rotation matrix calculated from the given
       // Euler angles. The Euler angles are applied in ZYX order.
       setEulerZYX: function( eulerX, eulerY, eulerZ ) {
-        var ci = Math.cos( eulerX ),
-            cj = Math.cos( eulerY ),
-            ch = Math.cos( eulerZ ),
-            si = Math.sin( eulerX ),
-            sj = Math.sin( eulerY ),
-            sh = Math.sin( eulerZ ),
-            cc = ci * ch,
-            cs = ci * sh,
-            sc = si * ch,
-            ss = si * sh;
+        var ci = Math.cos( eulerX );
+        var cj = Math.cos( eulerY );
+        var ch = Math.cos( eulerZ );
+        var si = Math.sin( eulerX );
+        var sj = Math.sin( eulerY );
+        var sh = Math.sin( eulerZ );
+        var cc = ci * ch;
+        var cs = ci * sh;
+        var sc = si * ch;
+        var ss = si * sh;
 
         return this.setValue(
           cj * ch, sj * sc - cs, sj * cc + ss,
@@ -175,9 +144,9 @@
       getRotation: function( dest ) {
         dest = dest || Bump.Quaternion.create();
 
-        var trace = this.el0.x + this.el1.y + this.el2.z,
-            temp = new Array( 4 ),
-            s;
+        var trace = this.el0.x + this.el1.y + this.el2.z;
+        var temp = new Array( 4 );
+        var s;
 
         if ( trace > 0 ) {
           s = Math.sqrt( trace + 1 );
@@ -189,10 +158,10 @@
           temp[2] = ( ( this.el1.x - this.el0.y ) * s );
         } else {
           var i = this.el0.x < this.el1.y ?
-                ( this.el1.y < this.el2.z ? 2 : 1 ) :
-                ( this.el0.x < this.el2.z ? 2 : 0 ),
-              j = ( i + 1 ) % 3,
-              k = ( i + 2 ) % 3;
+            ( this.el1.y < this.el2.z ? 2 : 1 ) :
+            ( this.el0.x < this.el2.z ? 2 : 0 );
+          var j = ( i + 1 ) % 3;
+          var k = ( i + 2 ) % 3;
 
           s = Math.sqrt( this[i][i] - this[j][j] - this[k][k] + 1 );
           temp[i] = s * 0.5;
@@ -256,7 +225,7 @@
           // from difference of angles formula
           var delta = Math.atan2( this.el0.x, this.el0.z );
 
-          //gimbal locked up
+          // gimbal locked up
           if ( this.el2.x  > 0 ) {
             eulerOut1.pitch = Math.PI / 2;
             eulerOut2.pitch = Math.PI / 2;
@@ -277,8 +246,8 @@
           eulerOut1.pitch = - Math.asin( this.el2.x );
           eulerOut2.pitch = Math.PI - eulerOut1.pitch;
 
-          var cp1 = Math.cos( eulerOut1.pitch ),
-              cp2 = Math.cos( eulerOut2.pitch );
+          var cp1 = Math.cos( eulerOut1.pitch );
+          var cp2 = Math.cos( eulerOut2.pitch );
 
           eulerOut1.roll = Math.atan2( this.el2.y / cp1, this.el2.z / cp1 );
           eulerOut2.roll = Math.atan2( this.el2.y / cp2, this.el2.z / cp2 );
@@ -493,13 +462,13 @@
         dest = dest || Bump.Matrix3x3.create();
 
         var co = Bump.Vector3.create(
-              this.cofac( 1, 1, 2, 2 ),
-              this.cofac( 1, 2, 2, 0 ),
-              this.cofac( 1, 0, 2, 1 )
-            ),
-            det = this.el0.dot( co );
+          this.cofac( 1, 1, 2, 2 ),
+          this.cofac( 1, 2, 2, 0 ),
+          this.cofac( 1, 0, 2, 1 )
+        );
+        var det = this.el0.dot( co );
 
-        // btFullAssert( det !== 0);
+        // Bump.FullAssert( det !== 0);
         var s = 1 / det;
         return dest.setValue(
           co.x * s, this.cofac( 0, 2, 2, 1 ) * s, this.cofac( 0, 1, 1, 2 ) * s,
@@ -527,10 +496,10 @@
         var step;
         for ( step = maxSteps; step > 0; --step ) {
           // Find off-diagonal element `[p][q]` with largest magnitude
-          var p = 0, q = 1, r = 2,
+          var p = 0, q = 1, r = 2;
 
-              max = Math.abs( this.el0.y ),
-              v   = Math.abs( this.el0.z );
+          var max = Math.abs( this.el0.y );
+          var v   = Math.abs( this.el0.z );
 
           if ( v > max ) {
             q = 2;
@@ -556,11 +525,10 @@
 
           // Compute Jacobi rotation J which leads to a zero for element
           // `[p][q]`
-          var mpq = this[p][q],
-              theta = ( this[q][q] - this[p][p] ) / ( 2 * mpq ),
-              theta2 = theta * theta,
-              cos,
-              sin;
+          var mpq = this[p][q];
+          var theta = ( this[q][q] - this[p][p] ) / ( 2 * mpq );
+          var theta2 = theta * theta;
+          var cos, sin;
 
           if ( theta2 * theta2 < ( 10 / EPSILON ) ) {
             t = ( theta >= 0 ) ?
@@ -582,8 +550,8 @@
           this[p][p] -= t * mpq;
           this[q][q] += t * mpq;
 
-          var mrp = this[r][p],
-              mrq = this[r][q];
+          var mrp = this[r][p];
+          var mrq = this[r][q];
 
           this[r][p] = this[p][r] = cos * mrp - sin * mrq;
           this[r][q] = this[q][r] = cos * mrq + sin * mrp;
@@ -632,16 +600,6 @@
         this.el0 = Bump.Vector3.clone( vecA );
         this.el1 = Bump.Vector3.clone( vecB );
         this.el2 = Bump.Vector3.clone( vecC );
-
-        this.el = [
-          Bump.Vector3.clone( vecA ),
-          Bump.Vector3.clone( vecB ),
-          Bump.Vector3.clone( vecC )
-        ];
-
-        this.setValue( vecA.x, vecA.y, vecA.z,
-                       vecB.x, vecB.y, vecB.z,
-                       vecC.x, vecC.y, vecC.z );
       }
     },
 

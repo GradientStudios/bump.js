@@ -3,8 +3,8 @@
   // not sure that this needs to be globally accessible through Bump
   Bump.GetConstraintIslandId = function( lhs ) {
     var islandId = 0,
-    rcolObj0 = lhs.getRigidBodyA(), /* const btCollisionObject& */
-    rcolObj1 = lhs.getRigidBodyB(); /* const btCollisionObject& */
+        rcolObj0 = lhs.getRigidBodyA(), // const btCollisionObject&
+        rcolObj1 = lhs.getRigidBodyB(); // const btCollisionObject&
     islandId = rcolObj0.getIslandTag() >= 0 ? rcolObj0.getIslandTag() : rcolObj1.getIslandTag();
     return islandId;
   };

@@ -206,7 +206,7 @@
       // Sets `this` rotation given an `axis` and `angle` in radians.
       setRotation: function( axis, angle ) {
         var d = axis.length();
-        // btAssert( d != 0 );
+        Bump.Assert( d !== 0 );
         var s = Math.sin( angle * 0.5 ) / d;
         return this.setValue( axis.x * s, axis.y * s, axis.z * s, Math.cos( angle * 0.5 ) );
       },
@@ -352,14 +352,14 @@
       },
 
       divideScalar: function( s, dest ) {
-        // btAssert( s !== 0 );
+        Bump.Assert( s !== 0 );
         dest = dest || Bump.Quaternion.create();
         var i = 1 / s;
         return dest.setValue( this.x * i, this.y * i, this.z * i, this.w * i );
       },
 
       divideScalarSelf: function( s ) {
-        // `btAssert( s !== 0 );`
+        Bump.Assert( s !== 0 );
         var i = 1 / s;
         return this.setValue( this.x * i, this.y * i, this.z * i, this.w * i );
       },
@@ -390,7 +390,7 @@
       // Get the angle between `this` quaternion and the quaternion `quat`.
       angle: function( quat ) {
         var s = Math.sqrt( this.length2() * quat.length2() );
-        // `btAssert( s !== 0 );`
+        Bump.Assert( s !== 0 );
         return Bump.Acos( this.dot( quat ) / s );
       },
 

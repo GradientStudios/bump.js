@@ -72,7 +72,7 @@
         aabbMin.setMin( triangle[2] );
         aabbMax.setMax( triangle[2] );
 
-        //PCK: add these checks for zero dimensions of aabb
+        // PCK: add these checks for zero dimensions of aabb
         var MIN_AABB_DIMENSION = 0.002;
         var MIN_AABB_HALF_DIMENSION = 0.001;
 
@@ -155,10 +155,10 @@
           subtree.subtreeSize[0] = this.quantizedContiguousNodes.at(0).isLeafNode() ? 1 : this.quantizedContiguousNodes.at(0).getEscapeIndex();
         }
 
-        //PCK: update the copy of the size
+        // PCK: update the copy of the size
         this.subtreeHeaderCount = this.SubtreeHeaders.length;
 
-        //PCK: clear m_quantizedLeafNodes and m_leafNodes, they are temporary
+        // PCK: clear m_quantizedLeafNodes and m_leafNodes, they are temporary
         this.quantizedLeafNodes.clear();
         // this.leafNodes.clear();
         this.leafNodes.length = 0;

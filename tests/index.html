@@ -18,6 +18,9 @@
   <script src="../src/LinearMath/MotionState.js"></script>
   <script src="../src/LinearMath/DefaultMotionState.js"></script>
 
+  <script src="../src/BulletCollision/NarrowPhaseCollision/RaycastCallback.js"></script>
+  <script src="../src/BulletCollision/NarrowPhaseCollision/ConvexCast.js"></script>
+  <script src="../src/BulletCollision/NarrowPhaseCollision/SubSimplexConvexCast.js"></script>
   <script src="../src/BulletCollision/NarrowPhaseCollision/DiscreteCollisionDetectorInterface.js"></script>
   <script src="../src/BulletCollision/NarrowPhaseCollision/ManifoldPoint.js"></script>
   <script src="../src/BulletCollision/NarrowPhaseCollision/PersistentManifold.js"></script>
@@ -92,6 +95,9 @@
   <!-- qunit js and css -->
   <script src="qunit/qunit/qunit.js"></script>
   <link rel="Stylesheet" media="screen" href="qunit/qunit/qunit.css" />
+
+  <!-- helper functions for testing -->
+  <script src="unit/test.helpers.js"></script>
 
   <!-- tests -->
   <script src="unit/test.bump.js"></script>

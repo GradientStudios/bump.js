@@ -7,8 +7,8 @@
 
     init: function CollisionPairCallback( dispatchInfo, dispatcher ) {
       this._super();
-      this.dispatchInfo = dispatchInfo || null; /* const btDispatcherInfo& */
-      this.dispatcher = dispatcher || null; /* btCollisionDispatcher* */
+      this.dispatchInfo = dispatchInfo || null; // const btDispatcherInfo&
+      this.dispatcher = dispatcher || null; // btCollisionDispatcher*
     },
 
     members: {

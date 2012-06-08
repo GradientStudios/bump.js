@@ -169,7 +169,7 @@
       },
 
       getPreferredPenetrationDirection: function( index, penetrationVector ) {
-        // `btAssert( 0 );`
+        Bump.Assert( false );
         return this;
       }
 
