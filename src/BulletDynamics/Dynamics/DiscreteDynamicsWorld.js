@@ -25,18 +25,160 @@
     }
   });
 
+  Bump.InplaceSolverIslandCallback = Bump.type({
+    parent: Bump.SimulationIslandManager.IslandCallback,
+
+    init: function InplaceSolverIslandCallback( solver, stackAlloc, dispatcher ) {
+      this._super();
+
+      // Initializer list
+      this.solverInfo = null;
+      this.solver = solver;
+      this.sortedConstraints = null;
+      this.numConstraints = 0;
+      this.debugDrawer = null;
+      this.stackAlloc = stackAlloc;
+      this.dispatcher = dispatcher;
+      // End initializer list
+
+      // Default initializers
+      this.bodies = [];
+      this.manifolds = [];
+      this.constraints = [];
+      // End default initializers
+
+      return this;
+    },
+
+    members: {
+      clone: function( dest ) {
+        Bump.Assert( false );
+        return dest;
+      },
+
+      assign: function( other ) {
+        Bump.Assert( false );
+        return this;
+      },
+
+      setup: function( solverInfo, sortedConstraints, numConstraints, debugDrawer ) {
+        Bump.Assert( solverInfo );
+        this.solverInfo = solverInfo;
+        this.sortedConstraints = sortedConstraints;
+        this.numConstraints = numConstraints;
+        this.debugDrawer = debugDrawer;
+        Bump.resize( this.bodies, 0 );
+        Bump.resize( this.manifolds, 0 );
+        Bump.resize( this.constraints, 0 );
+      },
+
+      processIsland: function( bodies, numBodies, manifolds, numManifolds, islandId ) {
+        if ( islandId < 0 ) {
+          if ( numManifolds + this.numConstraints ) {
+            // We don't split islands, so all constraints/contact
+            // manifolds/bodies are passed into the solver regardless the
+            // island id
+            this.solver.solveGroup(
+              bodies, numBodies,
+              manifolds, numManifolds,
+              this.sortedConstraints[0], this.numConstraints,
+              this.solverInfo,
+              this.debugDrawer,
+              this.stackAlloc,
+              this.dispatcher
+            );
+          }
+        } else {
+          // Also add all non-contact constraints/joints for this island
+          var startConstraint = null;
+          var numCurConstraints = 0;
+          var i;
+
+          // Find the first constraint for this island
+          for ( i = 0; i < this.numConstraints; ++i ) {
+            if ( Bump.GetConstraintIslandId( this.sortedConstraints[i] ) === islandId ) {
+              startConstraint = this.sortedConstraints.slice( i );
+              break;
+            }
+          }
+
+          // Count the number of constraints in this island
+          for ( ; i < this.numConstraints; ++i ) {
+            if ( Bump.GetConstraintIslandId( this.sortedConstraints[i] ) === islandId ) {
+              ++numCurConstraints;
+            }
+          }
+
+          if ( this.solverInfo.minimumSolverBatchSize <= 1 ) {
+            // Only call `solveGroup` if there is some work: avoid virtual
+            // function call, its overhead can be excessive.
+            if ( numManifolds + numCurConstraints ) {
+              this.solver.solveGroup(
+                bodies, numBodies,
+                manifolds, numManifolds,
+                startConstraint, numCurConstraints,
+                this.solverInfo,
+                this.debugDrawer,
+                this.stackAlloc,
+                this.dispatcher
+              );
+            }
+          } else {
+
+            for ( i = 0; i < numBodies; ++i ) {
+              this.bodies.push( bodies[i] );
+            }
+
+            for ( i = 0; i < numManifolds; ++i ) {
+              this.manifolds.push( manifolds[i] );
+            }
+
+            for ( i = 0; i < numCurConstraints; ++i ) {
+              this.constraints.push( startConstraint[i] );
+            }
+
+            if ( ( this.constraints.length + this.manifolds.length ) > this.solverInfo.minimumSolverBatchSize ) {
+              this.processConstraints();
+            }
+
+          }
+        }
+      },
+
+      processConstraints: function() {
+        if ( this.manifolds.length + this.constraints.length > 0 ) {
+          var bodies = this.bodies.length ? this.bodies : null;
+          var manifold = this.manifolds.length ? this.manifolds : null;
+          var constraints = this.constraints.length ? this.constraints : null;
+
+          this.solver.solveGroup( bodies, this.bodies.length, manifold, this.manifolds.length, constraints, this.constraints.length, this.solverInfo, this.debugDrawer, this.stackAlloc, this.dispatcher );
+        }
+
+        this.bodies.length = 0;
+        this.manifolds.length = 0;
+        this.constraints.length = 0;
+      }
+
+    }
+  });
+
   Bump.DiscreteDynamicsWorld = Bump.type({
     parent: Bump.DynamicsWorld,
 
     init: function DiscreteDynamicsWorld( dispatcher, pairCache, constraintSolver, collisionConfiguration ) {
       this._super( dispatcher, pairCache, collisionConfiguration );
 
+      // Initializer list
       this.constraintSolver = constraintSolver;
       this.gravity = Bump.Vector3.create( 0, -10, 0 );
       this.localTime = 0;
       this.synchronizeAllMotionStates = false;
       this.profileTimings = 0;
+      this.sortedConstraints = [];
+      this.solverIslandCallback = null;
+      // End initializer list
 
+      // Default initializers
       this.islandManager = null;
       this.constraints = [];
       this.nonStaticRigidBodies = [];
@@ -45,7 +187,9 @@
       this.ownsConstraintSolver = false;
 
       this.actions = [];
+      // End default initializers
 
+      // Start constructor body
       if ( this.constraintSolver === null ) {
         this.constraintSolver = Bump.SequentialImpulseConstraintSolver.create();
         this.ownsConstraintSolver = true;
@@ -54,7 +198,10 @@
       }
 
       this.islandManager = Bump.SimulationIslandManager.create();
+
       this.ownsIslandManager = true;
+
+      this.solverIslandCallback = Bump.InplaceSolverIslandCallback.create( constraintSolver, this.stackAlloc, dispatcher );
 
       return this;
     },
@@ -63,6 +210,10 @@
       destruct: function() {
         if ( this.ownsIslandManager ) {
           this.islandManager.destruct();
+        }
+
+        if ( this.solverIslandCallback ) {
+          this.solverIslandCallback.destruct();
         }
 
         if ( this.ownsConstraintSolver ) {
@@ -424,18 +575,21 @@
         var i, numConstraints = this.constraints.length;
 
         for ( i = 0; i < numConstraints; ++i ) {
-          var constraint = this.constraints[i],
-              colObj0 = constraint.getRigidBodyA(),
-              colObj1 = constraint.getRigidBodyB();
+          var constraint = this.constraints[i];
 
-          if (( (colObj0 !== null) && (!colObj0.isStaticOrKinematicObject()) ) &&
-              ( (colObj1 !== null) && (!colObj1.isStaticOrKinematicObject()) ))
-          {
-            if ( colObj0.isActive() || colObj1.isActive() ) {
-              this.getSimulationIslandManager().getUnionFind().unite(
-                colObj0.getIslandTag(),
-                colObj1.getIslandTag()
-              );
+          if ( constraint.isEnabled() ) {
+            var colObj0 = constraint.getRigidBodyA();
+            var colObj1 = constraint.getRigidBodyB();
+
+            if (( (colObj0 !== null) && (!colObj0.isStaticOrKinematicObject()) ) &&
+                ( (colObj1 !== null) && (!colObj1.isStaticOrKinematicObject()) ))
+            {
+              if ( colObj0.isActive() || colObj1.isActive() ) {
+                this.getSimulationIslandManager().getUnionFind().unite(
+                  colObj0.getIslandTag(),
+                  colObj1.getIslandTag()
+                );
+              }
             }
           }
         }
@@ -444,145 +598,31 @@
         this.getSimulationIslandManager().storeIslandActivationState( this.getCollisionWorld() );
       },
 
-      solveConstraints: (function() {
-        var InplaceSolverIslandCallback = Bump.type({
-          parent: Bump.SimulationIslandManager.IslandCallback,
+      solveConstraints: function( solverInfo ) {
+        var m_sortedConstraints = this.sortedConstraints;
+        var m_constraints = this.constraints;
+        var m_solverIslandCallback = this.solverIslandCallback;
 
-          init: function InplaceSolverIslandCallback(
-            solverInfo,
-            solver,
-            sortedConstraints,
-            numConstraints,
-            debugDrawer,
-            stackAlloc,
-            dispatcher
-          ) {
-            this._super();
+        Bump.resize( m_sortedConstraints, m_constraints.length, Bump.TypedConstraint.create() );
+        var i;
+        for ( i = 0; i < this.getNumConstraints(); ++i ) {
+          m_sortedConstraints[i] = m_constraints[i];
+        }
 
-            this.solverInfo = solverInfo;
-            this.solver = solver;
-            this.sortedConstraints = sortedConstraints;
-            this.numConstraints = numConstraints;
-            this.debugDrawer = debugDrawer;
-            this.stackAlloc = stackAlloc;
-            this.dispatcher = dispatcher;
+        Bump.quickSort( m_sortedConstraints, Bump.SortConstraintOnIslandPredicate.create() );
 
-            this.bodies = [];
-            this.manifolds = [];
-            this.constraints = [];
+        var constraintsPtr = this.getNumConstraints() ? m_sortedConstraints : null;
 
-            return this;
-          },
+        m_solverIslandCallback.setup( solverInfo, constraintsPtr, m_sortedConstraints.length, this.getDebugDrawer() );
+        this.constraintSolver.prepareSolve( this.getCollisionWorld().getNumCollisionObjects(), this.getCollisionWorld().getDispatcher().getNumManifolds() );
 
-          members: {
-            clone: function( dest ) {
-              Bump.Assert( false );
-              return dest;
-            },
+        // Solve all the constraints for this island.
+        this.islandManager.buildAndProcessIslands( this.getCollisionWorld().getDispatcher(), this.getCollisionWorld(), m_solverIslandCallback );
 
-            assign: function( other ) {
-              Bump.Assert( false );
-              return this;
-            },
+        m_solverIslandCallback.processConstraints();
 
-            ProcessIsland: function( bodies, numBodies, manifolds, numManifolds, islandId ) {
-              if ( islandId < 0 ) {
-                if ( numManifolds + this.numConstraints ) {
-                  // We don't split islands, so all constraints/contact
-                  // manifolds/bodies are passed into the solver regardless the
-                  // island id
-                  this.solver.solveGroup( bodies, numBodies, manifolds, numManifolds, this.sortedConstraints[0], this.numConstraints, this.solverInfo, this.debugDrawer, this.stackAlloc, this.dispatcher );
-                }
-              } else {
-                // Also add all non-contact constraints/joints for this island
-                var startConstraint = null;
-                var numCurConstraints = 0;
-                var i;
-
-                // Find the first constraint for this island
-                for ( i = 0; i < this.numConstraints; ++i ) {
-                  if ( Bump.GetConstraintIslandId( this.sortedConstraints[i] ) === islandId ) {
-                    startConstraint = this.sortedConstraints.slice( i );
-                    break;
-                  }
-                }
-
-                // Count the number of constraints in this island
-                for ( ; i < this.numConstraints; ++i ) {
-                  if ( Bump.GetConstraintIslandId( this.sortedConstraints[i] ) === islandId ) {
-                    ++numCurConstraints;
-                  }
-                }
-
-                if ( this.solverInfo.minimumSolverBatchSize <= 1 ) {
-                  // Only call `solveGroup` if there is some work: avoid virtual
-                  // function call, its overhead can be excessive.
-                  if ( numManifolds + numCurConstraints ) {
-                    this.solver.solveGroup( bodies, numBodies, manifolds, numManifolds, startConstraint, numCurConstraints, this.solverInfo, this.debugDrawer, this.stackAlloc, this.dispatcher );
-                  }
-                } else {
-                  for ( i = 0; i < numBodies; ++i ) {
-                    this.bodies.push( bodies[i] );
-                  }
-                  for ( i = 0; i < numManifolds; ++i ) {
-                    this.manifolds.push( manifolds[i] );
-                  }
-                  for ( i = 0; i < numCurConstraints; ++i ) {
-                    this.constraints.push( startConstraint[i] );
-                  }
-                  if ( ( this.constraints.length + this.manifolds.length ) > this.solverInfo.minimumSolverBatchSize ) {
-                    this.processConstraints();
-                  }
-
-                  //    else {
-                  //      console.log( 'deferred' );
-                  //    }
-                }
-              }
-            },
-
-            processConstraints: function() {
-              if ( this.manifolds.length + this.constraints.length > 0 ) {
-                var bodies = this.bodies.length ? this.bodies : null;
-                var manifold = this.manifolds.length ? this.manifolds : null;
-                var constraints = this.constraints.length ? this.constraints : null;
-
-                this.solver.solveGroup( bodies, this.bodies.length, manifold, this.manifolds.length, constraints, this.constraints.length, this.solverInfo, this.debugDrawer, this.stackAlloc, this.dispatcher );
-              }
-
-              this.bodies.length = 0;
-              this.manifolds.length = 0;
-              this.constraints.length = 0;
-            }
-
-          }
-        });
-
-        return function( solverInfo ) {
-          // Sorted version of all `TypedConstraint`, based on `islandId`
-          var sortedConstraints = [];
-          Bump.resize( sortedConstraints, this.constraints.length, Bump.TypedConstraint.create() );
-          var i;
-          for ( i = 0; i < this.getNumConstraints(); ++i ) {
-            sortedConstraints[i] = this.constraints[i];
-          }
-
-          Bump.quickSort( sortedConstraints, Bump.SortConstraintOnIslandPredicate.create() );
-
-          var constraintsPtr = this.getNumConstraints() ? sortedConstraints : null;
-
-          var solverCallback = InplaceSolverIslandCallback.create( solverInfo, this.constraintSolver, constraintsPtr, sortedConstraints.length, this.debugDrawer, this.stackAlloc, this.dispatcher1 );
-
-          this.constraintSolver.prepareSolve( this.getCollisionWorld().getNumCollisionObjects(), this.getCollisionWorld().getDispatcher().getNumManifolds() );
-
-          // Solve all the constraints for this island.
-          this.islandManager.buildAndProcessIslands( this.getCollisionWorld().getDispatcher(), this.getCollisionWorld(), solverCallback );
-
-          solverCallback.processConstraints();
-
-          this.constraintSolver.allSolved( solverInfo, this.debugDrawer, this.stackAlloc );
-        };
-      })(),
+        this.constraintSolver.allSolved( solverInfo, this.debugDrawer, this.stackAlloc );
+      },
 
       updateActivationState: function( timeStep ) {
         var zero = Bump.Vector3.create( 0, 0, 0 );

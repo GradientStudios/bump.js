@@ -445,35 +445,31 @@
         return quat.negate( dest );
       },
 
-      slerp: function( quat, t, dest ) {
-        dest = dest || Bump.Quaternion.create();
+      slerp: function( q, t, dest ) {
+        if ( !dest ) { dest = Bump.Quaternion.create(); }
 
-        var theta = this.angle( quat );
-        if ( theta !== 0 ) {
-          var d = 1 / Math.sin( theta ),
-              s0 = Math.sin( ( 1 - t ) * theta ),
-              s1 = Math.sin( t * theta );
+        var magnitude = Math.sqrt( this.length2() * q.length2() );
+        Bump.Assert( magnitude > 0 );
 
-          // Take care of long angle case.
-          // See [Slerp](http://en.wikipedia.org/wiki/Slerp).
-          if ( this.dot( quat ) < 0 ) {
-            return dest.setValue(
-              ( this.x * s0 + -quat.x * s1 ) * d,
-              ( this.y * s0 + -quat.y * s1 ) * d,
-              ( this.z * s0 + -quat.z * s1 ) * d,
-              ( this.w * s0 + -quat.w * s1 ) * d
-            );
-          }
+        var product = this.dot( q ) / magnitude;
+        if ( Math.abs( product ) !== 1 ) {
+          // Take care of long angle case see http://en.wikipedia.org/wiki/Slerp
+          var sign = ( product < 0 ) ? -1 : 1;
+
+          var theta = Bump.Acos( sign * product );
+          var s1 = Math.sin( sign * t * theta );
+          var d = 1 / Math.sin( theta );
+          var s0 = Math.sin( ( 1 - t ) * theta );
 
           return dest.setValue(
-            ( this.x * s0 + quat.x * s1 ) * d,
-            ( this.y * s0 + quat.y * s1 ) * d,
-            ( this.z * s0 + quat.z * s1 ) * d,
-            ( this.w * s0 + quat.w * s1 ) * d
+            ( this.x * s0 + q.x * s1 ) * d,
+            ( this.y * s0 + q.y * s1 ) * d,
+            ( this.z * s0 + q.z * s1 ) * d,
+            ( this.w * s0 + q.w * s1 ) * d
           );
+        } else {
+          return this.clone( dest );
         }
-
-        return this.clone( dest );
       }
     },
 

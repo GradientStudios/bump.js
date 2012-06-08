@@ -116,7 +116,7 @@
         if ( !this.splitIslands ) {
           var manifold = dispatcher.getInternalManifoldPointer();
           var maxNumManifolds = dispatcher.getNumManifolds();
-          callback.ProcessIsland( collisionObjects, collisionObjects.length, manifold, maxNumManifolds, -1 );
+          callback.processIsland( collisionObjects, collisionObjects.length, manifold, maxNumManifolds, -1 );
         } else {
           // - Sort manifolds, based on islands.
           // - Sort the vector using predicate and std::sort
@@ -124,7 +124,8 @@
 
           var numManifolds = this.islandmanifold.length;
 
-          // We should do radix sort, it it much faster (`O(n)` instead of `O(n log2(n)`)
+          // Tried a radix sort, but quicksort/heapsort seems still faster.
+          // TODO: Rewrite island management.
           Bump.quickSort( this.islandmanifold, Bump.PersistentManifoldSortPredicate.create() );
 
           // Now process all active islands (sets of manifolds for now)
@@ -175,7 +176,7 @@
             }
 
             if ( !islandSleeping ) {
-              callback.ProcessIsland( this.islandBodies, this.islandBodies.length, startManifold, numIslandManifolds, islandId );
+              callback.processIsland( this.islandBodies, this.islandBodies.length, startManifold, numIslandManifolds, islandId );
               // console.log( 'Island callback of size:' + this.islandBodies.length + 'bodies, ' + numIslandManifolds + ' manifolds' );
             }
 
@@ -288,10 +289,14 @@
             // Kinematic objects don't merge islands, but wake up all connected
             // objects.
             if ( colObj0.isKinematicObject() && colObj0.getActivationState() !== Bump.CollisionObject.ISLAND_SLEEPING ) {
-              colObj1.activate();
+              if ( colObj0.hasContactResponse() ) {
+                colObj1.activate();
+              }
             }
             if ( colObj1.isKinematicObject() && colObj1.getActivationState() !== Bump.CollisionObject.ISLAND_SLEEPING ) {
-              colObj0.activate();
+              if ( colObj1.hasContactResponse() ) {
+                colObj0.activate();
+              }
             }
             if ( this.splitIslands ) {
               // Filtering for response.
@@ -320,7 +325,7 @@
 
         members: {
           destruct: Bump.noop,
-          ProcessIsland: Bump.abstract
+          processIsland: Bump.abstract
         }
       })
     }

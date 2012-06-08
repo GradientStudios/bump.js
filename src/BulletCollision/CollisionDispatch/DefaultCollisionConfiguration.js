@@ -277,9 +277,13 @@
       },
 
       setPlaneConvexMultipointIterations: function( numPerturbationIterations, minimumPointsPerturbationThreshold ) {
-        var planeCreateFunc = this.planeConvexCF;
-        planeCreateFunc.numPerturbationIterations = numPerturbationIterations;
-        planeCreateFunc.minimumPointsPerturbationThreshold = minimumPointsPerturbationThreshold;
+        var cpCF = this.convexPlaneCF;
+        cpCF.numPerturbationIterations = numPerturbationIterations;
+        cpCF.minimumPointsPerturbationThreshold = minimumPointsPerturbationThreshold;
+
+        var pcCF = this.planeConvexCF;
+        pcCF.numPerturbationIterations = numPerturbationIterations;
+        pcCF.minimumPointsPerturbationThreshold = minimumPointsPerturbationThreshold;
       }
 
     }

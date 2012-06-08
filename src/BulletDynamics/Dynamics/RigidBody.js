@@ -406,7 +406,7 @@
       // - `tmpM1` ← `updateInertiaTensor`
       // - `tmpM2` ← `updateInertiaTensor`
       setCenterOfMassTransform: function( xform ) {
-        if ( this.isStaticOrKinematicObject() ) {
+        if ( this.isKinematicObject() ) {
           this.interpolationWorldTransform.assign( this.worldTransform );
         } else {
           this.interpolationWorldTransform.assign( xform );
@@ -680,8 +680,11 @@
 
         for ( var i = 0; i < this.constraintRefs.length; ++i ) {
           var c = this.constraintRefs[i];
-          if ( c.getRigidBodyA() === otherRb || c.getRigidBodyB() === otherRb ) {
-            return false;
+
+          if ( c.isEnabled() ) {
+            if ( c.getRigidBodyA() === otherRb || c.getRigidBodyB() === otherRb ) {
+              return false;
+            }
           }
         }
 
