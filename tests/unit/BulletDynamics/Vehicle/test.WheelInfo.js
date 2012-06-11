@@ -86,4 +86,8 @@ test( 'getSuspensionRestLength', function() {
   strictEqual( wi.getSuspensionRestLength(), 1, 'value from WheelInfoConstructionInfo correct' );
 });
 
-test( 'updateWheel: test skipped', function() {});
+module( 'WheelInfo.updateWheel' );
+
+test( 'test skipped', function() {
+  expect( 0 );
+});

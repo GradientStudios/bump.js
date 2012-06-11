@@ -443,7 +443,9 @@ test( 'bare bones', function() {
 
 module( 'RigidBody.clearForces' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'RigidBody.updateInertiaTensor' );
 

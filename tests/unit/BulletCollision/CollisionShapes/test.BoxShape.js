@@ -258,7 +258,9 @@ test( 'basic', function() {
 
 module( 'BoxShape.getEdge' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'BoxShape.getPlane' );
 
@@ -345,7 +347,9 @@ test( 'basic', function() {
 
 module( 'BoxShape.getContactBreakingThreshold' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'BoxShape.calculateTemporalAabb' );
 

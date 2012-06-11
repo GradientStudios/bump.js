@@ -26,15 +26,21 @@ test( 'basic', function() {
 
 module( 'UnionFind.assign' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'UnionFind.sortIslands' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'UnionFind.reset' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'UnionFind.getNumElements' );
 
@@ -125,13 +131,22 @@ test( 'basic', function() {
 
 module( 'UnionFind.Free' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'UnionFind.find' );
 
-test( 'one arg - test skipped', function() {});
-test( 'two args - test skipped', function() {});
+test( 'one arg - test skipped', function() {
+  expect( 0 );
+});
+
+test( 'two args - test skipped', function() {
+  expect( 0 );
+});
 
 module( 'UnionFind.unite' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});

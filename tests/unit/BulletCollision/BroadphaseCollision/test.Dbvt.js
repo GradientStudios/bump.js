@@ -733,7 +733,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
   module( 'Dbvt typemembers' );
 
-  test('enumNodes', function() {
+  test( 'enumNodes', function() {
     strictEqual( typeof Bump.Dbvt.enumNodes, 'function', 'exists' );
 
     var enumerator = Bump.DbvtNodeEnumerator.create(),
@@ -753,7 +753,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     deepEqual( enumerator.nodes, expected, 'correctly populates enumerator' );
   });
 
-  test('enumLeaves', function() {
+  test( 'enumLeaves', function() {
     strictEqual( typeof Bump.Dbvt.enumLeaves, 'function', 'exists' );
 
     var enumerator = Bump.DbvtNodeEnumerator.create(),
@@ -770,7 +770,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     deepEqual( enumerator.nodes, expected, 'correctly populates enumerator' );
   });
 
-  test('countLeaves', function() {
+  test( 'countLeaves', function() {
     strictEqual( typeof Bump.Dbvt.countLeaves, 'function', 'exists' );
 
     var dbvt = makeTestTree(),
@@ -780,7 +780,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     equal( result, expected, 'correctly counts leaves' );
   });
 
-  test('maxdepth', function() {
+  test( 'maxdepth', function() {
     strictEqual( typeof Bump.Dbvt.maxdepth, 'function', 'exists' );
 
     var dbvt = makeTestTree();
@@ -791,7 +791,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
   });
 
-  test('extractLeaves', function() {
+  test( 'extractLeaves', function() {
     strictEqual( typeof Bump.Dbvt.extractLeaves, 'function', 'exists' );
 
     var dbvt = makeTestTree(),
@@ -810,7 +810,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
   module( 'Dbvt members' );
 
-  test('clone', function() {
+  test( 'clone', function() {
     var dbvt = Bump.Dbvt.create(),
         dest = Bump.Dbvt.create(),
         //vols = makeVolumeGrid( 3 ),
@@ -844,7 +844,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     equal( iclone.sum, 100, 'all leaves visited correctly' );
   });
 
-  test('write', function() {
+  test( 'write', function() {
     var writer = TestWriter.create(),
     dbvt = makeTestTree(),
     expected = ' { internal : 0 : children 1 4 }' +
@@ -861,7 +861,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
   });
 
 
-  test('insert', function() {
+  test( 'insert', function() {
     // generate a tree from a 3 x 3 x 3 "grid" of volumes
 
     var vols = makeVolumeGrid( 3 ),
@@ -907,7 +907,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
   });
 
-  test('clear', function() {
+  test( 'clear', function() {
     var dbvt = makeTestTree();
     strictEqual( typeof dbvt.clear, 'function', 'clear exists' );
 
@@ -920,7 +920,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     equal( dbvt.opath, 0, 'opath cleared' );
   });
 
-  test('empty', function() {
+  test( 'empty', function() {
     var dbvt = Bump.Dbvt.create();
     strictEqual( typeof dbvt.empty, 'function', 'empty exists' );
     ok( dbvt.empty(), 'default dbvt is empty' );
@@ -932,7 +932,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     ok( dbvt.empty(), 'cleared dbvt is empty' );
   });
 
-  test('optimizeBottomUp', function() {
+  test( 'optimizeBottomUp', function() {
     var vols = makeVolumeGrid( 3 ),
         dbvt = Bump.Dbvt.create(),
         writer = TestWriter.create(),
@@ -946,7 +946,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     equal( writer.s, expected, 'result matches btDbvt.optimizeBottomUp' );
   });
 
-  test('optimizeTopDown', function() {
+  test( 'optimizeTopDown', function() {
     var vols = makeVolumeGrid( 3 ),
         dbvt = Bump.Dbvt.create(),
         writer = TestWriter.create(),
@@ -960,7 +960,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     equal( writer.s, expected, 'result matches btDbvt.optimizeTopDown' );
   });
 
-  test('optimizeIncremental', function() {
+  test( 'optimizeIncremental', function() {
     var vols = makeVolumeGrid( 3 ),
         dbvt = Bump.Dbvt.create(),
         writer = TestWriter.create(),
@@ -974,7 +974,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     equal( writer.s, expected, 'result matches btDbvt.optimizeIncremental' );
   });
 
-  test('updateLeafLookahead', function() {
+  test( 'updateLeafLookahead', function() {
     var expected = [
       ' { internal : 0 : children 1 18 } { internal : 1 : children 2 7 } { internal : 2 : children 3 6 } { internal : 3 : children 4 5 } { leaf : 4 : 9 } { leaf : 5 : 0 } { leaf : 6 : 18 } { internal : 7 : children 8 13 } { internal : 8 : children 9 10 } { leaf : 9 : 3 } { internal : 10 : children 11 12 } { leaf : 11 : 12 } { leaf : 12 : 21 } { internal : 13 : children 14 15 } { leaf : 14 : 6 } { internal : 15 : children 16 17 } { leaf : 16 : 15 } { leaf : 17 : 24 } { internal : 18 : children 19 36 } { internal : 19 : children 20 25 } { internal : 20 : children 21 22 } { leaf : 21 : 1 } { internal : 22 : children 23 24 } { leaf : 23 : 10 } { leaf : 24 : 19 } { internal : 25 : children 26 31 } { internal : 26 : children 27 28 } { leaf : 27 : 4 } { internal : 28 : children 29 30 } { leaf : 29 : 13 } { leaf : 30 : 22 } { internal : 31 : children 32 33 } { leaf : 32 : 7 } { internal : 33 : children 34 35 } { leaf : 34 : 16 } { leaf : 35 : 25 } { internal : 36 : children 37 42 } { internal : 37 : children 38 39 } { leaf : 38 : 2 } { internal : 39 : children 40 41 } { leaf : 40 : 11 } { leaf : 41 : 20 } { internal : 42 : children 43 48 } { internal : 43 : children 44 45 } { leaf : 44 : 5 } { internal : 45 : children 46 47 } { leaf : 46 : 14 } { leaf : 47 : 23 } { internal : 48 : children 49 50 } { leaf : 49 : 8 } { internal : 50 : children 51 52 } { leaf : 51 : 17 } { leaf : 52 : 26 }',
       ' { internal : 0 : children 1 18 } { internal : 1 : children 2 7 } { internal : 2 : children 3 6 } { internal : 3 : children 4 5 } { leaf : 4 : 9 } { leaf : 5 : 0 } { leaf : 6 : 18 } { internal : 7 : children 8 13 } { internal : 8 : children 9 10 } { leaf : 9 : 3 } { internal : 10 : children 11 12 } { leaf : 11 : 12 } { leaf : 12 : 21 } { internal : 13 : children 14 15 } { leaf : 14 : 6 } { internal : 15 : children 16 17 } { leaf : 16 : 15 } { leaf : 17 : 24 } { internal : 18 : children 19 36 } { internal : 19 : children 20 25 } { internal : 20 : children 21 22 } { leaf : 21 : 1 } { internal : 22 : children 23 24 } { leaf : 23 : 10 } { leaf : 24 : 19 } { internal : 25 : children 26 31 } { internal : 26 : children 27 28 } { leaf : 27 : 4 } { internal : 28 : children 29 30 } { leaf : 29 : 13 } { leaf : 30 : 22 } { internal : 31 : children 32 33 } { leaf : 32 : 7 } { internal : 33 : children 34 35 } { leaf : 34 : 16 } { leaf : 35 : 25 } { internal : 36 : children 37 42 } { internal : 37 : children 38 39 } { leaf : 38 : 2 } { internal : 39 : children 40 41 } { leaf : 40 : 11 } { leaf : 41 : 20 } { internal : 42 : children 43 48 } { internal : 43 : children 44 45 } { leaf : 44 : 5 } { internal : 45 : children 46 47 } { leaf : 46 : 14 } { leaf : 47 : 23 } { internal : 48 : children 49 50 } { leaf : 49 : 8 } { internal : 50 : children 51 52 } { leaf : 51 : 17 } { leaf : 52 : 26 }',
@@ -1023,7 +1023,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
 
   });
 
-  test('remove', function() {
+  test( 'remove', function() {
 
     var expected = [
       ' { internal : 0 : children 1 16 } { internal : 1 : children 2 5 } { internal : 2 : children 3 4 } { leaf : 3 : 9 } { leaf : 4 : 18 } { internal : 5 : children 6 11 } { internal : 6 : children 7 8 } { leaf : 7 : 3 } { internal : 8 : children 9 10 } { leaf : 9 : 12 } { leaf : 10 : 21 } { internal : 11 : children 12 13 } { leaf : 12 : 6 } { internal : 13 : children 14 15 } { leaf : 14 : 15 } { leaf : 15 : 24 } { internal : 16 : children 17 34 } { internal : 17 : children 18 23 } { internal : 18 : children 19 20 } { leaf : 19 : 1 } { internal : 20 : children 21 22 } { leaf : 21 : 10 } { leaf : 22 : 19 } { internal : 23 : children 24 29 } { internal : 24 : children 25 26 } { leaf : 25 : 4 } { internal : 26 : children 27 28 } { leaf : 27 : 13 } { leaf : 28 : 22 } { internal : 29 : children 30 31 } { leaf : 30 : 7 } { internal : 31 : children 32 33 } { leaf : 32 : 16 } { leaf : 33 : 25 } { internal : 34 : children 35 40 } { internal : 35 : children 36 37 } { leaf : 36 : 2 } { internal : 37 : children 38 39 } { leaf : 38 : 11 } { leaf : 39 : 20 } { internal : 40 : children 41 46 } { internal : 41 : children 42 43 } { leaf : 42 : 5 } { internal : 43 : children 44 45 } { leaf : 44 : 14 } { leaf : 45 : 23 } { internal : 46 : children 47 48 } { leaf : 47 : 8 } { internal : 48 : children 49 50 } { leaf : 49 : 17 } { leaf : 50 : 26 }',
@@ -1075,44 +1075,72 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
   });
 
   module( 'Dbvt.updateLeafVolume' );
-  test('test skipped', function() {});
+  test( 'test skipped', function() {
+    expect( 0 );
+  });
 
   module( 'Dbvt.updateLeafVolumeVelocityMargin' );
-  test('test skipped', function() {});
+  test( 'test skipped', function() {
+    expect( 0 );
+  });
 
   module( 'Dbvt.updateLeafVolumeVelocity' );
-  test('test skipped', function() {});
+  test( 'test skipped', function() {
+    expect( 0 );
+  });
 
   module( 'Dbvt.updateLeafVolumeMargin' );
-  test('test skipped', function() {});
+  test( 'test skipped', function() {
+    expect( 0 );
+  });
 
   module( 'Dbvt.collideTT' );
-  test('test skipped', function() {});
+  test( 'test skipped', function() {
+    expect( 0 );
+  });
 
   module( 'Dbvt.collideTTpersistenStack' );
-  test('test skipped', function() {});
+  test( 'test skipped', function() {
+    expect( 0 );
+  });
 
   module( 'Dbvt.collideTV' );
-  test('test skipped', function() {});
+  test( 'test skipped', function() {
+    expect( 0 );
+  });
 
   module( 'Dbvt.rayTestInternal' );
-  test('test skipped', function() {});
+  test( 'test skipped', function() {
+    expect( 0 );
+  });
 
   module( 'Dbvt.benchmark' );
-  test('test skipped', function() {});
+  test( 'test skipped', function() {
+    expect( 0 );
+  });
 
   module( 'Dbvt.rayTest' );
-  test('test skipped', function() {});
+  test( 'test skipped', function() {
+    expect( 0 );
+  });
 
   module( 'Dbvt.collideKDOP' );
-  test('test skipped', function() {});
+  test( 'test skipped', function() {
+    expect( 0 );
+  });
 
   module( 'Dbvt.collideOCL' );
-  test('test skipped', function() {});
+  test( 'test skipped', function() {
+    expect( 0 );
+  });
 
   module( 'Dbvt.collideTU' );
-  test('test skipped', function() {});
+  test( 'test skipped', function() {
+    expect( 0 );
+  });
 
   module( 'Dbvt.allocate' );
-  test('test skipped', function() {});
+  test( 'test skipped', function() {
+    expect( 0 );
+  });
 })();

@@ -102,7 +102,9 @@ test( 'no args', function() {
   strictEqual( doubleDispatchCheck, true, 'doubleDispatch correct type' );
 });
 
-test( 'with config - test skipped', function() {});
+test( 'with config - test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionDispatcher.clone' );
 
@@ -116,36 +118,54 @@ test( 'basic', function() {
 
 module( 'CollisionDispatcher.assign' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionDispatcher.getNewManifold' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionDispatcher.releaseManifold' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionDispatcher.clearManifold' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionDispatcher.findAlgorithm' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionDispatcher.needsCollision' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionDispatcher.needsResponse' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionDispatcher.dispatchAllCollisionPairs' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionDispatcher.defaultNearCallback' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});

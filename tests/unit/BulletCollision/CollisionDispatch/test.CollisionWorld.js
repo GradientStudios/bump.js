@@ -1,42 +1,62 @@
 module( 'CollisionWorld.create' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionWorld.updateSingleAabb' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionWorld.updateAabbs' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionWorld.rayTest' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionWorld.convexSweetTest' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionWorld.contactTest' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionWorld.contactPairTest' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionWorld.addCollisionObject' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionWorld.removeCollisionObject' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'CollisionWorld.performDiscreteCollisionDetection' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 
 (function(){
@@ -81,7 +101,9 @@ test( 'test skipped', function() {});
 
   module( 'CollisionWorld.SingleRayCallback.process' );
 
-  test( 'test skipped', function() {});
+  test( 'test skipped', function() {
+    expect( 0 );
+  });
 })();
 
 module( 'CollisionWorld.LocalShapeInfo.create' );

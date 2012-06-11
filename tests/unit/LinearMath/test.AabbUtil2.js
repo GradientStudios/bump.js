@@ -253,4 +253,6 @@ test( 'basic', function() {
 
 module( 'AabbUtil2.testQuantizedAabbAgainstQuantizedAabb' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});

@@ -44,4 +44,6 @@ test( 'correct types', function() {
 
 module( 'DbvtBroadphase' );
 
-test( 'skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});

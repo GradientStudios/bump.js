@@ -321,9 +321,7 @@ test( 'basic', function() {
 
 module( 'Bump.Transform.invXform' );
 test( 'basic', function() {
-  // testBinaryOp( Bump.Transform, "invXform", a, b, expected, {
-  //   destType: Bump.Vector3
-  // });
+  expect( 0 );
 });
 
 module( 'Bump.Transform.inverseTimes' );
