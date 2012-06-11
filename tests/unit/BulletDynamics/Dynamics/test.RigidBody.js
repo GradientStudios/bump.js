@@ -1,5 +1,15 @@
 var RigidBodyDeepCopyCheck = function( a, b ) {
-  CollisionObjectDeepCopyCheck( a, b );
+  notStrictEqual( a.worldTransform, b.worldTransform );
+  notStrictEqual( a.interpolationWorldTransform, b.interpolationWorldTransform );
+  notStrictEqual( a.interpolationLinearVelocity, b.interpolationLinearVelocity );
+  notStrictEqual( a.interpolationAngularVelocity, b.interpolationAngularVelocity );
+  notStrictEqual( a.anisotropicFriction, b.anisotropicFriction );
+
+  strictEqual( a.broadphaseHandle, b.broadphaseHandle );
+  strictEqual( a.collisionShape, b.collisionShape );
+  strictEqual( a.extensionPointer, b.extensionPointer );
+  strictEqual( a.rootCollisionShape, b.rootCollisionShape );
+  strictEqual( a.userObjectPointer, b.userObjectPointer );
 
   notStrictEqual( a.invInertiaTensorWorld, b.invInertiaTensorWorld );
   notStrictEqual( a.linearVelocity, b.linearVelocity );
@@ -23,9 +33,14 @@ var RigidBodyDeepCopyCheck = function( a, b ) {
   notStrictEqual( a.turnVelocity, b.turnVelocity );
 };
 
-var RigidBodyPointerMembers = CollisionObjectPointerMembers.concat(
+var RigidBodyPointerMembers = [
+  'broadphaseHandle',
+  'collisionShape',
+  'extensionPointer',
+  'rootCollisionShape',
+  'userObjectPointer',
   'optionalMotionState'
-);
+];
 
 module( 'RigidBody.create' );
 
@@ -100,7 +115,7 @@ test( 'correct types', function() {
 
     [ 'additionalLinearDampingThresholdSqr',  'number' ],
     [ 'additionalAngularDampingThresholdSqr', 'number' ],
-    [ 'additionalAngularDampingFactor',       'number' ],
+    [ 'additionalAngularDampingFactor',       'number' ]
   ];
 
   checkTypes( rb, checks );

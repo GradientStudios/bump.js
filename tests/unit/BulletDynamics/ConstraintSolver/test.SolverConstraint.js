@@ -2,27 +2,28 @@ var unionTest = function( obj, unionName, checks ) {
   ok( obj[ unionName ] !== undefined,
       'internal union value ' + unionName + ' exists' );
 
-  var maxSize = 1,
-  i;
+  var maxSize = 1, i;
   for ( i = 0; i < checks.length; i++ ) {
     if ( !Array.isArray( checks[ i ] ) ) {
       checks[ i ] = [ checks[ i ], 1 ];
     }
-    checks[ i ][ 1 ] = checks[ i ][ 1 ] || 1
+    checks[ i ][ 1 ] = checks[ i ][ 1 ] || 1;
     maxSize = Math.max( maxSize, checks[ i ][ 1 ] );
   }
+
+  var testValue, propName;
   if ( maxSize > 1 ) {
     ok( Array.isArray( obj[ unionName ] ), 'internal union value is an array' );
     ok( obj[ unionName ].length === maxSize, 'initialized to correct length' );
 
     for ( i = 0; i < checks.length; i++ ) {
-      var propName = checks[ i ][ 0 ],
-      size = checks[ i ][ 1 ];
+      propName = checks[ i ][ 0 ];
+      var size = checks[ i ][ 1 ];
 
       ok( obj[ propName ] !== undefined, propName + ' exists' );
 
       if ( size > 1 ) {
-        var testValue = [];
+        testValue = [];
 
         for ( var j = 0; j < size; j++ ) {
           testValue.push( i + 1 );
@@ -33,8 +34,9 @@ var unionTest = function( obj, unionName, checks ) {
         deepEqual( obj[ propName ], testValue,
                    propName + ' getter returns first ' + size + ' indices of ' + unionName );
       }
+
       else {
-        var testValue = i + 1,
+        testValue = i + 1;
         propName = checks[ i ][ 0 ];
         obj[ propName ] = testValue;
         ok( obj[ unionName ][ 0 ] === testValue,
@@ -44,9 +46,10 @@ var unionTest = function( obj, unionName, checks ) {
       }
     }
   }
+
   else {
     for ( i = 0; i < checks.length; i++ ) {
-      var testValue = i + 1,
+      testValue = i + 1;
       propName = checks[ i ][ 0 ];
       ok( obj[ propName ] !== undefined, propName + ' exists' );
       obj[ propName ] = testValue;
@@ -56,7 +59,7 @@ var unionTest = function( obj, unionName, checks ) {
           propName + ' getter returns ' + unionName );
     }
   }
-}
+};
 
 module( 'SolverConstraint.create' );
 

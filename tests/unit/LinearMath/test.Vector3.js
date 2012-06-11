@@ -494,7 +494,7 @@ test( 'basic', 426, function() {
       epsilon: Math.pow( 2, -48 ),
       destType: Bump.Vector3
     });
-  }
+  };
 
   crossTest(
     Bump.Vector3.create( 1, 0, 0 ),
@@ -530,7 +530,7 @@ test( 'basic', 111, function() {
       epsilon: Math.pow( 2, -48 ),
       modifiesSelf: true
     });
-  }
+  };
 
   crossTest(
     Bump.Vector3.create( 1, 0, 0 ),

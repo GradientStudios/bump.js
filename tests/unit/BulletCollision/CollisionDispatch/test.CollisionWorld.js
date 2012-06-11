@@ -71,7 +71,7 @@ test( 'test skipped', function() {
     var rrc = Bump.CollisionWorld.RayResultCallback.create();
 
     return  Bump.CollisionWorld.SingleRayCallback.create( from, to, world, rrc );
-  }
+  };
 
   module( 'CollisionWorld.SingleRayCallback.create' );
 
@@ -84,16 +84,18 @@ test( 'test skipped', function() {
     var src = makeTestSingleRayCallback();
 
     var checks = [
-      [ 'rayFromWorld', Bump.Vector3 ],
-      [ 'rayToWorld', Bump.Vector3 ],
-      [ 'hitNormal', Bump.Vector3 ],
-      [ 'world', Bump.CollisionWorld ],
-      [ 'resultCallback', Bump.CollisionWorld.RayResultCallback ],
-      [ 'rayFromTrans', Bump.Transform ],
-      [ 'rayToTrans', Bump.Transform ],
-      [ 'rayDirectionInverse', Bump.Vector3 ],
-      [ 'signs', Bump.Vector3 ],
-      [ 'lambda_max', 'number' ]
+      [ 'rayFromWorld',        Bump.Vector3 ],
+      [ 'rayToWorld',          Bump.Vector3 ],
+      [ 'hitNormal',           Bump.Vector3 ],
+
+      [ 'world',               Bump.CollisionWorld ],
+      [ 'resultCallback',      Bump.CollisionWorld.RayResultCallback ],
+
+      [ 'rayFromTrans',        Bump.Transform ],
+      [ 'rayToTrans',          Bump.Transform ],
+      [ 'rayDirectionInverse', Bump.Vector3   ],
+      [ 'signs',               Bump.Vector3   ],
+      [ 'lambda_max',          'number'       ]
     ];
 
     checkTypes( src, checks );
@@ -213,15 +215,15 @@ test( 'correct types', function() {
   );
 
   var checks = [
-    [ 'closestHitFraction', 'number' ],
-    [ 'collisionObject', null ],
-    [ 'collisionFilterGroup', 'number'], // technically an enum value
-    [ 'collisionFilterMask', 'number'], // technically an enum value
-    [ 'flags', 'number' ],
-    [ 'rayFromWorld', Bump.Vector3 ],
-    [ 'rayToWorld', Bump.Vector3 ],
-    [ 'hitNormalWorld', Bump.Vector3 ],
-    [ 'hitPointWorld', Bump.Vector3 ],
+    [ 'closestHitFraction',   'number'     ],
+    [ 'collisionObject',      null         ],
+    [ 'collisionFilterGroup', 'number'     ], // technically an enum value
+    [ 'collisionFilterMask',  'number'     ], // technically an enum value
+    [ 'flags',                'number'     ],
+    [ 'rayFromWorld',         Bump.Vector3 ],
+    [ 'rayToWorld',           Bump.Vector3 ],
+    [ 'hitNormalWorld',       Bump.Vector3 ],
+    [ 'hitPointWorld',        Bump.Vector3 ]
   ];
 
   checkTypes( crrc, checks );

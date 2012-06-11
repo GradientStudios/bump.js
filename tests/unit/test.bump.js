@@ -325,7 +325,7 @@ test( '_super properties', 3, function() {
   equal( a.name, 'a', 'property returns private by convention variable' );
 
   raises(function() {
-    Bump.type({
+    var name = Bump.type({
       properties: {
         name: {
           get: function() { return this._super(); }
@@ -337,7 +337,7 @@ test( '_super properties', 3, function() {
   }, 'call to _super raises error if no parent is defined' );
 
   raises(function() {
-    Bump.type({
+    var name = Bump.type({
       parent: Bump.type(),
       properties: {
         name: {
