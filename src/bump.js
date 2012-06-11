@@ -2,7 +2,7 @@
 
 // the main library object
 this.Bump = {
-  version: '0.2.0'
+  version: '0.2.1'
 };
 
 (function( window, Bump ) {
