@@ -800,6 +800,7 @@
           }
         }
 
+        var numFrictionPoolConstraints;
         if ( infoGlobal.solverMode & Bump.SolverMode.SOLVER_SIMD ) {
           // solve all joint constraints, using SIMD, if available
           for ( j = 0; j < m_tmpSolverNonContactConstraintPool.length; j++ ) {
@@ -884,7 +885,7 @@
             }
 
             // solve all friction constraints
-            var numFrictionPoolConstraints = m_tmpSolverContactFrictionConstraintPool.length;
+            numFrictionPoolConstraints = m_tmpSolverContactFrictionConstraintPool.length;
             for ( j = 0; j < numFrictionPoolConstraints; j++ ) {
               // btSolverConstraint&
               solveManifold = m_tmpSolverContactFrictionConstraintPool[ this.orderFrictionConstraintPool[ j ] ];
