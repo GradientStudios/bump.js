@@ -1,6 +1,10 @@
- // Vector3 provides vector math functionality with an API similar
- // to Three.js : Math operations are member functions that use the
- // context Vector3 object as the destination.
+// load: bump.js
+
+// run: LinearMath/AlignedObjectArray.js
+
+// Vector3 provides vector math functionality with an API similar
+// to Three.js : Math operations are member functions that use the
+// context Vector3 object as the destination.
 (function( window, Bump ) {
   var tmpVec1, tmpVec2, tmpVec3;
 

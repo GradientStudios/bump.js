@@ -1,3 +1,8 @@
+// load: bump.js
+// load: LinearMath/Vector3.js
+// load: LinearMath/Matrix3x3.js
+// load: LinearMath/Quaternion.js
+
 // **Bump.Transform** is the port of the `btTransform` class in
 // [Bullet](http://bulletphysics.org).
 

@@ -1,3 +1,6 @@
+// load: bump.js
+// load: LinearMath/Vector3.js
+
 // **Bump.Quaternion** is the port of the `btQuaternion` class in
 // [Bullet](http://bulletphysics.org). It implements
 // [quaternions](http://en.wikipedia.org/wiki/Quaternion) in the physics engine.

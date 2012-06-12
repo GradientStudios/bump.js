@@ -1,3 +1,6 @@
+// load: bump.js
+// run: LinearMath/Vector3.js
+
 // **Bump.Matrix3x3** is the port of the `btMatrix3x3` class in
 // [Bullet](http://bulletphysics.org).
 

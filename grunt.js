@@ -1,6 +1,8 @@
 /*global module:false*/
 module.exports = function(grunt) {
 
+  grunt.loadNpmTasks( 'grunt-dep-concat' );
+
   // Project configuration.
   grunt.initConfig({
     pkg: '<json:package.json>',
@@ -15,15 +17,20 @@ module.exports = function(grunt) {
       files: ['grunt.js', 'src/**/*.js'],
       tests: ['tests/unit/**/*.js']
     },
-    concat: {
+    depconcat: {
       dist: {
-        src: ['<banner:meta.banner>', '<file_strip_banner:src/<%= pkg.name %>.js>'],
-        dest: 'dist/<%= pkg.name %>.js'
+        src: [
+          '<banner:meta.banner>',
+          'src/bump.js',
+          'src/LinearMath/*.js'
+        ],
+        dest: 'dist/<%= pkg.name %>.js',
+        basePath: 'src/'
       }
     },
     min: {
       dist: {
-        src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
+        src: ['<banner:meta.banner>', '<config:depconcat.dist.dest>'],
         dest: 'dist/<%= pkg.name %>.min.js'
       }
     },
@@ -83,5 +90,5 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'lint concat min');
+  grunt.registerTask('default', 'lint depconcat min');
 };

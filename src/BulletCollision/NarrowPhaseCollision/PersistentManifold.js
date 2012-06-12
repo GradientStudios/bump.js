@@ -1,3 +1,6 @@
+// load: bump.js
+// load: LinearMath/Math.js
+
 (function( window, Bump ) {
   var MANIFOLD_CACHE_SIZE = 4,
       tmpV1 = Bump.Vector3.create(),
