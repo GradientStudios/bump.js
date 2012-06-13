@@ -1,3 +1,10 @@
+// load: bump.js
+// load: LinearMath/Vector3.js
+// load: LinearMath/Matrix3x3.js
+// load: LinearMath/Quaternion.js
+
+// run: LinearMath/Transform.js
+
 (function( window, Bump ) {
   Bump.aabbSupport = function( halfExtents, supportDir ) {
     return Bump.Vector3.create(

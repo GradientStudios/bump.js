@@ -1,3 +1,8 @@
+// load: bump.js
+// load: BulletCollision/NarrowPhaseCollision/DiscreteCollisionDetectorInterface.js
+
+// run: LinearMath/Vector3.js
+
 (function( window, Bump ) {
 
   var dDOT   = function( a, aOff, b, bOff ) { return a[ aOff ] * b[ bOff ] + a[ aOff + 1 ] * b[ bOff + 1 ] + a[ aOff + 2 ] * b[ bOff + 2 ]; },

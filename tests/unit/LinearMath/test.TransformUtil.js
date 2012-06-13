@@ -63,7 +63,7 @@ test( 'basic', function() {
       expectedAngVel = Bump.Vector3.create( -14.12458886808226, -8.154835185180083, -8.154835185180083 );
 
   orn0.setRotation( Bump.Vector3.create( 1, 0, 0 ),  Math.PI / 2 );
-  orn1.setRotation( Bump.Vector3.create( 0, 1, 0 ), -Math.PI / 3 )
+  orn1.setRotation( Bump.Vector3.create( 0, 1, 0 ), -Math.PI / 3 );
 
   testFunc( Bump.TransformUtil, 'calculateVelocityQuaternion', {
     isStaticFunc: true,
@@ -90,7 +90,7 @@ test( 'basic', function() {
       orn1 = Bump.Quaternion.create();
 
   orn0.setRotation( Bump.Vector3.create( 1, 0, 0 ),  Math.PI / 2 );
-  orn1.setRotation( Bump.Vector3.create( 0, 1, 0 ), -Math.PI / 3 )
+  orn1.setRotation( Bump.Vector3.create( 0, 1, 0 ), -Math.PI / 3 );
 
   var transform0b = Bump.Transform.create( orn0, Bump.Vector3.create( 1, 2, 3 ) ),
       transform1b = Bump.Transform.create( orn1, Bump.Vector3.create( 4, 3, 2 ) );

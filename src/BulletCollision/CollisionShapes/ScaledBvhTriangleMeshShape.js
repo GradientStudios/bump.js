@@ -1,3 +1,10 @@
+// load: bump.js
+// load: BulletCollision/CollisionShapes/ConcaveShape.js
+// load: BulletCollision/CollisionShapes/TriangleCallback.js
+
+// run: LinearMath/Vector3.js
+// run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+
 (function( window, Bump ) {
 
   var ScaledTriangleCallback = Bump.type({

@@ -1,3 +1,8 @@
+// load: bump.js
+// load: BulletCollision/BroadphaseCollision/OverlappingPairCallback.js
+
+// run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+
 (function( window, Bump ) {
 
   // **OverlapCallback** is the port of the original bullet struct

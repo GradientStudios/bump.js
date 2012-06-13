@@ -1,3 +1,8 @@
+// load: bump.js
+// load: LinearMath/Math.js
+
+// run: BulletDynamics/Dynamics/RigidBody.js
+
 (function( window, Bump ) {
   var DEFAULT_DEBUGDRAW_SIZE = 0.3,
       tmpV1 = Bump.Vector3.create();

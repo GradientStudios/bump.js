@@ -1,8 +1,10 @@
+// run: LinearMath/Math.js
+
 // file for generic inheritance code and some base classes
 
 // the main library object
 this.Bump = {
-  version: '0.2.0'
+  version: '0.2.1'
 };
 
 (function( window, Bump ) {
@@ -312,8 +314,6 @@ this.Bump = {
 
     return exports;
   };
-
-  Bump.TypedObject = Bump.type();
 
   Bump.Enum = function( values ) {
     var myEnum = {}, currentValue = 0;

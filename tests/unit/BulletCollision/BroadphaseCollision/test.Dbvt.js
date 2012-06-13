@@ -1,18 +1,16 @@
-module( 'Bump.DbvtAabbMm' );
-
-test( 'DbvtAabbMm exists', function() {
+module( 'DbvtAabbMm' );
+test( 'exists', function() {
   var dbvtaabbmm = Bump.DbvtAabbMm || {};
   strictEqual( typeof dbvtaabbmm.create, 'function', 'Bump.DbvtAabbMm exists' );
 });
 
-test( 'DbvtAabbMm creation', function() {
+module( 'DbvtAabbMm constructors' );
+test( 'basic', function() {
   var t = Bump.DbvtAabbMm.create() || {};
   ok( t instanceof Bump.DbvtAabbMm.prototype.init, 'creation without `new` operator' );
 });
 
-module( 'Bump.DbvtAabbMm constructors' );
-
-test( 'empty', function() {
+test( 'empty constructor', function() {
   var box = Bump.DbvtAabbMm.create();
   deepEqual( box.mi, Bump.Vector3.create(), 'mi zeroed out' );
   deepEqual( box.mx, Bump.Vector3.create(), 'mx zeroed out' );
@@ -22,7 +20,7 @@ test( 'FromCE', function() {
   strictEqual( typeof Bump.DbvtAabbMm.FromCE, 'function', 'FromCE exists' );
 
   var box = Bump.DbvtAabbMm.FromCE(
-    Bump.Vector3.create( ),
+    Bump.Vector3.create(),
     Bump.Vector3.create( 5, 10, 20 )
   );
 
@@ -63,7 +61,7 @@ test( 'FromPoints', function() {
         Bump.Vector3.create(),
         Bump.Vector3.create( -12, -2, 0 ),
         Bump.Vector3.create( 8, 10, 0 ),
-        Bump.Vector3.create( 4, 12, -10 ),
+        Bump.Vector3.create( 4, 12, -10 )
       ],
       box = Bump.DbvtAabbMm.FromPoints( pts );
 
@@ -71,10 +69,7 @@ test( 'FromPoints', function() {
   deepEqual( box.mx, Bump.Vector3.create( 8, 12, 0 ), 'mx value correct' );
 });
 
-module( 'Bump.DbvtAabbMm member functions' );
-
 (function() {
-
   // shortcut for making a DbvtAabbMm
   var make = function( mix, miy, miz, mxx, mxy, mxz ) {
     var box = Bump.DbvtAabbMm.create();
@@ -83,106 +78,128 @@ module( 'Bump.DbvtAabbMm member functions' );
     return box;
   };
 
-  test( 'Center', function() {
+  module( 'DbvtAabbMm.Center' );
+  test( 'basic', function() {
     var objs = [
           make( -10, -10, -10, 10, 10, 10 ),
-          make( 2, 0, -4, 4, 6, 12 ),
+          make( 2, 0, -4, 4, 6, 12 )
         ],
         expected = [
           Bump.Vector3.create(),
-          Bump.Vector3.create( 3, 3, 4 ),
+          Bump.Vector3.create( 3, 3, 4 )
         ];
 
-    testUnaryOp( Bump.DbvtAabbMm, 'Center', objs, expected, {
+    testFunc( Bump.DbvtAabbMm, 'Center', {
+      objects: objs,
+      expected: expected,
       destType: Bump.Vector3
     });
   });
 
-  test( 'Lengths', function() {
+  module( 'DbvtAabbMm.Lengths' );
+  test( 'basic', function() {
     var objs = [
           make( -10, -10, -10, 10, 10, 10 ),
-          make( 2, 0, -4, 4, 6, 12 ),
+          make( 2, 0, -4, 4, 6, 12 )
         ],
         expected = [
           Bump.Vector3.create( 20, 20, 20 ),
-          Bump.Vector3.create( 2, 6, 16 ),
+          Bump.Vector3.create( 2, 6, 16 )
         ];
 
-    testUnaryOp( Bump.DbvtAabbMm, 'Lengths', objs, expected, {
+    testFunc( Bump.DbvtAabbMm, 'Lengths', {
+      objects: objs,
+      expected: expected,
       destType: Bump.Vector3
     });
   });
 
-  test( 'Extents', function() {
+  module( 'DbvtAabbMm.Extents' );
+  test( 'basic', function() {
     var objs = [
           make( -10, -10, -10, 10, 10, 10 ),
-          make( 2, 0, -4, 4, 6, 12 ),
+          make( 2, 0, -4, 4, 6, 12 )
         ],
         expected = [
           Bump.Vector3.create( 10, 10, 10 ),
-          Bump.Vector3.create( 1, 3, 8 ),
+          Bump.Vector3.create( 1, 3, 8 )
         ];
 
-    testUnaryOp( Bump.DbvtAabbMm, 'Extents', objs, expected, {
+    testFunc( Bump.DbvtAabbMm, 'Extents', {
+      objects: objs,
+      expected: expected,
       destType: Bump.Vector3
     });
   });
 
-  test( 'Mins', function() {
+  module( 'DbvtAabbMm.Mins' );
+  test( 'basic', function() {
     var objs = [
           make( -10, -10, -10, 10, 10, 10 ),
-          make( 2, 0, -4, 4, 6, 12 ),
+          make( 2, 0, -4, 4, 6, 12 )
         ],
         expected = [
           Bump.Vector3.create( -10, -10, -10 ),
-          Bump.Vector3.create( 2, 0, -4 ),
+          Bump.Vector3.create( 2, 0, -4 )
         ];
 
-    testUnaryOp( Bump.DbvtAabbMm, 'Mins', objs, expected );
+    testFunc( Bump.DbvtAabbMm, 'Mins', {
+      objects: objs,
+      expected: expected
+    });
   });
 
-  test( 'Maxs', function() {
+  module( 'DbvtAabbMm.Maxs' );
+  test( 'basic', function() {
     var objs = [
           make( -10, -10, -10, 10, 10, 10 ),
-          make( 2, 0, -4, 4, 6, 12 ),
+          make( 2, 0, -4, 4, 6, 12 )
         ],
         expected = [
           Bump.Vector3.create( 10, 10, 10 ),
-          Bump.Vector3.create( 4, 6, 12 ),
+          Bump.Vector3.create( 4, 6, 12 )
         ];
-    testUnaryOp( Bump.DbvtAabbMm, 'Maxs', objs, expected );
 
+    testFunc( Bump.DbvtAabbMm, 'Maxs', {
+      objects: objs,
+      expected: expected
+    });
   });
 
-  test( 'Expand', function() {
+  module( 'DbvtAabbMm.Expand' );
+  test( 'basic', function() {
     var box = make( -1, -2, -3, 3, 2, 1 ),
         e = Bump.Vector3.create( 2, 2, 2 ),
         mi = box.mi,
         mx = box.mx,
         expected = make( -3, -4, -5, 5, 4, 3 );
 
-    testBinaryOp( Bump.DbvtAabbMm, 'Expand', box, e, expected, {
+    testFunc( Bump.DbvtAabbMm, 'Expand', {
+      objects: box,
+      args: [ [ e ] ],
+      expected: [ expected ],
       modifiesSelf: true
     });
-    ok( mi === box.mi, 'mi modified in place' );
-    ok( mx === box.mx, 'mx modified in place' );
   });
 
-  test( 'SignedExpand', function() {
+  module( 'DbvtAabbMm.SignedExpand' );
+  test( 'basic', function() {
     var box = make( -1, -2, -3, 3, 2, 1 ),
         e = Bump.Vector3.create( -2, 2, 0 ),
         mi = box.mi,
         mx = box.mx,
         expected = make( -3, -2, -3, 3, 4, 1 );
 
-    testBinaryOp( Bump.DbvtAabbMm, 'SignedExpand', box, e, expected, {
+    testFunc( Bump.DbvtAabbMm, 'SignedExpand', {
+      objects: box,
+      args: [ [ e ] ],
+      expected: [ expected ],
       modifiesSelf: true
     });
-    ok( mi === box.mi, 'mi modified in place' );
-    ok( mx === box.mx, 'mx modified in place' );
   });
 
-  test( 'Contain', function() {
+  module( 'DbvtAabbMm.Contain' );
+  test( 'basic', function() {
     var boxA = make( -1, -2, -3, 3, 2, 1 ),
         boxBs = [
           make( -1, -1, -1, 1, 1, 1 ),
@@ -193,7 +210,7 @@ module( 'Bump.DbvtAabbMm member functions' );
           make( -1, -3, -3, 3, 1, 1 ),
           make( -1, -2, -2, 3, 2, 2 ),
           make( -1, -2, -4, 3, 2, 0 ),
-          make( -3, -3, -3, 3, 3, 3 ),
+          make( -3, -3, -3, 3, 3, 3 )
         ],
         expected = [
           true,
@@ -207,10 +224,15 @@ module( 'Bump.DbvtAabbMm member functions' );
           false
         ];
 
-    testBinaryOp( Bump.DbvtAabbMm, 'Contain', boxA, boxBs, expected );
+    testFunc( Bump.DbvtAabbMm, 'Contain', {
+      objects: boxA,
+      args: boxBs.map(function( elem ) { return [ elem ]; }),
+      expected: expected
+    });
   });
 
-  test( 'Classify (TODO)', function() {
+  module( 'DbvtAabbMm.Classify' );
+  test( 'TODO', function() {
     ok( Bump.DbvtAabbMm.prototype.Classify, 'Classify exists' );
 
     var sqrt3 = Math.sqrt( 3 ),
@@ -220,61 +242,60 @@ module( 'Bump.DbvtAabbMm member functions' );
                          0, 7 ), 1, 'returns 1' );
     equal( box.Classify( Bump.Vector3.create( 1, 1, 1 ).normalize(),
                          2, 7 ), 1, 'returns 1' );
-    ok( true, 'TODO : Decide what to do about bug and then finish tests.' );
-    /*
-    equal( box2.Classify( Bump.Vector3.create( 1, 1, 1 ).normalize(),
-                          0, 7 ), 0, 'returns 0' );
-    equal( box.Classify( Bump.Vector3.create( 1, 1, 1 ).normalize(),
-                         2.5, 7 ), 0, 'returns 0' );
-    equal( box.Classify( Bump.Vector3.create( 1, 1, 1 ).normalize(),
-                         3, 7 ), 0, 'returns 0' );
-    equal( box.Classify( Bump.Vector3.create( 1, 1, 1 ).normalize(),
-                         4, 7 ), 0, 'returns -1' );
-    */
+    ok( true, 'TODO: Decide what to do about bug and then finish tests.' );
+
+    // equal( box2.Classify( Bump.Vector3.create( 1, 1, 1 ).normalize(),
+    //                       0, 7 ), 0, 'returns 0' );
+    // equal( box.Classify( Bump.Vector3.create( 1, 1, 1 ).normalize(),
+    //                      2.5, 7 ), 0, 'returns 0' );
+    // equal( box.Classify( Bump.Vector3.create( 1, 1, 1 ).normalize(),
+    //                      3, 7 ), 0, 'returns 0' );
+    // equal( box.Classify( Bump.Vector3.create( 1, 1, 1 ).normalize(),
+    //                      4, 7 ), 0, 'returns -1' );
   });
 
-  test( 'ProjectMinimum (TODO)', function() {
-    ok( true, 'TODO' );
+  module( 'DbvtAabbMm.ProjectMinimum' );
+  test( 'TODO', function() {
+    expect( 0 );
   });
 
-  test( 'AddSpan (TODO)', function() {
-    ok( true, 'TODO' );
+  module( 'DbvtAabbMm.AddSpan' );
+  test( 'TODO', function() {
+    expect( 0 );
   });
 
-  module( 'Bump.DbvtAabbMm associated global functions' );
-
-  test( 'Bump.Intersect.DbvtAabbMm2', function() {
+  module( 'Intersect.DbvtAabbMm' );
+  test( 'basic', function() {
     strictEqual( typeof Bump.Intersect, 'object', 'Bump.Intersect exists' );
     strictEqual( typeof Bump.Intersect.DbvtAabbMm2, 'function', 'Bump.Intersect.DbvtAabbMm2 exists' );
 
-    var box1 = make( -1, -1, -1, 1, 1, 1 ),
-        box2 = make( -2, -3, -3, 0, -2, -2 ),
-        box3 = make( -3, -2, -3, -2, 0, -2 ),
-        box4 = make( -3, -3, -2, -2, -2, 0 ),
-        box5 = make( 0, -3, -3, 2, -2, -2 ),
-        box6 = make( -3, 0, -3, -2, 2, -2 ),
-        box7 = make( -3, -3, 0, -2, -2, 2 ),
-        box8 = make( -3, -3, -3, -2, -2, -2 ),
-        box9 = make( -2, -2, -2, 2, 2, 2 ),
-        box10 = make( 0, 0, 0, 2, 2, 2 ),
-        box11 = make( -2, -2, -2, 0, 0, 0 );
+    var box1  = make( -1, -1, -1,  1,  1,  1 ),
+        box2  = make( -2, -3, -3,  0, -2, -2 ),
+        box3  = make( -3, -2, -3, -2,  0, -2 ),
+        box4  = make( -3, -3, -2, -2, -2,  0 ),
+        box5  = make(  0, -3, -3,  2, -2, -2 ),
+        box6  = make( -3,  0, -3, -2,  2, -2 ),
+        box7  = make( -3, -3,  0, -2, -2,  2 ),
+        box8  = make( -3, -3, -3, -2, -2, -2 ),
+        box9  = make( -2, -2, -2,  2,  2,  2 ),
+        box10 = make(  0,  0,  0,  2,  2,  2 ),
+        box11 = make( -2, -2, -2,  0,  0,  0 );
 
     var func = Bump.Intersect.DbvtAabbMm2;
-    ok( !func( box1, box2 ), 'no overlap on x axis' );
-    ok( !func( box1, box3 ), 'no overlap on y axis' );
-    ok( !func( box1, box4 ), 'no overlap on z axis' );
-    ok( !func( box1, box5 ), 'no overlap on x axis' );
-    ok( !func( box1, box6 ), 'no overlap on y axis' );
-    ok( !func( box1, box7 ), 'no overlap on z axis' );
-    ok( !func( box1, box8 ), 'no overlap on any axis' );
-    ok( func( box1, box9 ), 'overlap on all axes' );
-    ok( func( box1, box10 ), 'overlap on all axes' );
-    ok( func( box1, box11 ), 'overlap on all axes' );
-
-
+    ok( !func( box1, box2  ), 'no overlap on x axis' );
+    ok( !func( box1, box3  ), 'no overlap on y axis' );
+    ok( !func( box1, box4  ), 'no overlap on z axis' );
+    ok( !func( box1, box5  ), 'no overlap on x axis' );
+    ok( !func( box1, box6  ), 'no overlap on y axis' );
+    ok( !func( box1, box7  ), 'no overlap on z axis' );
+    ok( !func( box1, box8  ), 'no overlap on any axis' );
+    ok(  func( box1, box9  ), 'overlap on all axes' );
+    ok(  func( box1, box10 ), 'overlap on all axes' );
+    ok(  func( box1, box11 ), 'overlap on all axes' );
   });
 
-  test( 'Bump.Intersect.DbvtAabbMm.Vector3', function() {
+  module( 'Intersect.DbvtAabbMm.Vector3' );
+  test( 'basic', function() {
     strictEqual( typeof Bump.Intersect, 'object', 'Bump.Intersect exists' );
     strictEqual( typeof Bump.Intersect.DbvtAabbMm, 'object', 'Bump.Intersect.DbvtAabbMm exists' );
     strictEqual( typeof Bump.Intersect.DbvtAabbMm.Vector3, 'function',
@@ -308,7 +329,8 @@ module( 'Bump.DbvtAabbMm member functions' );
 
   });
 
-  test( 'Bump.Proximity.DbvtAabbMm2', function() {
+  module( 'Proximity.DbvtAabbMm2' );
+  test( 'basic', function() {
     strictEqual( typeof Bump.Proximity, 'object', 'Bump.Proximity exists' );
     strictEqual( typeof Bump.Proximity.DbvtAabbMm2, 'function', 'Bump.Proximity.DbvtAabbMm2 exists' );
 
@@ -320,7 +342,8 @@ module( 'Bump.DbvtAabbMm member functions' );
 
   });
 
-  test( 'Bump.Select.DbvtAabbMm3', function() {
+  module( 'Select.DbvtAabbMm3' );
+  test( 'basic', function() {
     strictEqual( typeof Bump.Select, 'object', 'Bump.Select exists' );
     strictEqual( typeof Bump.Select.DbvtAabbMm3, 'function', 'Bump.Select.DbvtAabbMm3 exists' );
 
@@ -336,7 +359,8 @@ module( 'Bump.DbvtAabbMm member functions' );
 
   });
 
-  test( 'Bump.Merge.DbvtAabbMm3', function() {
+  module( 'Merge.DbvtAabbMm3' );
+  test( 'basic', function() {
     strictEqual( typeof Bump.Merge, 'object', 'Bump.Merge exists' );
     strictEqual( typeof Bump.Merge.DbvtAabbMm3, 'function', 'Bump.Merge.DbvtAabbMm3 exists' );
 
@@ -350,7 +374,8 @@ module( 'Bump.DbvtAabbMm member functions' );
 
   });
 
-  test( 'Bump.NotEqual.DbvtAabbMm2', function() {
+  module( 'NotEqual.DbvtAabbMm2' );
+  test( 'basic', function() {
     strictEqual( typeof Bump.NotEqual, 'object', 'Bump.NotEqual exists' );
     strictEqual( typeof Bump.NotEqual.DbvtAabbMm2, 'function', 'Bump.NotEqual.DbvtAabbMm2 exists' );
 
@@ -366,20 +391,20 @@ module( 'Bump.DbvtAabbMm member functions' );
 
 })();
 
-module( 'Bump.DbvtVolume' );
+module( 'DbvtVolume' );
 
 test( 'DbvtVolume "typecast" from DbvtAabbMm', function() {
   strictEqual( typeof Bump.DbvtVolume.create, 'function', 'Bump.DbvtVolume exists' );
   strictEqual( Bump.DbvtVolume, Bump.DbvtAabbMm, 'DbvtVolume and DbvtAabbMm refer to same object' );
 });
 
-test( 'DbvtVolume shares same associated functions', function() {
-  strictEqual( Bump.Intersect.DbvtVolume2, Bump.Intersect.DbvtAabbMm2, 'Intersect' );
-  strictEqual( Bump.Intersect.DbvtVolume.Vector3, Bump.Intersect.DbvtAabbMm.Vector3, 'Intersect' )
-  strictEqual( Bump.Proximity.DbvtVolume2, Bump.Proximity.DbvtAabbMm2, 'Proximity' );
-  strictEqual( Bump.Select.DbvtVolume3, Bump.Select.DbvtAabbMm3, 'Select' );
-  strictEqual( Bump.Merge.DbvtVolume3, Bump.Merge.DbvtAabbMm3, 'Merge' );
-  strictEqual( Bump.NotEqual.DbvtVolume2, Bump.NotEqual.DbvtAabbMm2, 'NotEqual' );
+test( 'DbvtVolume shares same associated functions to DbvtAabbMm', function() {
+ strictEqual( Bump.Intersect.DbvtVolume2,        Bump.Intersect.DbvtAabbMm2,        'Intersect' );
+ strictEqual( Bump.Intersect.DbvtVolume.Vector3, Bump.Intersect.DbvtAabbMm.Vector3, 'Intersect' );
+ strictEqual( Bump.Proximity.DbvtVolume2,        Bump.Proximity.DbvtAabbMm2,        'Proximity' );
+ strictEqual( Bump.Select.DbvtVolume3,           Bump.Select.DbvtAabbMm3,           'Select'    );
+ strictEqual( Bump.Merge.DbvtVolume3,            Bump.Merge.DbvtAabbMm3,            'Merge'     );
+ strictEqual( Bump.NotEqual.DbvtVolume2,         Bump.NotEqual.DbvtAabbMm2,         'NotEqual'  );
 });
 
 module( 'Bump.DbvtNode' );
@@ -707,7 +732,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
     dbvt0.root = root;
 
     return dbvt0;
-  }
+  };
 
   // make an n^3 grid of 0.5 x 0.5 x 0.5 bounding boxes, centered on the origin
   var makeVolumeGrid = function( n ) {
@@ -722,14 +747,14 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
       }
     }
     return vols;
-  }
+  };
 
   // insert all volumes into dbvt
   var insertAll = function( dbvt, vols ) {
     for ( var i = 0; i < vols.length; i++ ) {
       dbvt.insert( vols[ i ], i );
     }
-  }
+  };
 
   module( 'Dbvt typemembers' );
 
@@ -1051,7 +1076,7 @@ test( 'Bump.DbvtNodeEnumerator ProcessNode member function', function() {
       ' { internal : 0 : children 1 2 } { leaf : 1 : 23 } { internal : 2 : children 3 4 } { leaf : 3 : 8 } { internal : 4 : children 5 6 } { leaf : 5 : 17 } { leaf : 6 : 26 }',
       ' { internal : 0 : children 1 2 } { leaf : 1 : 8 } { internal : 2 : children 3 4 } { leaf : 3 : 17 } { leaf : 4 : 26 }',
       ' { internal : 0 : children 1 2 } { leaf : 1 : 17 } { leaf : 2 : 26 }',
-      ' { leaf : 0 : 26 }',
+      ' { leaf : 0 : 26 }'
     ],
     dbvt = Bump.Dbvt.create(),
     vols = makeVolumeGrid( 3 ),

@@ -1,3 +1,10 @@
+// load: bump.js
+// load: LinearMath/Vector3.js
+// load: BulletCollision/CollisionShapes/PolyhedralConvexShape.js
+
+// run: LinearMath/AabbUtil2.js
+// run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+
 // The `BoxShape` is a box primitive around the origin, its sides axis aligned
 // with length specified by half extents, in local shape coordinates. When used
 // as part of a `CollisionObject` or `btRigidBody` it will be an oriented box in

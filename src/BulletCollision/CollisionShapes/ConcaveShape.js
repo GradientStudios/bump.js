@@ -1,3 +1,6 @@
+// load: bump.js
+// load: BulletCollision/CollisionShapes/CollisionShape.js
+
 (function( window, Bump ) {
 
   Bump.PHY_ScalarType = Bump.Enum([

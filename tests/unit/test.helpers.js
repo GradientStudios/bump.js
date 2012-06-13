@@ -1,3 +1,60 @@
+// Given an object, checks the types of the properties to ensure that they are
+// of the correct types compared to the expected values.
+var checkTypes = function( obj, checks ) {
+  for ( var i = 0; i < checks.length; ++i ) {
+    var propName = checks[i][0];
+    var propType = checks[i][1];
+    if ( typeof propType === 'object' ) {
+      if ( propType !== null ) {
+        ok( obj[ propName ] instanceof propType.prototype.constructor, propName );
+      } else {
+        if ( obj[ propName ] === null ) {
+          strictEqual( obj[ propName ], propType, propName );
+        } else {
+          ok( typeof obj[ propName ] === 'object', propName );
+        }
+      }
+    } else {
+      if ( propType === 'array' ) {
+        ok( Array.isArray( obj[ propName ] ), propName );
+      } else {
+        strictEqual( typeof obj[ propName ], propType, propName );
+      }
+    }
+  }
+
+  checks = checks.map(function( elem ) {
+    return elem[0];
+  });
+
+  for ( var prop in obj ) {
+    if ( obj.hasOwnProperty( prop ) ) {
+      if ( checks.indexOf( prop ) === -1 ) {
+        ok( false, 'has no extra property "' + prop + '"' );
+      }
+    }
+  }
+};
+
+// Given an object that should represent an enum, make sure that no two properties
+// of the enum have the same value.
+var testEnumForUniqueValues = function( enumObj ) {
+  var values = {};
+  for ( var key in enumObj ) {
+    values[ enumObj[ key ] ] = values[ enumObj[ key ] ] || [];
+    values[ enumObj[ key ] ].push( key );
+  }
+  for ( var value in values ) {
+    if ( values[ value ].length > 1 ) {
+      // duplicate values were found
+      ok( false, 'Failed because properties ' + values[ value ].toString() + ' share value ' + value );
+    }
+    else {
+      ok( true, 'Property ' + values[ value ][ 0 ] + ' has unique value ' + value );
+    }
+  }
+};
+
 // Checks `result` against `expected` in a way similar to `deepEqual` but only
 // checks equality of numbers, and does this with a given `epsilon`.
 var epsilonNumberCheck = function( result, expected, epsilon, message ) {
@@ -19,9 +76,9 @@ var epsilonNumberCheck = function( result, expected, epsilon, message ) {
     if ( checkedObjects.indexOf( eProp ) === -1 ) {
 
       if ( typeof eProp === 'number' ) {
-        var expectedValue = ( Math.abs( rProp - eProp ) < epsilon
-                              ? rProp
-                              : eProp );
+        var expectedValue = ( Math.abs( rProp - eProp ) < epsilon ?
+                              rProp :
+                              eProp );
         equal( rProp, expectedValue, message + path );
       } else if ( Array.isArray( eProp ) ) {
         checkedObjects.push( eProp );
@@ -42,153 +99,6 @@ var epsilonNumberCheck = function( result, expected, epsilon, message ) {
   }
 };
 
-// Assuming that clone works, tests `op` on `a` with a list of arguments `b` and
-// expected values `expected`.
-//
-// Options include:
-//
-// - a test for setting a destination, `create`d from given `destType`
-// - a test for whether `a` is supposed to modify itself
-var testUnaryOp = function( objType, op, objs, expected, options ) {
-  options = options || {};
-  options.epsilon = options.epsilon || 0;
-  options.modifiesSelf = options.modifiesSelf === undefined ? false : options.modifiesSelf;
-
-  if ( typeof op === 'string' ) {
-    ok( op in objType.prototype, op + ' exists' );
-    op = objType.prototype[ op ];
-  }
-
-  var epsilonDeepEqual = deepEqual;
-  if ( options.epsilon > 0 ) {
-    // Using epsilon to test numeric values instead of the normal deepEqual
-    epsilonDeepEqual = function( result, expected, message ) {
-      epsilonNumberCheck( result, expected, options.epsilon, message );
-    };
-  }
-
-  objs = Array.isArray( objs ) ? objs : [ objs ];
-  expected = Array.isArray( expected ) ? expected : [ expected ];
-
-  for ( var i = 0; i < objs.length; ++i ) {
-    var c, o = objs[i], oClone = o.clone();
-
-    epsilonDeepEqual( op.apply( objs[i], [] ), expected[i], 'basic equality' );
-    if ( options.modifiesSelf ) {
-      epsilonDeepEqual( objs[i], expected[i], 'self modification check' );
-      oClone.clone( objs[i] );
-    } else {
-      deepEqual( o, oClone, 'does not modify object' );
-    }
-
-    if ( options.destType ) {
-      var d = options.destType.create(), dRef = d;
-
-      c = op.apply( o, [ d ] );
-      strictEqual( c, dRef, 'answer is placed in specified destination' );
-      epsilonDeepEqual( d, expected[i], 'setting destination works correctly' );
-
-      if ( !options.modifiesSelf ) {
-        deepEqual( o, oClone, 'does not modify object' );
-      }
-
-      if ( options.destType === objType ) {
-        c = op.apply( o, [ o ] );
-        strictEqual( c, o, 'answer is placed in specified destination' );
-        epsilonDeepEqual( o, expected[i], 'setting yourself as destination works correctly' );
-
-        // reset o after done
-        oClone.clone( o );
-      }
-    }
-  }
-};
-
-var testBinaryOp = function( objType, op, a, b, expected, options ) {
-  options = options || {};
-  options.epsilon = options.epsilon || 0;
-  options.modifiesSelf = options.modifiesSelf === undefined ? false : options.modifiesSelf;
-
-  if ( typeof op === 'string' ) {
-    ok( op in objType.prototype, op + ' exists' );
-    op = objType.prototype[ op ];
-  }
-
-  var epsilonDeepEqual = deepEqual;
-  if ( options.epsilon > 0 ) {
-    // Using epsilon to test numeric values instead of the normal deepEqual
-    epsilonDeepEqual = function( result, expected, message ) {
-      epsilonNumberCheck( result, expected, options.epsilon, message );
-    };
-  }
-
-  b = Array.isArray( b ) ? b : [ b ];
-  expected = Array.isArray( expected ) ? expected : [ expected ];
-
-  var aClone = a.clone();
-
-  for ( var i = 0; i < b.length; ++i ) {
-    var bRef = b[i], bClone, c;
-
-    if ( bRef.clone ) {
-      bClone = b[i].clone();
-    } else {
-      bClone = b[i];
-    }
-
-    epsilonDeepEqual( op.apply( a, [ b[i] ] ), expected[i], 'basic equality' );
-    if ( options.modifiesSelf ) {
-      epsilonDeepEqual( a, expected[i], 'self modification check' );
-      aClone.clone( a );
-    } else {
-      deepEqual( a, aClone, 'does not modify a' );
-    }
-
-    if ( options.destType ) {
-      var d = options.destType.create(),
-          dRef = d;
-
-      c = op.apply( a, [ b[i], d ] );
-      strictEqual( c, dRef, 'answer is placed in specified destination' );
-      epsilonDeepEqual( d, expected[i], 'setting destination works correctly' );
-
-      if ( options.modifiesSelf ) {
-        // reset a
-        aClone.clone( a );
-      } else {
-        deepEqual( a, aClone, 'does not modify a' );
-      }
-
-      // self destination test modifies a
-      if ( options.destType === objType ) {
-        deepEqual( a, aClone, 'ensure a starts off the same' );
-
-        c = op.apply( a, [ b[i], a ] );
-        strictEqual( c, a, 'answer is placed in specified self-destination' );
-        epsilonDeepEqual( a, expected[i], 'setting yourself as destination works correctly' );
-
-        // reset a after done
-        aClone.clone( a );
-      }
-
-      if ( bRef.constructor.prototype === options.destType.prototype ) {
-        deepEqual( b[i], bClone, 'ensure b starts off the same' );
-
-        c = op.apply( a, [ b[i], b[i] ] );
-        strictEqual( c, bRef, 'answer is placed in specified arg-destination' );
-        epsilonDeepEqual( b[i], expected[i], 'setting arg as destination works correctly' );
-
-        // reset b after done
-        bClone.clone( b[i] );
-      }
-    }
-
-    deepEqual( b[i], bClone, 'does not modify b' );
-
-    aClone.clone( a );
-  }
-};
-
 var testFunc = function( objType, func, options ) {
   options = options || {};
   options.isStaticFunc = options.isStaticFunc || false;
@@ -198,6 +108,7 @@ var testFunc = function( objType, func, options ) {
 
   var i, j, epsilonDeepEqual = deepEqual;
   var savedReferences = {};
+  var descPrefix = '';
 
   if ( options.epsilon > 0 ) {
     // Using epsilon to test numeric values instead of the normal deepEqual
@@ -214,7 +125,7 @@ var testFunc = function( objType, func, options ) {
   };
 
   var checkEqual = function( result, expected, message ) {
-    if ( !(result === expected) ) {
+    if ( result !== expected ) {
       equal( result, expected, message );
     }
   };
@@ -236,7 +147,7 @@ var testFunc = function( objType, func, options ) {
       return function() {};
     } else {
       return function( message ) {
-        message = message === undefined ? 'does not modify object' : message;
+        message = descPrefix + ( message === undefined ? 'does not modify object' : message );
         epsilonDeepEqual( a, aClone, message );
       };
     }
@@ -281,7 +192,7 @@ var testFunc = function( objType, func, options ) {
     return function() {
       for ( var prop in savedReferences ) {
         if ( savedReferences.hasOwnProperty( prop ) ) {
-          strictEqual( a[ prop ], savedReferences[ prop ], prop + ' reference not changed' );
+          strictEqual( a[ prop ], savedReferences[ prop ], descPrefix + prop + ' reference not changed' );
         }
       }
     };
@@ -290,7 +201,7 @@ var testFunc = function( objType, func, options ) {
   var postFuncObjCheck = (function() {
     if ( options.modifiesSelf ) {
       return function() {
-        checkExpected( a, expected, 'modifies itself to be expected value' );
+        checkExpected( a, expected, descPrefix + 'modifies itself to be expected value' );
         a.clone( a );
       };
     } else {
@@ -307,15 +218,15 @@ var testFunc = function( objType, func, options ) {
       if ( arg.isConst && argIndex !== exception ) {
         if ( !( options.modifiesSelf && a === arg.param ) ) {
           if ( !arg.param.clone ) {
-            strictEqual( args[argIndex], argsClone[argIndex], 'const arg ' + argIndex + ' is not modified' );
+            strictEqual( args[argIndex], argsClone[argIndex], descPrefix + 'const arg ' + argIndex + ' is not modified' );
           } else {
-            epsilonDeepEqual( args[argIndex], argsClone[argIndex], 'const arg ' + argIndex + ' is not modified' );
+            epsilonDeepEqual( args[argIndex], argsClone[argIndex], descPrefix + 'const arg ' + argIndex + ' is not modified' );
           }
         }
       }
 
       if ( arg.expected !== undefined ) {
-        epsilonDeepEqual( args[argIndex], arg.expected, 'test index ' + i + ': reference arg ' + argIndex + ' has correct expected value' );
+        epsilonDeepEqual( args[argIndex], arg.expected, descPrefix + 'test index ' + i + ': reference arg ' + argIndex + ' has correct expected value' );
         if ( argsClone[argIndex].clone ) {
           argsClone[argIndex].clone( args[argIndex] );
         } else {
@@ -400,70 +311,89 @@ var testFunc = function( objType, func, options ) {
     }
   }
 
+  var argMap = function( elem, idx, arr ) {
+    if ( elem.clone ) {
+      return elem.clone();
+    } else {
+      return elem;
+    }
+  };
+
   for ( i = 0; i < objs.length; ++i ) {
     var a = objs[i],
         aClone,
         args = options.args === undefined ? [] : options.args[i].map( extractArgs ),
-        argsClone = args.map(function( elem, idx, arr ) {
-          if ( elem.clone ) {
-            return elem.clone();
-          } else {
-            return elem;
-          }
-        }),
+        argsClone = args.map( argMap ),
         expected = options.expected === undefined ? undefined : options.expected[i],
         ret;
+    descPrefix = 'test #' + (i + 1) + ': ';
 
     if ( !options.isStaticFunc ) {
       aClone = a.clone();
     }
 
     preFuncSaveReferences();
-    checkExpected( func.apply( a, args ), expected, 'returns expected value' );
+    checkExpected( func.apply( a, args ), expected, descPrefix + 'returns expected value' );
     postFuncCheckReferences();
     postFuncCheck();
 
+    var prefixes = [];
     if ( options.destType ) {
+      prefixes.push( descPrefix );
+      descPrefix += 'with dest set: ';
+
       var dest = options.destType.create(), destRef = dest;
 
       preFuncSaveReferences();
       ret = func.apply( a, addDestArg( dest ) );
       postFuncCheckReferences();
 
-      strictEqual( ret, dest, 'answer is placed in specified destination' );
-      checkExpected( dest, expected, 'setting destination works correctly' );
+      strictEqual( ret, dest, descPrefix + 'answer is placed in specified destination' );
+      checkExpected( dest, expected, descPrefix + 'setting destination works correctly' );
 
       postFuncCheck();
 
       if ( options.destType === objType ) {
+        prefixes.push( descPrefix );
+        descPrefix += 'with self dest: ';
+
         preFuncSaveReferences();
         ret = func.apply( a, addDestArg( a ) );
         postFuncCheckReferences();
-        strictEqual( ret, a, 'answer is placed in specified destination' );
-        checkExpected( a, expected, 'setting yourself as destination works correctly' );
+        strictEqual( ret, a, descPrefix + 'answer is placed in specified destination' );
+        checkExpected( a, expected, descPrefix + 'setting yourself as destination works correctly' );
 
         postFuncArgCheck();
         resetA();
+
+        descPrefix = prefixes.pop();
       }
 
       for ( j = 0; j < args.length; ++j ) {
         var argCorrectType = args[j].constructor.prototype === options.destType.prototype;
         if ( argCorrectType ) {
-          epsilonDeepEqual( args[j], argsClone[j], 'arg is not modified' );
+          prefixes.push( descPrefix );
+          descPrefix += 'with arg ' + j + ' as dest: ';
+
+          epsilonDeepEqual( args[j], argsClone[j], descPrefix + 'arg ' + j + ' is not modified' );
 
           preFuncSaveReferences();
           ret = func.apply( a, addDestArg( args[j] ) );
           postFuncCheckReferences();
 
-          strictEqual( ret, args[j], 'answer is placed in specified destination' );
-          checkExpected( args[j], expected, 'setting argument as destination works correctly' );
+          strictEqual( ret, args[j], descPrefix + 'answer is placed in specified destination' );
+          checkExpected( args[j], expected, descPrefix + 'setting argument as destination works correctly' );
 
           postFuncObjCheck();
           postFuncArgCheck( j );
 
           argsClone[j].clone( args[j] );
+
+          descPrefix = prefixes.pop();
         }
       }
+
+      descPrefix = prefixes.pop();
     }
 
     // postFuncArgCheck();

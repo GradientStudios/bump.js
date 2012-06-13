@@ -113,7 +113,7 @@ test( 'rayTest', function() {
       ok( !rayCallback.hasHit(), 'Test ' + testNum + ' does not have a hit.' );
     }
     testNum++;
-  }
+  };
 
   // run the actual tests
   raycastTest({

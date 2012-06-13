@@ -1,24 +1,5 @@
 module( 'Bump.BroadphaseNativeTypes' );
 
-// Given an object that should represent an enum, make sure that no two properties
-// of the enum have the same value.
-var testEnumForUniqueValues = function( enumObj ) {
-  var values = {};
-  for ( var key in enumObj ) {
-    values[ enumObj[ key ] ] = values[ enumObj[ key ] ] || [];
-    values[ enumObj[ key ] ].push( key );
-  }
-  for ( var value in values ) {
-    if ( values[ value ].length > 1 ) {
-      // duplicate values were found
-      ok( false, 'Failed because properties ' + values[ value ].toString() + ' share value ' + value );
-    }
-    else {
-      ok( true, 'Property ' + values[ value ][ 0 ] + ' has unique value ' + value );
-    }
-  }
-}
-
 // Takes the given `op`, which must be a unary type member that returns a boolean,
 // and evaluates it on all members of the given `enumObj` object.
 // `trueValues` is an array of all enum property names for which the expected result is true.
@@ -274,7 +255,7 @@ test( 'create', function() {
   a = Bump.BroadphasePair.create( p0, p1 ),
   b = Bump.BroadphasePair.create( p0, p1 );
 
-  ok( typeof a == 'object', 'creates and object' );
+  ok( typeof a === 'object', 'creates and object' );
   ok( a !== b, 'creates different objects' );
   deepEqual( a, b, 'creates similar objects' );
 

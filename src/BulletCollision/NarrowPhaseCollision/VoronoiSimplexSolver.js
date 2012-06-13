@@ -1,3 +1,7 @@
+// load: bump.js
+
+// run: LinearMath/Vector3.js
+
 (function( window, Bump ) {
   var VORONOI_SIMPLEX_MAX_VERTS = 5,
       VORONOI_DEFAULT_EQUAL_VERTEX_THRESHOLD = 0.0001,

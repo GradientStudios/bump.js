@@ -1,3 +1,14 @@
+// load: bump.js
+// load: BulletCollision/CollisionDispatch/CollisionConfiguration.js
+
+// run: BulletCollision/NarrowPhaseCollision/VoronoiSimplexSolver.js
+// run: BulletCollision/NarrowPhaseCollision/GjkEpaPenetrationDepthSolver.js
+// run: BulletCollision/CollisionDispatch/ConvexConvexAlgorithm.js
+// run: BulletCollision/CollisionDispatch/ConvexConcaveCollisionAlgorithm.js
+// run: BulletCollision/CollisionDispatch/CompoundCollisionAlgorithm.js
+// run: BulletCollision/CollisionDispatch/BoxBoxCollisionAlgorithm.js
+// run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+
 (function( window, Bump ) {
   Bump.DefaultCollisionConstructionInfo = Bump.type({
     init: function DefaultCollisionConstructionInfo() {

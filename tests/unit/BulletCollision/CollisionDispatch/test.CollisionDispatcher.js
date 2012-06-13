@@ -62,7 +62,7 @@ test( 'processOverlap', function() {
       dispatcher = Bump.CollisionDispatcher.create(),
       info = Bump.DispatcherInfo.create(),
       nearCallback = function( p, d, i ) {
-        ok( ( p === pair) && ( d == dispatcher ) && ( i === info ), 'near callback fired' );
+        ok( ( p === pair) && ( d === dispatcher ) && ( i === info ), 'near callback fired' );
       };
 
   dispatcher.setNearCallback( nearCallback );

@@ -1,3 +1,8 @@
+// load: bump.js
+// load: BulletCollision/NarrowPhaseCollision/ConvexPenetrationDepthSolver.js
+
+// run: BulletCollision/NarrowPhaseCollision/GjkEpa2.js
+
 (function( window, Bump ) {
 
   Bump.GjkEpaPenetrationDepthSolver = Bump.type({

@@ -1,3 +1,11 @@
+// load: bump.js
+// load: BulletDynamics/ConstraintSolver/ConstraintSolver.js
+
+// run: LinearMath/Vector3.js
+// run: LinearMath/AlignedObjectArray.js
+// run: BulletDynamics/ConstraintSolver/ContactSolverInfo.js
+// run: BulletDynamics/Dynamics/RigidBody.js
+
 (function( window, Bump ) {
   // *** Bump.SequentialImpulseConstraintSolver *** is a port of the bullet
   // class `btSequentialImpulseConstraintSolver`. Original documentation:

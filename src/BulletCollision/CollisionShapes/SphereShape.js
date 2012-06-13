@@ -1,3 +1,9 @@
+// load: bump.js
+// load: BulletCollision/CollisionShapes/ConvexInternalShape.js
+
+// run: LinearMath/Vector3.js
+// run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+
 (function( window, Bump ) {
 
   Bump.SphereShape = Bump.type({

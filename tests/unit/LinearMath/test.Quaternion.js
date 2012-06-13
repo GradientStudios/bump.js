@@ -8,9 +8,8 @@ function exist( method ) {
   return ok( method in Bump.Quaternion.prototype, method + ' exists' );
 }
 
-module( 'Bump.Quaternion btQuadWord members' );
-
-test( 'create', function() {
+module( 'Quaternion.create (btQuadWord)' );
+test( 'basic', function() {
   ok( Bump.Quaternion.create, 'create exists' );
 
   var a = Bump.Quaternion.create(),
@@ -49,7 +48,8 @@ test( 'create', function() {
   }
 });
 
-test( 'clone', function() {
+module( 'Quaternion.clone (btQuadWord)' );
+test( 'static clone', function() {
   ok( Bump.Quaternion.clone, 'clone exists' );
 
   var a = Bump.Quaternion.create( 1, 2, 3, 4 ),
@@ -61,7 +61,7 @@ test( 'clone', function() {
   notStrictEqual( a, b, 'clone creates new object' );
 });
 
-test( 'clone: random test', function() {
+test( 'static clone: rand() test', function() {
   function rand() {
     return Math.random() * 2 - 1;
   }
@@ -95,7 +95,7 @@ test( 'member clone', function() {
   strictEqual( a, aRef, 'does not allocate new a' );
 });
 
-test( 'member clone: random test', function() {
+test( 'member clone: rand() test', function() {
   function rand() {
     return Math.random() * 2 - 1;
   }
@@ -111,6 +111,7 @@ test( 'member clone: random test', function() {
   }
 });
 
+module( 'Quaternion getters and setters (btQuadWord)' );
 test( '[sg]et[XYZW]', function() {
   var components = [ 'X', 'Y', 'Z', 'W' ];
   for ( var i = 0; i < components.length; ++i ) {
@@ -148,6 +149,7 @@ test( '[sg]et[XYZW]', function() {
   strictEqual( a, aRef, 'does not allocate new a' );
 });
 
+module( 'Quaternion unary operator* property (btQuadWord)' );
 test( 'unary operator* property', function() {
   for ( var i = 0; i < 4; ++i ) {
     exist( i );
@@ -183,7 +185,8 @@ test( 'unary operator* property', function() {
   strictEqual( a, aRef, 'does not allocate new a' );
 });
 
-test( 'equal and notEqual', function() {
+module( 'Quaternion equal and notEqual (btQuadWord)' );
+test( 'basic', function() {
   exist( 'equal' );
   exist( 'notEqual' );
 
@@ -198,7 +201,8 @@ test( 'equal and notEqual', function() {
   strictEqual( a, aRef, 'does not allocate new a' );
 });
 
-test( 'setValue', function() {
+module( 'Quaternion.setValue (btQuadWord)' );
+test( 'basic', function() {
   exist( 'setValue' );
 
   var a = Bump.Quaternion.create(),
@@ -223,6 +227,7 @@ test( 'setValue', function() {
   strictEqual( a, aRef, 'does not allocate new a' );
 });
 
+module( 'Quaternion.setMin (btQuadWord)' );
 test( 'setMin', function() {
   exist( 'setMin' );
 
@@ -253,6 +258,7 @@ test( 'setMin', function() {
   deepEqual( b, bClone, 'does not change b' );
 });
 
+module( 'Quaternion.setMax (btQuadWord)' );
 test( 'setMax', function() {
   exist( 'setMax' );
 
@@ -283,9 +289,8 @@ test( 'setMax', function() {
   deepEqual( b, bClone, 'does not change b' );
 });
 
-module( 'Bump.Quaternion btQuaternion members' );
-
-test( 'setRotation', function() {
+module( 'Quaternion.setRotation' );
+test( 'basic', function() {
   exist( 'setRotation' );
 
   var a = Bump.Quaternion.create(),
@@ -312,7 +317,8 @@ test( 'setRotation', function() {
   strictEqual( a, aRef, 'does not allocate new a' );
 });
 
-test( 'setEuler', function() {
+module( 'Quaternion.setEuler' );
+test( 'basic', function() {
   exist( 'setEuler' );
 
   var a = Bump.Quaternion.create(),
@@ -339,7 +345,8 @@ test( 'setEuler', function() {
   strictEqual( a, aRef, 'does not allocate new a' );
 });
 
-test( 'setEulerZYX', function() {
+module( 'Quaternion.setEulerZYX' );
+test( 'basic', function() {
   exist( 'setEulerZYX' );
 
   var a = Bump.Quaternion.create(),
@@ -366,7 +373,8 @@ test( 'setEulerZYX', function() {
   strictEqual( a, aRef, 'does not allocate new a' );
 });
 
-test( 'negate', function() {
+module( 'Quaternion.negate' );
+test( 'basic', function() {
   var objs = [
         Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
         Bump.Quaternion.create( -1, -2, -3, -4 )
@@ -376,108 +384,126 @@ test( 'negate', function() {
         Bump.Quaternion.create( 1, 2, 3, 4 )
       ];
 
-  testUnaryOp( Bump.Quaternion, 'negate', objs, expected );
+  testFunc( Bump.Quaternion, 'negate', {
+    objects: objs,
+    expected: expected
+  });
 });
 
-test( 'add', function() {
-  exist( 'add' );
-
+module( 'Quaternion.add' );
+test( 'basic', function() {
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
       b = Bump.Quaternion.create( 1, 2, 3, 4 ),
       expected = Bump.Quaternion.create( 1.5, 2, 2.5, 3 );
 
-  testBinaryOp( Bump.Quaternion, "add", a, b, expected, {
+  testFunc( Bump.Quaternion, 'add', {
+    objects: a,
+    args: [[ b ]],
+    expected: [ expected ],
     destType: Bump.Quaternion
   });
 });
 
-test( 'addSelf', function() {
-  exist( 'addSelf' );
-
+module( 'Quaternion.addSelf' );
+test( 'basic', function() {
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
       b = Bump.Quaternion.create( 1, 2, 3, 4 ),
       expected = Bump.Quaternion.create( 1.5, 2, 2.5, 3 );
 
-  testBinaryOp( Bump.Quaternion, "addSelf", a, b, expected, {
+  testFunc( Bump.Quaternion, 'addSelf', {
+    objects: a,
+    args: [[ b ]],
+    expected: [ expected ],
     modifiesSelf: true
   });
 });
 
-test( 'subtract', function() {
-  exist( 'subtract' );
-
+module( 'Quaternion.subtract' );
+test( 'basic', function() {
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
       b = Bump.Quaternion.create( -1, -2, -3, -4 ),
       expected = Bump.Quaternion.create( 1.5, 2, 2.5, 3 );
 
-  testBinaryOp( Bump.Quaternion, "subtract", a, b, expected, {
+  testFunc( Bump.Quaternion, 'subtract', {
+    objects: a,
+    args: [[ b ]],
+    expected: [ expected ],
     destType: Bump.Quaternion
   });
 });
 
-test( 'subtractSelf', function() {
-  exist( 'subtractSelf' );
-
+module( 'Quaternion.subtractSelf' );
+test( 'basic', function() {
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
       b = Bump.Quaternion.create( -1, -2, -3, -4 ),
       expected = Bump.Quaternion.create( 1.5, 2, 2.5, 3 );
 
-  testBinaryOp( Bump.Quaternion, "subtractSelf", a, b, expected, {
+  testFunc( Bump.Quaternion, 'subtractSelf', {
+    objects: a,
+    args: [[ b ]],
+    expected: [ expected ],
     modifiesSelf: true
   });
 });
 
-test( 'multiplyQuaternion', function() {
-  exist( 'multiplyQuaternion' );
-
+module( 'Quaternion.multiplyQuaternion' );
+test( 'basic', function() {
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
       b = Bump.Quaternion.create( -1, -2, -3, -4 ),
       expected = Bump.Quaternion.create( -2, 4, 4, 3 );
 
-  testBinaryOp( Bump.Quaternion, "multiplyQuaternion", a, b, expected, {
+  testFunc( Bump.Quaternion, 'multiplyQuaternion', {
+    objects: a,
+    args: [[ b ]],
+    expected: [ expected ],
     destType: Bump.Quaternion
   });
 });
 
-test( 'multiplyQuaternionSelf', function() {
-  exist( 'multiplyQuaternionSelf' );
-
+module( 'Quaternion.multiplyQuaternionSelf' );
+test( 'basic', function() {
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
       b = Bump.Quaternion.create( -1, -2, -3, -4 ),
       expected = Bump.Quaternion.create( -2, 4, 4, 3 );
 
-  testBinaryOp( Bump.Quaternion, "multiplyQuaternionSelf", a, b, expected, {
+  testFunc( Bump.Quaternion, 'multiplyQuaternionSelf', {
+    objects: a,
+    args: [[ b ]],
+    expected: [ expected ],
     modifiesSelf: true
   });
 });
 
-test( 'multiplyVector', function() {
-  exist( 'multiplyVector' );
-
+module( 'Quaternion.multiplyVector' );
+test( 'basic', function() {
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
       b = Bump.Vector3.create( 1, -2, 3 ),
       expected = Bump.Quaternion.create( -2, 0, -4, 1 );
 
-  testBinaryOp( Bump.Quaternion, "multiplyVector", a, b, expected, {
+  testFunc( Bump.Quaternion, 'multiplyVector', {
+    objects: a,
+    args: [[ b ]],
+    expected: [ expected ],
     destType: Bump.Quaternion
   });
 });
 
-test( 'vectorMultiply', function() {
-  exist( 'vectorMultiply' );
-
+module( 'Quaternion.vectorMultiply' );
+test( 'basic', function() {
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
       b = Bump.Vector3.create( 1, -2, 3 ),
       expected = Bump.Quaternion.create( 0, 4, -2, 1 );
 
-  testBinaryOp( Bump.Quaternion, "vectorMultiply", a, b, expected, {
+  testFunc( Bump.Quaternion, 'vectorMultiply', {
+    objects: a,
+    args: [[ b ]],
+    expected: [ expected ],
     destType: Bump.Quaternion
   });
 });
 
-test( 'multiplyScalar', function() {
-  exist( 'multiplyScalar' );
-
+module( 'Quaternion.multiplyScalar' );
+test( 'basic', function() {
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
       b = [ 1, -2 ],
       expected = [
@@ -485,14 +511,16 @@ test( 'multiplyScalar', function() {
         Bump.Quaternion.create( -1, 0, 1, 2 )
       ];
 
-  testBinaryOp( Bump.Quaternion, "multiplyScalar", a, b, expected, {
+  testFunc( Bump.Quaternion, 'multiplyScalar', {
+    objects: a,
+    args: b.map(function( e ) { return [ e ]; }),
+    expected: expected,
     destType: Bump.Quaternion
   });
 });
 
-test( 'multiplyScalarSelf', function() {
-  exist( 'multiplyScalarSelf' );
-
+module( 'Quaternion.multiplyScalarSelf' );
+test( 'basic', function() {
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
       b = [ 1, -2 ],
       expected = [
@@ -500,14 +528,16 @@ test( 'multiplyScalarSelf', function() {
         Bump.Quaternion.create( -1, 0, 1, 2 )
       ];
 
-  testBinaryOp( Bump.Quaternion, "multiplyScalarSelf", a, b, expected, {
+  testFunc( Bump.Quaternion, 'multiplyScalarSelf', {
+    objects: a,
+    args: b.map(function( e ) { return [ e ]; }),
+    expected: expected,
     modifiesSelf: true
   });
 });
 
-test( 'divideScalar', function() {
-  exist( 'divideScalar' );
-
+module( 'Quaternion.divideScalar' );
+test( 'basic', function() {
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
       b = [ 1, -2 ],
       expected = [
@@ -515,14 +545,16 @@ test( 'divideScalar', function() {
         Bump.Quaternion.create( -0.25, 0, 0.25, 0.5 )
       ];
 
-  testBinaryOp( Bump.Quaternion, "divideScalar", a, b, expected, {
+  testFunc( Bump.Quaternion, 'divideScalar', {
+    objects: a,
+    args: b.map(function( e ) { return [ e ]; }),
+    expected: expected,
     destType: Bump.Quaternion
   });
 });
 
-test( 'divideScalarSelf', function() {
-  exist( 'divideScalarSelf' );
-
+module( 'Quaternion.divideScalarSelf' );
+test( 'basic', function() {
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
       b = [ 1, -2 ],
       expected = [
@@ -530,22 +562,29 @@ test( 'divideScalarSelf', function() {
         Bump.Quaternion.create( -0.25, 0, 0.25, 0.5 )
       ];
 
-  testBinaryOp( Bump.Quaternion, "divideScalarSelf", a, b, expected, {
+  testFunc( Bump.Quaternion, 'divideScalarSelf', {
+    objects: a,
+    args: b.map(function( e ) { return [ e ]; }),
+    expected: expected,
     modifiesSelf: true
   });
 });
 
-test( 'dot', function() {
-  exist( 'dot' );
-
+module( 'Quaternion.dot' );
+test( 'basic', function() {
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
       b = Bump.Quaternion.create( -1, -2, -3, -4 ),
       expected = 5;
 
-  testBinaryOp( Bump.Quaternion, "dot", a, b, expected );
+  testFunc( Bump.Quaternion, 'dot', {
+    objects: a,
+    args: [[ b ]],
+    expected: [ expected ]
+  });
 });
 
-test( 'length', function() {
+module( 'Quaternion.length' );
+test( 'basic', function() {
   var objs = [
         Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
         Bump.Quaternion.create( -1, -2, -3, -4 )
@@ -553,10 +592,18 @@ test( 'length', function() {
       expected = [ Math.sqrt( 1.5 ), Math.sqrt( 30 ) ],
       expected2 = [ 1.5, 30 ];
 
-  testUnaryOp( Bump.Quaternion, 'length', objs, expected );
-  testUnaryOp( Bump.Quaternion, 'length2', objs, expected2 );
+  testFunc( Bump.Quaternion, 'length', {
+    objects: objs,
+    expected: expected
+  });
+
+  testFunc( Bump.Quaternion, 'length2', {
+    objects: objs,
+    expected: expected2
+  });
 });
 
+module( 'Quaternion.normalized' );
 test( 'normalized', function() {
   var objs = [
         Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
@@ -567,12 +614,15 @@ test( 'normalized', function() {
         Bump.Quaternion.create( -0.18257418583505536, -0.3651483716701107, -0.5477225575051661, -0.7302967433402214 )
       ];
 
-  testUnaryOp( Bump.Quaternion, 'normalized', objs, expected, {
+  testFunc( Bump.Quaternion, 'normalized', {
+    objects: objs,
+    expected: expected,
     destType: Bump.Quaternion
   });
 });
 
-test( 'normalize', function() {
+module( 'Quaternion.normalize' );
+test( 'basic', function() {
   var objs = [
         Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
         Bump.Quaternion.create( -1, -2, -3, -4 )
@@ -582,21 +632,27 @@ test( 'normalize', function() {
         Bump.Quaternion.create( -0.18257418583505536, -0.3651483716701107, -0.5477225575051661, -0.7302967433402214 )
       ];
 
-  testUnaryOp( Bump.Quaternion, 'normalize', objs, expected, {
+  testFunc( Bump.Quaternion, 'normalize', {
+    objects: objs,
+    expected: expected,
     modifiesSelf: true
   });
 });
 
-test( 'angle', function() {
-  exist( 'angle' );
-
+module( 'Quaternion.angle' );
+test( 'basic', function() {
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
       b = Bump.Quaternion.create( -1, -2, -3, -4 ),
       expected = 0.7297276562269663;
 
-  testBinaryOp( Bump.Quaternion, "angle", a, b, expected );
+  testFunc( Bump.Quaternion, 'angle', {
+    objects: a,
+    args: [[ b ]],
+    expected: [ expected ]
+  });
 });
 
+module( 'Quaternion.getAngle' );
 test( 'getAngle', function() {
   var objs = [
         Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
@@ -604,10 +660,14 @@ test( 'getAngle', function() {
       ],
       expected = [ 6.283185307179586, 6.283185307179586 ];
 
-  testUnaryOp( Bump.Quaternion, 'getAngle', objs, expected );
+  testFunc( Bump.Quaternion, 'getAngle', {
+    objects: objs,
+    expected: expected
+  });
 });
 
-test( 'getAxis', function() {
+module( 'Quaternion.getAxis' );
+test( 'basic', function() {
   var objs = [
         Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
         Bump.Quaternion.create( -1, -2, -3, -4 )
@@ -617,31 +677,37 @@ test( 'getAxis', function() {
         Bump.Vector3.create( 1, 0, 0 )
       ];
 
-  testUnaryOp( Bump.Quaternion, 'getAxis', objs, expected, {
+  testFunc( Bump.Quaternion, 'getAxis', {
+    objects: objs,
+    expected: expected,
     destType: Bump.Vector3
   });
 });
 
-test( 'farthest', function() {
-  exist( 'farthest' );
-
+module( 'Quaternion.farthest' );
+test( 'basic', function() {
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
       b = Bump.Quaternion.create( -1, -2, -3, -4 ),
       expected = Bump.Quaternion.create( 1, 2, 3, 4 );
 
-  testBinaryOp( Bump.Quaternion, "farthest", a, b, expected, {
+  testFunc( Bump.Quaternion, 'farthest', {
+    objects: a,
+    args: [[ b ]],
+    expected: [ expected ],
     destType: Bump.Quaternion
   });
 });
 
-test( 'nearest', function() {
-  exist( 'nearest' );
-
+module( 'Quaternion.nearest' );
+test( 'basic', function() {
   var a = Bump.Quaternion.create( 0.5, 0, -0.5, -1 ),
       b = Bump.Quaternion.create( -1, -2, -3, -4 ),
       expected = Bump.Quaternion.create( -1, -2, -3, -4 );
 
-  testBinaryOp( Bump.Quaternion, "nearest", a, b, expected, {
+  testFunc( Bump.Quaternion, 'nearest', {
+    objects: a,
+    args: [[ b ]],
+    expected: [ expected ],
     destType: Bump.Quaternion
   });
 });

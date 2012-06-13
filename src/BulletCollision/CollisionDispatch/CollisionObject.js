@@ -1,3 +1,8 @@
+// load: bump.js
+
+// run: LinearMath/Vector3.js
+// run: LinearMath/Transform.js
+
 (function( window, Bump ) {
   var ACTIVE_TAG = 1,
       ISLAND_SLEEPING = 2,

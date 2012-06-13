@@ -1,3 +1,9 @@
+// load: bump.js
+// load: BulletCollision/CollisionShapes/TriangleCallback.js
+// load: BulletCollision/BroadphaseCollision/QuantizedBvh.js
+
+// run: LinearMath/Vector3.js
+
 (function( window, Bump ) {
 
   var NodeTriangleCallback = Bump.type({

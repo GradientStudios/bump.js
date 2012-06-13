@@ -1,39 +1,3 @@
-var checkTypes = function( obj, checks ) {
-  for ( var i = 0; i < checks.length; ++i ) {
-    var propName = checks[i][0];
-    var propType = checks[i][1];
-    if ( typeof propType === 'object' ) {
-      if ( propType !== null ) {
-        ok( obj[ propName ] instanceof propType.prototype.constructor, propName );
-      } else {
-        if ( obj[ propName ] === null ) {
-          strictEqual( obj[ propName ], propType, propName );
-        } else {
-          ok( typeof obj[ propName ] === 'object', propName );
-        }
-      }
-    } else {
-      if ( propType === 'array' ) {
-        ok( Array.isArray( obj[ propName ] ), propName );
-      } else {
-        strictEqual( typeof obj[ propName ], propType, propName );
-      }
-    }
-  }
-
-  checks = checks.map(function( elem ) {
-    return elem[0];
-  });
-
-  for ( var prop in obj ) {
-    if ( obj.hasOwnProperty( prop ) ) {
-      if ( checks.indexOf( prop ) === -1 ) {
-        ok( false, 'has no extra property "' + prop + '"' );
-      }
-    }
-  }
-};
-
 var CollisionObjectDeepCopyCheck = function( a, b ) {
   notStrictEqual( a.worldTransform, b.worldTransform );
   notStrictEqual( a.interpolationWorldTransform, b.interpolationWorldTransform );

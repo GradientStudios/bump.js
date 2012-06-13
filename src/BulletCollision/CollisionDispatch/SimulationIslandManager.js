@@ -1,3 +1,9 @@
+// load: bump.js
+
+// run: LinearMath/AlignedObjectArray.js
+// run: BulletCollision/CollisionDispatch/CollisionObject.js
+// run: BulletCollision/CollisionDispatch/UnionFind.js
+
 (function( window, Bump ) {
 
   var getIslandId = function( lhs ) {

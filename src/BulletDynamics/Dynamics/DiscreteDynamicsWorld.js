@@ -1,3 +1,16 @@
+// load: bump.js
+// load: BulletCollision/CollisionDispatch/SimulationIslandManager.js
+// load: BulletDynamics/Dynamics/DynamicsWorld.js
+
+// run: LinearMath/AlignedObjectArray.js
+// run: LinearMath/Vector3.js
+// run: LinearMath/Transform.js
+// run: LinearMath/TransformUtil.js
+// run: BulletDynamics/ConstraintSolver/SequentialImpulseConstraintSolver.js
+// run: BulletDynamics/Dynamics/RigidBody.js
+// run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+// run: BulletCollision/CollisionShapes/SphereShape.js
+
 (function( window, Bump ) {
 
   // not sure that this needs to be globally accessible through Bump

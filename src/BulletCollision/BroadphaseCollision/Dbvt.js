@@ -1,3 +1,9 @@
+// load: bump.js
+
+// run: LinearMath/Vector3.js
+// run: LinearMath/AlignedObjectArray.js
+// run: LinearMath/AabbUtil2.js
+
 // **Bump.Dbvt** is the port of the `btDbvt` class in
 // [Bullet](http://bulletphysics.org).
 // Original btDbvt implementation by Nathanael Presson.

@@ -1,3 +1,7 @@
+// load: bump.js
+
+// run: LinearMath/Vector3.js
+
 // **Bump.BroadphaseProxy** is the port of the `btBroadphaseProxy` class in
 // [Bullet](http://bulletphysics.org).
 

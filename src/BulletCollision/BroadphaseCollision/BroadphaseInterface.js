@@ -1,3 +1,7 @@
+// load: bump.js
+
+// run: LinearMath/Vector3.js
+
 (function( window, Bump ) {
 
   Bump.BroadphaseAabbCallback = Bump.type({

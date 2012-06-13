@@ -1,3 +1,8 @@
+// load: bump.js
+// load: LinearMath/MotionState.js
+
+// run: LinearMath/Transform.js
+
 (function( window, Bump ) {
   Bump.DefaultMotionState = Bump.type({
     parent: Bump.MotionState,

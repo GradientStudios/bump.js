@@ -1,3 +1,11 @@
+// load: bump.js
+// load: BulletCollision/CollisionShapes/TriangleMeshShape.js
+
+// run: LinearMath/Vector3.js
+// run: BulletCollision/CollisionShapes/OptimizedBvh.js
+// run: BulletCollision/CollisionShapes/ConcaveShape.js
+// run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+
 (function( window, Bump ) {
 
   Bump.BvhTriangleMeshShape = Bump.type({
