@@ -1,3 +1,5 @@
+// load: bump.js
+
 (function( window, Bump ) {
 
   Bump.ConstraintSolver = Bump.type({

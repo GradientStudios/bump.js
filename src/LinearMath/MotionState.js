@@ -1,3 +1,5 @@
+// load: bump.js
+
 (function( window, Bump ) {
   Bump.MotionState = Bump.type({
     init: function MotionState() {},

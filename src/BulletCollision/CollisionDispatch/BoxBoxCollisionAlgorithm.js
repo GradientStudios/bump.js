@@ -1,3 +1,9 @@
+// load: bump.js
+// load: BulletCollision/CollisionDispatch/ActivatingCollisionAlgorithm.js
+// load: BulletCollision/CollisionDispatch/CollisionAlgorithmCreateFunc.js
+
+// run: BulletCollision/NarrowPhaseCollision/DiscreteCollisionDetectorInterface.js
+
 (function( window, Bump ) {
 
   Bump.BoxBoxCollisionAlgorithm = Bump.type({

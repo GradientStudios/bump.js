@@ -10,7 +10,7 @@ test( 'Transform creation', function() {
   ok( t instanceof Bump.Transform.prototype.init, 'creation without `new` operator' );
 });
 
-module( 'Bump.Transform constructor' );
+module( 'Transform constructor' );
 
 test( 'empty', function() {
   var transform = Bump.Transform.create();
@@ -36,7 +36,7 @@ test( 'arguments (Quaternion, Vector3)', function() {
   notStrictEqual( transform.origin, origin, 'transform origin is new copy' );
 });
 
-module( 'Bump.Transform.clone' );
+module( 'Transform.clone' );
 
 test( 'static', function() {
   var a = Bump.Transform.create( Bump.Quaternion.getIdentity(), Bump.Vector3.create() ),
@@ -93,7 +93,7 @@ test( 'basic', function() {
   notStrictEqual( a.origin, b.origin );
 });
 
-module( 'Bump.Transform.setOrigin' );
+module( 'Transform.setOrigin' );
 test( 'basic', function() {
   var a = Bump.Transform.create(),
       aRef = a,
@@ -111,7 +111,7 @@ test( 'basic', function() {
   strictEqual( o, oRef, 'o is not reallocated' );
 });
 
-module( 'Bump.Transform.setBasis' );
+module( 'Transform.setBasis' );
 test( 'basic', function() {
   var a = Bump.Transform.create(),
       aRef = a,
@@ -129,7 +129,7 @@ test( 'basic', function() {
   strictEqual( b, bRef, 'b is not reallocated' );
 });
 
-module( 'Bump.Transform.setRotation' );
+module( 'Transform.setRotation' );
 test( 'basic', function() {
   var a = Bump.Transform.create(),
       aRef = a,
@@ -147,7 +147,7 @@ test( 'basic', function() {
   strictEqual( q, qRef, 'q is not reallocated' );
 });
 
-module( 'Bump.Transform.setIdentity' );
+module( 'Transform.setIdentity' );
 test( 'basic', function() {
   var a = Bump.Transform.create( Bump.Quaternion.create(), Bump.Vector3.create( 1, 1, 1 ) ),
       aRef = a,
@@ -163,7 +163,7 @@ test( 'basic', function() {
   strictEqual( a.origin, aOriginRef, 'a.origin is not reallocated' );
 });
 
-module( 'Bump.Transform.equal' );
+module( 'Transform.equal' );
 test( 'basic', function() {
   var a = Bump.Transform.getIdentity(),
       aRef = a,
@@ -179,7 +179,7 @@ test( 'basic', function() {
   strictEqual( b, bRef, 'b is not reallocated' );
 });
 
-module( 'Bump.Transform.mult' );
+module( 'Transform.mult' );
 test( 'basic', function() {
   var a = Bump.Transform.create(
         Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, -1, 1 ), Math.PI / 3 ),
@@ -212,7 +212,7 @@ test( 'basic', function() {
   strictEqual( b, bRef, 'does not reallocate b' );
 });
 
-module( 'Bump.Transform.multiplyTransform' );
+module( 'Transform.multiplyTransform' );
 test( 'basic', function() {
   var a = Bump.Transform.create(
         Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, -1, 1 ), Math.PI / 3 ),
@@ -243,7 +243,7 @@ test( 'basic', function() {
   // });
 });
 
-module( 'Bump.Transform.multiplyTransformSelf' );
+module( 'Transform.multiplyTransformSelf' );
 test( 'basic', function() {
   var a = Bump.Transform.create(
         Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, -1, 1 ), Math.PI / 3 ),
@@ -262,12 +262,15 @@ test( 'basic', function() {
         Bump.Vector3.create( -1.3333333333333333, -0.6666666666666666, 0.6666666666666667 )
       );
 
-  testBinaryOp( Bump.Transform, "multiplyTransformSelf", a, b, expected, {
+  testFunc( Bump.Transform, 'multiplyTransformSelf', {
+    objects: a,
+    args: [[ b ]],
+    expected: [ expected ],
     modifiesSelf: true
   });
 });
 
-module( 'Bump.Transform.multiplyQuaternion' );
+module( 'Transform.multiplyQuaternion' );
 test( 'basic', function() {
   var a = Bump.Transform.create(
         Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, -1, 1 ), Math.PI / 3 ),
@@ -276,12 +279,15 @@ test( 'basic', function() {
       b = Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, 1, 1 ), Math.PI ),
       expected = Bump.Quaternion.create( 0.16666666666666655, 0.5, 0.8333333333333335, -0.16666666666666666 );
 
-  testBinaryOp( Bump.Transform, "multiplyQuaternion", a, b, expected, {
+  testFunc( Bump.Transform, 'multiplyQuaternion', {
+    objects: a,
+    args: [[ b ]],
+    expected: [ expected ],
     destType: Bump.Quaternion
   });
 });
 
-module( 'Bump.Transform.multiplyVector' );
+module( 'Transform.multiplyVector' );
 test( 'basic', function() {
   var a = Bump.Transform.create(
         Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, -1, 1 ), Math.PI / 3 ),
@@ -290,12 +296,15 @@ test( 'basic', function() {
       b = Bump.Vector3.create( 1, 1, 1 ),
       expected = Bump.Vector3.create( -1.3333333333333333, -0.6666666666666666, 0.6666666666666667 );
 
-  testBinaryOp( Bump.Transform, "multiplyVector", a, b, expected, {
+  testFunc( Bump.Transform, 'multiplyVector', {
+    objects: a,
+    args: [[ b ]],
+    expected: [ expected ],
     destType: Bump.Vector3
   });
 });
 
-module( 'Bump.Transform.inverse' );
+module( 'Transform.inverse' );
 test( 'basic', function() {
   var a = Bump.Transform.create(
         Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, -1, 1 ), Math.PI / 3 ),
@@ -319,14 +328,12 @@ test( 'basic', function() {
   strictEqual( a, aRef, 'does not allocate new a' );
 });
 
-module( 'Bump.Transform.invXform' );
+module( 'Transform.invXform' );
 test( 'basic', function() {
-  // testBinaryOp( Bump.Transform, "invXform", a, b, expected, {
-  //   destType: Bump.Vector3
-  // });
+  expect( 0 );
 });
 
-module( 'Bump.Transform.inverseTimes' );
+module( 'Transform.inverseTimes' );
 test( 'basic', function() {
   var a = Bump.Transform.create(
         Bump.Quaternion.createWithAxisAngle( Bump.Vector3.create( 1, -1, 1 ), Math.PI / 3 ),
@@ -345,7 +352,10 @@ test( 'basic', function() {
         Bump.Vector3.create( 3.333333333333333, 0.666666666666667, -0.6666666666666665 )
       );
 
-  testBinaryOp( Bump.Transform, "inverseTimes", a, b, expected, {
+  testFunc( Bump.Transform, 'inverseTimes', {
+    objects: a,
+    args: [[ b ]],
+    expected: [ expected ],
     destType: Bump.Transform
   });
 });

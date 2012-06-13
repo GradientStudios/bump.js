@@ -1,3 +1,8 @@
+// load: bump.js
+// load: BulletCollision/CollisionDispatch/CollisionWorld.js
+
+// run: BulletDynamics/ConstraintSolver/ContactSolverInfo.js
+
 (function( window, Bump ) {
 
   Bump.DynamicsWorldType = Bump.Enum([

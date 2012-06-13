@@ -93,11 +93,15 @@ test( 'basic', function() {
 
 module( 'PersistentManifold.setBodies' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'PersistentManifold.clearUserCache' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'PersistentManifold.getNumContacts' );
 
@@ -142,35 +146,51 @@ test( 'basic', function() {
 
 module( 'PersistentManifold.getCacheEntry' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'PersistentManifold.addManifoldPoint' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'PersistentManifold.removeContact' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'PersistentManifold.replaceContactPoint' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'PersistentManifold.validContactDistance' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'PersistentManifold.refreshContactPoints' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'PersistentManifold.clearManifold' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'PersistentManifold.sortCachedPoints' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'PersistentManifold manifold cache manipulation' );
 

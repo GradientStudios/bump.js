@@ -74,8 +74,12 @@ test( 'basic', function() {
 
 module( 'ManifoldResult.addContactPoint' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'ManifoldResult.refreshContactPoints' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});

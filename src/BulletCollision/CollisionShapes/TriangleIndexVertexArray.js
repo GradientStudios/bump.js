@@ -1,3 +1,9 @@
+// load: bump.js
+// load: BulletCollision/CollisionShapes/StridingMeshInterface.js
+
+// run: LinearMath/Vector3.js
+// run: BulletCollision/CollisionShapes/ConcaveShape.js
+
 (function( window, Bump ) {
 
   Bump.IndexedMesh = Bump.type({

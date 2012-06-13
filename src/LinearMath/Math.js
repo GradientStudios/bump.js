@@ -1,3 +1,5 @@
+// load: bump.js
+
 // Math stuff that bullet defines.
 (function( window, Bump ) {
   Bump.SIMD_INFINITY = Infinity;

@@ -1,3 +1,5 @@
+// load: bump.js
+
 // Note that **btAlignedObjectArray** has *not* been ported, and instead has
 // been replaced with standard JavaScript arrays. However, any functions from
 // that class that are in fact necessary can be ported here as non-member

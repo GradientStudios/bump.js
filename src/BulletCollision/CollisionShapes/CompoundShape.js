@@ -1,3 +1,12 @@
+// load: bump.js
+// load: BulletCollision/CollisionShapes/CollisionShape.js
+
+// run: LinearMath/Vector3.js
+// run: LinearMath/Matrix3x3.js
+// run: LinearMath/Transform.js
+// run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+// run: BulletCollision/BroadphaseCollision/Dbvt.js
+
 (function( window, Bump ) {
 
   Bump.CompoundShapeChild = Bump.type({

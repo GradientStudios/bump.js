@@ -258,7 +258,9 @@ test( 'basic', function() {
 
 module( 'BoxShape.getEdge' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'BoxShape.getPlane' );
 
@@ -273,18 +275,18 @@ test( 'basic', function() {
   testFunc( Bump.BoxShape, 'getPlane', {
     objects: shape,
     args: [
-      [ { param: planeNormal, expected: Bump.Vector3.create( 1, 0, 0 ) },
+      [ { param: planeNormal,  expected: Bump.Vector3.create( 1, 0, 0 ) },
         { param: planeSupport, expected: Bump.Vector3.create( -1, 2, 3 ) }, 0 ],
-      [ { param: planeNormal, expected: Bump.Vector3.create( -1, 0, 0 ) },
+      [ { param: planeNormal,  expected: Bump.Vector3.create( -1, 0, 0 ) },
         { param: planeSupport, expected: Bump.Vector3.create( 1, 2, 3 ) }, 1 ],
-      [ { param: planeNormal, expected: Bump.Vector3.create( 0, 1, 0 ) },
+      [ { param: planeNormal,  expected: Bump.Vector3.create( 0, 1, 0 ) },
         { param: planeSupport, expected: Bump.Vector3.create( 1, -2, 3 ) }, 2 ],
-      [ { param: planeNormal, expected: Bump.Vector3.create( 0, -1, 0 ) },
+      [ { param: planeNormal,  expected: Bump.Vector3.create( 0, -1, 0 ) },
         { param: planeSupport, expected: Bump.Vector3.create( 1, 2, 3 ) }, 3 ],
-      [ { param: planeNormal, expected: Bump.Vector3.create( 0, 0, 1 ) },
+      [ { param: planeNormal,  expected: Bump.Vector3.create( 0, 0, 1 ) },
         { param: planeSupport, expected: Bump.Vector3.create( 1, 2, -3 ) }, 4 ],
-      [ { param: planeNormal, expected: Bump.Vector3.create( 0, 0, -1 ) },
-        { param: planeSupport, expected: Bump.Vector3.create( 1, 2, 3 ) }, 5 ],
+      [ { param: planeNormal,  expected: Bump.Vector3.create( 0, 0, -1 ) },
+        { param: planeSupport, expected: Bump.Vector3.create( 1, 2, 3 ) }, 5 ]
     ],
     expected: expected
   });
@@ -345,7 +347,9 @@ test( 'basic', function() {
 
 module( 'BoxShape.getContactBreakingThreshold' );
 
-test( 'test skipped', function() {});
+test( 'test skipped', function() {
+  expect( 0 );
+});
 
 module( 'BoxShape.calculateTemporalAabb' );
 

@@ -1,3 +1,9 @@
+// load: bump.js
+// load: LinearMath/Vector3.js
+// load: LinearMath/Transform.js
+
+// run: LinearMath/HashMap.js
+
 (function( window, Bump ) {
   var EPSILON = Math.pow( 2, -52 ),
       tmpV1 = Bump.Vector3.create(),
@@ -89,7 +95,7 @@
           NbTris = numVertices;
           for ( j = 0; j < NbTris; ++j ) {
             k = ( j + 1 ) % numVertices;
-            var vp = InternalVertexPair( this.faces[i].indices[j], this.faces[i].indices[k] );
+            var vp = InternalVertexPair.create( this.faces[i].indices[j], this.faces[i].indices[k] );
             var edptr = edges.find( vp );
             var edge = this.vertices[vp.v1].subtract( this.vertices[vp.v0] );
             edge.normalize();

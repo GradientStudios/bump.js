@@ -1,3 +1,7 @@
+// load: bump.js
+// load: LinearMath/Vector3.js
+// load: BulletCollision/CollisionShapes/ConvexShape.js
+
 (function( window, Bump ) {
   Bump.CONVEX_DISTANCE_MARGIN = 0.04;
 

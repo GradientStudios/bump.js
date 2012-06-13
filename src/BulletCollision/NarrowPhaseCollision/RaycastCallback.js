@@ -1,3 +1,8 @@
+// load: bump.js
+// load: BulletCollision/CollisionShapes/TriangleCallback.js
+
+// run: LinearMath/Vector3.js
+
 (function( window, Bump ) {
 
   Bump.TriangleRaycastCallback = Bump.type({
@@ -5,8 +10,8 @@
 
     init: function TriangleRaycastCallback( from, to, flags ) {
       this.from = from.clone(); // Vector3
-      this.to = to.clone(); // Vector3
-      this.flags = flags || 0; // unsigned integer
+      this.to = to.clone();     // Vector3
+      this.flags = flags || 0;  // unsigned integer
       this.hitFraction = 1;
     },
 

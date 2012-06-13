@@ -4,7 +4,7 @@ test( 'Matrix3x3 exists', function() {
   ok( Bump.Matrix3x3 );
 });
 
-module( 'Bump.Matrix3x3.create' );
+module( 'Matrix3x3.create' );
 
 test( 'basic' , function() {
   ok( Bump.Matrix3x3.create, 'create exists' );
@@ -48,9 +48,8 @@ test( 'basic', function() {
 
 });
 
-module( 'Matrix3x3 basic' );
-
-test( 'getIdentity', function() {
+module( 'Matrix3x3.getIdentity' );
+test( 'basic', function() {
   ok( Bump.Matrix3x3.getIdentity, 'getIdentity exists' );
   ok( typeof Bump.Matrix3x3.getIdentity() === 'object', 'creates an object' );
 
@@ -66,7 +65,8 @@ test( 'getIdentity', function() {
 
 });
 
-test( 'setValue', function() {
+module( 'Matrix3x3.setValue' );
+test( 'basic', function() {
   ok( Bump.Matrix3x3.prototype.setValue, 'setValue exists' );
   ok( Bump.Matrix3x3.create().setValue, 'setValue exists' );
 
@@ -79,7 +79,8 @@ test( 'setValue', function() {
   deepEqual( a, b );
 });
 
-test( 'operator[] property', function() {
+module( 'Matrix3x3 operator[] property' );
+test( 'basic', function() {
   ok( '0' in Bump.Matrix3x3.prototype, '0 property exists' );
   ok( '1' in Bump.Matrix3x3.prototype, '1 property exists' );
   ok( '2' in Bump.Matrix3x3.prototype, '2 property exists' );
@@ -107,7 +108,8 @@ test( 'operator[] property', function() {
   deepEqual( a[2], Bump.Vector3.create( 16, 17, 18 ) );
 });
 
-test( 'clone', function() {
+module( 'Matrix3x3.clone' );
+test( 'static clone', function() {
   ok( Bump.Matrix3x3.clone, 'clone exists' );
 
   var a = Bump.Matrix3x3.getIdentity(),
@@ -118,7 +120,25 @@ test( 'clone', function() {
   deepEqual( a, b, 'clone copies object' );
 });
 
-test( 'getColumn', function() {
+test( 'member clone', function() {
+  ok( Bump.Matrix3x3.prototype.clone, 'clone exists' );
+
+  var c = Bump.Matrix3x3.create( 1, 2, 3, 4, 5, 6, 7, 8, 9 ),
+      d = Bump.Matrix3x3.clone( c ),
+      dRef = d,
+      e = d.clone(),
+      eRef = e;
+
+  ok( c !== d, 'Bump.Matrix3x3.clone creates new object' );
+  ok( e === eRef, 'this.clone does not create new object' );
+  ok( d === dRef, 'this.clone does not change cloned object' );
+
+  deepEqual( c, d, 'all copies are similar' );
+  deepEqual( c, e, 'all copies are similar' );
+});
+
+module( 'Matrix3x3.getColumn' );
+test( 'basic', function() {
   ok( Bump.Matrix3x3.prototype.getColumn, 'getColumn exists' );
 
   var a = Bump.Matrix3x3.getIdentity(),
@@ -134,7 +154,8 @@ test( 'getColumn', function() {
   deepEqual( tmp, Bump.Vector3.create( 0, 0, 1 ) );
 });
 
-test( 'getRow', function() {
+module( 'Matrix3x3.getRow' );
+test( 'basic', function() {
   ok( Bump.Matrix3x3.prototype.getRow, 'getRow exists' );
 
   var a = Bump.Matrix3x3.getIdentity(),
@@ -150,7 +171,8 @@ test( 'getRow', function() {
   deepEqual( tmp, Bump.Vector3.create( 0, 0, 1 ) );
 });
 
-test( 'setIdentity', function() {
+module( 'Matrix3x3.setIdentity' );
+test( 'basic', function() {
   ok( Bump.Matrix3x3.prototype.setIdentity, 'setIdentity exists' );
 
   var a = Bump.Matrix3x3.getIdentity(),
@@ -159,7 +181,8 @@ test( 'setIdentity', function() {
   deepEqual( a, b, 'getIdentity and setIdentity produce the same matrix' );
 });
 
-test( 'setRotation', function() {
+module( 'Matrix3x3.setRotation' );
+test( 'basic', function() {
   ok( Bump.Matrix3x3.prototype.setRotation, 'setRotation exists' );
 
   var a = Bump.Matrix3x3.create(),
@@ -170,7 +193,8 @@ test( 'setRotation', function() {
   deepEqual( a, expected, 'identity rotation is identity' );
 });
 
-test( 'setEulerZYX', function() {
+module( 'Matrix3x3.setEulerZYX' );
+test( 'basic', function() {
   ok( Bump.Matrix3x3.prototype.setEulerZYX, 'setEulerZYX exists' );
 
   var a = Bump.Matrix3x3.create(),
@@ -203,16 +227,20 @@ test( 'setEulerZYX', function() {
   strictEqual( newARef, aRef, 'does not allocate new a' );
 });
 
-test( 'getRotation', function() {
+module( 'Matrix3x3.getRotation' );
+test( 'basic', function() {
   var a = Bump.Matrix3x3.getIdentity(),
       answer = Bump.Quaternion.getIdentity();
 
-  testUnaryOp( Bump.Matrix3x3, 'getRotation', a, answer, {
+  testFunc( Bump.Matrix3x3, 'getRotation', {
+    objects: a,
+    expected: [ answer ],
     destType: Bump.Quaternion
   });
 });
 
-test( 'getEulerZYX', function() {
+module( 'Matrix3x3.getEulerZYX' );
+test( 'basic', function() {
   var a = Bump.Matrix3x3.create(
         1/4*(Math.sqrt(3)-1), 1/8*Math.sqrt(3)*(1+Math.sqrt(3))-1/(2*Math.sqrt(2)), 1/8*(-1-Math.sqrt(3))-Math.sqrt(3/2)/2,
         1/4*(1-Math.sqrt(3)), -1/(2*Math.sqrt(2))-1/8*Math.sqrt(3)*(1+Math.sqrt(3)), 1/8*(1+Math.sqrt(3))-Math.sqrt(3/2)/2,
@@ -224,7 +252,9 @@ test( 'getEulerZYX', function() {
         roll: 2 * Math.PI / 3
       };
 
-  testUnaryOp( Bump.Matrix3x3, 'getEulerZYX', a, answer, {
+  testFunc( Bump.Matrix3x3, 'getEulerZYX', {
+    objects: a,
+    expected: [ answer ],
     epsilon: Math.pow( 2, -48 ),
 
     // Emulates the functionality of Type that the test uses
@@ -232,167 +262,176 @@ test( 'getEulerZYX', function() {
   });
 });
 
-test( 'member clone', function() {
-  ok( Bump.Matrix3x3.prototype.clone, 'clone exists' );
-
-  var c = Bump.Matrix3x3.create( 1, 2, 3, 4, 5, 6, 7, 8, 9 ),
-      d = Bump.Matrix3x3.clone( c ),
-      dRef = d,
-      e = d.clone(),
-      eRef = e;
-
-  ok( c !== d, 'Bump.Matrix3x3.clone creates new object' );
-  ok( e === eRef, 'this.clone does not create new object' );
-  ok( d === dRef, 'this.clone does not change cloned object' );
-
-  deepEqual( c, d, 'all copies are similar' );
-  deepEqual( c, e, 'all copies are similar' );
-});
-
-module( 'Bump.Matrix3x3 math' );
-
-test( 'add', function() {
+module( 'Matrix3x3.add' );
+test( 'basic', function() {
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
       b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
       answer = Bump.Matrix3x3.create( 26, 34, 8, 11, 21, 17, 8, 17, 20 ),
       Z = Bump.Matrix3x3.create();
 
-  testBinaryOp( Bump.Matrix3x3, 'add', a, [ Z, b ], [ a.clone(), answer ], {
+  testFunc( Bump.Matrix3x3, 'add', {
+    objects: a,
+    args: [[ Z ], [ b ]],
+    expected: [ a.clone(), answer ],
     destType: Bump.Matrix3x3
   });
 });
 
-test( 'addSelf', function() {
+module( 'Matrix3x3.addSelf' );
+test( 'basic', function() {
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
       b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
       answer = Bump.Matrix3x3.create( 26, 34, 8, 11, 21, 17, 8, 17, 20 ),
       Z = Bump.Matrix3x3.create();
 
-  testBinaryOp( Bump.Matrix3x3, 'addSelf', a, [ Z, b ], [ a.clone(), answer ], {
+  testFunc( Bump.Matrix3x3, 'addSelf', {
+    objects: a,
+    args: [[ Z ], [ b ]],
+    expected: [ a.clone(), answer ],
     modifiesSelf: true
   });
 });
 
-test( 'subtract', function() {
+module( 'Matrix3x3.subtract' );
+test( 'basic', function() {
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
       b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
       answer = Bump.Matrix3x3.create( 2, -16, -2, -7, 1, 13, -8, 7, 14 ),
       Z = Bump.Matrix3x3.create();
 
-  testBinaryOp( Bump.Matrix3x3, 'subtract', a, [ Z, b ], [ a.clone(), answer ], {
+  testFunc( Bump.Matrix3x3, 'subtract', {
+    objects: a,
+    args: [[ Z ], [ b ]],
+    expected: [ a.clone(), answer ],
     destType: Bump.Matrix3x3
   });
 });
 
-test( 'subtractSelf', function() {
+module( 'Matrix3x3.subtractSelf' );
+test( 'basic', function() {
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
       b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
       answer = Bump.Matrix3x3.create( 2, -16, -2, -7, 1, 13, -8, 7, 14 ),
       Z = Bump.Matrix3x3.create();
 
-  testBinaryOp( Bump.Matrix3x3, 'subtractSelf', a, [ Z, b ], [ a.clone(), answer ], {
+  testFunc( Bump.Matrix3x3, 'subtractSelf', {
+    objects: a,
+    args: [[ Z ], [ b ]],
+    expected: [ a.clone(), answer ],
     modifiesSelf: true
   });
 });
 
-test( 'multiplyMatrix', function() {
+module( 'Matrix3x3.multiplyMatrix' );
+test( 'basic', function() {
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
       b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
       answer = Bump.Matrix3x3.create( 273, 455, 97, 243, 235, 77, 244, 205, 75 ),
       I = Bump.Matrix3x3.getIdentity();
 
-  testBinaryOp( Bump.Matrix3x3, 'multiplyMatrix', a, [ I, b ], [ a.clone(), answer ], {
+  testFunc( Bump.Matrix3x3, 'multiplyMatrix', {
+    objects: a,
+    args: [[ I ], [ b ]],
+    expected: [ a.clone(), answer ],
     destType: Bump.Matrix3x3
   });
 });
 
-test( 'multiplyMatrixSelf', function() {
+module( 'Matrix3x3.multiplyMatrixSelf' );
+test( 'basic', function() {
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
       b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
       answer = Bump.Matrix3x3.create( 273, 455, 97, 243, 235, 77, 244, 205, 75 ),
       I = Bump.Matrix3x3.getIdentity();
 
-  testBinaryOp( Bump.Matrix3x3, 'multiplyMatrixSelf', a, [ I, b ], [ a.clone(), answer ], {
+  testFunc( Bump.Matrix3x3, 'multiplyMatrixSelf', {
+    objects: a,
+    args: [[ I ], [ b ]],
+    expected: [ a.clone(), answer ],
     modifiesSelf: true
   });
 });
 
-test( 'multiplyVector', function() {
+module( 'Matrix3x3.multiplyVector' );
+test( 'basic', function() {
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
       b = Bump.Vector3.create( 12, 25, 5 ),
       answer = Bump.Vector3.create( 408, 374, 385 ),
       I = Bump.Matrix3x3.getIdentity();
 
-  testBinaryOp( Bump.Matrix3x3, 'multiplyVector', a, b, answer, {
-    destType: Bump.Vector3
-  });
-
-  testBinaryOp( Bump.Matrix3x3, 'multiplyVector', I, b, b.clone(), {
+  testFunc( Bump.Matrix3x3, 'multiplyVector', {
+    objects: [ a, I ],
+    args: [[ b ], [ b ]],
+    expected: [ answer, b.clone() ],
     destType: Bump.Vector3
   });
 });
 
-test( 'vectorMultiply', function() {
+module( 'Matrix3x3.vectorMultiply' );
+test( 'basic', function() {
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
       b = Bump.Vector3.create( 12, 25, 5 ),
       answer = Bump.Vector3.create( 218, 443, 496 ),
       I = Bump.Matrix3x3.getIdentity();
 
-  testBinaryOp( Bump.Matrix3x3, 'vectorMultiply', a, b, answer, {
-    destType: Bump.Vector3
-  });
-
-  testBinaryOp( Bump.Matrix3x3, 'vectorMultiply', I, b, b.clone(), {
+  testFunc( Bump.Matrix3x3, 'vectorMultiply', {
+    objects: [ a, I ],
+    args: [[ b ], [ b ]],
+    expected: [ answer, b.clone() ],
     destType: Bump.Vector3
   });
 });
 
-test( 'multiplyScalar', function() {
+module( 'Matrix3x3.multiplyScalar' );
+test( 'basic', function() {
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
       answer = Bump.Matrix3x3.create( -42, -27, -9, -6, -33, -45, 0, -36, -51 );
 
-  testBinaryOp( Bump.Matrix3x3, 'multiplyScalar', a, [ 1, -3 ], [ a.clone(), answer ], {
+  testFunc( Bump.Matrix3x3, 'multiplyScalar', {
+    objects: a,
+    args: [[ 1 ], [ -3 ]],
+    expected: [ a.clone(), answer ],
     destType: Bump.Matrix3x3
   });
 });
 
-test( 'scaled', function() {
+module( 'Matrix3x3.scaled' );
+test( 'basic', function() {
   ok( Bump.Matrix3x3.prototype.scaled, 'scaled exists' );
 });
 
-test( 'transposeTimes', function() {
+module( 'Matrix3x3.transposeTimes' );
+test( 'basic', function() {
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
       b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
       answer = Bump.Matrix3x3.create( 186, 370, 74, 303, 395, 103, 307, 310, 96 ),
       I = Bump.Matrix3x3.getIdentity();
 
-  testBinaryOp( Bump.Matrix3x3, 'transposeTimes', a, b, answer, {
+  testFunc( Bump.Matrix3x3, 'transposeTimes', {
+    objects: [ a, I, I ],
+    args: [[ b ], [ a ], [ b ]],
+    expected: [ answer, a.clone(), b.clone() ],
     destType: Bump.Matrix3x3
   });
-
-  testBinaryOp(
-    Bump.Matrix3x3, 'transposeTimes', I,
-    [ a, b ],
-    [ a.clone(), b.clone() ], {
-      destType: Bump.Matrix3x3
-    }
-  );
 });
 
-test( 'timesTranspose', function() {
+module( 'Matrix3x3.timesTranspose' );
+test( 'basic', function() {
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
       b = Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 ),
       answer = Bump.Matrix3x3.create( 408, 222, 166, 374, 158, 116, 385, 154, 111 ),
       I = Bump.Matrix3x3.getIdentity();
 
-  testBinaryOp( Bump.Matrix3x3, 'timesTranspose', a, [ b, I ], [ answer, a.clone() ], {
+  testFunc( Bump.Matrix3x3, 'timesTranspose', {
+    objects: a,
+    args: [[ b ], [ I ]],
+    expected: [ answer, a.clone() ],
     destType: Bump.Matrix3x3
   });
 });
 
-module( 'Bump.Matrix3x3 advanced utilities' );
-
-test( 'determinant', function() {
+module( 'Matrix3x3.determinant' );
+test( 'basic', function() {
   var objs = [
         Bump.Matrix3x3.create(),
         Bump.Matrix3x3.getIdentity(),
@@ -406,10 +445,14 @@ test( 'determinant', function() {
         -210
       ];
 
-  testUnaryOp( Bump.Matrix3x3, 'determinant', objs, expected );
+  testFunc( Bump.Matrix3x3, 'determinant', {
+    objects: objs,
+    expected: expected
+  });
 });
 
-test( 'adjoint', function() {
+module( 'Matrix3x3.adjoint' );
+test( 'basic', function() {
   var objs = [
         Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
         Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 )
@@ -419,12 +462,15 @@ test( 'adjoint', function() {
         Bump.Matrix3x3.create( 20, -50, 0, -11, -4, 21, -35, 140, -105 )
       ];
 
-  testUnaryOp( Bump.Matrix3x3, 'adjoint', objs, expected, {
+  testFunc( Bump.Matrix3x3, 'adjoint', {
+    objects: objs,
+    expected: expected,
     destType: Bump.Matrix3x3
   });
 });
 
-test( 'absolute', function() {
+module( 'Matrix3x3.absolute' );
+test( 'basic', function() {
   var objs = [
         Bump.Matrix3x3.create( -14, 9, -3, 2, -11, 15, -0, 12, -17 ),
         Bump.Matrix3x3.create( 12, -25, 5, -9, 10, -2, 8, -5, 3 )
@@ -434,12 +480,15 @@ test( 'absolute', function() {
         Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 )
       ];
 
-  testUnaryOp( Bump.Matrix3x3, 'absolute', objs, expected, {
+  testFunc( Bump.Matrix3x3, 'absolute', {
+    objects: objs,
+    expected: expected,
     destType: Bump.Matrix3x3
   });
 });
 
-test( 'transpose', function() {
+module( 'Matrix3x3.transpose' );
+test( 'basic', function() {
   var objs = [
         Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
         Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 )
@@ -449,12 +498,15 @@ test( 'transpose', function() {
         Bump.Matrix3x3.create( 12, 9, 8, 25, 10, 5, 5, 2, 3 )
       ];
 
-  testUnaryOp( Bump.Matrix3x3, 'transpose', objs, expected, {
+  testFunc( Bump.Matrix3x3, 'transpose', {
+    objects: objs,
+    expected: expected,
     destType: Bump.Matrix3x3
   });
 });
 
-test( 'inverse', function() {
+module( 'Matrix3x3.inverse' );
+test( 'basic', function() {
   var objs = [
         Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 ),
         Bump.Matrix3x3.create( 12, 25, 5, 9, 10, 2, 8, 5, 3 )
@@ -464,13 +516,16 @@ test( 'inverse', function() {
         Bump.Matrix3x3.create( -20 / 210, 50 / 210, 0, 11 / 210, 4 / 210, -21 / 210, 35 / 210, -140 / 210, 105 / 210 )
       ];
 
-  testUnaryOp( Bump.Matrix3x3, 'inverse', objs, expected, {
+  testFunc( Bump.Matrix3x3, 'inverse', {
+    objects: objs,
+    expected: expected,
     epsilon: Math.pow( 2, -52 ),
     destType: Bump.Matrix3x3
   });
 });
 
-test( 'diagonalize', function() {
+module( 'Matrix3x3.diagonalize' );
+test( 'basic', function() {
   ok( Bump.Matrix3x3.prototype.diagonalize, 'diagonalize exists' );
 
   var EPSILON = Math.pow( 2, -16 );
@@ -499,7 +554,8 @@ test( 'diagonalize', function() {
   equal( a.el2.z, aDgn.el2.z );
 });
 
-test( 'cofac', function() {
+module( 'Matrix3x3.cofac' );
+test( 'basic', function() {
   ok( Bump.Matrix3x3.prototype.cofac, 'cofac exists' );
 
   var a = Bump.Matrix3x3.create( 14, 9, 3, 2, 11, 15, 0, 12, 17 );

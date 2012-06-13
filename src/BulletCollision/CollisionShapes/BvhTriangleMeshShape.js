@@ -1,3 +1,11 @@
+// load: bump.js
+// load: BulletCollision/CollisionShapes/TriangleMeshShape.js
+
+// run: LinearMath/Vector3.js
+// run: BulletCollision/CollisionShapes/OptimizedBvh.js
+// run: BulletCollision/CollisionShapes/ConcaveShape.js
+// run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+
 (function( window, Bump ) {
 
   Bump.BvhTriangleMeshShape = Bump.type({
@@ -137,7 +145,7 @@
         // var numfaces    = data.numFaces;
         var indicestype = data.indicesType;
 
-        var gfxbaseType = (
+        var GfxbaseType = (
           indicestype === PHY_SHORT ?
             Uint16Array :
             (
@@ -147,7 +155,7 @@
             )
         );
 
-        var gfxbase = new gfxbaseType( indexbase.buffer, nodeTriangleIndex * indexstride );
+        var gfxbase = new GfxbaseType( indexbase.buffer, nodeTriangleIndex * indexstride );
         Bump.Assert( indicestype === PHY_INTEGER ||
                      indicestype === PHY_SHORT   ||
                      indicestype === PHY_UCHAR   );

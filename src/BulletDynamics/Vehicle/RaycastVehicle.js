@@ -1,3 +1,8 @@
+// load: bump.js
+// load: BulletDynamics/Vehicle/VehicleRaycaster.js
+
+// run: BulletCollision/CollisionDispatch/CollisionWorld.js
+
 (function( window, Bump ) {
 
   // excluding the btRaycastVehicle port for now

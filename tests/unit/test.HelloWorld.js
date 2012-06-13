@@ -288,7 +288,6 @@ test( 'basic', function() {
     // Get CompoundShape transform
     dynamicsWorld.getCollisionObjectArray()[ 2 ].getMotionState().getWorldTransform( trans );
 
-    epsilon = 0;
     shapeName = 'CompoundShape';
     switch ( i ) {
     case 100:

@@ -1,3 +1,8 @@
+// load: bump.js
+// load: BulletCollision/NarrowPhaseCollision/DiscreteCollisionDetectorInterface.js
+
+// run: LinearMath/Vector3.js
+
 (function( window, Bump ) {
 
   Bump.REL_ERROR2 = 1e-6;

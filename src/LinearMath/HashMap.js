@@ -1,3 +1,5 @@
+// load: bump.js
+
 // HashMap.js contains classes for the use with hashmaps. It includes some
 // wrappers around primitive types.
 

@@ -1,3 +1,7 @@
+// load: bump.js
+// load: LinearMath/Vector3.js
+// load: LinearMath/Matrix3x3.js
+
 (function( window, Bump ) {
   var AabbUtil2 = Bump,
       tmpV1 = Bump.Vector3.create(),

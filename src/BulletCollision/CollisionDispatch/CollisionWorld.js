@@ -1,3 +1,18 @@
+// load: bump.js
+// load: LinearMath/Vector3.js
+// load: BulletCollision/NarrowPhaseCollision/RaycastCallback.js
+// load: BulletCollision/BroadphaseCollision/Dbvt.js
+// load: BulletCollision/BroadphaseCollision/BroadphaseInterface.js
+
+// run: LinearMath/Transform.js
+// run: LinearMath/TransformUtil.js
+// run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+// run: BulletCollision/BroadphaseCollision/Dispatcher.js
+// run: BulletCollision/CollisionDispatch/CollisionObject.js
+// run: BulletCollision/NarrowPhaseCollision/VoronoiSimplexSolver.js
+// run: BulletCollision/NarrowPhaseCollision/SubSimplexConvexCast.js
+// run: BulletCollision/CollisionShapes/SphereShape.js
+
 (function( window, Bump ) {
   var tmpV1 = Bump.Vector3.create();
 

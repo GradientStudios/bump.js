@@ -1,3 +1,13 @@
+// load: bump.js
+// load: BulletCollision/CollisionDispatch/CollisionObject.js
+
+// run: LinearMath/AlignedObjectArray.js
+// run: LinearMath/Vector3.js
+// run: LinearMath/Quaternion.js
+// run: LinearMath/Matrix3x3.js
+// run: LinearMath/Transform.js
+// run: LinearMath/TransformUtil.js
+
 (function( window, Bump ) {
   var RigidBodyConstructionInfo,
       tmpV1 = Bump.Vector3.create(),

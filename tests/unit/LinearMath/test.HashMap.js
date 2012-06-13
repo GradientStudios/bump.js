@@ -91,7 +91,7 @@ test( 'insertion, removal, and retrieval', function() {
       power = 16,
       numItems = 1 << power,
       objects = [],
-      i;
+      i, index, retrievedObject, expectedObject, same;
 
   for ( i = 0; i < numItems; ++i ) {
     objects.push( {} );
@@ -103,10 +103,10 @@ test( 'insertion, removal, and retrieval', function() {
 
   var allSame = true;
   for ( i = 0; i < 3 * numItems; i += 3 ) {
-    var index = i % numItems,
-        retrievedObject = hashMap.get( Bump.HashInt.create( index ) ),
-        expectedObject = objects[ index ],
-        same = ( retrievedObject === expectedObject );
+    index = i % numItems;
+    retrievedObject = hashMap.get( Bump.HashInt.create( index ) );
+    expectedObject = objects[ index ];
+    same = ( retrievedObject === expectedObject );
 
     if ( !same ) {
       equal( objects.indexOf( retrievedObject ), index, 'Index "' + index + '" fails' );
@@ -127,10 +127,10 @@ test( 'insertion, removal, and retrieval', function() {
 
   allSame = true;
   for ( i = 0; i < 3 * numItems; i += 3 ) {
-    var index = i % numItems,
-        retrievedObject = hashMap.get( Bump.HashInt.create( index ) ),
-        expectedObject = objects[ index ],
-        same;
+    index = i % numItems;
+    retrievedObject = hashMap.get( Bump.HashInt.create( index ) );
+    expectedObject = objects[ index ];
+    same = undefined;
 
     if ( index % 2 ) {
       same = ( retrievedObject === undefined );

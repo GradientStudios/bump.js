@@ -1,3 +1,13 @@
+// load: bump.js
+// load: BulletCollision/BroadphaseCollision/Dbvt.js
+// load: BulletCollision/CollisionDispatch/ActivatingCollisionAlgorithm.js
+// load: BulletCollision/CollisionDispatch/CollisionAlgorithmCreateFunc.js
+
+// run: LinearMath/Vector3.js
+// run: LinearMath/Transform.js
+// run: LinearMath/AabbUtil2.js
+// run: LinearMath/AlignedObjectArray.js
+
 (function( window, Bump ) {
 
   var CompoundLeafCallback = Bump.type({

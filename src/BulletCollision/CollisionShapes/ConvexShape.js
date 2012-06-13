@@ -1,3 +1,9 @@
+// load: bump.js
+// load: LinearMath/Vector3.js
+// load: BulletCollision/CollisionShapes/CollisionShape.js
+
+// run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+
 (function( window, Bump ) {
   var EPSILON = Math.pow( 2, -52 ),
       tmpV1 = Bump.Vector3.create(),
