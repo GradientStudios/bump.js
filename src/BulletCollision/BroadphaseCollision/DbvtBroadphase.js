@@ -1,3 +1,12 @@
+// load: bump.js
+// load: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+// load: BulletCollision/BroadphaseCollision/Dbvt.js
+// load: BulletCollision/BroadphaseCollision/BroadphaseInterface.js
+
+// run: LinearMath/Vector3.js
+// run: LinearMath/AlignedObjectArray.js
+// run: BulletCollision/BroadphaseCollision/OverlappingPairCache.js
+
 (function( window, Bump ) {
 
   Bump.DBVT_BP_MARGIN = 0.05;

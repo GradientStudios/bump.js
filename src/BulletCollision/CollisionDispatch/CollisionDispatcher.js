@@ -1,3 +1,12 @@
+// load: bump.js
+// load: BulletCollision/BroadphaseCollision/OverlappingPairCache.js
+// load: BulletCollision/BroadphaseCollision/Dispatcher.js
+
+// run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+// run: BulletCollision/CollisionDispatch/ManifoldResult.js
+// run: BulletCollision/NarrowPhaseCollision/PersistentManifold.js
+// run: BulletCollision/BroadphaseCollision/CollisionAlgorithm.js
+
 (function( window, Bump ) {
 
   Bump.gNumManifold = 0;

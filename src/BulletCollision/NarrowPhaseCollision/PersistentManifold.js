@@ -1,5 +1,8 @@
 // load: bump.js
 // load: LinearMath/Math.js
+// load: LinearMath/Vector3.js
+
+// run: BulletCollision/NarrowPhaseCollision/ManifoldPoint.js
 
 (function( window, Bump ) {
   var MANIFOLD_CACHE_SIZE = 4,

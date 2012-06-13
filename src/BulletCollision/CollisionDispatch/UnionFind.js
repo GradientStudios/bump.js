@@ -1,3 +1,7 @@
+// load: bump.js
+
+// run: LinearMath/AlignedObjectArray.js
+
 (function( window, Bump ) {
 
   Bump.Element = Bump.type({

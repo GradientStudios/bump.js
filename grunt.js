@@ -19,11 +19,7 @@ module.exports = function(grunt) {
     },
     depconcat: {
       dist: {
-        src: [
-          '<banner:meta.banner>',
-          'src/bump.js',
-          'src/LinearMath/*.js'
-        ],
+        src: ['<banner:meta.banner>', 'src/**/*.js'],
         dest: 'dist/<%= pkg.name %>.js',
         basePath: 'src/'
       }
@@ -40,20 +36,20 @@ module.exports = function(grunt) {
     },
     jshint: {
       options: {
-        browser: true,
-        devel: true,
-        immed: false,
-        evil: true,
-        newcap: false,
+        browser : true,
+        devel   : true,
+        immed   : false,
+        evil    : true,
+        newcap  : false,
 
-        curly: true,
-        eqeqeq: true,
-        latedef: true,
-        noarg: true,
-        sub: true,
-        undef: true,
-        boss: true,
-        eqnull: true
+        curly   : true,
+        eqeqeq  : true,
+        latedef : true,
+        noarg   : true,
+        sub     : true,
+        undef   : true,
+        boss    : true,
+        eqnull  : true
       },
       globals: {},
       // Specify Bump and Qunit globals for tests.
@@ -62,27 +58,27 @@ module.exports = function(grunt) {
           Bump: true,
 
           // Custom testing functions.
-          testFunc: true,
-          testEnumForUniqueValues: true,
-          checkTypes: true,
-          epsilonNumberCheck: true,
+          testFunc                : true,
+          testEnumForUniqueValues : true,
+          checkTypes              : true,
+          epsilonNumberCheck      : true,
 
           // QUnit's globals.
-          QUnit: true,
-          module: true,
-          test: true,
-          asyncTest: true,
-          expect: true,
-          start: true,
-          stop: true,
-          ok: true,
-          equal: true,
-          notEqual: true,
-          deepEqual: true,
-          notDeepEqual: true,
-          strictEqual: true,
-          notStrictEqual: true,
-          raises: true
+          QUnit          : true,
+          module         : true,
+          test           : true,
+          asyncTest      : true,
+          expect         : true,
+          start          : true,
+          stop           : true,
+          ok             : true,
+          equal          : true,
+          notEqual       : true,
+          deepEqual      : true,
+          notDeepEqual   : true,
+          strictEqual    : true,
+          notStrictEqual : true,
+          raises         : true
         }
       }
     },

@@ -1,3 +1,9 @@
+// load: bump.js
+
+// run: LinearMath/Vector3.js
+// run: LinearMath/AlignedObjectArray.js
+// run: LinearMath/AabbUtil2.js
+
 (function( window, Bump ) {
   // 10 gives the potential for 1024 parts, with at most 2^21 (2097152) (minus
   // one actually) triangles each (since the sign bit is reserved)

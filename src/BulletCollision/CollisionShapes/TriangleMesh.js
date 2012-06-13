@@ -1,3 +1,11 @@
+// load: bump.js
+// load: LinearMath/Vector3.js
+// load: BulletCollision/CollisionShapes/TriangleIndexVertexArray.js
+
+// run: LinearMath/AlignedObjectArray.js
+// run: BulletCollision/CollisionShapes/ConcaveShape.js
+// run: BulletCollision/CollisionShapes/TriangleIndexVertexArray.js
+
 (function( window, Bump ) {
   var tmpV1 = Bump.Vector3.create();
   var tmpV2 = Bump.Vector3.create();

@@ -1,3 +1,7 @@
+// load: bump.js
+
+// run: LinearMath/Vector3.js
+
 ( function( window, Bump ) {
 
   // **Bump.SolverConstraint** is the port of the Bullet struct

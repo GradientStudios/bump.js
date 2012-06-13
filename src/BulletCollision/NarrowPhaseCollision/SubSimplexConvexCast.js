@@ -1,3 +1,10 @@
+// load: bump.js
+// load: BulletCollision/NarrowPhaseCollision/ConvexCast.js
+
+// run: LinearMath/Vector3.js
+// run: LinearMath/Transform.js
+// run: BulletCollision/CollisionShapes/ConvexShape.js
+
 (function( window, Bump ) {
 
   var MAX_ITERATIONS = 64;

@@ -1,3 +1,5 @@
+// load: bump.js
+
 (function( window, Bump ) {
 
   Bump.ActionInterface = Bump.type({

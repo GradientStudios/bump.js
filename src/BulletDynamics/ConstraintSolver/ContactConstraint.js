@@ -1,3 +1,9 @@
+// load: bump.js
+// load: BulletDynamics/ConstraintSolver/TypedConstraint.js
+
+// run: LinearMath/Vector3.js
+// run: BulletDynamics/ConstraintSolver/JacobianEntry.js
+
 (function( window, Bump ) {
 
   // btContactConstraint can be automatically created to solve contact

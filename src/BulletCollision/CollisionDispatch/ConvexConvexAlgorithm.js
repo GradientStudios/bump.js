@@ -1,3 +1,16 @@
+// load: bump.js
+// load: BulletCollision/CollisionDispatch/ActivatingCollisionAlgorithm.js
+// load: BulletCollision/CollisionDispatch/CollisionAlgorithmCreateFunc.js
+// load: BulletCollision/NarrowPhaseCollision/DiscreteCollisionDetectorInterface.js
+
+// run: LinearMath/Vector3.js
+// run: LinearMath/Quaternion.js
+// run: LinearMath/Matrix3x3.js
+// run: LinearMath/Transform.js
+// run: LinearMath/AlignedObjectArray.js
+// run: BulletCollision/NarrowPhaseCollision/GjkPairDetector.js
+// run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+
 (function( window, Bump ) {
 
   // Defined at bottom of file

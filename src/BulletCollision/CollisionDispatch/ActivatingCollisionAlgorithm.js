@@ -1,3 +1,6 @@
+// load: bump.js
+// load: BulletCollision/BroadphaseCollision/CollisionAlgorithm.js
+
 (function( window, Bump ) {
 
   Bump.ActivatingCollisionAlgorithm = Bump.type({

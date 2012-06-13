@@ -1,3 +1,6 @@
+// load: bump.js
+// load: LinearMath/Vector3.js
+
 // notes:
 // Another memory optimization would be to store m_minvJt1 in the remaining 3 w components
 // which makes the btJacobianEntry memory layout 16 bytes

@@ -1,3 +1,11 @@
+// load: bump.js
+// load: LinearMath/Vector3.js
+// load: BulletCollision/NarrowPhaseCollision/ManifoldPoint.js
+// load: BulletCollision/NarrowPhaseCollision/DiscreteCollisionDetectorInterface.js
+
+// run: LinearMath/Transform.js
+// run: BulletCollision/CollisionDispatch/CollisionObject.js
+
 (function( window, Bump ) {
   // Temporary "stack" variables.
   var tmpV1 = Bump.Vector3.create(),

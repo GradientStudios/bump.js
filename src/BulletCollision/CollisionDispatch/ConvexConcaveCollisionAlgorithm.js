@@ -1,3 +1,13 @@
+// load: bump.js
+// load: BulletCollision/CollisionShapes/TriangleCallback.js
+// load: BulletCollision/CollisionDispatch/ActivatingCollisionAlgorithm.js
+// load: BulletCollision/CollisionDispatch/CollisionAlgorithmCreateFunc.js
+
+// run: LinearMath/Vector3.js
+// run: LinearMath/Transform.js
+// run: BulletCollision/BroadphaseCollision/CollisionAlgorithm.js
+// run: BulletCollision/CollisionShapes/TriangleShape.js
+
 (function( window, Bump ) {
 
   Bump.ConvexTriangleCallback = Bump.type({

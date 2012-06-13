@@ -1,3 +1,12 @@
+// load: bump.js
+// load: BulletCollision/CollisionShapes/TriangleCallback.js
+// load: BulletCollision/CollisionShapes/ConcaveShape.js
+
+// run: LinearMath/Vector3.js
+// run: LinearMath/Transform.js
+// run: LinearMath/AabbUtil2.js
+// run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+
 (function( window, Bump ) {
 
   var FilteredCallback = Bump.type({

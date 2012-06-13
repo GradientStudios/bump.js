@@ -1,3 +1,10 @@
+// load: bump.js
+
+// run: LinearMath/Vector3.js
+// run: LinearMath/Matrix3x3.js
+// run: LinearMath/Transform.js
+// run: BulletCollision/CollisionShapes/ConvexShape.js
+
 (function( window, Bump ) {
   // GJK
   var GJK_MAX_ITERATIONS = 128;

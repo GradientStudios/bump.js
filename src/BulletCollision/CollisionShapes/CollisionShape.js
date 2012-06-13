@@ -1,3 +1,9 @@
+// load: bump.js
+// load: LinearMath/Vector3.js
+// load: LinearMath/Transform.js
+
+// run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+
 (function( window, Bump ) {
   var tmpV1, tmpV2, tmpV3, tmpV4, tmpT1;
 
