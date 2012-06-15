@@ -22,14 +22,19 @@
     },
 
     members: {
-
-      // Creates a deep copy of `this` DbvtAabbMm, storing the result in `dest` if
-      // provided. Otherwise creates and returns a new DbvtAabbMm.
+      // Creates a deep copy of `this` DbvtAabbMm, storing the result in `dest`
+      // if provided. Otherwise creates and returns a new DbvtAabbMm.
       clone: function( dest ) {
         var box = dest || Bump.DbvtAabbMm.create();
         this.mi.clone( box.mi );
         this.mx.clone( box.mx );
         return box;
+      },
+
+      assign: function( other ) {
+        this.mi.assign( other.mi );
+        this.mx.assign( other.mx );
+        return this;
       },
 
       // Compute the center of `this` bounding box. The result is stored in the
@@ -851,7 +856,8 @@
             root = this.root;
           }
         }
-        leaf.volume = volume;
+
+        leaf.volume.assign( volume );
         insertleaf( this, root, leaf );
       },
 
