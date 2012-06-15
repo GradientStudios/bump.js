@@ -10,21 +10,21 @@
   var tmpGCPVec2 = Bump.Vector3.create();
   var tmpGCPVec3 = Bump.Vector3.create();
 
-  var dDOT   = function( a, aOff, b, bOff ) { return a[ aOff ] * b[ bOff ] + a[ aOff + 1 ] * b[ bOff + 1 ] + a[ aOff + 2 ] * b[ bOff + 2 ]; },
+  var dDOT   = function( a,       b, bOff ) { return a.x       * b[ bOff ] + a.y           * b[ bOff + 1 ] + a.z           * b[ bOff + 2 ]; },
       dDOT44 = function( a, aOff, b, bOff ) { return a[ aOff ] * b[ bOff ] + a[ aOff + 4 ] * b[ bOff + 4 ] + a[ aOff + 8 ] * b[ bOff + 8 ]; },
-      dDOT41 = function( a, aOff, b, bOff ) { return a[ aOff ] * b[ bOff ] + a[ aOff + 4 ] * b[ bOff + 1 ] + a[ aOff + 8 ] * b[ bOff + 2 ]; },
-      dDOT14 = function( a, aOff, b, bOff ) { return a[ aOff ] * b[ bOff ] + a[ aOff + 1 ] * b[ bOff + 4 ] + a[ aOff + 2 ] * b[ bOff + 8 ]; };
+      dDOT41 = function( a, aOff, b       ) { return a[ aOff ] * b.x       + a[ aOff + 4 ] * b.y           + a[ aOff + 8 ] * b.z;           },
+      dDOT14 = function( a      , b, bOff ) { return a.x       * b[ bOff ] + a.y           * b[ bOff + 4 ] + a.z           * b[ bOff + 8 ]; };
 
   var dMULTIPLY1_331 = function( A, B, C ) {
-    A[0] = dDOT41( B, 0, C, 0 );
-    A[1] = dDOT41( B, 1, C, 0 );
-    A[2] = dDOT41( B, 2, C, 0 );
+    A[0] = dDOT41( B, 0, C );
+    A[1] = dDOT41( B, 1, C );
+    A[2] = dDOT41( B, 2, C );
   };
 
   var dMULTIPLY0_331 = function( A, B, C ) {
-    A[0] = dDOT( B, 0, C, 0 );
-    A[1] = dDOT( B, 4, C, 0 );
-    A[2] = dDOT( B, 8, C, 0 );
+    A[0] = dDOT( B, C, 0 );
+    A[1] = dDOT( B, C, 0 );
+    A[2] = dDOT( B, C, 0 );
   };
 
   var dMatrix3 = Bump.type({
@@ -37,9 +37,9 @@
 
   var dLineClosestApproach = function( pa, ua, pb, ub, alpha, beta ) {
     var p = pb.subtract( pa ),
-        uaub = dDOT( ua, 0, ub, 0 ),
-        q1 =  dDOT( ua, 0, p, 0 ),
-        q2 = -dDOT( ub, 0, p, 0 ),
+        uaub = dDOT( ua, ub, 0 ),
+        q1 =  dDOT( ua, p, 0 ),
+        q2 = -dDOT( ub, p, 0 ),
         d = 1 - uaub * uaub;
     if ( d <= 0.0001 ) {
       alpha.value = 0;
@@ -326,11 +326,11 @@
     if ( tstRet !== undefined ) { return tstRet; }
 
     // separating axis = v1, v2, v3
-    tstRet = TST( dDOT41( R2, 0, p, 0 ), A[0] * Q11 + A[1] * Q21 + A[2] * Q31 + B[0], R2, 0, 4 );
+    tstRet = TST( dDOT41( R2, 0, p ), A[0] * Q11 + A[1] * Q21 + A[2] * Q31 + B[0], R2, 0, 4 );
     if ( tstRet !== undefined ) { return tstRet; }
-    tstRet = TST( dDOT41( R2, 1, p, 0 ), A[0] * Q12 + A[1] * Q22 + A[2] * Q32 + B[1], R2, 1, 5 );
+    tstRet = TST( dDOT41( R2, 1, p ), A[0] * Q12 + A[1] * Q22 + A[2] * Q32 + B[1], R2, 1, 5 );
     if ( tstRet !== undefined ) { return tstRet; }
-    tstRet = TST( dDOT41( R2, 2, p, 0 ), A[0] * Q13 + A[1] * Q23 + A[2] * Q33 + B[2], R2, 2, 6 );
+    tstRet = TST( dDOT41( R2, 2, p ), A[0] * Q13 + A[1] * Q23 + A[2] * Q33 + B[2], R2, 2, 6 );
     if ( tstRet !== undefined ) { return tstRet; }
 
     // Note: cross product axes need to be scaled when s is computed.
@@ -420,7 +420,7 @@
       var sign;
       pa.x = p1.x; pa.y = p1.y; pa.z = p1.z;
       for ( j = 0; j < 3; ++j ) {
-        sign = ( dDOT14( normal, R1, j, 0 ) > 0 ) ? 1 : -1;
+        sign = ( dDOT14( normal, j, 0 ) > 0 ) ? 1 : -1;
 
         pa.x += sign * A[j] * R1[     j ];
         pa.y += sign * A[j] * R1[ 4 + j ];
@@ -431,7 +431,7 @@
       pb = tmpBBpb.setValue( 0, 0, 0 );
       pb.x = p2.x; pb.y = p2.y; pb.z = p2.z;
       for ( j = 0; j < 3; ++j ) {
-        sign = ( dDOT14( normal, R2, j, 0 ) > 0 ) ? -1 : 1;
+        sign = ( dDOT14( normal, j, 0 ) > 0 ) ? -1 : 1;
 
         pb.x += sign * B[j] * R1[     j ];
         pb.y += sign * B[j] * R1[ 4 + j ];
@@ -569,8 +569,8 @@
     // `quad` is the 2D coordinate of incident face (x,y pairs).
     var quad = new Array( 8 ),
         c1, c2, m11, m12, m21, m22;
-    c1 = dDOT14( center, 0, Ra, code1 );
-    c2 = dDOT14( center, 0, Ra, code2 );
+    c1 = dDOT14( center, Ra, code1 );
+    c2 = dDOT14( center, Ra, code2 );
     // optimize this? - we have already computed this data above, but it is not
     // stored in an easy-to-index format. for now it's quicker just to recompute
     // the four dot products.
@@ -634,7 +634,7 @@
       point[ tmp + 1 ] = center.y + k1 * Rb[ 4 + a1 ] + k2 * Rb[ 4 + a2 ];
       point[ tmp + 2 ] = center.z + k1 * Rb[ 8 + a1 ] + k2 * Rb[ 8 + a2 ];
 
-      dep[ cnum ] = Sa[ codeN ] - dDOT( normal2, 0 , point, tmp );
+      dep[ cnum ] = Sa[ codeN ] - dDOT( normal2 , point, tmp );
       if ( dep[ cnum ] >= 0 ) {
         ret[ cnum * 2    ] = ret[ j * 2     ];
         ret[ cnum * 2 + 1] = ret[ j * 2 + 1 ];
