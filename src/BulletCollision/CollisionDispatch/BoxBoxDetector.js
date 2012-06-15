@@ -581,7 +581,7 @@
 
     if ( n < 1 ) {
       // This should never happen.
-      console.log( 'This should never happen.' );
+      // console.log( 'This should never happen.' );
       return 0;
     }
 
@@ -622,7 +622,7 @@
 
     if ( cnum < 1 ) {
       // This should never happen.
-      console.log( 'This should never happen.' );
+      // console.log( 'This should never happen.' );
       return 0;
     }
 
