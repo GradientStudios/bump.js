@@ -1,10 +1,12 @@
 // load: bump.js
 // load: BulletCollision/CollisionDispatch/ActivatingCollisionAlgorithm.js
 // load: BulletCollision/CollisionDispatch/CollisionAlgorithmCreateFunc.js
-
-// run: BulletCollision/NarrowPhaseCollision/DiscreteCollisionDetectorInterface.js
+// load: BulletCollision/NarrowPhaseCollision/DiscreteCollisionDetectorInterface.js
 
 (function( window, Bump ) {
+
+  // Used in processCollision.
+  var tmpPCInput1 = Bump.DiscreteCollisionDetectorInterface.ClosestPointInput.create();
 
   Bump.BoxBoxCollisionAlgorithm = Bump.type({
     parent: Bump.ActivatingCollisionAlgorithm,
@@ -74,7 +76,7 @@
         // contact reduction is done.
         resultOut.setPersistentManifold( this.manifoldPtr );
 
-        var input = Bump.DiscreteCollisionDetectorInterface.ClosestPointInput.create();
+        var input = tmpPCInput1;
         input.maximumDistanceSquared = Infinity;
         input.transformA.assign( body0.getWorldTransform() );
         input.transformB.assign( body1.getWorldTransform() );

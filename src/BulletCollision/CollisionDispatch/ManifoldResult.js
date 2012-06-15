@@ -154,8 +154,7 @@
         var pointA = pointInWorld
           .add( normalOnBInWorld.multiplyScalar( depth, tmpV1 ), tmpV1 );
 
-        var localA = tmpV2,
-            localB = tmpV3;
+        var localA = tmpV2, localB = tmpV3;
 
         if ( isSwapped ) {
           localA = this.rootTransB.invXform( pointA, tmpV2 );
@@ -165,7 +164,7 @@
           localB = this.rootTransB.invXform( pointInWorld, tmpV3 );
         }
 
-        var newPt = Bump.ManifoldPoint.create( localA, localB, normalOnBInWorld, depth );
+        var newPt = tmpMP1.initWithContactPointInPlace( localA, localB, normalOnBInWorld, depth );
         newPt.positionWorldOnA.assign( pointA );
         newPt.positionWorldOnB.assign( pointInWorld );
 

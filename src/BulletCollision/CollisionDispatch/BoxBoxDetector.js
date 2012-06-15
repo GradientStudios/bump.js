@@ -5,6 +5,11 @@
 
 (function( window, Bump ) {
 
+  // Used in getClosestPoints.
+  var tmpGCPVec1 = Bump.Vector3.create();
+  var tmpGCPVec2 = Bump.Vector3.create();
+  var tmpGCPVec3 = Bump.Vector3.create();
+
   var dDOT   = function( a, aOff, b, bOff ) { return a[ aOff ] * b[ bOff ] + a[ aOff + 1 ] * b[ bOff + 1 ] + a[ aOff + 2 ] * b[ bOff + 2 ]; },
       dDOT44 = function( a, aOff, b, bOff ) { return a[ aOff ] * b[ bOff ] + a[ aOff + 4 ] * b[ bOff + 4 ] + a[ aOff + 8 ] * b[ bOff + 8 ]; },
       dDOT41 = function( a, aOff, b, bOff ) { return a[ aOff ] * b[ bOff ] + a[ aOff + 4 ] * b[ bOff + 1 ] + a[ aOff + 8 ] * b[ bOff + 2 ]; },
@@ -218,6 +223,22 @@
     }
   };
 
+  var tmpBBp = Bump.Vector3.create();
+  var tmpBBpp = Bump.Vector3.create();
+  var tmpBBnormalC = Bump.Vector3.create();
+  var tmpBBpa = Bump.Vector3.create();
+  var tmpBBpb = Bump.Vector3.create();
+  var tmpBBua = Bump.Vector3.create();
+  var tmpBBub = Bump.Vector3.create();
+  var tmpBBnormal2  = Bump.Vector3.create();
+  var tmpBBnr = Bump.Vector3.create();
+  var tmpBBanr = Bump.Vector3.create();
+  var tmpBBcenter = Bump.Vector3.create();
+  var tmpBBpointInWorld = Bump.Vector3.create();
+  var tmpBBposInWorld = Bump.Vector3.create();
+
+  var tmpBBVec1 = Bump.Vector3.create();
+
   var dBoxBox2 = function(
     p1, R1, side1,
     p2, R2, side2,
@@ -225,9 +246,9 @@
     maxc, contact, skip, output
   ) {
     var fudge_factor = 1.05,
-        p = Bump.Vector3.create(),
-        pp = Bump.Vector3.create(),
-        normalC = Bump.Vector3.create( 0, 0, 0 ),
+        p = tmpBBp,
+        pp = tmpBBpp.setValue( 0, 0, 0 ),
+        normalC = tmpBBnormalC.setValue( 0, 0, 0 ),
         normalR = { matrix: null, index: 0 },
         A = [ 0, 0, 0 ],
         B = [ 0, 0, 0 ],
@@ -395,7 +416,7 @@
     if ( code > 6 ) {
       // An edge from box 1 touches an edge from box 2.
       // Find a point `pa` on the intersecting edge of box 1.
-      pa = Bump.Vector3.create();
+      pa = tmpBBpa.setValue( 0, 0, 0 );
       var sign;
       pa.x = p1.x; pa.y = p1.y; pa.z = p1.z;
       for ( j = 0; j < 3; ++j ) {
@@ -407,7 +428,7 @@
       }
 
       // Find a point `pb` on the intersecting edge of box 2.
-      pb = Bump.Vector3.create();
+      pb = tmpBBpb.setValue( 0, 0, 0 );
       pb.x = p2.x; pb.y = p2.y; pb.z = p2.z;
       for ( j = 0; j < 3; ++j ) {
         sign = ( dDOT14( normal, R2, j, 0 ) > 0 ) ? -1 : 1;
@@ -418,7 +439,8 @@
       }
 
       var alpha = { value: 0 }, beta = { value: 0 },
-          ua = Bump.Vector3.create(), ub = Bump.Vector3.create;
+          ua = tmpBBua.setValue( 0, 0, 0 ),
+          ub = tmpBBub.setValue( 0, 0, 0 );
 
       tmp = ~~(( code - 7 ) / 3);
       ua.x = R1[ tmp     ];
@@ -442,7 +464,7 @@
       pb.y += ub.y * tmp;
       pb.z += ub.z * tmp;
 
-      output.addContactPoint( normal.negate(), pb, -depth.value );
+      output.addContactPoint( normal.negate( tmpBBVec1 ), pb, -depth.value );
 
       return_code.value = code;
 
@@ -473,9 +495,9 @@
 
     // `nr` = normal vector of reference face dotted with axes of incident box.
     // `anr` = absolute values of nr.
-    var normal2 = Bump.Vector3.create(),
-        nr = Bump.Vector3.create(),
-        anr = Bump.Vector3.create();
+    var normal2 = tmpBBnormal2.setValue( 0, 0, 0 ),
+        nr = tmpBBnr.setValue( 0, 0, 0 ),
+        anr = tmpBBanr.setValue( 0, 0, 0 );
     if ( code <= 3 ) {
       normal2.x = normal.x;
       normal2.y = normal.y;
@@ -517,7 +539,7 @@
     }
 
     // Compute center point of incident face, in reference-face coordinates.
-    var center = Bump.Vector3.create();
+    var center = tmpBBcenter.setValue( 0, 0, 0 );
     if ( nr[ lanr ] < 0 ) {
       center.x = pb.x - pa.x + Sb[ lanr ] * Rb[     lanr ];
       center.y = pb.y - pa.y + Sb[ lanr ] * Rb[ 4 + lanr ];
@@ -631,7 +653,7 @@
     if ( maxc < 1 ) { maxc = 1; }
 
     if ( cnum <= maxc ) {
-      var pointInWorld = Bump.Vector3.create();
+      var pointInWorld = tmpBBpointInWorld.setValue( 0, 0, 0 );
       if ( code < 4 ) {
         // We have less contacts than we need, so we use them all.
         for ( j = 0; j < cnum; ++j ) {
@@ -640,7 +662,7 @@
           pointInWorld.y = point[ tmp + 1 ] + pa.y;
           pointInWorld.z = point[ tmp + 2 ] + pa.z;
 
-          output.addContactPoint( normal.negate(), pointInWorld, -dep[j] );
+          output.addContactPoint( normal.negate( tmpBBVec1 ), pointInWorld, -dep[j] );
         }
       } else {
         // We have less contacts than we need, so we use them all.
@@ -649,7 +671,7 @@
           pointInWorld.x = point[ tmp     ] + pa.x - normal.x * dep[j];
           pointInWorld.y = point[ tmp + 1 ] + pa.y - normal.y * dep[j];
           pointInWorld.z = point[ tmp + 2 ] + pa.z - normal.z * dep[j];
-          output.addContactPoint( normal.negate(), pointInWorld , -dep[j] );
+          output.addContactPoint( normal.negate( tmpBBVec1 ), pointInWorld , -dep[j] );
         }
       }
     } else {
@@ -668,7 +690,7 @@
       cullPoints2( cnum, ret, maxc, i1, iret );
 
       for ( j = 0; j < maxc; ++j ) {
-        var posInWorld = Bump.Vector3.create();
+        var posInWorld = tmpBBposInWorld;
 
         tmp = iret[j] * 3;
         posInWorld.x = point[ tmp     ] + pa.x;
@@ -677,9 +699,9 @@
 
         tmp = dep[ iret[j] ];
         if ( code < 4 ) {
-          output.addContactPoint( normal.negate(), posInWorld, -tmp );
+          output.addContactPoint( normal.negate( tmpBBVec1 ), posInWorld, -tmp );
         } else {
-          output.addContactPoint( normal.negate(), posInWorld.subtract( normal.multiplyScalar( tmp ) ), -tmp );
+          output.addContactPoint( normal.negate( tmpBBVec1 ), posInWorld.subtract( normal.multiplyScalar( tmp ) ), -tmp );
         }
       }
       cnum = maxc;
@@ -740,18 +762,18 @@
           R2[ 2 + 4 * j ] = transformB.basis[j].z;
         }
 
-        var normal = Bump.Vector3.create(),
-            depth = { value: 0 },
+        var normal      = tmpGCPVec1.setValue( 0, 0, 0 ),
+            depth       = { value: 0 },
             return_code = { value: 0 },
-            maxc = 4;
+            maxc        = 4;
 
         var num = dBoxBox2(
           transformA.origin,
           R1,
-          this.box1.getHalfExtentsWithMargin().multiplyScalar( 2 ),
+          this.box1.getHalfExtentsWithMargin( tmpGCPVec2 ).multiplyScalar( 2, tmpGCPVec2 ),
           transformB.origin,
           R2,
-          this.box2.getHalfExtentsWithMargin().multiplyScalar( 2 ),
+          this.box2.getHalfExtentsWithMargin( tmpGCPVec3 ).multiplyScalar( 2, tmpGCPVec3 ),
           normal, depth, return_code,
           maxc, contact, skip,
           output

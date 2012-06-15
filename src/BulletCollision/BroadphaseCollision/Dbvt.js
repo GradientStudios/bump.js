@@ -37,6 +37,14 @@
         return this;
       },
 
+      // A convenience function to replicate the static FromMM, but on an
+      // existing DbvtAabbMm.
+      setFromMM: function( mi, mx ) {
+        this.mi.assign( mi );
+        this.mx.assign( mx );
+        return this;
+      },
+
       // Compute the center of `this` bounding box. The result is stored in the
       // the `Vector3` `dest` if provided. Otherwise a new `Vector3` is created.
       Center: function( dest ) {
@@ -1014,6 +1022,7 @@
               this.stkStack[ this.stkStack.length * 2 - 1 ] = undefined; // stkStack.resize( this.stkStack.size() * 2 );
               threshold = this.stkStack.length - 4;
             }
+
             if ( p.a === p.b ) {
               if ( p.a.isinternal() ) {
                 this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.a.childs[ 0 ] );
@@ -1021,6 +1030,7 @@
                 this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.a.childs[ 1 ] );
               }
             }
+
             else if ( Bump.Intersect.DbvtVolume2( p.a.volume, p.b.volume ) ) {
               if ( p.a.isinternal() ) {
                 if ( p.b.isinternal() ) {
@@ -1028,18 +1038,17 @@
                   this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b.childs[ 0 ] );
                   this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b.childs[ 1 ] );
                   this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b.childs[ 1 ] );
-                }
-                else {
+                } else {
                   this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b );
                   this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b );
                 }
               }
+
               else {
                 if ( p.b.isinternal() ) {
                   this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 0 ] );
                   this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 1 ] );
-                }
-                else {
+                } else {
                   policy.ProcessNode2( p.a, p.b );
                 }
               }
