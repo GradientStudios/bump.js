@@ -12,6 +12,16 @@
   // The btSequentialImpulseConstraintSolver is a fast SIMD implementation of
   // the Projected Gauss Seidel (iterative LCP) method.
 
+  var solverConstraintPool = [];
+  var CreateSolverConstraint = function() {
+    return solverConstraintPool.pop() || Bump.SolverConstraint.create();
+  };
+
+  var DeleteSolverConstraint = function( solverConstraint ) {
+    solverConstraint.setZero();
+    solverConstraintPool.push( solverConstraint );
+  };
+
   // A zero vector. Do not modify.
   var vecZero = Bump.Vector3.create( 0, 0, 0 );
 
@@ -173,7 +183,7 @@
         desiredVelocity = desiredVelocity || 0;
         cfmSlip = cfmSlip || 0;
 
-        var solverConstraint = Bump.SolverConstraint.create();
+        var solverConstraint = CreateSolverConstraint();
         this.tmpSolverContactFrictionConstraintPool.push( solverConstraint );
         solverConstraint.frictionIndex = frictionIndex;
         this.setupFrictionConstraint( solverConstraint, normalAxis, solverBodyA,
@@ -437,7 +447,7 @@
                 frictionIndex = this.tmpSolverContactConstraintPool.length, // int
                 // btSolverConstraint&
                 // solverConstraint = this.tmpSolverContactConstraintPool.expandNonInitializing(),
-                solverConstraint = Bump.SolverConstraint.create(),
+                solverConstraint = CreateSolverConstraint(),
                 rb0 = Bump.RigidBody.upcast( colObj0 ), // btRigidBody*
                 rb1 = Bump.RigidBody.upcast( colObj1 ); // btRigidBody*
 
@@ -760,9 +770,19 @@
           }
         }
 
-        Bump.resize( this.tmpSolverContactConstraintPool, 0 );
+        var elem;
+
+        // Bump.resize( this.tmpSolverContactConstraintPool, 0 );
+        while ( undefined !== (elem = this.tmpSolverContactConstraintPool.pop()) ) {
+          DeleteSolverConstraint( elem );
+        }
+
         Bump.resize( this.tmpSolverNonContactConstraintPool, 0 );
-        Bump.resize( this.tmpSolverContactFrictionConstraintPool, 0 );
+
+        // Bump.resize( this.tmpSolverContactFrictionConstraintPool, 0 );
+        while ( undefined !== (elem = this.tmpSolverContactFrictionConstraintPool.pop()) ) {
+          DeleteSolverConstraint( elem );
+        }
 
         return 0;
       },
