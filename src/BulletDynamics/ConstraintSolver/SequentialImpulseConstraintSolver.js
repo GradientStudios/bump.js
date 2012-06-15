@@ -68,7 +68,7 @@
         var body0 = Bump.RigidBody.upcast( colObj0 );
         var body1 = Bump.RigidBody.upcast( colObj1 );
 
-        solverConstraint.contactNormal = normalAxis;
+        solverConstraint.contactNormal.assign( normalAxis );
 
         solverConstraint.solverBodyA = body0 ? body0 : this.getFixedBody();
         solverConstraint.solverBodyB = body1 ? body1 : this.getFixedBody();
@@ -215,7 +215,7 @@
         var denom = relaxationRef.value / ( denom0 + denom1 );
         solverConstraint.jacDiagABInv = denom;
 
-        solverConstraint.contactNormal = cp.normalWorldOnB;
+        solverConstraint.contactNormal.assign( cp.normalWorldOnB );
         rel_pos1.cross( cp.normalWorldOnB, solverConstraint.relpos1CrossNormal );
         rel_pos2.cross( cp.normalWorldOnB.negate( tmpVec ), solverConstraint.relpos2CrossNormal );
 
@@ -533,10 +533,10 @@
             contactConstraint.appliedPushImpulse = sum;
           }
 
-          body1.internalApplyPushImpulse( contactConstraint.contactNormal * body1.internalGetInvMass(),
+          body1.internalApplyPushImpulse( contactConstraint.contactNormal.multiplyVector( body1.internalGetInvMass() ),
                                           contactConstraint.angularComponentA,
                                           deltaImpulse );
-          body2.internalApplyPushImpulse( contactConstraint.contactNormal.negate() * body2.internalGetInvMass(),
+          body2.internalApplyPushImpulse( contactConstraint.contactNormal.negate().multiplyVector( body2.internalGetInvMass() ),
                                           contactConstraint.angularComponentB,
                                           deltaImpulse );
         }
