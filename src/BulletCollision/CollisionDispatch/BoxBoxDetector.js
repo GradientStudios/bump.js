@@ -10,21 +10,22 @@
   var tmpGCPVec2 = Bump.Vector3.create();
   var tmpGCPVec3 = Bump.Vector3.create();
 
-  var dDOT   = function( a,       b, bOff ) { return a.x       * b[ bOff ] + a.y           * b[ bOff + 1 ] + a.z           * b[ bOff + 2 ]; },
+  var dDOTAV = function( a, aOff, b       ) { return a[ aOff ] * b.x       + a[ aOff + 1 ] * b.y           + a[ aOff + 2 ] * b.z;           },
+      dDOTVA = function( a      , b, bOff ) { return a.x       * b[ bOff ] + a.y           * b[ bOff + 1 ] + a.z           * b[ bOff + 2 ]; },
       dDOT44 = function( a, aOff, b, bOff ) { return a[ aOff ] * b[ bOff ] + a[ aOff + 4 ] * b[ bOff + 4 ] + a[ aOff + 8 ] * b[ bOff + 8 ]; },
       dDOT41 = function( a, aOff, b       ) { return a[ aOff ] * b.x       + a[ aOff + 4 ] * b.y           + a[ aOff + 8 ] * b.z;           },
       dDOT14 = function( a      , b, bOff ) { return a.x       * b[ bOff ] + a.y           * b[ bOff + 4 ] + a.z           * b[ bOff + 8 ]; };
 
   var dMULTIPLY1_331 = function( A, B, C ) {
-    A[0] = dDOT41( B, 0, C );
-    A[1] = dDOT41( B, 1, C );
-    A[2] = dDOT41( B, 2, C );
+    A.x = dDOT41( B, 0, C );
+    A.y = dDOT41( B, 1, C );
+    A.z = dDOT41( B, 2, C );
   };
 
   var dMULTIPLY0_331 = function( A, B, C ) {
-    A[0] = dDOT( B, C, 0 );
-    A[1] = dDOT( B, C, 0 );
-    A[2] = dDOT( B, C, 0 );
+    A.x = dDOTAV( B, 0, C );
+    A.y = dDOTAV( B, 4, C );
+    A.z = dDOTAV( B, 8, C );
   };
 
   var dMatrix3 = Bump.type({
@@ -36,11 +37,12 @@
   });
 
   var dLineClosestApproach = function( pa, ua, pb, ub, alpha, beta ) {
-    var p = pb.subtract( pa ),
-        uaub = dDOT( ua, ub, 0 ),
-        q1 =  dDOT( ua, p, 0 ),
-        q2 = -dDOT( ub, p, 0 ),
-        d = 1 - uaub * uaub;
+    var p    = pb.subtract( pa ),
+        uaub =  dDOTVA( ua, ub, 0 ),
+        q1   =  dDOTVA( ua,  p, 0 ),
+        q2   = -dDOTVA( ub,  p, 0 ),
+        d    = 1 - uaub * uaub;
+
     if ( d <= 0.0001 ) {
       alpha.value = 0;
       beta.value  = 0;
@@ -344,9 +346,9 @@
         if ( s2 * fudge_factor > s ) {
           s = s2;
           normalR.matrix = null;
-          normalC[0] = n1 / l;
-          normalC[1] = n2 / l;
-          normalC[2] = n3 / l;
+          normalC.x = n1 / l;
+          normalC.y = n2 / l;
+          normalC.z = n3 / l;
           invert_normal = expr1 < 0;
           code = cc;
         }
@@ -634,7 +636,7 @@
       point[ tmp + 1 ] = center.y + k1 * Rb[ 4 + a1 ] + k2 * Rb[ 4 + a2 ];
       point[ tmp + 2 ] = center.z + k1 * Rb[ 8 + a1 ] + k2 * Rb[ 8 + a2 ];
 
-      dep[ cnum ] = Sa[ codeN ] - dDOT( normal2 , point, tmp );
+      dep[ cnum ] = Sa[ codeN ] - dDOTVA( normal2, point, tmp );
       if ( dep[ cnum ] >= 0 ) {
         ret[ cnum * 2    ] = ret[ j * 2     ];
         ret[ cnum * 2 + 1] = ret[ j * 2 + 1 ];
