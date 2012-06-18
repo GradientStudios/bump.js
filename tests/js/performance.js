@@ -1,3 +1,5 @@
+/*global Stats:false*/
+
 (function() {
   var stats = new Stats();
 
