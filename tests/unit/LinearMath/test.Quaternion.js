@@ -289,6 +289,13 @@ test( 'setMax', function() {
   deepEqual( b, bClone, 'does not change b' );
 });
 
+module( 'Quaternion.createWithEuler' );
+test( 'basic', function() {
+  var a = Bump.Quaternion.createWithEuler( 0, 0, 0 );
+
+  ok( a instanceof Bump.Quaternion.prototype.constructor );
+});
+
 module( 'Quaternion.setRotation' );
 test( 'basic', function() {
   exist( 'setRotation' );

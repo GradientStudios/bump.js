@@ -226,7 +226,7 @@
             cosRoll = Math.cos( halfRoll ),
             sinRoll = Math.sin( halfRoll );
 
-        this.setValue(
+        return this.setValue(
           cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw,
           cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw,
           sinRoll * cosPitch * cosYaw - cosRoll * sinPitch * sinYaw,
