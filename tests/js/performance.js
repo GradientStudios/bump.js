@@ -1,8 +1,8 @@
-/*global Stats:false*/
+/*global Stats:false THREEWrapper:false*/
 
 (function() {
   var stats = new Stats();
-  stats.setMode(1);
+  // stats.setMode(1);
 
   // Align top-left
   stats.domElement.style.position = 'absolute';
@@ -82,12 +82,20 @@
     dynamicsWorld.addRigidBody( body );
   };
 
+  var renderer = new THREEWrapper();
+  renderer.init();
+
+  renderer.addBox({ size: 20, wireframe: true });
+
   (function() {
     var num = 7;
     var j = 4;
     for ( var i = 0; i < num; ++i ) {
       for ( var k = 0; k < num; ++k ) {
         createCube( i - (num - 1) / 2, j, k - (num - 1) / 2 );
+
+        renderer.addBox({ size: 1 });
+
       }
     }
   }());
@@ -113,10 +121,23 @@
 
       dynamicsWorld.stepSimulation( 0.016, 10 );
 
+      for ( var i = 0; i < dynamicsWorld.getNumCollisionObjects(); ++i ) {
+        var colObj = dynamicsWorld.getCollisionObjectArray()[i];
+        var body = Bump.RigidBody.upcast( colObj );
+        body.getMotionState().getWorldTransform( newTransform );
+
+        var mesh = renderer.meshes[ i ];
+        mesh.position.copy( newTransform.origin );
+        mesh.quaternion.copy( newTransform.getRotation( quat ) );
+      }
+
+      renderer.render();
       stats.end();
+
+      window.requestAnimationFrame( step );
     };
 
-    setInterval( step, 16 );
+    window.requestAnimationFrame( step );
   };
 
   var keylistener = function( evt ) {
