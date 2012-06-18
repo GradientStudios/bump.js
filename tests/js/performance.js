@@ -2,6 +2,7 @@
 
 (function() {
   var stats = new Stats();
+  stats.setMode(1);
 
   // Align top-left
   stats.domElement.style.position = 'absolute';
@@ -19,21 +20,31 @@
 
   var collisionShapes = [];
 
-  (function() {
-    var groundHalfExtents = Bump.Vector3.create( 500, 500, 500 );
-    var groundShape = Bump.BoxShape.create( groundHalfExtents );
-    collisionShapes.push( groundShape );
+  var groundHalfExtents = Bump.Vector3.create( 50, 50, 50 );
+  var groundShape = Bump.BoxShape.create( groundHalfExtents );
+  collisionShapes.push( groundShape );
 
+  var createGroundCube = function( position ) {
     var groundTransform = Bump.Transform.create();
     groundTransform.setIdentity();
-    groundTransform.setOrigin( Bump.Vector3.create( 0, -500, 0 ) );
+    groundTransform.setOrigin( Bump.Vector3.create( 0, -75, 0 ) );
 
     var myMotionState = Bump.DefaultMotionState.create( groundTransform );
     var rbInfo = Bump.RigidBody.RigidBodyConstructionInfo.create( 0, myMotionState, groundShape, Bump.Vector3.create() );
     var body = Bump.RigidBody.create( rbInfo );
 
+    body.setCollisionFlags( body.getCollisionFlags() | Bump.CollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT );
+    body.setActivationState( Bump.CollisionObject.DISABLE_DEACTIVATION );
+
     dynamicsWorld.addRigidBody( body );
-  }());
+  };
+
+  createGroundCube( Bump.Vector3.create(   0, -75,   0 ));
+  createGroundCube( Bump.Vector3.create(   0,  75,   0 ));
+  createGroundCube( Bump.Vector3.create( -75,   0,   0 ));
+  createGroundCube( Bump.Vector3.create(  75,   0,   0 ));
+  createGroundCube( Bump.Vector3.create(   0,   0, -75 ));
+  createGroundCube( Bump.Vector3.create(   0,   0,  75 ));
 
   var boxCubeShape = Bump.BoxShape.create( Bump.Vector3.create( 0.5, 0.5, 0.5 ) );
   collisionShapes.push( boxCubeShape );
