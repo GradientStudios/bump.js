@@ -20,31 +20,42 @@
 
   var collisionShapes = [];
 
-  var groundHalfExtents = Bump.Vector3.create( 50, 50, 50 );
-  var groundShape = Bump.BoxShape.create( groundHalfExtents );
-  collisionShapes.push( groundShape );
+  var groundBody;
+  (function( size ) {
+    var groundHalfExtents = Bump.Vector3.create( size, size, size );
+    var groundBoxShape = Bump.BoxShape.create( groundHalfExtents );
+    var groundShape = Bump.CompoundShape.create();
 
-  var createGroundCube = function( position ) {
-    var groundTransform = Bump.Transform.create();
-    groundTransform.setIdentity();
-    groundTransform.setOrigin( Bump.Vector3.create( 0, -75, 0 ) );
+    collisionShapes.push( groundShape );
+    collisionShapes.push( groundBoxShape );
+
+    var sizeAndHalf = 1.5 * size;
+    [
+      Bump.Vector3.create( 0, -sizeAndHalf, 0 ),
+      Bump.Vector3.create( 0,  sizeAndHalf, 0 ),
+      Bump.Vector3.create( -sizeAndHalf, 0, 0 ),
+      Bump.Vector3.create(  sizeAndHalf, 0, 0 ),
+      Bump.Vector3.create( 0, 0, -sizeAndHalf ),
+      Bump.Vector3.create( 0, 0,  sizeAndHalf )
+    ].forEach(function( position ) {
+      var localTransform = Bump.Transform.getIdentity();
+      localTransform.setOrigin( position );
+
+      groundShape.addChildShape( localTransform, groundBoxShape );
+    });
+
+    var groundTransform = Bump.Transform.getIdentity();
 
     var myMotionState = Bump.DefaultMotionState.create( groundTransform );
     var rbInfo = Bump.RigidBody.RigidBodyConstructionInfo.create( 0, myMotionState, groundShape, Bump.Vector3.create() );
-    var body = Bump.RigidBody.create( rbInfo );
+    // var rbInfo = Bump.RigidBody.RigidBodyConstructionInfo.create( 0, myMotionState, groundBoxShape, Bump.Vector3.create() );
+    groundBody = Bump.RigidBody.create( rbInfo );
 
-    body.setCollisionFlags( body.getCollisionFlags() | Bump.CollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT );
-    body.setActivationState( Bump.CollisionObject.DISABLE_DEACTIVATION );
+    groundBody.setCollisionFlags( groundBody.getCollisionFlags() | Bump.CollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT );
+    groundBody.setActivationState( Bump.CollisionObject.DISABLE_DEACTIVATION );
 
-    dynamicsWorld.addRigidBody( body );
-  };
-
-  createGroundCube( Bump.Vector3.create(   0, -75,   0 ));
-  createGroundCube( Bump.Vector3.create(   0,  75,   0 ));
-  createGroundCube( Bump.Vector3.create( -75,   0,   0 ));
-  createGroundCube( Bump.Vector3.create(  75,   0,   0 ));
-  createGroundCube( Bump.Vector3.create(   0,   0, -75 ));
-  createGroundCube( Bump.Vector3.create(   0,   0,  75 ));
+    dynamicsWorld.addRigidBody( groundBody );
+  }( 20 ));
 
   var boxCubeShape = Bump.BoxShape.create( Bump.Vector3.create( 0.5, 0.5, 0.5 ) );
   collisionShapes.push( boxCubeShape );
@@ -66,26 +77,46 @@
     var rbInfo = Bump.RigidBody.RigidBodyConstructionInfo.create( 1, myMotionState, boxCubeShape, localInertia );
     var body = Bump.RigidBody.create( rbInfo );
 
+    body.setFriction( 0.1 );
+
     dynamicsWorld.addRigidBody( body );
   };
 
   (function() {
+    var num = 7;
     var j = 4;
-    for ( var i = -2; i < 3; ++i ) {
-      for ( var k = -2; k < 3; ++k ) {
-        createCube( i, j, k );
+    for ( var i = 0; i < num; ++i ) {
+      for ( var k = 0; k < num; ++k ) {
+        createCube( i - (num - 1) / 2, j, k - (num - 1) / 2 );
       }
     }
   }());
 
-  var startSimulation = function() {
-    setInterval(function () {
-      stats.begin();
+  var groundRot = Bump.Quaternion.createWithEuler( 0, 0, Math.PI * 0.003 );
+  var quat = Bump.Quaternion.create();
+  var newTransform = Bump.Transform.create();
 
-      dynamicsWorld.stepSimulation( 1 / 60, 10 );
+  var rate = Math.PI / 60 / 5;
+  var amp  = rate / 2;
+
+  var startSimulation = function() {
+    var time = Date.now();
+
+    var step = function () {
+      time += 16;
+
+      stats.begin();
+      groundRot.setEuler( 0, 0, rate + amp * Math.sin( time / 500 ) );
+      groundBody.getMotionState().getWorldTransform( newTransform );
+      newTransform.basis.multiplyMatrix( Bump.Matrix3x3.createWithQuaternion( groundRot ), newTransform.basis );
+      groundBody.getMotionState().setWorldTransform( newTransform );
+
+      dynamicsWorld.stepSimulation( 0.016, 10 );
 
       stats.end();
-    }, 1000 / 60 );
+    };
+
+    setInterval( step, 16 );
   };
 
   var keylistener = function( evt ) {
