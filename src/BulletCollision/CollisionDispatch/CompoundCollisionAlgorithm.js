@@ -9,25 +9,31 @@
 // run: LinearMath/AlignedObjectArray.js
 
 (function( window, Bump ) {
+  var createGetter = function( Type, pool ) {
+    return function() {
+      return pool.pop() || Type.create();
+    };
+  };
 
-  // Used in ProcessChildShape
-  var tmpPCSVec1 = Bump.Vector3.create();
-  var tmpPCSVec2 = Bump.Vector3.create();
-  var tmpPCSVec3 = Bump.Vector3.create();
-  var tmpPCSVec4 = Bump.Vector3.create();
-  var tmpPCST1   = Bump.Transform.create();
-  var tmpPCST2   = Bump.Transform.create();
-  var tmpPCST3   = Bump.Transform.create();
+  var createDeller = function( pool ) {
+    return function() {
+      for ( var i = 0; i < arguments.length; ++i ) {
+        pool.push( arguments[i] );
+      }
+    };
+  };
 
-  // Used in processCollision
-  var tmpPCVec1 = Bump.Vector3.create();
-  var tmpPCVec2 = Bump.Vector3.create();
-  var tmpPCVec3 = Bump.Vector3.create();
-  var tmpPCVec4 = Bump.Vector3.create();
-  var tmpPCT1   = Bump.Transform.create();
-  var tmpPCT2   = Bump.Transform.create();
-  var tmpPCT3   = Bump.Transform.create();
-  var tmpPCVol1 = Bump.DbvtVolume.create();
+  var vecPool   = [];
+  var transPool = [];
+  var volPool   = [];
+
+  var getDbvtVolume = createGetter( Bump.DbvtVolume, volPool   );
+  var getVector3    = createGetter( Bump.Vector3,    vecPool   );
+  var getTransform  = createGetter( Bump.Transform,  transPool );
+
+  var delDbvtVolume = createDeller( volPool );
+  var delVector3    = createDeller( vecPool );
+  var delTransform  = createDeller( transPool );
 
   var CompoundLeafCallback = Bump.type({
     parent: Bump.Dbvt.ICollide,
@@ -48,6 +54,14 @@
 
     members: {
       ProcessChildShape: function( childShape, index ) {
+        var tmpPCSVec1 = getVector3();
+        var tmpPCSVec2 = getVector3();
+        var tmpPCSVec3 = getVector3();
+        var tmpPCSVec4 = getVector3();
+        var tmpPCST1   = getTransform();
+        var tmpPCST2   = getTransform();
+        var tmpPCST3   = getTransform();
+
         var m_compoundColObj = this.compoundColObj;
         var m_otherObj = this.otherObj;
         var m_childCollisionAlgorithms = this.childCollisionAlgorithms;
@@ -103,6 +117,9 @@
           m_compoundColObj.setWorldTransform( orgTrans );
           m_compoundColObj.setInterpolationWorldTransform( orgInterpolationTrans );
         }
+
+        delVector3( tmpPCSVec1, tmpPCSVec2, tmpPCSVec3, tmpPCSVec4 );
+        delTransform( tmpPCST1, tmpPCST2, tmpPCST3 );
       },
 
       ProcessNode: function( leaf ) {
