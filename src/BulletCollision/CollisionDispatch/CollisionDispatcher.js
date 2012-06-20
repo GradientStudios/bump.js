@@ -1,9 +1,9 @@
 // load: bump.js
 // load: BulletCollision/BroadphaseCollision/OverlappingPairCache.js
 // load: BulletCollision/BroadphaseCollision/Dispatcher.js
+// load: BulletCollision/CollisionDispatch/ManifoldResult.js
 
 // run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
-// run: BulletCollision/CollisionDispatch/ManifoldResult.js
 // run: BulletCollision/NarrowPhaseCollision/PersistentManifold.js
 // run: BulletCollision/BroadphaseCollision/CollisionAlgorithm.js
 
@@ -28,6 +28,9 @@
       }
     }
   });
+
+  // Used in defaultNearCallback
+  var tmpDNCMR1 = Bump.ManifoldResult.create();
 
   Bump.CollisionDispatcher = Bump.type({
     parent: Bump.Dispatcher,
@@ -332,7 +335,7 @@
           }
 
           if ( collisionPair.algorithm ) {
-            var contactPointResult = Bump.ManifoldResult.create( colObj0, colObj1 );
+            var contactPointResult = tmpDNCMR1.setWithCollisionObjects( colObj0, colObj1 );
 
             if ( dispatchInfo.dispatchFunc === Bump.DispatcherInfo.DispatchFunc.DISPATCH_DISCRETE ) {
               // Discrete collision detection query.

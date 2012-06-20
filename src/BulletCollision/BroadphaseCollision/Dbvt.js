@@ -10,6 +10,12 @@
 
 (function( window, Bump ) {
 
+  // Used in collideTV
+  var tmpCTVVol1;
+
+  // Do not change.
+  var sStkNNZero;
+
   // **Bump.DbvtAabbMm** is the port of the `btDbvtAabbMm` class. "DbvtAabbMm"
   // stands for "Dynamic Bounding Volume Tree Axis-Aligned Bounding Box
   // Minimum/Maximum," meaning that it represents an AABB from 2 `Vector3`s, the
@@ -26,8 +32,8 @@
       // if provided. Otherwise creates and returns a new DbvtAabbMm.
       clone: function( dest ) {
         var box = dest || Bump.DbvtAabbMm.create();
-        this.mi.clone( box.mi );
-        this.mx.clone( box.mx );
+        box.mi.assign( this.mi );
+        box.mx.assign( this.mx );
         return box;
       },
 
@@ -287,19 +293,12 @@
 
   // Intersect test for 2 `DbvtAabbMm`s
   Bump.Intersect.DbvtAabbMm2 = function( a, b ) {
-    //     #if  DBVT_INT0_IMPL == DBVT_IMPL_SSE
-    //         const __m128     rt(_mor_ps(   _mcmplt_ps(_mload_ps(b.mx),_mload_ps(a.mi)),
-    //          _mcmplt_ps(_mload_ps(a.mx),_mload_ps(b.mi))));
-    //         const __int32*   pu((const __int32*)&rt);
-    //         return((pu[0]|pu[1]|pu[2])==0);
-    //     #else
     return ( ( a.mi.x <= b.mx.x ) &&
              ( a.mx.x >= b.mi.x ) &&
              ( a.mi.y <= b.mx.y ) &&
              ( a.mx.y >= b.mi.y ) &&
              ( a.mi.z <= b.mx.z ) &&
              ( a.mx.z >= b.mi.z ) );
-    //     #endif
   };
   Bump.Intersect.DbvtVolume2 = Bump.Intersect.DbvtAabbMm2; // typedef consistency
 
@@ -1014,40 +1013,54 @@
         if ( root0 && root1 ) {
           var depth = 1,
               threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 4;
-          this.stkStack[ Bump.Dbvt.DOUBLE_STACKSIZE - 1 ] = undefined; // stkStack.resize( DOUBLE_STACKSIZE );
-          this.stkStack[ 0 ] = Bump.Dbvt.sStkNN.create( root0, root1 );
+
+          Bump.resize( this.stkStack, Bump.Dbvt.DOUBLE_STACKSIZE, sStkNNZero );
+          this.stkStack[0].set( root0, root1 );
+
           do {
             var p = this.stkStack[ --depth ];
+
+            // So for some reason, using the getter property p.a.childs causes
+            // some weird bugs, and for some unknown reason, saving it first to
+            // a variable bypasses it. I don't know why. T_T
+            //
+            // - EL
+            var a0, a1;
+
             if ( depth > threshold ) {
-              this.stkStack[ this.stkStack.length * 2 - 1 ] = undefined; // stkStack.resize( this.stkStack.size() * 2 );
+              Bump.resize( this.stkStack, this.stkStack.length * 2, sStkNNZero );
               threshold = this.stkStack.length - 4;
             }
 
             if ( p.a === p.b ) {
               if ( p.a.isinternal() ) {
-                this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.a.childs[ 0 ] );
-                this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.a.childs[ 1 ] );
-                this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.a.childs[ 1 ] );
+                a0 = p.a.childs[0];
+                a1 = p.a.childs[1];
+                this.stkStack[ depth++ ].set( a0, a0 );
+                this.stkStack[ depth++ ].set( a1, a1 );
+                this.stkStack[ depth++ ].set( a0, a1 );
               }
             }
 
             else if ( Bump.Intersect.DbvtVolume2( p.a.volume, p.b.volume ) ) {
               if ( p.a.isinternal() ) {
+                a0 = p.a.childs[0];
+                a1 = p.a.childs[1];
                 if ( p.b.isinternal() ) {
-                  this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b.childs[ 0 ] );
-                  this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b.childs[ 0 ] );
-                  this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b.childs[ 1 ] );
-                  this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b.childs[ 1 ] );
+                  this.stkStack[ depth++ ].set( a0, p.b.childs[0] );
+                  this.stkStack[ depth++ ].set( a1, p.b.childs[0] );
+                  this.stkStack[ depth++ ].set( a0, p.b.childs[1] );
+                  this.stkStack[ depth++ ].set( a1, p.b.childs[1] );
                 } else {
-                  this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 0 ], p.b );
-                  this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a.childs[ 1 ], p.b );
+                  this.stkStack[ depth++ ].set( a0, p.b );
+                  this.stkStack[ depth++ ].set( a1, p.b );
                 }
               }
 
               else {
                 if ( p.b.isinternal() ) {
-                  this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 0 ] );
-                  this.stkStack[ depth++ ] = Bump.Dbvt.sStkNN.create( p.a, p.b.childs[ 1 ] );
+                  this.stkStack[ depth++ ].set( p.a, p.b.childs[0] );
+                  this.stkStack[ depth++ ].set( p.a, p.b.childs[1] );
                 } else {
                   policy.ProcessNode2( p.a, p.b );
                 }
@@ -1061,7 +1074,7 @@
       // `DbvtVolume` `vol` according to the given policy. ???
       collideTV: function( root, vol, policy ) {
         if ( root ) {
-          var volume = vol.clone(),
+          var volume = vol.clone( tmpCTVVol1 ),
               stack = [];
           // stack.resize( 0 );
           // stack.reserve( SIMPLE_STACKSIZE );
@@ -1430,8 +1443,7 @@
           i = ifree[ ifree.length - 1 ];
           ifree.pop();
           stock[ i ] = value;
-        }
-        else {
+        } else {
           i = stock.length;
           stock.push( value );
         }
@@ -1441,12 +1453,40 @@
   });
 
   // Stack element structs
-
+  var uuid = 0;
   Bump.Dbvt.sStkNN = Bump.type({
     // initialize from two `DbvtNode`s
     init: function sStkNN( na, nb ) {
       this.a = na || 0;
       this.b = nb || 0;
+      this.uuid = uuid++;
+
+      return this;
+    },
+
+    members: {
+      clone: function( dest ) {
+        if ( !dest ) {
+          dest = Bump.Dbvt.sStkNN.create( this.a, this.b );
+        } else {
+          dest.a = this.a;
+          dest.b = this.b;
+        }
+
+        return dest;
+      },
+
+      set: function( a, b ) {
+        this.a = a;
+        this.b = b;
+        return this;
+      },
+
+      assign: function( other ) {
+        this.a = other.a;
+        this.b = other.b;
+        return this;
+      }
     }
   });
 
@@ -1532,5 +1572,8 @@
       }
     }
   });
+
+  tmpCTVVol1 = Bump.DbvtVolume.create();
+  sStkNNZero = Bump.Dbvt.sStkNN.create();
 
 })( this, this.Bump );

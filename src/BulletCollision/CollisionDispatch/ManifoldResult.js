@@ -81,6 +81,23 @@
         return this;
       },
 
+      setWithCollisionObjects: function( body0, body1 ) {
+        this.manifoldPtr = null;
+
+        this.body0 = body0;
+        this.body1 = body1;
+
+        this.rootTransA.assign( this.body0.getWorldTransform() );
+        this.rootTransB.assign( this.body1.getWorldTransform() );
+
+        this.partId0 = 0;
+        this.partId1 = 0;
+        this.index0 = 0;
+        this.index1 = 0;
+
+        return this;
+      },
+
       clone: function( dest ) {
         dest = dest || Bump.ManifoldResult.create();
 

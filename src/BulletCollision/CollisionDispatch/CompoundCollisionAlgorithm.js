@@ -1,14 +1,33 @@
 // load: bump.js
+// load: LinearMath/Vector3.js
+// load: LinearMath/Transform.js
 // load: BulletCollision/BroadphaseCollision/Dbvt.js
 // load: BulletCollision/CollisionDispatch/ActivatingCollisionAlgorithm.js
 // load: BulletCollision/CollisionDispatch/CollisionAlgorithmCreateFunc.js
 
-// run: LinearMath/Vector3.js
-// run: LinearMath/Transform.js
 // run: LinearMath/AabbUtil2.js
 // run: LinearMath/AlignedObjectArray.js
 
 (function( window, Bump ) {
+
+  // Used in ProcessChildShape
+  var tmpPCSVec1 = Bump.Vector3.create();
+  var tmpPCSVec2 = Bump.Vector3.create();
+  var tmpPCSVec3 = Bump.Vector3.create();
+  var tmpPCSVec4 = Bump.Vector3.create();
+  var tmpPCST1   = Bump.Transform.create();
+  var tmpPCST2   = Bump.Transform.create();
+  var tmpPCST3   = Bump.Transform.create();
+
+  // Used in processCollision
+  var tmpPCVec1 = Bump.Vector3.create();
+  var tmpPCVec2 = Bump.Vector3.create();
+  var tmpPCVec3 = Bump.Vector3.create();
+  var tmpPCVec4 = Bump.Vector3.create();
+  var tmpPCT1   = Bump.Transform.create();
+  var tmpPCT2   = Bump.Transform.create();
+  var tmpPCT3   = Bump.Transform.create();
+  var tmpPCVol1 = Bump.DbvtVolume.create();
 
   var CompoundLeafCallback = Bump.type({
     parent: Bump.Dbvt.ICollide,
@@ -39,16 +58,16 @@
         Bump.Assert( index < compoundShape.getNumChildShapes() );
 
         // backup
-        var orgTrans = m_compoundColObj.getWorldTransform().clone();
-        var orgInterpolationTrans = m_compoundColObj.getInterpolationWorldTransform().clone();
+        var orgTrans = tmpPCST1.assign( m_compoundColObj.getWorldTransform() );
+        var orgInterpolationTrans = tmpPCST2.assign( m_compoundColObj.getInterpolationWorldTransform() );
         var childTrans = compoundShape.getChildTransform( index );
-        var newChildWorldTrans = orgTrans.multiplyTransform( childTrans );
+        var newChildWorldTrans = orgTrans.multiplyTransform( childTrans, tmpPCST3 );
 
         // perform an AABB check first
-        var aabbMin0 = Bump.Vector3.create();
-        var aabbMax0 = Bump.Vector3.create();
-        var aabbMin1 = Bump.Vector3.create();
-        var aabbMax1 = Bump.Vector3.create();
+        var aabbMin0 = tmpPCSVec1;
+        var aabbMax0 = tmpPCSVec2;
+        var aabbMin1 = tmpPCSVec3;
+        var aabbMax1 = tmpPCSVec4;
         childShape.getAabb( newChildWorldTrans, aabbMin0, aabbMax0 );
         m_otherObj.getCollisionShape().getAabb( m_otherObj.getWorldTransform(), aabbMin1, aabbMax1 );
 
@@ -220,13 +239,15 @@
 
         var numChildren;
         if ( tree ) {
-          var localAabbMin = Bump.Vector3.create();
-          var localAabbMax = Bump.Vector3.create();
-          var otherInCompoundSpace = Bump.Transform.create();
-          otherInCompoundSpace.assign( colObj.getWorldTransform().inverse().multiplyTransform( otherObj.getWorldTransform() ) );
+          var localAabbMin = tmpPCVec1;
+          var localAabbMax = tmpPCVec2;
+          var otherInCompoundSpace = colObj.getWorldTransform()
+            .inverse( tmpPCT1 )
+            .multiplyTransform( otherObj.getWorldTransform(), tmpPCT1 );
+
           otherObj.getCollisionShape().getAabb( otherInCompoundSpace, localAabbMin, localAabbMax );
 
-          var bounds = Bump.DbvtVolume.FromMM( localAabbMin, localAabbMax );
+          var bounds = tmpPCVol1.setFromMM( localAabbMin, localAabbMax );
           // process all children, that overlap with  the given AABB bounds
           tree.collideTV( tree.root, bounds, callback );
         }
@@ -246,21 +267,21 @@
         manifoldArray.length = 0;
         var childShape = null;
 
-        var orgTrans              = Bump.Transform.create();
-        var orgInterpolationTrans = Bump.Transform.create();
-        var newChildWorldTrans    = Bump.Transform.create();
+        var orgTrans              = tmpPCT1;
+        // var orgInterpolationTrans = tmpPCT2;
+        var newChildWorldTrans    = tmpPCT3;
 
-        var aabbMin0 = Bump.Vector3.create();
-        var aabbMax0 = Bump.Vector3.create();
-        var aabbMin1 = Bump.Vector3.create();
-        var aabbMax1 = Bump.Vector3.create();
+        var aabbMin0 = tmpPCVec1;
+        var aabbMax0 = tmpPCVec2;
+        var aabbMin1 = tmpPCVec3;
+        var aabbMax1 = tmpPCVec4;
 
         for ( i = 0; i < numChildren; ++i ) {
           if ( m_childCollisionAlgorithms[i] ) {
             childShape = compoundShape.getChildShape( i );
             // if not longer overlapping, remove the algorithm
             orgTrans.assign( colObj.getWorldTransform() );
-            orgInterpolationTrans = colObj.getInterpolationWorldTransform( orgInterpolationTrans );
+            // orgInterpolationTrans.assign( colObj.getInterpolationWorldTransform() );
             var childTrans = compoundShape.getChildTransform( i );
             newChildWorldTrans = orgTrans.multiplyTransform( childTrans, newChildWorldTrans );
 
