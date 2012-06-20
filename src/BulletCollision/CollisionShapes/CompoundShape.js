@@ -1,13 +1,20 @@
 // load: bump.js
+// load: LinearMath/Vector3.js
+// load: LinearMath/Matrix3x3.js
 // load: BulletCollision/CollisionShapes/CollisionShape.js
 
-// run: LinearMath/Vector3.js
-// run: LinearMath/Matrix3x3.js
 // run: LinearMath/Transform.js
 // run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
 // run: BulletCollision/BroadphaseCollision/Dbvt.js
 
 (function( window, Bump ) {
+
+  // Used in getAabb
+  var tmpGAVec1 = Bump.Vector3.create();
+  var tmpGAVec2 = Bump.Vector3.create();
+  var tmpGAVec3 = Bump.Vector3.create();
+  var tmpGAVec4 = Bump.Vector3.create();
+  var tmpGAMat1 = Bump.Matrix3x3.create();
 
   Bump.CompoundShapeChild = Bump.type({
     members: {
@@ -198,8 +205,12 @@
       // `getAabb`'s default implementation is brute force, expected derived
       // classes to implement a fast dedicated version.
       getAabb: function( trans, aabbMin, aabbMax ) {
-        var localHalfExtents = this.localAabbMax.subtract( this.localAabbMin ).multiplyScalar( 0.5 );
-        var localCenter = this.localAabbMax.add( this.localAabbMin ).multiplyScalar( 0.5 );
+        var localHalfExtents = this.localAabbMax
+          .subtract( this.localAabbMin, tmpGAVec1 )
+          .multiplyScalar( 0.5, tmpGAVec1 );
+        var localCenter = this.localAabbMax
+          .add( this.localAabbMin, tmpGAVec2 )
+          .multiplyScalar( 0.5, tmpGAVec2 );
 
         // avoid an illegal AABB when there are no children
         if ( !this.children.length ) {
@@ -208,13 +219,11 @@
         }
 
         var margin = this.getMargin();
-        localHalfExtents.addSelf( Bump.Vector3.create( margin, margin, margin ) );
+        localHalfExtents.addSelf( tmpGAVec3.setValue( margin, margin, margin ) );
 
-        var abs_b = trans.basis.absolute();
-
-        var center = trans.transform( localCenter );
-
-        var extent = Bump.Vector3.create(
+        var abs_b = trans.basis.absolute( tmpGAMat1 );
+        var center = trans.transform( localCenter, tmpGAVec3 );
+        var extent = tmpGAVec4.setValue(
           abs_b.el0.dot( localHalfExtents ),
           abs_b.el1.dot( localHalfExtents ),
           abs_b.el2.dot( localHalfExtents )

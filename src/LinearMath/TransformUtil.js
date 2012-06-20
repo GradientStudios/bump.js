@@ -46,8 +46,7 @@
 
     // Exponential map.
     // Google for "Practical Parameterization of Rotations Using the Exponential Map", F. Sebastian Grassia
-    var axis,
-        fAngle = angvel.length();
+    var axis, fAngle = angvel.length();
 
     // limit the angular motion
     if ( fAngle * timeStep > ANGULAR_MOTION_THRESHOLD ) {

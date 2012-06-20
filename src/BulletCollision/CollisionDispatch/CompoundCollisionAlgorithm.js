@@ -53,6 +53,16 @@
     },
 
     members: {
+      set: function( compoundObj, otherObj, dispatcher, dispatchInfo, resultOut, childCollisionAlgorithms, sharedManifold ) {
+        this.compoundColObj = compoundObj;
+        this.otherObj = otherObj;
+        this.dispatcher = dispatcher;
+        this.dispatchInfo = dispatchInfo;
+        this.resultOut = resultOut;
+        this.childCollisionAlgorithms = childCollisionAlgorithms;
+        this.sharedManifold = sharedManifold;
+      },
+
       ProcessChildShape: function( childShape, index ) {
         var tmpPCSVec1 = getVector3();
         var tmpPCSVec2 = getVector3();
@@ -141,6 +151,10 @@
     }
   });
 
+  var leafCallbackPool = [];
+  var getCompoundLeafCallback = createGetter( CompoundLeafCallback, leafCallbackPool );
+  var delCompoundLeafCallback = createDeller( leafCallbackPool );
+
   Bump.CompoundCollisionAlgorithm = Bump.type({
     parent: Bump.ActivatingCollisionAlgorithm,
 
@@ -213,6 +227,16 @@
       },
 
       processCollision: function( body0, body1, dispatchInfo, resultOut ) {
+        var tmpPCVec1 = getVector3();
+        var tmpPCVec2 = getVector3();
+        var tmpPCVec3 = getVector3();
+        var tmpPCVec4 = getVector3();
+        var tmpPCT1   = getTransform();
+        var tmpPCT2   = getTransform();
+        var tmpPCT3   = getTransform();
+        var tmpPCVol1 = getDbvtVolume();
+        var callback  = getCompoundLeafCallback();
+
         var m_childCollisionAlgorithms = this.childCollisionAlgorithms;
 
         var colObj = this.isSwapped ? body1 : body0;
@@ -232,7 +256,7 @@
 
         var tree = compoundShape.getDynamicAabbTree();
         // use a dynamic aabb tree to cull potential child-overlaps
-        var callback = CompoundLeafCallback.create( colObj, otherObj, this.dispatcher, dispatchInfo, resultOut, m_childCollisionAlgorithms, this.sharedManifold );
+        callback.set( colObj, otherObj, this.dispatcher, dispatchInfo, resultOut, m_childCollisionAlgorithms, this.sharedManifold );
 
         // We need to refresh all contact manifolds.
         // Note that we should actually recursively traverse all children,
@@ -328,6 +352,11 @@
             }
           }
         }
+
+        delCompoundLeafCallback( callback );
+        delDbvtVolume( tmpPCVol1 );
+        delTransform( tmpPCT1, tmpPCT2, tmpPCT3 );
+        delVector3( tmpPCVec1, tmpPCVec2, tmpPCVec3, tmpPCVec4 );
       },
 
       calculateTimeOfImpact: function( body0, body1, dispatchInfo, resultOut ) {

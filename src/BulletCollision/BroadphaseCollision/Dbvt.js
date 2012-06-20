@@ -314,12 +314,15 @@
 
   Bump.Proximity = {};
 
+  var tmpProxVec1 = Bump.Vector3.create();
+  var tmpProxVec2 = Bump.Vector3.create();
   // Given `DbvtAabbMm`s `a` and `b`, compute the "proximity", which is twice the
   // Manhattan distance between the centers
   Bump.Proximity.DbvtAabbMm2 = function( a, b ) {
-    var d = a.mi.add( a.mx ).subtractSelf( b.mi.add( b.mx ) );
+    var d = a.mi.add( a.mx, tmpProxVec1 )
+      .subtractSelf( b.mi.add( b.mx, tmpProxVec2 ) );
 
-    return ( Math.abs( d.x ) + Math.abs( d.y ) + Math.abs( d.z ) );
+    return Math.abs( d.x ) + Math.abs( d.y ) + Math.abs( d.z );
   };
   Bump.Proximity.DbvtVolume2 = Bump.Proximity.DbvtAabbMm2; // typedef consistency
 
@@ -451,8 +454,7 @@
 
   size = function( a ) {
     var edges = a.Lengths();
-    return edges.x * edges.y * edges.z +
-      edges.x + edges.y + edges.z ;
+    return edges.x * edges.y * edges.z + edges.x + edges.y + edges.z;
   },
 
   getmaxdepth = function( node, depth, maxdepthRef ) {
@@ -489,10 +491,10 @@
     if ( pdbvt.free ) {
       node = pdbvt.free;
       pdbvt.free = 0;
-    }
-    else {
+    } else {
       node = Bump.DbvtNode.create();
     }
+
     node.parent = parent;
     node.data = data;
     node.childs[ 1 ] = 0; // redundant?
@@ -516,6 +518,7 @@
       pdbvt.root = leaf;
       leaf.parent = 0;
     }
+
     else {
       if ( !root.isleaf() ) {
         do {
@@ -526,6 +529,7 @@
           ];
         } while ( !root.isleaf() );
       }
+
       var prev = root.parent;
       var node = createnodeTreeParentVolume2Data( pdbvt, prev, leaf.volume, root.volume, 0 );
       if ( prev ) {
@@ -537,14 +541,14 @@
         do {
           if ( !prev.volume.Contain( node.volume ) ) {
             Bump.Merge.DbvtVolume3( prev.childs[ 0 ].volume, prev.childs[ 1 ].volume, prev.volume );
-          }
-          else {
+          } else {
             break;
           }
           node = prev;
           prev = node.parent;
         } while ( 0 !== prev );
       }
+
       else {
         node.childs[ 0 ] = root;
         root.parent = node;
@@ -560,6 +564,7 @@
                 pdbvt.root = 0;
                 return 0;
     }
+
     else {
       var parent = leaf.parent,
       prev = parent.parent,
@@ -573,13 +578,13 @@
           Bump.Merge.DbvtVolume3( prev.childs[ 0 ].volume, prev.childs[ 1 ].volume, prev.volume );
           if ( Bump.NotEqual.DbvtVolume2( pb, prev.volume ) ) {
             prev = prev.parent;
-          }
-          else {
+          } else {
             break;
           }
         }
         return prev || pdbvt.root;
       }
+
       else {
         pdbvt.root = sibling;
         sibling.parent = 0;
@@ -595,8 +600,7 @@
       fetchleaves( pdbvt, root.childs[ 0 ], leaves, depth - 1 );
       fetchleaves( pdbvt, root.childs[ 1 ], leaves, depth - 1 );
       deletenode( pdbvt, root );
-    }
-    else {
+    } else {
       leaves.push( root );
     }
   },
@@ -608,8 +612,7 @@
     for ( var i = 0, ni = leaves.length; i < ni; ++i ) {
       if ( axis.dot( leaves[ i ].volume.Center().subract( org, tmpVector3 ) ) < 0 ) {
         left.push( leaves[ i ] );
-      }
-      else {
+      } else {
         right.push( leaves[ i ] );
       }
     }
@@ -746,6 +749,8 @@
     return n;
   };
 
+  // Used in updateLeafVolumeMargin and updateLeafVolumeVelocityMargin
+  var tmpMargin = Bump.Vector3.create();
 
   // **Bump.Dbvt** is the port of the `btDbvt` struct. Original documentation
   // as follows:
@@ -843,8 +848,7 @@
             for ( var i = 0; ( i < lookahead ) && root.parent; ++i ) {
               root = root.parent;
             }
-          }
-          else {
+          } else {
             root = this.root;
           }
         }
@@ -858,8 +862,7 @@
             for ( var i = 0; ( i < this.lkhd ) && root.parent; ++i ) {
               root = root.parent;
             }
-          }
-          else {
+          } else {
             root = this.root;
           }
         }
@@ -872,7 +875,8 @@
         if ( leaf.volume.Contain( volume ) ) {
           return false;
         }
-        volume.Expand( Bump.Vector3.create( margin, margin, margin ) );
+
+        volume.Expand( tmpMargin.setValue( margin, margin, margin ) );
         volume.SignedExpand( velocity );
         this.updateLeafVolume( leaf, volume );
         return true;
@@ -883,8 +887,9 @@
         if ( leaf.volume.Contain( volume ) ) {
           return false;
         }
+
         volume.SignedExpand( velocity );
-        this.updateLeafVolume( leaf,volume );
+        this.updateLeafVolume( leaf, volume );
         return true;
       },
 
@@ -892,8 +897,9 @@
         if ( leaf.volume.Contain( volume ) ) {
           return false;
         }
-        volume.Expand( Bump.Vector3.create( margin,margin,margin ) );
-        this.updateLeafVolume( leaf,volume );
+
+        volume.Expand( tmpMargin.setValue( margin, margin, margin ) );
+        this.updateLeafVolume( leaf, volume );
         return true;
       },
 

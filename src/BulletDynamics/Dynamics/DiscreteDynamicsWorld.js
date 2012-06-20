@@ -175,6 +175,14 @@
     }
   });
 
+  // Used in integrateTransforms
+  var tmpITVec1   = Bump.Vector3.create();
+  var tmpITTrans1 = Bump.Transform.create();
+  var tmpITTrans2 = Bump.Transform.create();
+
+  // Used in synchronizeSingleMotionState
+  var tmpSSMTrans1 = Bump.Transform.create();
+
   Bump.DiscreteDynamicsWorld = Bump.type({
     parent: Bump.DynamicsWorld,
 
@@ -321,7 +329,7 @@
           // otherwise the 'graphics' transform never updates properly.
           //
           // **TODO:** Add 'dirty' flag.
-          var interpolatedTransform = Bump.Transform.create();
+          var interpolatedTransform = tmpSSMTrans1;
           Bump.TransformUtil.integrateTransform(
             body.getInterpolationWorldTransform(),
             body.getInterpolationLinearVelocity(),
@@ -527,14 +535,14 @@
       },
 
       integrateTransforms: function( timeStep ) {
-        var predictedTrans = Bump.Transform.create();
+        var predictedTrans = tmpITTrans1;
         for ( var i = 0; i < this.nonStaticRigidBodies.length; ++i ) {
           var body = this.nonStaticRigidBodies[i];
           body.setHitFraction( 1 );
 
           if ( body.isActive() && ( !body.isStaticOrKinematicObject() ) ) {
             body.predictIntegratedTransform( timeStep, predictedTrans );
-            var squareMotion = ( predictedTrans.origin.subtract( body.getWorldTransform().origin ) ).length2();
+            var squareMotion = predictedTrans.origin.subtract( body.getWorldTransform().origin, tmpITVec1 ).length2();
 
             if ( this.getDispatchInfo().useContinuous && body.getCcdSquareMotionThreshold() && body.getCcdSquareMotionThreshold() < squareMotion ) {
               if ( body.getCollisionShape().isConvex() ) {
@@ -553,7 +561,7 @@
                 sweepResults.collisionFilterGroup = body.getBroadphaseProxy().collisionFilterGroup;
                 sweepResults.collisionFilterMask  = body.getBroadphaseProxy().collisionFilterMask;
 
-                var modifiedPredictedTrans = predictedTrans.clone();
+                var modifiedPredictedTrans = tmpITTrans2.assign( predictedTrans );
                 modifiedPredictedTrans.setBasis( body.getWorldTransform().basis );
 
                 this.convexSweepTest( tmpSphere, body.getWorldTransform(), modifiedPredictedTrans, sweepResults );
@@ -565,8 +573,8 @@
 
                   // Response between two dynamic objects without friction,
                   // assuming 0 penetration depth.
-                  var appliedImpulse = 0,
-                      depth = 0;
+                  var appliedImpulse = 0;
+                  var depth = 0;
                   appliedImpulse = this.resolveSingleCollision( body, sweepResults.hitCollisionObject, sweepResults.hitPointWorld, sweepResults.hitNormalWorld, this.getSolverInfo(), depth );
 
                   continue;
