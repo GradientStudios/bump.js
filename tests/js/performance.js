@@ -108,7 +108,7 @@
   var amp  = rate / 2;
 
   var startSimulation = function() {
-    var time = Date.now();
+    var time = 0;
 
     var step = function () {
       time += 16;
@@ -119,7 +119,7 @@
       newTransform.basis.multiplyMatrix( Bump.Matrix3x3.createWithQuaternion( groundRot ), newTransform.basis );
       groundBody.getMotionState().setWorldTransform( newTransform );
 
-      dynamicsWorld.stepSimulation( 0.016, 10 );
+      dynamicsWorld.stepSimulation( 0.016 );
 
       for ( var i = 0; i < dynamicsWorld.getNumCollisionObjects(); ++i ) {
         var colObj = dynamicsWorld.getCollisionObjectArray()[i];
