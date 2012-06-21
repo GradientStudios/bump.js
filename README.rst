@@ -11,6 +11,10 @@ The current version of grunt runs ``uglify-js@1.0.7``, which contains a bug caus
 	$ cd node_modules/grunt
 	$ npm install uglify-js@1.2.6
 
+Or build with ``make``::
+
+	$ make
+
 One time setup for build process:
 ---------------------------------
 
