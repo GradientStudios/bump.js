@@ -51,6 +51,7 @@
         this.appliedImpulse = 0;
         this.friction = 0;
         this.jacDiagABInv = 0;
+        this.overrideNumSolverIterations = 0;
         this.rhs = 0;
         this.cfm = 0;
         this.lowerLimit = 0;

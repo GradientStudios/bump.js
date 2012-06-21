@@ -236,16 +236,22 @@
       updateSingleAabb: (function() {
         var reportMe;
 
+        var tmpVec1 = Bump.Vector3.create();
+        var tmpVec2 = Bump.Vector3.create();
+        var tmpVec3 = Bump.Vector3.create();
+        var tmpVec4 = Bump.Vector3.create();
+        var tmpVec5 = Bump.Vector3.create();
+
         return function( colObj ) {
-          var minAabb = Bump.Vector3.create(), maxAabb = Bump.Vector3.create();
+          var minAabb = tmpVec1, maxAabb = tmpVec2;
           colObj.getCollisionShape().getAabb( colObj.getWorldTransform(), minAabb, maxAabb );
           // Need to increase the aabb for contact thresholds.
-          var contactThreshold = Bump.Vector3.create( Bump.gContactBreakingThreshold, Bump.gContactBreakingThreshold, Bump.gContactBreakingThreshold );
+          var contactThreshold = tmpVec3.setValue( Bump.gContactBreakingThreshold, Bump.gContactBreakingThreshold, Bump.gContactBreakingThreshold );
           minAabb.subtractSelf( contactThreshold );
           maxAabb.addSelf( contactThreshold );
 
           if ( this.getDispatchInfo().useContinuous && colObj.getInternalType() === Bump.CollisionObject.CollisionObjectTypes.CO_RIGID_BODY && !colObj.isStaticOrKinematicObject() ) {
-            var minAabb2 = Bump.Vector3.create(), maxAabb2 = Bump.Vector3.create();
+            var minAabb2 = tmpVec4, maxAabb2 = tmpVec5;
             colObj.getCollisionShape().getAabb( colObj.getInterpolationWorldTransform(), minAabb2, maxAabb2 );
             minAabb2.subtractSelf( contactThreshold );
             maxAabb2.addSelf( contactThreshold );

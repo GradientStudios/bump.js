@@ -43,7 +43,20 @@
         this.accumImpulse = other.accumImpulse;
 
         return this;
+      },
+
+      setZero: function() {
+        this.normal[0] = 0;
+        this.normal[1] = 0;
+        this.normal[2] = 0;
+        this.rhs = 0;
+        this.jacDiagInv = 0;
+        this.lowerLimit = 0;
+        this.upperLimit = 0;
+        this.accumImpulse = 0;
+        return this;
       }
+
     }
   });
 
@@ -133,6 +146,46 @@
         this.constraintRow[0].accumImpulse = 0;
         this.constraintRow[1].accumImpulse = 0;
         this.constraintRow[2].accumImpulse = 0;
+      },
+
+      initWithContactPointInPlace: function( pointA, pointB, normal, distance ) {
+        this.localPointA.assign( pointA );
+        this.localPointB.assign( pointB );
+        this.positionWorldOnB.setZero();
+        this.positionWorldOnA.setZero();
+        this.normalWorldOnB.assign( normal );
+
+        this.distance1 = distance;
+        this.combinedFriction = 0;
+        this.combinedRestitution = 0;
+
+        this.partId0 = 0;
+        this.partId1 = 0;
+        this.index0 = 0;
+        this.index1 = 0;
+
+        this.userPersistentData = null;
+        this.appliedImpulse = 0;
+
+        this.lateralFrictionInitialized = false;
+        this.appliedImpulseLateral1 = 0;
+        this.appliedImpulseLateral2 = 0;
+        this.contactMotion1 = 0;
+        this.contactMotion2 = 0;
+        this.contactCFM1 = 0;
+        this.contactCFM2 = 0;
+
+        // Lifetime of the contactpoint in frames.
+        this.lifeTime = 0;
+
+        this.lateralFrictionDir1.setZero();
+        this.lateralFrictionDir2.setZero();
+
+        this.constraintRow[0].setZero();
+        this.constraintRow[1].setZero();
+        this.constraintRow[2].setZero();
+
+        return this;
       },
 
       clone: function( dest ) {

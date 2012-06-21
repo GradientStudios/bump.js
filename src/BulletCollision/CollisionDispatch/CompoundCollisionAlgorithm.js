@@ -1,14 +1,39 @@
 // load: bump.js
+// load: LinearMath/Vector3.js
+// load: LinearMath/Transform.js
 // load: BulletCollision/BroadphaseCollision/Dbvt.js
 // load: BulletCollision/CollisionDispatch/ActivatingCollisionAlgorithm.js
 // load: BulletCollision/CollisionDispatch/CollisionAlgorithmCreateFunc.js
 
-// run: LinearMath/Vector3.js
-// run: LinearMath/Transform.js
 // run: LinearMath/AabbUtil2.js
 // run: LinearMath/AlignedObjectArray.js
 
 (function( window, Bump ) {
+  var createGetter = function( Type, pool ) {
+    return function() {
+      return pool.pop() || Type.create();
+    };
+  };
+
+  var createDeller = function( pool ) {
+    return function() {
+      for ( var i = 0; i < arguments.length; ++i ) {
+        pool.push( arguments[i] );
+      }
+    };
+  };
+
+  var vecPool   = [];
+  var transPool = [];
+  var volPool   = [];
+
+  var getDbvtVolume = createGetter( Bump.DbvtVolume, volPool   );
+  var getVector3    = createGetter( Bump.Vector3,    vecPool   );
+  var getTransform  = createGetter( Bump.Transform,  transPool );
+
+  var delDbvtVolume = createDeller( volPool );
+  var delVector3    = createDeller( vecPool );
+  var delTransform  = createDeller( transPool );
 
   var CompoundLeafCallback = Bump.type({
     parent: Bump.Dbvt.ICollide,
@@ -28,7 +53,25 @@
     },
 
     members: {
+      set: function( compoundObj, otherObj, dispatcher, dispatchInfo, resultOut, childCollisionAlgorithms, sharedManifold ) {
+        this.compoundColObj = compoundObj;
+        this.otherObj = otherObj;
+        this.dispatcher = dispatcher;
+        this.dispatchInfo = dispatchInfo;
+        this.resultOut = resultOut;
+        this.childCollisionAlgorithms = childCollisionAlgorithms;
+        this.sharedManifold = sharedManifold;
+      },
+
       ProcessChildShape: function( childShape, index ) {
+        var tmpPCSVec1 = getVector3();
+        var tmpPCSVec2 = getVector3();
+        var tmpPCSVec3 = getVector3();
+        var tmpPCSVec4 = getVector3();
+        var tmpPCST1   = getTransform();
+        var tmpPCST2   = getTransform();
+        var tmpPCST3   = getTransform();
+
         var m_compoundColObj = this.compoundColObj;
         var m_otherObj = this.otherObj;
         var m_childCollisionAlgorithms = this.childCollisionAlgorithms;
@@ -39,16 +82,16 @@
         Bump.Assert( index < compoundShape.getNumChildShapes() );
 
         // backup
-        var orgTrans = m_compoundColObj.getWorldTransform().clone();
-        var orgInterpolationTrans = m_compoundColObj.getInterpolationWorldTransform().clone();
+        var orgTrans = tmpPCST1.assign( m_compoundColObj.getWorldTransform() );
+        var orgInterpolationTrans = tmpPCST2.assign( m_compoundColObj.getInterpolationWorldTransform() );
         var childTrans = compoundShape.getChildTransform( index );
-        var newChildWorldTrans = orgTrans.multiplyTransform( childTrans );
+        var newChildWorldTrans = orgTrans.multiplyTransform( childTrans, tmpPCST3 );
 
         // perform an AABB check first
-        var aabbMin0 = Bump.Vector3.create();
-        var aabbMax0 = Bump.Vector3.create();
-        var aabbMin1 = Bump.Vector3.create();
-        var aabbMax1 = Bump.Vector3.create();
+        var aabbMin0 = tmpPCSVec1;
+        var aabbMax0 = tmpPCSVec2;
+        var aabbMin1 = tmpPCSVec3;
+        var aabbMax1 = tmpPCSVec4;
         childShape.getAabb( newChildWorldTrans, aabbMin0, aabbMax0 );
         m_otherObj.getCollisionShape().getAabb( m_otherObj.getWorldTransform(), aabbMin1, aabbMax1 );
 
@@ -84,6 +127,9 @@
           m_compoundColObj.setWorldTransform( orgTrans );
           m_compoundColObj.setInterpolationWorldTransform( orgInterpolationTrans );
         }
+
+        delVector3( tmpPCSVec1, tmpPCSVec2, tmpPCSVec3, tmpPCSVec4 );
+        delTransform( tmpPCST1, tmpPCST2, tmpPCST3 );
       },
 
       ProcessNode: function( leaf ) {
@@ -104,6 +150,10 @@
 
     }
   });
+
+  var leafCallbackPool = [];
+  var getCompoundLeafCallback = createGetter( CompoundLeafCallback, leafCallbackPool );
+  var delCompoundLeafCallback = createDeller( leafCallbackPool );
 
   Bump.CompoundCollisionAlgorithm = Bump.type({
     parent: Bump.ActivatingCollisionAlgorithm,
@@ -177,6 +227,16 @@
       },
 
       processCollision: function( body0, body1, dispatchInfo, resultOut ) {
+        var tmpPCVec1 = getVector3();
+        var tmpPCVec2 = getVector3();
+        var tmpPCVec3 = getVector3();
+        var tmpPCVec4 = getVector3();
+        var tmpPCT1   = getTransform();
+        var tmpPCT2   = getTransform();
+        var tmpPCT3   = getTransform();
+        var tmpPCVol1 = getDbvtVolume();
+        var callback  = getCompoundLeafCallback();
+
         var m_childCollisionAlgorithms = this.childCollisionAlgorithms;
 
         var colObj = this.isSwapped ? body1 : body0;
@@ -196,7 +256,7 @@
 
         var tree = compoundShape.getDynamicAabbTree();
         // use a dynamic aabb tree to cull potential child-overlaps
-        var callback = CompoundLeafCallback.create( colObj, otherObj, this.dispatcher, dispatchInfo, resultOut, m_childCollisionAlgorithms, this.sharedManifold );
+        callback.set( colObj, otherObj, this.dispatcher, dispatchInfo, resultOut, m_childCollisionAlgorithms, this.sharedManifold );
 
         // We need to refresh all contact manifolds.
         // Note that we should actually recursively traverse all children,
@@ -220,13 +280,15 @@
 
         var numChildren;
         if ( tree ) {
-          var localAabbMin = Bump.Vector3.create();
-          var localAabbMax = Bump.Vector3.create();
-          var otherInCompoundSpace = Bump.Transform.create();
-          otherInCompoundSpace.assign( colObj.getWorldTransform().inverse().multiplyTransform( otherObj.getWorldTransform() ) );
+          var localAabbMin = tmpPCVec1;
+          var localAabbMax = tmpPCVec2;
+          var otherInCompoundSpace = colObj.getWorldTransform()
+            .inverse( tmpPCT1 )
+            .multiplyTransform( otherObj.getWorldTransform(), tmpPCT1 );
+
           otherObj.getCollisionShape().getAabb( otherInCompoundSpace, localAabbMin, localAabbMax );
 
-          var bounds = Bump.DbvtVolume.FromMM( localAabbMin, localAabbMax );
+          var bounds = tmpPCVol1.setFromMM( localAabbMin, localAabbMax );
           // process all children, that overlap with  the given AABB bounds
           tree.collideTV( tree.root, bounds, callback );
         }
@@ -246,21 +308,21 @@
         manifoldArray.length = 0;
         var childShape = null;
 
-        var orgTrans              = Bump.Transform.create();
-        var orgInterpolationTrans = Bump.Transform.create();
-        var newChildWorldTrans    = Bump.Transform.create();
+        var orgTrans              = tmpPCT1;
+        // var orgInterpolationTrans = tmpPCT2;
+        var newChildWorldTrans    = tmpPCT3;
 
-        var aabbMin0 = Bump.Vector3.create();
-        var aabbMax0 = Bump.Vector3.create();
-        var aabbMin1 = Bump.Vector3.create();
-        var aabbMax1 = Bump.Vector3.create();
+        var aabbMin0 = tmpPCVec1;
+        var aabbMax0 = tmpPCVec2;
+        var aabbMin1 = tmpPCVec3;
+        var aabbMax1 = tmpPCVec4;
 
         for ( i = 0; i < numChildren; ++i ) {
           if ( m_childCollisionAlgorithms[i] ) {
             childShape = compoundShape.getChildShape( i );
             // if not longer overlapping, remove the algorithm
             orgTrans.assign( colObj.getWorldTransform() );
-            orgInterpolationTrans = colObj.getInterpolationWorldTransform( orgInterpolationTrans );
+            // orgInterpolationTrans.assign( colObj.getInterpolationWorldTransform() );
             var childTrans = compoundShape.getChildTransform( i );
             newChildWorldTrans = orgTrans.multiplyTransform( childTrans, newChildWorldTrans );
 
@@ -290,6 +352,11 @@
             }
           }
         }
+
+        delCompoundLeafCallback( callback );
+        delDbvtVolume( tmpPCVol1 );
+        delTransform( tmpPCT1, tmpPCT2, tmpPCT3 );
+        delVector3( tmpPCVec1, tmpPCVec2, tmpPCVec3, tmpPCVec4 );
       },
 
       calculateTimeOfImpact: function( body0, body1, dispatchInfo, resultOut ) {

@@ -43,7 +43,6 @@
 
     return function( p0, p1, p2, p3 ) {
       // It calculates possible 3 area constructed from random 4 points and returns the biggest one.
-
       a[0] = p0.subtract( p1, a[0] );
       a[1] = p0.subtract( p2, a[1] );
       a[2] = p0.subtract( p3, a[2] );
@@ -382,28 +381,32 @@
         if ( Bump.gContactCalcArea3Points ) {
           if ( maxPenetrationIndex !== 0 ) {
             var a0 = pt.localPointA.subtract( m_pointCache[1].localPointA, tmpV1 ),
-            b0 = m_pointCache[3].localPointA.subtract( m_pointCache[2].localPointA, tmpV2 );
+                b0 = m_pointCache[3].localPointA.subtract( m_pointCache[2].localPointA, tmpV2 );
+
             cross = a0.cross( b0, tmpV3 );
             res0 = cross.length2();
           }
 
           if ( maxPenetrationIndex !== 1 ) {
             var a1 = pt.localPointA.subtract( m_pointCache[0].localPointA, tmpV1 ),
-            b1 = m_pointCache[3].localPointA.subtract( m_pointCache[2].localPointA, tmpV2 );
+                b1 = m_pointCache[3].localPointA.subtract( m_pointCache[2].localPointA, tmpV2 );
+
             cross = a1.cross( b1, tmpV3 );
             res1 = cross.length2();
           }
 
           if ( maxPenetrationIndex !== 2 ) {
             var a2 = pt.localPointA.subtract( m_pointCache[0].localPointA, tmpV1 ),
-            b2 = m_pointCache[3].localPointA.subtract( m_pointCache[1].localPointA, tmpV2 );
+                b2 = m_pointCache[3].localPointA.subtract( m_pointCache[1].localPointA, tmpV2 );
+
             cross = a2.cross( b2, tmpV3 );
             res2 = cross.length2();
           }
 
           if ( maxPenetrationIndex !== 3 ) {
             var a3 = pt.localPointA.subtract( m_pointCache[0].localPointA, tmpV1 ),
-            b3 = m_pointCache[2].localPointA.subtract( m_pointCache[1].localPointA, tmpV2 );
+                b3 = m_pointCache[2].localPointA.subtract( m_pointCache[1].localPointA, tmpV2 );
+
             cross = a3.cross( b3, tmpV3 );
             res3 = cross.length2();
           }

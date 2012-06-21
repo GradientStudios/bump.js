@@ -651,7 +651,7 @@
         }
         if ( this.z < minVal ) {
           minIndex = 2;
-          minVal =this.z;
+          minVal = this.z;
         }
         if ( this.w < minVal ) {
           minIndex = 3;
