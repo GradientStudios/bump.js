@@ -1,10 +1,14 @@
 // load: bump.js
 // load: BulletCollision/CollisionDispatch/ActivatingCollisionAlgorithm.js
 // load: BulletCollision/CollisionDispatch/CollisionAlgorithmCreateFunc.js
-
-// run: BulletCollision/NarrowPhaseCollision/DiscreteCollisionDetectorInterface.js
+// load: BulletCollision/CollisionDispatch/BoxBoxDetector.js
+// load: BulletCollision/NarrowPhaseCollision/DiscreteCollisionDetectorInterface.js
 
 (function( window, Bump ) {
+
+  // Used in processCollision.
+  var tmpPCInput1 = Bump.DiscreteCollisionDetectorInterface.ClosestPointInput.create();
+  var detector = Bump.BoxBoxDetector.create();
 
   Bump.BoxBoxCollisionAlgorithm = Bump.type({
     parent: Bump.ActivatingCollisionAlgorithm,
@@ -74,12 +78,12 @@
         // contact reduction is done.
         resultOut.setPersistentManifold( this.manifoldPtr );
 
-        var input = Bump.DiscreteCollisionDetectorInterface.ClosestPointInput.create();
+        var input = tmpPCInput1;
         input.maximumDistanceSquared = Infinity;
         input.transformA.assign( body0.getWorldTransform() );
         input.transformB.assign( body1.getWorldTransform() );
 
-        var detector = Bump.BoxBoxDetector.create( box0, box1 );
+        detector.init( box0, box1 );
         detector.getClosestPoints( input, resultOut, dispatchInfo.debugDraw );
 
         // `refreshContactPoints` is only necessary when using persistent

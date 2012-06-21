@@ -396,7 +396,7 @@
 
         var MAX_ANGVEL = Math.PI / 2;
 
-        this.linearVelocity.addSelf( this.totalForce.multiplyScalar( this.inverseMass * step ), tmpV1 );
+        this.linearVelocity.addSelf( this.totalForce.multiplyScalar( this.inverseMass * step, tmpV1 ) );
         this.angularVelocity.addSelf(
           this.invInertiaTensorWorld
             .multiplyVector( this.totalTorque, tmpV1 )

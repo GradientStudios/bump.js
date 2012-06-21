@@ -1,13 +1,19 @@
 // load: bump.js
+// load: LinearMath/Vector3.js
 // load: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
 // load: BulletCollision/BroadphaseCollision/Dbvt.js
 // load: BulletCollision/BroadphaseCollision/BroadphaseInterface.js
 
-// run: LinearMath/Vector3.js
 // run: LinearMath/AlignedObjectArray.js
 // run: BulletCollision/BroadphaseCollision/OverlappingPairCache.js
 
 (function( window, Bump ) {
+
+  // Used in setAabb.
+  var tmpSADTC1;
+  var tmpSAAabb1 = Bump.DbvtVolume.create();
+  var tmpSAVec1  = Bump.Vector3.create();
+  var tmpSAVec2  = Bump.Vector3.create();
 
   Bump.DBVT_BP_MARGIN = 0.05;
 
@@ -65,6 +71,7 @@
     init: function DbvtTreeCollider( p ) {
       this.pbp = p;
       this.proxy = null;
+      return this;
     },
 
     members: {
@@ -284,7 +291,8 @@
 
       setAabb: function( absproxy, aabbMin, aabbMax, dispatcher ) {
         var proxy = absproxy,
-        aabb = Bump.DbvtVolume.FromMM( aabbMin, aabbMax );
+            aabb = tmpSAAabb1.setFromMM( aabbMin, aabbMax );
+
         var docollide = false;
         if ( proxy.stage === Bump.DbvtBroadphase.Stages.STAGECOUNT ) {
           // fixed . dynamic set
@@ -292,15 +300,16 @@
           proxy.leaf = this.sets[ 0 ].insert( aabb, proxy );
           docollide = true;
         }
+
         else {
           // dynamic set
           ++this.updates_call;
           if ( Bump.Intersect.DbvtVolume2( proxy.leaf.volume, aabb ) ) {
             // Moving
-            var delta = aabbMin.subtract( proxy.aabbMin ),
-                velocity = proxy.aabbMax.subtract( proxy.aabbMin )
-                  .divideScalarSelf( 2 )
-                  .multiplyScalarSelf( this.prediction );
+            var delta = aabbMin.subtract( proxy.aabbMin, tmpSAVec1 ),
+                velocity = proxy.aabbMax.subtract( proxy.aabbMin, tmpSAVec2 )
+                  .divideScalarSelf( 2, tmpSAVec2 )
+                  .multiplyScalarSelf( this.prediction, tmpSAVec2 );
 
             if ( delta.x < 0 ) {
               velocity.x = -velocity.x;
@@ -311,16 +320,18 @@
             if ( delta.z < 0 ) {
               velocity.z = -velocity.z;
             }
-            if (
-              this.sets[0].updateLeafVolumeVelocityMargin( proxy.leaf,
-                                                           aabb,
-                                                           velocity,
-                                                           Bump.DBVT_BP_MARGIN )
-            ) {
+
+            if ( this.sets[0].updateLeafVolumeVelocityMargin(
+              proxy.leaf,
+              aabb,
+              velocity,
+              Bump.DBVT_BP_MARGIN
+            ) ) {
               ++this.updates_done;
               docollide = true;
             }
           }
+
           else {
             // Teleporting
             this.sets[ 0 ].updateLeafVolume( proxy.leaf, aabb );
@@ -328,15 +339,16 @@
             docollide = true;
           }
         }
+
         listremove( proxy, this.stageRoots[ proxy.stage ] );
-        aabbMin.clone( proxy.aabbMin );
-        aabbMax.clone( proxy.aabbMax );
+        proxy.aabbMin.assign( aabbMin );
+        proxy.aabbMax.assign( aabbMax );
         proxy.stage = this.stageCurrent;
         listappend( proxy, this.stageRoots[ this.stageCurrent ] );
         if ( docollide ) {
           this.needcleanup = true;
           if ( !this.deferedcollide ) {
-            var collider = Bump.DbvtTreeCollider.create( this );
+            var collider = tmpSADTC1.init( this );
             this.sets[ 1 ].collideTTpersistentStack( this.sets[ 1 ].root, proxy.leaf, collider );
             this.sets[ 0 ].collideTTpersistentStack( this.sets[ 0 ].root, proxy.leaf, collider );
           }
@@ -559,4 +571,7 @@
       benchmark: Bump.noop
     }
   });
+
+  tmpSADTC1 = Bump.DbvtTreeCollider.create();
+
 })( this, this.Bump );
