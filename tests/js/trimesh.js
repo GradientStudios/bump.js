@@ -21,41 +21,104 @@
   var collisionShapes = [];
 
   var groundBody;
-  (function( size ) {
-    var groundHalfExtents = Bump.Vector3.create( size, size, size );
-    var groundBoxShape = Bump.BoxShape.create( groundHalfExtents );
-    var groundShape = Bump.CompoundShape.create();
 
-    collisionShapes.push( groundShape );
-    collisionShapes.push( groundBoxShape );
+  // (function( size ) {
+  //   var groundHalfExtents = Bump.Vector3.create( size, size, size );
+  //   var groundBoxShape = Bump.BoxShape.create( groundHalfExtents );
+  //   var groundShape = Bump.CompoundShape.create();
 
-    var sizeAndHalf = 1.5 * size;
-    [
-      Bump.Vector3.create( 0, -sizeAndHalf, 0 ),
-      Bump.Vector3.create( 0,  sizeAndHalf, 0 ),
-      Bump.Vector3.create( -sizeAndHalf, 0, 0 ),
-      Bump.Vector3.create(  sizeAndHalf, 0, 0 ),
-      Bump.Vector3.create( 0, 0, -sizeAndHalf ),
-      Bump.Vector3.create( 0, 0,  sizeAndHalf )
-    ].forEach(function( position ) {
-      var localTransform = Bump.Transform.getIdentity();
-      localTransform.setOrigin( position );
+  //   collisionShapes.push( groundShape );
+  //   collisionShapes.push( groundBoxShape );
 
-      groundShape.addChildShape( localTransform, groundBoxShape );
-    });
+  //   var sizeAndHalf = 1.5 * size;
+  //   [
+  //     Bump.Vector3.create( 0, -sizeAndHalf, 0 ),
+  //     Bump.Vector3.create( 0,  sizeAndHalf, 0 ),
+  //     Bump.Vector3.create( -sizeAndHalf, 0, 0 ),
+  //     Bump.Vector3.create(  sizeAndHalf, 0, 0 ),
+  //     Bump.Vector3.create( 0, 0, -sizeAndHalf ),
+  //     Bump.Vector3.create( 0, 0,  sizeAndHalf )
+  //   ].forEach(function( position ) {
+  //     var localTransform = Bump.Transform.getIdentity();
+  //     localTransform.setOrigin( position );
 
-    var groundTransform = Bump.Transform.getIdentity();
+  //     groundShape.addChildShape( localTransform, groundBoxShape );
+  //   });
 
-    var myMotionState = Bump.DefaultMotionState.create( groundTransform );
-    var rbInfo = Bump.RigidBody.RigidBodyConstructionInfo.create( 0, myMotionState, groundShape, Bump.Vector3.create() );
-    // var rbInfo = Bump.RigidBody.RigidBodyConstructionInfo.create( 0, myMotionState, groundBoxShape, Bump.Vector3.create() );
-    groundBody = Bump.RigidBody.create( rbInfo );
+  //   var groundTransform = Bump.Transform.getIdentity();
 
-    groundBody.setCollisionFlags( groundBody.getCollisionFlags() | Bump.CollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT );
-    groundBody.setActivationState( Bump.CollisionObject.DISABLE_DEACTIVATION );
+  //   var myMotionState = Bump.DefaultMotionState.create( groundTransform );
+  //   var rbInfo = Bump.RigidBody.RigidBodyConstructionInfo.create( 0, myMotionState, groundShape, Bump.Vector3.create() );
+  //   // var rbInfo = Bump.RigidBody.RigidBodyConstructionInfo.create( 0, myMotionState, groundBoxShape, Bump.Vector3.create() );
+  //   groundBody = Bump.RigidBody.create( rbInfo );
 
-    dynamicsWorld.addRigidBody( groundBody );
-  }( 20 ));
+  //   groundBody.setCollisionFlags( groundBody.getCollisionFlags() | Bump.CollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT );
+  //   groundBody.setActivationState( Bump.CollisionObject.DISABLE_DEACTIVATION );
+
+  //   dynamicsWorld.addRigidBody( groundBody );
+  // }( 10 ));
+
+  (function() {
+    var text = document.getElementById('obj-file').text;
+
+    // parse file for vertex and face entries
+    var faceMatches = text.match( /^f( \d+(\/\d+)?){3}$/gm );
+    var vertexMatches = text.match( /^v( -?\d+(\.\d+)?){3}$/gm );
+    var vertices;
+
+    if( vertexMatches && faceMatches) {
+
+      var triMesh = Bump.TriangleMesh.create();
+
+      // extract vertices
+      vertices = vertexMatches.map( function( vString ) {
+        var vertex = vString.split(" ");
+        // vertex[ 0 ] is the "v" token, so ignore it
+        vertex = Bump.Vector3.create(
+          parseFloat( vertex[ 1 ] ),
+          parseFloat( vertex[ 2 ] ),
+          parseFloat( vertex[ 3 ] )
+        );
+
+        return vertex;
+      });
+
+      // extract face data and add triangles to the mesh
+      if( faceMatches ) {
+        faceMatches.forEach( function( fString ) {
+          var face = fString.replace( /\/\d+/g, '' ).split( ' ' );
+
+          // face[ 0 ] is the "f" token so ignore it
+          triMesh.addTriangle(
+            vertices[ parseInt( face[ 1 ], 10 ) - 1 ],
+            vertices[ parseInt( face[ 2 ], 10 ) - 1 ],
+            vertices[ parseInt( face[ 3 ], 10 ) - 1 ]
+          );
+        });
+      }
+
+      var triShape = Bump.ScaledBvhTriangleMeshShape.create(
+        Bump.BvhTriangleMeshShape.create( triMesh, true ),
+        Bump.Vector3.create( 1, 1, 1 )
+      );
+
+      var groundTransform = Bump.Transform.getIdentity();
+      groundTransform.setOrigin(
+        Bump.Vector3.create( 0, -17, 0 )
+      );
+
+      var myMotionState = Bump.DefaultMotionState.create( groundTransform );
+      var rbInfo = Bump.RigidBody.RigidBodyConstructionInfo.create( 0, myMotionState, triShape, Bump.Vector3.create() );
+      // var rbInfo = Bump.RigidBody.RigidBodyConstructionInfo.create( 0, myMotionState, groundBoxShape, Bump.Vector3.create() );
+      groundBody = Bump.RigidBody.create( rbInfo );
+
+      // groundBody.setCollisionFlags( groundBody.getCollisionFlags() | Bump.CollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT );
+      groundBody.setActivationState( Bump.CollisionObject.DISABLE_DEACTIVATION );
+
+      console.log( 'adding the ground body' );
+      dynamicsWorld.addRigidBody( groundBody );
+    }
+  }());
 
   var boxCubeShape = Bump.BoxShape.create( Bump.Vector3.create( 0.5, 0.5, 0.5 ) );
   collisionShapes.push( boxCubeShape );
@@ -92,7 +155,7 @@
     var j = 4;
     for ( var i = 0; i < num; ++i ) {
       for ( var k = 0; k < num; ++k ) {
-        createCube( i - (num - 1) / 2, j, k - (num - 1) / 2 );
+        createCube( (i - (num - 1) / 2) * 3, j, (k - (num - 1) / 2) * 3 );
 
         renderer.addBox({ size: 1 });
 
@@ -114,10 +177,10 @@
       time += 16;
 
       stats.begin();
-      groundRot.setEuler( 0, 0, rate + amp * Math.sin( time / 500 ) );
-      groundBody.getMotionState().getWorldTransform( newTransform );
-      newTransform.basis.multiplyMatrix( Bump.Matrix3x3.createWithQuaternion( groundRot ), newTransform.basis );
-      groundBody.getMotionState().setWorldTransform( newTransform );
+      // groundRot.setEuler( 0, 0, rate + amp * Math.sin( time / 500 ) );
+      // groundBody.getMotionState().getWorldTransform( newTransform );
+      // newTransform.basis.multiplyMatrix( Bump.Matrix3x3.createWithQuaternion( groundRot ), newTransform.basis );
+      // groundBody.getMotionState().setWorldTransform( newTransform );
 
       dynamicsWorld.stepSimulation( 0.016 );
 
