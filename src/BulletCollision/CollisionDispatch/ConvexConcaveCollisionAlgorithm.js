@@ -153,7 +153,7 @@
 
       getAllContactManifolds: function( manifoldArray ) {
         if ( this.btConvexTriangleCallback.manifoldPtr ) {
-          manifoldArray.push_back( this.btConvexTriangleCallback.manifoldPtr );
+          manifoldArray.push( this.btConvexTriangleCallback.manifoldPtr );
         }
       }
 
