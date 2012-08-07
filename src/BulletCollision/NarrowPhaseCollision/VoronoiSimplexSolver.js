@@ -3,6 +3,26 @@
 // run: LinearMath/Vector3.js
 
 (function( window, Bump ) {
+  var createGetter = function( Type, pool ) {
+    return function() {
+      return pool.pop() || Type.create();
+    };
+  };
+
+  var createDeller = function( pool ) {
+    return function() {
+      for ( var i = 0; i < arguments.length; ++i ) {
+        pool.push( arguments[i] );
+      }
+    };
+  };
+
+  // memory pool for recycling Vector3 objects
+  var vector3Pool = [];
+
+  var getVector3 = createGetter( Bump.Vector3, vector3Pool );
+  var delVector3 = createDeller( vector3Pool );
+
   var VORONOI_SIMPLEX_MAX_VERTS = 5,
       VORONOI_DEFAULT_EQUAL_VERTEX_THRESHOLD = 0.0001,
       VERTA = 0,
@@ -185,7 +205,12 @@
       },
 
       updateClosestVectorAndPoints: function() {
-        var tmpV1, tmpV2, p, a, b, c, d;
+        var tmpV1 = getVector3().setZero();
+        var tmpV2 = getVector3().setZero();
+        var tmpV3 = getVector3().setZero();
+        var tmpV4 = getVector3().setZero();
+        var p = getVector3().setZero();
+        var a, b, c, d;
 
         if ( this.needsUpdate ) {
           this.cachedBC.reset();
@@ -198,11 +223,9 @@
             break;
 
           case 1:
-            tmpV1 = Bump.Vector3.create();
-
             this.cachedP1.assign( this.simplexPointsP[0] );
             this.cachedP2.assign( this.simplexPointsQ[0] );
-            this.cachedV.assign( this.cachedP1.subtract( this.cachedP2 ) );
+            this.cachedV.assign( this.cachedP1.subtract( this.cachedP2, tmpV1 ));
             this.cachedBC.reset();
             this.cachedBC.setBarycentricCoordinates( 1, 0, 0, 0 );
             this.cachedValidClosest = this.cachedBC.isValid();
@@ -210,15 +233,12 @@
 
           // Closest point origin from line segment.
           case 2:
-            tmpV1 = Bump.Vector3.create();
+            var from = this.simplexVectorW[0];
+            var to = this.simplexVectorW[1];
+                // nearest = Bump.Vector3.create();
 
-            var from = this.simplexVectorW[0],
-                to = this.simplexVectorW[1],
-                nearest = Bump.Vector3.create();
-
-            p = Bump.Vector3.create( 0, 0, 0 );
-            var diff = p.subtract( from ),
-                v = to.subtract( from ),
+            var diff = p.subtract( from, tmpV3 ),
+                v = to.subtract( from, tmpV4 ),
                 t = v.dot( diff );
 
             if ( t > 0 ) {
@@ -240,7 +260,8 @@
               this.cachedBC.usedVertices.usedVertexA = true;
             }
             this.cachedBC.setBarycentricCoordinates( 1 - t, t );
-            nearest.assign( from.add( v.multiplyScalar( t, tmpV1 ), tmpV1 ) );
+            // ASD: commented this out since it is apparently never used
+            // nearest.assign( from.add( v.multiplyScalar( t, tmpV1 ), tmpV1 ) );
 
             this.cachedP1.assign( this.simplexPointsP[0].add( this.simplexPointsP[1].subtract( this.simplexPointsP[0], tmpV1 ).multiplyScalar( t, tmpV1 ), tmpV1 ) );
             this.cachedP2.assign( this.simplexPointsQ[0].add( this.simplexPointsQ[1].subtract( this.simplexPointsQ[0], tmpV1 ).multiplyScalar( t, tmpV1 ), tmpV1 ) );
@@ -253,11 +274,6 @@
 
           // Closest point origin from triangle.
           case 3:
-            tmpV1 = Bump.Vector3.create();
-            tmpV2 = Bump.Vector3.create();
-
-            p = Bump.Vector3.create( 0, 0, 0 );
-
             a = this.simplexVectorW[0];
             b = this.simplexVectorW[1];
             c = this.simplexVectorW[2];
@@ -283,11 +299,6 @@
             break;
 
           case 4:
-            tmpV1 = Bump.Vector3.create();
-            tmpV2 = Bump.Vector3.create();
-
-            p = Bump.Vector3.create( 0, 0, 0 );
-
             a = this.simplexVectorW[0];
             b = this.simplexVectorW[1];
             c = this.simplexVectorW[2];
@@ -310,7 +321,7 @@
                   .add( this.simplexPointsQ[3].multiplyScalar( this.cachedBC.barycentricCoords[3], tmpV1 ), tmpV2 )
               );
 
-              this.cachedV.assign( this.cachedP1.subtract( this.cachedP2 ) );
+              this.cachedV.assign( this.cachedP1.subtract( this.cachedP2, tmpV1 ) );
               this.reduceVertices( this.cachedBC.usedVertices );
             } else {
               //     console.log( 'sub distance got penetration' );
@@ -334,6 +345,12 @@
             this.cachedValidClosest = false;
           }
         }
+
+        delVector3( tmpV1 );
+        delVector3( tmpV2 );
+        delVector3( tmpV3 );
+        delVector3( tmpV4 );
+        delVector3( p );
 
         return this.cachedValidClosest;
 
