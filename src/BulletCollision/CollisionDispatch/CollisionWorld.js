@@ -3,17 +3,46 @@
 // load: BulletCollision/NarrowPhaseCollision/RaycastCallback.js
 // load: BulletCollision/BroadphaseCollision/Dbvt.js
 // load: BulletCollision/BroadphaseCollision/BroadphaseInterface.js
+// load: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+// load: BulletCollision/CollisionDispatch/CollisionObject.js
+// load: BulletCollision/NarrowPhaseCollision/VoronoiSimplexSolver.js
+// load: BulletCollision/NarrowPhaseCollision/SubSimplexConvexCast.js
+// load: BulletCollision/CollisionShapes/SphereShape.js
 
 // run: LinearMath/Transform.js
 // run: LinearMath/TransformUtil.js
 // run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
 // run: BulletCollision/BroadphaseCollision/Dispatcher.js
-// run: BulletCollision/CollisionDispatch/CollisionObject.js
-// run: BulletCollision/NarrowPhaseCollision/VoronoiSimplexSolver.js
-// run: BulletCollision/NarrowPhaseCollision/SubSimplexConvexCast.js
-// run: BulletCollision/CollisionShapes/SphereShape.js
+
 
 (function( window, Bump ) {
+
+  // memory pool management
+
+  // dummyArgs is an array of arguments to be used when creating
+  // a new object of Type, as some Types expect args within their
+  // create functions
+  var createGetter = function( Type, pool, dummyArgs ) {
+    // if there are dummy args, use them
+    if( dummyArgs ) {
+      return function() {
+        return pool.pop() || Type.create.apply( Type, dummyArgs );
+      };
+    } else {
+      return function() {
+        return pool.pop() || Type.create();
+      };
+    }
+  };
+
+  var createDeller = function( pool ) {
+    return function() {
+      for ( var i = 0; i < arguments.length; ++i ) {
+        pool.push( arguments[i] );
+      }
+    };
+  };
+
   var tmpV1 = Bump.Vector3.create();
 
   // port of btCollisionWorld::RayResultCallback (stored on Bump.CollisionWorld after its
@@ -63,6 +92,25 @@
     },
 
     members: {
+      // ASD: added for easy recycling, since init() calls clone
+      set: function BridgeTriangleRaycastCallback( from,
+                                                    to,
+                                                    resultCallback,
+                                                    collisionObject,
+                                                    triangleMesh,
+                                                    colObjWorldTransform
+                                                  ) {
+        //@BP Mod
+        Bump.TriangleRaycastCallback.set.call(
+          this, from, to, resultCallback.flags
+        );
+        this.resultCallback = resultCallback;
+        this.collisionObject = collisionObject;
+        this.triangleMesh = triangleMesh;
+        this.colObjWorldTransform.assign( colObjWorldTransform );
+        return this;
+      },
+
       reportHit: function( hitNormalLocal, hitFraction, partId, triangleIndex ) {
         var shapeInfo = Bump.CollisionWorld.LocalShapeInfo.create();
         shapeInfo.shapePart = partId;
@@ -140,6 +188,27 @@
     },
 
     members: {
+
+      // ASD: added for easy recycling of RayTester objects, since init calls
+      // clone()
+      set: function(
+        collisionObject,          // btCollisionObject*
+        compoundShape,            // const btCompoundShape*
+        colObjWorldTransform,     // const btTransform&
+        rayFromTrans,             // const btTransform&
+        rayToTrans,               // const btTransform&
+        resultCallback            // RayResultCallback&
+      ) {
+        this.collisionObject = collisionObject;
+        this.compoundShape = compoundShape;
+        this.colObjWorldTransform.assign( colObjWorldTransform );
+        this.rayFromTrans.assign( rayFromTrans );
+        this.rayToTrans.assign( rayToTrans );
+        this.resultCallback = resultCallback;
+
+        return this;
+      },
+
       // ASD: this function actually doesn't overwrite anything in ICollide, so we will leave it named as
       // `Process` for now...
       Process: function( i ) {
@@ -172,6 +241,67 @@
     }
   });
 
+  // port of btCollisionWorld::LocalRayResult, stored on
+  // Bump.CollisionWorld after its definition below
+  var LocalRayResult = Bump.type({
+    init: function LocalRayResult (
+      collisionObject,          // btCollisionObject*
+      localShapeInfo,           // LocalShapeInfo*
+      hitNormalLocal,           // const btVector3&
+      hitFraction               // btScalar
+    ) {
+      this.collisionObject = collisionObject;
+      this.localShapeInfo = localShapeInfo;
+      this.hitNormalLocal = hitNormalLocal;
+      this.hitFraction = hitFraction;
+    }
+  });
+
+
+  // Collision World memory pools
+  var sphereShapePool = [];
+  var voronoiPool = [];
+  var convexCastPool = [];
+  var castResultPool = [];
+  var localRayResultPool = [];
+  var bridgeTriangleRCBPool = [];
+  var rayTesterPool = [];
+
+  var getSphereShape = createGetter( Bump.SphereShape, sphereShapePool, [ 0.0 ] );
+  var getVoronoiSimplexSolver = createGetter( Bump.VoronoiSimplexSolver, voronoiPool );
+  var getSubsimplexConvexCast = createGetter( Bump.SubsimplexConvexCast, convexCastPool );
+  var getCastResult = createGetter( Bump.ConvexCast.CastResult, castResultPool );
+  var getLocalRayResult = createGetter( LocalRayResult, localRayResultPool );
+
+  var getBridgeTriangleRaycastCallback = createGetter(
+    BridgeTriangleRaycastCallback,
+    bridgeTriangleRCBPool,
+    [
+      Bump.Vector3.create(),
+      Bump.Vector3.create(),
+      { flags: 0 }, // dummy value for `resultCallback` param
+      undefined,
+      undefined,
+      Bump.Transform.getIdentity()
+    ]
+  );
+
+  var getRayTester = createGetter( RayTester, rayTesterPool, [
+    undefined,
+    undefined,
+    Bump.Transform.getIdentity(),
+    Bump.Transform.getIdentity(),
+    Bump.Transform.getIdentity(),
+    undefined
+  ]);
+
+  var delSphereShape = createDeller( sphereShapePool );
+  var delVoronoiSimplexSolver = createDeller( voronoiPool );
+  var delSubsimplexConvexCast = createDeller( convexCastPool );
+  var delCastResult = createDeller( castResultPool );
+  var delLocalRayResult = createDeller( localRayResultPool );
+  var delBridgeTriangleRaycastCallback = createDeller( bridgeTriangleRCBPool );
+  var delRayTester = createDeller( rayTesterPool );
 
   Bump.CollisionWorld = Bump.type({
 
@@ -459,7 +589,19 @@
                                colObjWorldTransform,
                                resultCallback ) {
 
-        var pointShape = Bump.SphereShape.create( 0.0 );
+        // allocate temporaries
+        // TODO: not all of these are needed for every rayTestSingle call,
+        // so allocations could be moved to where they are needed
+        var tmpSS = getSphereShape();
+        var tmpCR = getCastResult();
+        var tmpVSS = getVoronoiSimplexSolver();
+        var tmpSSCC = getSubsimplexConvexCast();
+        var tmpLRR = getLocalRayResult();
+        var tmpBTRC = getBridgeTriangleRaycastCallback();
+        var tmpRT = getRayTester();
+
+        var pointShape = tmpSS;
+        pointShape.init( 0.0 );
         pointShape.setMargin( 0 );
 
         var castShape = pointShape;
@@ -467,15 +609,17 @@
         var worldTocollisionObject, rayFromLocal, rayToLocal, rcb;
 
         if ( collisionShape.isConvex() ) {
-          var castResult = Bump.ConvexCast.CastResult.create();
+          var castResult = tmpCR;
           castResult.fraction = resultCallback.closestHitFraction;
 
           var convexShape = collisionShape;
-          var simplexSolver = Bump.VoronoiSimplexSolver.create();
+          var simplexSolver = tmpVSS;
+          simplexSolver.init();
 
           // #define USE_SUBSIMPLEX_CONVEX_CAST 1
           // #ifdef USE_SUBSIMPLEX_CONVEX_CAST
-          var convexCaster = Bump.SubsimplexConvexCast.create( castShape, convexShape, simplexSolver );
+          var convexCaster = tmpSSCC;
+          convexCaster.init( castShape, convexShape, simplexSolver );
           // #else
           //            //btGjkConvexCast       convexCaster(castShape,convexShape,&simplexSolver);
           //            //btContinuousConvexCollision convexCaster(castShape,convexShape,&simplexSolver,0);
@@ -497,7 +641,8 @@
                 // #endif //USE_SUBSIMPLEX_CONVEX_CAST
 
                 castResult.normal.normalize();
-                var localRayResult = Bump.CollisionWorld.LocalRayResult.create(
+                var localRayResult = tmpLRR;
+                localRayResult.init(
                   collisionObject,
                   0,
                   castResult.normal,
@@ -524,7 +669,7 @@
               // ConvexCast::CastResult
               // ASD: in-function declaration of BridgeTriangleRaycastCallback went here
 
-              rcb = BridgeTriangleRaycastCallback.create(
+              rcb = tmpBTRC.set(
                 rayFromLocal,
                 rayToLocal,
                 resultCallback,
@@ -551,7 +696,7 @@
               // but since it was line-for-line identical to the first declaration, the two were
               // were consolidated into a single Bump.type() outside of CollisionWorld.
 
-              rcb = BridgeTriangleRaycastCallback.create(
+              rcb = tmpBTRC.set(
                 rayFromLocal,
                 rayToLocal,
                 resultCallback,
@@ -578,8 +723,7 @@
               var compoundShape = collisionShape;
               var dbvt = compoundShape.getDynamicAabbTree();
 
-
-              var rayCB = RayTester.create(
+              var rayCB = tmpRT.set(
                 collisionObject,
                 compoundShape,
                 colObjWorldTransform,
@@ -598,10 +742,20 @@
                 }
               }
 
+              delRayTester( rayCB );
             }
           }
 
         }
+
+        // free temporaries
+        delSphereShape( tmpSS );
+        delCastResult( tmpCR );
+        delVoronoiSimplexSolver( tmpVSS );
+        delSubsimplexConvexCast( tmpSSCC );
+        delLocalRayResult( tmpLRR );
+        delBridgeTriangleRaycastCallback( tmpBTRC );
+        delRayTester( tmpRT );
       }
     }
   });
@@ -679,21 +833,8 @@
     }
   });
 
-  // port of btCollisionWorld::LocalRayResult
-  Bump.CollisionWorld.LocalRayResult = Bump.type({
-    init: function LocalRayResult (
-      collisionObject,          // btCollisionObject*
-      localShapeInfo,           // LocalShapeInfo*
-      hitNormalLocal,           // const btVector3&
-      hitFraction               // btScalar
-    ) {
-      this.collisionObject = collisionObject;
-      this.localShapeInfo = localShapeInfo;
-      this.hitNormalLocal = hitNormalLocal;
-      this.hitFraction = hitFraction;
-    }
-  });
-
+  // defined above for dependency reasons
+  Bump.CollisionWorld.LocalRayResult = LocalRayResult;
   Bump.CollisionWorld.RayResultCallback = RayResultCallback;
 
   // port of btCollisionWorld::ClosestRayResultCallback
