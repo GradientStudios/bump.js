@@ -20,6 +20,53 @@
 
   var collisionShapes = [];
 
+  (function(){
+    var _DOWN = Bump.Vector3.create( 0, -1, 0 );
+    var _down = Bump.Vector3.create();
+    var _from = Bump.Vector3.create();
+    var _to = Bump.Vector3.create();
+
+    // for now test the 4 corners
+    var testPoints = [
+      Bump.Vector3.create( -1, -1, -1 ),
+      Bump.Vector3.create( -1, -1, 1 ),
+      Bump.Vector3.create( 1, -1, -1 ),
+      Bump.Vector3.create( 1, -1, 1 )
+    ];
+
+    var boxTrans = Bump.Transform.getIdentity();
+
+    var rayCallback = Bump.CollisionWorld.ClosestRayResultCallback.create( _from, _to );
+    rayCallback.collisionFilterMask =
+      Bump.BroadphaseProxy.CollisionFilterGroups.AllFilter;
+
+    // set up a internal pre-tick callback to test a bunch of raycasts per object
+    dynamicsWorld.setInternalTickCallback( function() {
+
+      // cast rays for each collision object, slipping object 0,
+      // which is the dryer
+      for ( var i = 1; i < dynamicsWorld.getNumCollisionObjects(); ++i ) {
+        var colObj = dynamicsWorld.getCollisionObjectArray()[ i ];
+        var body = Bump.RigidBody.upcast( colObj );
+        body.getMotionState().getWorldTransform( boxTrans );
+
+        boxTrans.multiplyVector( _DOWN, _down );
+
+        for ( var j = 0; j < testPoints.length; j++ ) {
+          boxTrans.multiplyVector( testPoints[ j ], _from );
+          _from.add( _down, _to );
+          rayCallback.rayFromWorld = _from;
+          rayCallback.rayToWorld = _to;
+
+          dynamicsWorld.rayTest( _from, _to, rayCallback );
+
+          if( rayCallback.hasHit() ) {
+            // do something
+          }
+        }
+      }
+    }, undefined, true );
+  }());
   var groundBody;
   (function( size ) {
     var groundHalfExtents = Bump.Vector3.create( size, size, size );
@@ -88,7 +135,7 @@
   renderer.addBox({ size: 20, wireframe: true });
 
   (function() {
-    var num = 7;
+    var num = 2;
     var j = 4;
     for ( var i = 0; i < num; ++i ) {
       for ( var k = 0; k < num; ++k ) {
@@ -111,7 +158,7 @@
     var time = 0;
 
     var step = function () {
-      time += 16;
+      time += 160;
 
       stats.begin();
       groundRot.setEuler( 0, 0, rate + amp * Math.sin( time / 500 ) );
@@ -119,7 +166,7 @@
       newTransform.basis.multiplyMatrix( Bump.Matrix3x3.createWithQuaternion( groundRot ), newTransform.basis );
       groundBody.getMotionState().setWorldTransform( newTransform );
 
-      dynamicsWorld.stepSimulation( 0.016 );
+      dynamicsWorld.stepSimulation( 0.16, 20, 0.016 );
 
       for ( var i = 0; i < dynamicsWorld.getNumCollisionObjects(); ++i ) {
         var colObj = dynamicsWorld.getCollisionObjectArray()[i];
