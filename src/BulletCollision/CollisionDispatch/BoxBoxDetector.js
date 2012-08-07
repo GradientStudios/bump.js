@@ -36,8 +36,9 @@
     }
   });
 
+  var tmpLCAVec1 = Bump.Vector3.create();
   var dLineClosestApproach = function( pa, ua, pb, ub, alpha, beta ) {
-    var p    = pb.subtract( pa ),
+    var p    = pb.subtract( pa, tmpLCAVec1 ),
         uaub =  dDOTVA( ua, ub, 0 ),
         q1   =  dDOTVA( ua,  p, 0 ),
         q2   = -dDOTVA( ub,  p, 0 ),
@@ -240,6 +241,7 @@
   var tmpBBposInWorld = Bump.Vector3.create();
 
   var tmpBBVec1 = Bump.Vector3.create();
+  var tmpBBVec2 = Bump.Vector3.create();
 
   var dBoxBox2 = function(
     p1, R1, side1,
@@ -703,7 +705,7 @@
         if ( code < 4 ) {
           output.addContactPoint( normal.negate( tmpBBVec1 ), posInWorld, -tmp );
         } else {
-          output.addContactPoint( normal.negate( tmpBBVec1 ), posInWorld.subtract( normal.multiplyScalar( tmp ) ), -tmp );
+          output.addContactPoint( normal.negate( tmpBBVec1 ), posInWorld.subtract( normal.multiplyScalar( tmp, tmpBBVec2 ), tmpBBVec2 ), -tmp );
         }
       }
       cnum = maxc;
