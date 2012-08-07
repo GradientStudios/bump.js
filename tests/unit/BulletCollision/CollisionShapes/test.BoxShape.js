@@ -320,14 +320,14 @@ module( 'BoxShape.getBoundingSphere' );
 test( 'basic', function() {
   var shape  = Bump.BoxShape.create( Bump.Vector3.create( 1, 1, 1 ) ),
       center = Bump.Vector3.create(),
-      sphere = { radius: 0 };
+      radius = { value: 0 };
 
   testFunc( Bump.BoxShape, 'getBoundingSphere', {
     objects: shape,
     args: [
       [
         { param: center, expected: Bump.Vector3.create( 0, 0, 0 ) },
-        { param: sphere, expected: { radius: Math.sqrt( 3 ) } }
+        { param: radius, expected: { value: Math.sqrt( 3 ) } }
       ]
     ],
     expected: [ shape.clone() ]

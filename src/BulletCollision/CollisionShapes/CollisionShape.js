@@ -6,6 +6,7 @@
 
 (function( window, Bump ) {
   var tmpV1, tmpV2, tmpV3, tmpV4, tmpT1;
+  var radius = { value: 0 };
 
   Bump.CollisionShapeData = Bump.type({
     init: function CollisionShapeData() {
@@ -36,15 +37,15 @@
       // - `tmpV2`
       // - `tmpV3`
       // - `tmpT1`
-      getBoundingSphere: function( center, sphere ) {
+      getBoundingSphere: function( center, radius ) {
         var tr = tmpT1;
         tr.setIdentity();
         var aabbMin = tmpV1, aabbMax = tmpV2;
 
         this.getAabb( tr, aabbMin, aabbMax );
 
-        sphere.radius = aabbMax.subtract( aabbMin, tmpV3 ).length() * 0.5;
-        center = aabbMin.add( aabbMax, tmpV3 ).multiplyScalar( 0.5, sphere.center );
+        radius.value = aabbMax.subtract( aabbMin, tmpV3 ).length() * 0.5;
+        center = aabbMin.add( aabbMax, tmpV3 ).multiplyScalar( 0.5, center );
 
         return this;
       },
@@ -63,11 +64,11 @@
       // `TODO`: cache this value, to improve performance
       getAngularMotionDisc: function() {
         var center = tmpV4;
-        var radius = { radius: 0 };
+        radius.value = 0;
 
         this.getBoundingSphere( center, radius );
-        radius.radius += ( center ).length();
-        return radius.radius;
+        radius.value += center.length();
+        return radius.value;
       },
 
       // Uses the following temporary variables:
