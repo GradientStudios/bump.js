@@ -1,5 +1,5 @@
 // load: bump.js
-// run: LinearMath/Vector3.js
+// load: LinearMath/Vector3.js
 
 // **Bump.Matrix3x3** is the port of the `btMatrix3x3` class in
 // [Bullet](http://bulletphysics.org).
@@ -9,6 +9,8 @@
 
   var rowLookup = [ 'el0', 'el1', 'el2' ];
   var colLookup = [ 'x', 'y', 'z' ];
+
+  var tmpV1 = Bump.Vector3.create();
 
   Bump.Matrix3x3 = Bump.type({
     // Given *exactly* nine arguments in row major order,
@@ -475,7 +477,7 @@
       inverse: function( dest ) {
         dest = dest || Bump.Matrix3x3.create();
 
-        var co = Bump.Vector3.create(
+        var co = tmpV1.setValue(
           this.cofac( 1, 1, 2, 2 ),
           this.cofac( 1, 2, 2, 0 ),
           this.cofac( 1, 0, 2, 1 )
