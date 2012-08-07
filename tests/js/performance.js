@@ -103,6 +103,7 @@
   var groundRot = Bump.Quaternion.createWithEuler( 0, 0, Math.PI * 0.003 );
   var quat = Bump.Quaternion.create();
   var newTransform = Bump.Transform.create();
+  var tmpMat = Bump.Matrix3x3.create();
 
   var rate = Math.PI / 60 / 5;
   var amp  = rate / 2;
@@ -116,7 +117,7 @@
       stats.begin();
       groundRot.setEuler( 0, 0, rate + amp * Math.sin( time / 500 ) );
       groundBody.getMotionState().getWorldTransform( newTransform );
-      newTransform.basis.multiplyMatrix( Bump.Matrix3x3.createWithQuaternion( groundRot ), newTransform.basis );
+      newTransform.basis.multiplyMatrix( tmpMat.setRotation( groundRot ), newTransform.basis );
       groundBody.getMotionState().setWorldTransform( newTransform );
 
       dynamicsWorld.stepSimulation( 0.016 );
