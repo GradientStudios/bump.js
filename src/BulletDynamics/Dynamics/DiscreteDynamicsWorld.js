@@ -1,9 +1,10 @@
 // load: bump.js
+// load: LinearMath/Vector3.js
 // load: BulletCollision/CollisionDispatch/SimulationIslandManager.js
+// load: BulletDynamics/ConstraintSolver/TypedConstraint.js
 // load: BulletDynamics/Dynamics/DynamicsWorld.js
 
 // run: LinearMath/AlignedObjectArray.js
-// run: LinearMath/Vector3.js
 // run: LinearMath/Transform.js
 // run: LinearMath/TransformUtil.js
 // run: BulletDynamics/ConstraintSolver/SequentialImpulseConstraintSolver.js
@@ -12,6 +13,7 @@
 // run: BulletCollision/CollisionShapes/SphereShape.js
 
 (function( window, Bump ) {
+  var zeroVec = Bump.Vector3.create( 0, 0, 0 );
 
   // not sure that this needs to be globally accessible through Bump
   Bump.GetConstraintIslandId = function( lhs ) {
@@ -182,6 +184,9 @@
 
   // Used in synchronizeSingleMotionState
   var tmpSSMTrans1 = Bump.Transform.create();
+
+  // Used in solveConstraints
+  var emptyTypedConstraint = Bump.TypedConstraint.create();
 
   Bump.DiscreteDynamicsWorld = Bump.type({
     parent: Bump.DynamicsWorld,
@@ -624,7 +629,7 @@
         var m_constraints = this.constraints;
         var m_solverIslandCallback = this.solverIslandCallback;
 
-        Bump.resize( m_sortedConstraints, m_constraints.length, Bump.TypedConstraint.create() );
+        Bump.resize( m_sortedConstraints, m_constraints.length, emptyTypedConstraint );
         var i;
         for ( i = 0; i < this.getNumConstraints(); ++i ) {
           m_sortedConstraints[i] = m_constraints[i];
@@ -646,7 +651,6 @@
       },
 
       updateActivationState: function( timeStep ) {
-        var zero = Bump.Vector3.create( 0, 0, 0 );
         for ( var i = 0; i < this.nonStaticRigidBodies.length; ++i ) {
           var body = this.nonStaticRigidBodies[i];
           if ( body !== null ) {
@@ -660,8 +664,8 @@
                   body.setActivationState( Bump.CollisionObject.WANTS_DEACTIVATION );
                 }
                 if ( body.getActivationState() === Bump.CollisionObject.ISLAND_SLEEPING ) {
-                  body.setAngularVelocity( zero );
-                  body.setLinearVelocity( zero );
+                  body.setAngularVelocity( zeroVec );
+                  body.setLinearVelocity( zeroVec );
                 }
               }
             } else {
