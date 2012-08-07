@@ -86,7 +86,7 @@
     members: {
       initWithContactPoint: function( body0, body1, throwaway, contactBreakingThreshold, contactProcessingThreshold ) {
         Bump.TypedObject.prototype.init
-          .apply( this, [ Bump.ContactManifoldTypes.BT_PERSISTENT_MANIFOLD_TYPE ] );
+          .call( this, Bump.ContactManifoldTypes.BT_PERSISTENT_MANIFOLD_TYPE );
 
         this.pointCache = [];
         for ( var i = 0; i < MANIFOLD_CACHE_SIZE; ++i ) {
