@@ -44,6 +44,7 @@
   };
 
   var tmpV1 = Bump.Vector3.create();
+  var tmpV2 = Bump.Vector3.create();
 
   // port of btCollisionWorld::RayResultCallback (stored on Bump.CollisionWorld after its
   // definition below
@@ -241,6 +242,110 @@
     }
   });
 
+  // port of btCollisionWorld::SingleRayCallback, stored on
+  // Bump.CollisionWorld after its definition below
+  var SingleRayCallback = Bump.type({
+    parent: Bump.BroadphaseRayCallback,
+
+    init: function SingleRayCallback(
+      rayFromWorld,            // const btVector3&
+      rayToWorld,              // const btVector3&
+      world,                   // const btCollisionWorld*
+      resultCallback           // btCollisionWorld::RayResultCallback&
+    ) {
+      this.rayFromWorld = rayFromWorld.clone();
+      this.rayToWorld = rayToWorld.clone();
+      this.hitNormal = Bump.Vector3.create();
+
+      this.world = world;
+      this.resultCallback = resultCallback;
+
+      this.rayFromTrans = Bump.Transform.getIdentity();
+      this.rayFromTrans.setOrigin( this.rayFromWorld );
+      this.rayToTrans = Bump.Transform.getIdentity();
+      this.rayToTrans.setOrigin( this.rayToWorld );
+
+      var rayDir = rayToWorld.subtract( rayFromWorld, tmpV1 ).normalize();
+
+      // what about division by zero? --> just set rayDirection[i] to INF/BT_LARGE_FLOAT
+      this.rayDirectionInverse = Bump.Vector3.create();
+      this.signs = Bump.Vector3.create();
+      this.rayDirectionInverse[ 0 ] = rayDir[ 0 ] === 0 ? Infinity : 1 / rayDir[ 0 ];
+      this.rayDirectionInverse[ 1 ] = rayDir[ 1 ] === 0 ? Infinity : 1 / rayDir[ 1 ];
+      this.rayDirectionInverse[ 2 ] = rayDir[ 2 ] === 0 ? Infinity : 1 / rayDir[ 2 ];
+      this.signs[ 0 ] = this.rayDirectionInverse[ 0 ] < 0 ? 1 : 0;
+      this.signs[ 1 ] = this.rayDirectionInverse[ 1 ] < 0 ? 1 : 0;
+      this.signs[ 2 ] = this.rayDirectionInverse[ 2 ] < 0 ? 1 : 0;
+
+      this.lambda_max = rayDir.dot( this.rayToWorld.subtract( this.rayFromWorld, tmpV2 ));
+    },
+
+    members: {
+
+      // ASD: added for easy recycling without extra allocations
+      set: function(
+        rayFromWorld,            // const btVector3&
+        rayToWorld,              // const btVector3&
+        world,                   // const btCollisionWorld*
+        resultCallback           // btCollisionWorld::RayResultCallback&
+      ) {
+        this.rayFromWorld.assign( rayFromWorld );
+        this.rayToWorld.assign( rayToWorld );
+        this.hitNormal.setZero();
+
+        this.world = world;
+        this.resultCallback = resultCallback;
+
+        this.rayFromTrans.setIdentity();
+        this.rayFromTrans.setOrigin( this.rayFromWorld );
+        this.rayToTrans.setIdentity();
+        this.rayToTrans.setOrigin( this.rayToWorld );
+
+        var rayDir = rayToWorld.subtract( rayFromWorld, tmpV1 ).normalize();
+
+        // what about division by zero? --> just set rayDirection[i] to INF/BT_LARGE_FLOAT
+        this.rayDirectionInverse.setZero();
+        this.signs.setZero();
+        this.rayDirectionInverse[ 0 ] = rayDir[ 0 ] === 0 ? Infinity : 1 / rayDir[ 0 ];
+        this.rayDirectionInverse[ 1 ] = rayDir[ 1 ] === 0 ? Infinity : 1 / rayDir[ 1 ];
+        this.rayDirectionInverse[ 2 ] = rayDir[ 2 ] === 0 ? Infinity : 1 / rayDir[ 2 ];
+        this.signs[ 0 ] = this.rayDirectionInverse[ 0 ] < 0 ? 1 : 0;
+        this.signs[ 1 ] = this.rayDirectionInverse[ 1 ] < 0 ? 1 : 0;
+        this.signs[ 2 ] = this.rayDirectionInverse[ 2 ] < 0 ? 1 : 0;
+
+        this.lambda_max = rayDir.dot( this.rayToWorld.subtract( this.rayFromWorld, tmpV2 ));
+
+        return this;
+      },
+
+      process: function( proxy ) {
+        // terminate further ray tests, once the closestHitFraction reached zero
+        if ( this.resultCallback.closestHitFraction === 0 ) {
+          return false;
+        }
+        var collisionObject = proxy.clientObject;
+
+        // only perform raycast if filterMask matches
+        if ( this.resultCallback.needsCollision( collisionObject.getBroadphaseHandle() )) {
+          // RigidcollisionObject* collisionObject = ctrl.GetRigidcollisionObject();
+          // btVector3 collisionObjectAabbMin,collisionObjectAabbMax;
+          // btScalar hitLambda = this.resultCallback.closestHitFraction;
+          // culling already done by broadphase
+          // if ( btRayAabb( this.rayFromWorld, this.rayToWorld, collisionObjectAabbMin, collisionObjectAabbMax, hitLambda, this.hitNormal ) )
+          this.world.rayTestSingle(
+            this.rayFromTrans,
+            this.rayToTrans,
+            collisionObject,
+            collisionObject.getCollisionShape(),
+            collisionObject.getWorldTransform(),
+            this.resultCallback
+          );
+        }
+        return true;
+      }
+    }
+  });
+
   // port of btCollisionWorld::LocalRayResult, stored on
   // Bump.CollisionWorld after its definition below
   var LocalRayResult = Bump.type({
@@ -258,7 +363,17 @@
   });
 
 
-  // Collision World memory pools
+  // Collision World memory pools and temporaries
+
+  // for rayTest
+  var tmpSingleRayCallback = SingleRayCallback.create(
+    Bump.Vector3.create(),
+    Bump.Vector3.create(),
+    undefined,
+    undefined
+  );
+
+  // for rayTestSingle
   var vector3Pool = [];
   var sphereShapePool = [];
   var voronoiPool = [];
@@ -456,7 +571,7 @@
       // aabb and for each object with ray-aabb overlap, perform an exact ray
       // test.
       rayTest: function( rayFromWorld, rayToWorld, resultCallback ) {
-        var rayCB = Bump.CollisionWorld.SingleRayCallback.create( rayFromWorld, rayToWorld, this, resultCallback );
+        var rayCB = tmpSingleRayCallback.set( rayFromWorld, rayToWorld, this, resultCallback );
 
         this.broadphasePairCache.rayTest( rayFromWorld, rayToWorld, rayCB );
       },
@@ -771,70 +886,8 @@
     }
   });
 
-  Bump.CollisionWorld.SingleRayCallback = Bump.type({
-    parent: Bump.BroadphaseRayCallback,
-
-    init: function SingleRayCallback(
-      rayFromWorld,            // const btVector3&
-      rayToWorld,              // const btVector3&
-      world,                   // const btCollisionWorld*
-      resultCallback           // btCollisionWorld::RayResultCallback&
-    ) {
-      this.rayFromWorld = rayFromWorld.clone();
-      this.rayToWorld = rayToWorld.clone();
-      this.hitNormal = Bump.Vector3.create();
-
-      this.world = world;
-      this.resultCallback = resultCallback;
-
-      this.rayFromTrans = Bump.Transform.getIdentity();
-      this.rayFromTrans.setOrigin( this.rayFromWorld );
-      this.rayToTrans = Bump.Transform.getIdentity();
-      this.rayToTrans.setOrigin( this.rayToWorld );
-
-      var rayDir = rayToWorld.subtract( rayFromWorld ).normalize();
-
-      // what about division by zero? --> just set rayDirection[i] to INF/BT_LARGE_FLOAT
-      this.rayDirectionInverse = Bump.Vector3.create();
-      this.signs = Bump.Vector3.create();
-      this.rayDirectionInverse[ 0 ] = rayDir[ 0 ] === 0 ? Infinity : 1 / rayDir[ 0 ];
-      this.rayDirectionInverse[ 1 ] = rayDir[ 1 ] === 0 ? Infinity : 1 / rayDir[ 1 ];
-      this.rayDirectionInverse[ 2 ] = rayDir[ 2 ] === 0 ? Infinity : 1 / rayDir[ 2 ];
-      this.signs[ 0 ] = this.rayDirectionInverse[ 0 ] < 0 ? 1 : 0;
-      this.signs[ 1 ] = this.rayDirectionInverse[ 1 ] < 0 ? 1 : 0;
-      this.signs[ 2 ] = this.rayDirectionInverse[ 2 ] < 0 ? 1 : 0;
-
-      this.lambda_max = rayDir.dot( this.rayToWorld.subtract( this.rayFromWorld ));
-    },
-
-    members: {
-      process: function( proxy ) {
-        // terminate further ray tests, once the closestHitFraction reached zero
-        if ( this.resultCallback.closestHitFraction === 0 ) {
-          return false;
-        }
-        var collisionObject = proxy.clientObject;
-
-        // only perform raycast if filterMask matches
-        if ( this.resultCallback.needsCollision( collisionObject.getBroadphaseHandle() )) {
-          // RigidcollisionObject* collisionObject = ctrl.GetRigidcollisionObject();
-          // btVector3 collisionObjectAabbMin,collisionObjectAabbMax;
-          // btScalar hitLambda = this.resultCallback.closestHitFraction;
-          // culling already done by broadphase
-          // if ( btRayAabb( this.rayFromWorld, this.rayToWorld, collisionObjectAabbMin, collisionObjectAabbMax, hitLambda, this.hitNormal ) )
-          this.world.rayTestSingle(
-            this.rayFromTrans,
-            this.rayToTrans,
-            collisionObject,
-            collisionObject.getCollisionShape(),
-            collisionObject.getWorldTransform(),
-            this.resultCallback
-          );
-        }
-        return true;
-      }
-    }
-  });
+  // defined above for dependency reasons
+  Bump.CollisionWorld.SingleRayCallback = SingleRayCallback;
 
   // port of btCollisionWorld::LocalShapeInfo
   Bump.CollisionWorld.LocalShapeInfo = Bump.type({
