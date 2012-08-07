@@ -1,6 +1,7 @@
 // load: bump.js
 // load: BulletCollision/CollisionDispatch/CollisionConfiguration.js
 
+// run: BulletCollision/NarrowPhaseCollision/PersistentManifold.js
 // run: BulletCollision/NarrowPhaseCollision/VoronoiSimplexSolver.js
 // run: BulletCollision/NarrowPhaseCollision/GjkEpaPenetrationDepthSolver.js
 // run: BulletCollision/CollisionDispatch/ConvexConvexAlgorithm.js
@@ -161,13 +162,13 @@
       //   this.stackAlloc = Bump.StackAlloc( constructionInfo.defaultStackAllocatorSize );
       // }
 
-      // if ( constructionInfo.persistentManifoldPool !== null ) {
-      //   this.ownsPersistentManifoldPool = false;
-      //   this.persistentManifoldPool = constructionInfo.persistentManifoldPool;
-      // } else {
-      //   this.ownsPersistentManifoldPool = true;
-      //   this.persistentManifoldPool = Bump.PoolAllocator( sizeof( Bump.PersistentManifold ), constructionInfo.defaultMaxPersistentManifoldPoolSize );
-      // }
+      if ( constructionInfo.persistentManifoldPool !== null ) {
+        this.ownsPersistentManifoldPool = false;
+        this.persistentManifoldPool = constructionInfo.persistentManifoldPool;
+      } else {
+        this.ownsPersistentManifoldPool = true;
+        this.persistentManifoldPool = Bump.PoolAllocator.create( Bump.PersistentManifold, constructionInfo.defaultMaxPersistentManifoldPoolSize );
+      }
 
       // if ( constructionInfo.collisionAlgorithmPool !== null ) {
       //   this.ownsCollisionAlgorithmPool = false;

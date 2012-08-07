@@ -195,28 +195,23 @@
 
         var contactProcessingThreshold = Math.min( body0.getContactProcessingThreshold(), body1.getContactProcessingThreshold() );
 
-        // **MEMPOOL:** Ignoring for now…
-        //
-        //     var mem = null;
-        //
-        //     if ( this.persistentManifoldPoolAllocator.getFreeCount() ) {
-        //       mem = this.persistentManifoldPoolAllocator.allocate( sizeof( Bump.PersistentManifold ) );
-        //     } else {
-        //       // We got a pool memory overflow, by default we fallback to
-        //       // dynamically allocate memory. If we require a contiguous contact
-        //       // pool then assert.
-        //       if ( ( this.dispatcherFlags & Bump.CollisionDispatcher.DispatcherFlags.CD_DISABLE_CONTACTPOOL_DYNAMIC_ALLOCATION ) === 0 ) {
-        //         mem = btAlignedAlloc(sizeof(btPersistentManifold),16);
-        //       } else {
-        //         Bump.Assert( false );
-        //         // Make sure to increase the `defaultMaxPersistentManifoldPoolSize`
-        //         // in the `DefaultCollisionConstructionInfo`/`btDefaultCollisionConfiguration`.
-        //         return null;
-        //       }
-        //     }
-        //     var manifold = mem.instantiate( Bump.PersistentManifold, [ body0, body1, 0, contactBreakingThreshold, contactProcessingThreshold ] );
+        var manifold;
+        if ( this.persistentManifoldPoolAllocator.getFreeCount() ) {
+          manifold = this.persistentManifoldPoolAllocator.allocate( body0, body1, 0, contactBreakingThreshold, contactProcessingThreshold );
+        } else {
+          // We got a pool memory overflow, by default we fallback to
+          // dynamically allocate memory. If we require a contiguous contact
+          // pool then assert.
+          if ( ( this.dispatcherFlags & Bump.CollisionDispatcher.DispatcherFlags.CD_DISABLE_CONTACTPOOL_DYNAMIC_ALLOCATION ) === 0 ) {
+            manifold = Bump.PersistentManifold.create( body0, body1, 0, contactBreakingThreshold, contactProcessingThreshold );
+          } else {
+            Bump.Assert( false );
+            // Make sure to increase the `defaultMaxPersistentManifoldPoolSize`
+            // in the `DefaultCollisionConstructionInfo`/`btDefaultCollisionConfiguration`.
+            return null;
+          }
+        }
 
-        var manifold = Bump.PersistentManifold.create( body0, body1, 0, contactBreakingThreshold, contactProcessingThreshold );
         manifold.index1a = this.manifoldsPtr.length;
         this.manifoldsPtr.push( manifold );
 
@@ -236,14 +231,13 @@
         this.manifoldsPtr[ findIndex ].index1a = findIndex;
         this.manifoldsPtr.pop();
 
-        // **MEMPOOL:** Ignoring for now…
-        //
-        //     manifold.destructor();
-        //     if ( this.persistentManifoldPoolAllocator.validPtr( manifold ) ) {
-        //       this.persistentManifoldPoolAllocator.freeMemory( manifold );
-        //     } else {
-        //       btAlignedFree(manifold);
-        //     }
+        manifold.destruct();
+        // We have no good way of checking for valid pointers, so ignore for now.
+        // if ( !this.persistentManifoldPoolAllocator.validPtr( manifold ) ) {
+        //   btAlignedFree(manifold);
+        // } else {
+        this.persistentManifoldPoolAllocator.freeMemory( manifold );
+        // }
       },
 
       clearManifold: function( manifold ) {

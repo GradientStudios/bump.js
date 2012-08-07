@@ -106,6 +106,8 @@
         this.index1a = 0;
       },
 
+      destruct: Bump.noop,
+
       clone: function( dest ) {
         dest = dest || Bump.PersistentManifold.create();
 
@@ -146,6 +148,27 @@
         this.companionIdA = other.companionIdA;
         this.companionIdB = other.companionIdB;
         this.index1a = other.index1a;
+
+        return this;
+      },
+
+      allocate: function( body0, body1, throwaway, contactBreakingThreshold, contactProcessingThreshold ) {
+        if ( arguments.length ) {
+          this.body0 = body0;
+          this.body1 = body1;
+          this.contactBreakingThreshold = contactBreakingThreshold;
+          this.contactProcessingThreshold = contactProcessingThreshold;
+        } else {
+          this.body0 = null;
+          this.body1 = null;
+          this.contactBreakingThreshold = 0;
+          this.contactProcessingThreshold = 0;
+        }
+
+        this.cachedPoints = 0;
+        this.companionIdA = 0;
+        this.companionIdB = 0;
+        this.index1a = 0;
 
         return this;
       },
