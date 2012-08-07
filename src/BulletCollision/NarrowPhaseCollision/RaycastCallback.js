@@ -16,6 +16,17 @@
     },
 
     members: {
+
+      // ASD: added for easy recycling, since init() calls clone
+      set: function( from, to, flags ) {
+        this.from.assign( from );
+        this.to.assign( to );
+        this.flags = flags || 0;
+        this.hitFraction = 1;
+
+        return this;
+      },
+
       processTriangle: function(
         triangle, // originally btVector3*, ported as array
         partId,
