@@ -259,6 +259,7 @@
 
 
   // Collision World memory pools
+  var vector3Pool = [];
   var sphereShapePool = [];
   var voronoiPool = [];
   var convexCastPool = [];
@@ -267,6 +268,7 @@
   var bridgeTriangleRCBPool = [];
   var rayTesterPool = [];
 
+  var getVector3 = createGetter( Bump.Vector3, vector3Pool );
   var getSphereShape = createGetter( Bump.SphereShape, sphereShapePool, [ 0.0 ] );
   var getVoronoiSimplexSolver = createGetter( Bump.VoronoiSimplexSolver, voronoiPool );
   var getSubsimplexConvexCast = createGetter( Bump.SubsimplexConvexCast, convexCastPool );
@@ -295,6 +297,7 @@
     undefined
   ]);
 
+  var delVector3 = createDeller( vector3Pool );
   var delSphereShape = createDeller( sphereShapePool );
   var delVoronoiSimplexSolver = createDeller( voronoiPool );
   var delSubsimplexConvexCast = createDeller( convexCastPool );
@@ -302,6 +305,10 @@
   var delLocalRayResult = createDeller( localRayResultPool );
   var delBridgeTriangleRaycastCallback = createDeller( bridgeTriangleRCBPool );
   var delRayTester = createDeller( rayTesterPool );
+
+  // used to reinitialize a SphereShape in rayTestSingle
+  var emptySphereShape = Bump.SphereShape.create( 0.0 );
+  emptySphereShape.setMargin( 0 );
 
   Bump.CollisionWorld = Bump.type({
 
@@ -592,6 +599,8 @@
         // allocate temporaries
         // TODO: not all of these are needed for every rayTestSingle call,
         // so allocations could be moved to where they are needed
+        var tmpVec1 = getVector3();
+        var tmpVec2 = getVector3();
         var tmpSS = getSphereShape();
         var tmpCR = getCastResult();
         var tmpVSS = getVoronoiSimplexSolver();
@@ -600,11 +609,9 @@
         var tmpBTRC = getBridgeTriangleRaycastCallback();
         var tmpRT = getRayTester();
 
-        var pointShape = tmpSS;
-        pointShape.init( 0.0 );
-        pointShape.setMargin( 0 );
-
-        var castShape = pointShape;
+        // TODO: to get best speed-up, could in-line the clone code here
+        // to avoid multiple calls to _super functions
+        var castShape = emptySphereShape.clone( tmpSS );
 
         var worldTocollisionObject, rayFromLocal, rayToLocal, rcb;
 
@@ -614,7 +621,7 @@
 
           var convexShape = collisionShape;
           var simplexSolver = tmpVSS;
-          simplexSolver.init();
+          simplexSolver.reset();
 
           // #define USE_SUBSIMPLEX_CONVEX_CAST 1
           // #ifdef USE_SUBSIMPLEX_CONVEX_CAST
@@ -706,9 +713,9 @@
               );
               rcb.hitFraction = resultCallback.closestHitFraction;
 
-              var rayAabbMinLocal = rayFromLocal.clone();
+              var rayAabbMinLocal = rayFromLocal.clone( tmpVec1 );
               rayAabbMinLocal.setMin( rayToLocal );
-              var rayAabbMaxLocal = rayFromLocal.clone();
+              var rayAabbMaxLocal = rayFromLocal.clone( tmpVec2 );
               rayAabbMaxLocal.setMax( rayToLocal );
 
               concaveShape.processAllTriangles( rcb, rayAabbMinLocal, rayAabbMaxLocal );
@@ -733,22 +740,26 @@
               );
 
               if ( dbvt ) {
-                var localRayFrom = colObjWorldTransform.inverseTimes( rayFromTrans ).getOrigin().clone();
-                var localRayTo = colObjWorldTransform.inverseTimes( rayToTrans ).getOrigin().clone();
+                var localRayFrom = colObjWorldTransform
+                  .inverseTimes( rayFromTrans )
+                  .getOrigin().clone( tmpVec1 );
+                var localRayTo = colObjWorldTransform
+                  .inverseTimes( rayToTrans )
+                  .getOrigin().clone( tmpVec2 );
                 Bump.Dbvt.rayTest( dbvt.root, localRayFrom, localRayTo, rayCB );
               } else {
                 for ( var i = 0, n = compoundShape.getNumChildShapes(); i < n; ++i ) {
                   rayCB.Process( i );
                 }
               }
-
-              delRayTester( rayCB );
             }
           }
 
         }
 
         // free temporaries
+        delVector3( tmpVec1 );
+        delVector3( tmpVec2 );
         delSphereShape( tmpSS );
         delCastResult( tmpCR );
         delVoronoiSimplexSolver( tmpVSS );
