@@ -19,12 +19,23 @@
 
       if ( arguments.length < 1 ) {
         buffer = new ArrayBuffer( 16 );
+        buffer.__cache = {};
       }
 
-      this.__view = new Uint8Array( buffer, byteOffset, 16 );
-      this.quantizedAabbMin = new Uint16Array( buffer, byteOffset, 3 );
-      this.quantizedAabbMax = new Uint16Array( buffer, byteOffset + 6, 3 );
-      this.escapeIndexOrTriangleIndex = new Int32Array( buffer, byteOffset + 12, 1 );
+      if ( !buffer.__cache[ byteOffset ] ) {
+        buffer.__cache[ byteOffset ] = {
+          a: new Uint8Array( buffer, byteOffset, 16 ),
+          b: new Uint16Array( buffer, byteOffset, 3 ),
+          c: new Uint16Array( buffer, byteOffset + 6, 3 ),
+          d: new Int32Array( buffer, byteOffset + 12, 1 )
+        };
+      }
+
+      var cache = buffer.__cache[ byteOffset ];
+      this.__view = cache.a;
+      this.quantizedAabbMin = cache.b;
+      this.quantizedAabbMax = cache.c;
+      this.escapeIndexOrTriangleIndex = cache.d;
     },
 
     members: {
@@ -129,6 +140,8 @@
 
       this.bvhAabbMin = Bump.Vector3.create( -Infinity, -Infinity, -Infinity );
       this.bvhAabbMax = Bump.Vector3.create(  Infinity,  Infinity,  Infinity );
+
+      this.__cacheRootNode = Bump.QuantizedBvhNode.createRef();
     },
 
     members: {
@@ -376,7 +389,7 @@
         var walkIterations = 0;
         var subTreeSize = endNodeIndex - startNodeIndex;
 
-        var rootNode = Bump.QuantizedBvhNode.createRef();
+        var rootNode = this.__cacheRootNode;
         var rootNodeIndex = startNodeIndex;
         m_quantizedContiguousNodes.at( startNodeIndex, rootNode );
         var escapeIndex = 0;

@@ -62,6 +62,7 @@
       reserve: function( count ) {
         if ( this.capacity < count ) {
           var newData = new ArrayBuffer( this.BYTES_PER_ELEMENT * count );
+          newData.__cache = {};
           var newView = new this.type( newData );
 
           if ( this.view ) {
