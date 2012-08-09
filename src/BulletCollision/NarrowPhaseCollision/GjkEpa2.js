@@ -861,6 +861,9 @@
     }
   });
 
+  // used in GjkEpaSolver2.Penetration
+  var gEPA = EPA.create();
+
   var Initialize = function Initialize(
     shape0, wtrs0,
     shape1, wtrs1,
@@ -954,7 +957,7 @@
       var gjk_status = gjk.Evaluate( shape, guess.negate() );
       switch ( gjk_status ) {
       case GJK_eStatus.Inside:
-        var epa = EPA.create();
+        var epa = gEPA;
         var epa_status = epa.Evaluate( gjk, guess.negate() );
         if ( epa_status !== EPA.eStatus.Failed ) {
           var w0 = Bump.Vector3.create( 0, 0, 0 );
