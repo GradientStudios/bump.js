@@ -9,6 +9,25 @@
 // Original btDbvt implementation by Nathanael Presson.
 
 (function( window, Bump ) {
+  var createGetter = function( Type, pool ) {
+    return function() {
+      return pool.pop() || Type.create();
+    };
+  };
+
+  var createDeller = function( pool ) {
+    return function() {
+      for ( var i = 0; i < arguments.length; ++i ) {
+        pool.push( arguments[i] );
+      }
+    };
+  };
+
+  var vector3Pool = [];
+
+  var getVector3 = createGetter( Bump.Vector3, vector3Pool );
+
+  var delVector3 = createDeller( vector3Pool );
 
   // Used in collideTV
   var tmpCTVVol1;
@@ -1204,10 +1223,10 @@
 
       rayTest: function( root, rayFrom, rayTo, policy ) {
         if ( root ) {
-          var diff = rayTo.subtract( rayFrom ),
-          rayDir = diff.normalized();
+          var diff = rayTo.subtract( rayFrom, getVector3() ),
+          rayDir = diff.normalized( getVector3() );
 
-          var rayDirectionInverse = Bump.Vector3.create(
+          var rayDirectionInverse = getVector3().setValue(
             rayDir.x === 0 ? Infinity : 1 / rayDir.x,
             rayDir.y === 0 ? Infinity : 1 / rayDir.y,
             rayDir.z === 0 ? Infinity : 1 / rayDir.z
@@ -1227,7 +1246,7 @@
           stack[ Bump.Dbvt.DOUBLE_STACKSIZE - 1 ] = undefined;
           stack[ 0 ] = root;
 
-          var bounds = [ Bump.Vector3.create(), Bump.Vector3.create() ];
+          var bounds = [];
 
           do {
             var node = stack[ --depth ];
@@ -1252,6 +1271,8 @@
               }
             }
           } while ( depth );
+
+          delVector3( rayDirectionInverse, diff, rayDir );
         }
       },
 
