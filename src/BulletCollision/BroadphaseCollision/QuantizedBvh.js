@@ -21,10 +21,21 @@
         buffer = new ArrayBuffer( 16 );
       }
 
-      this.__view = new Uint8Array( buffer, byteOffset, 16 );
-      this.quantizedAabbMin = new Uint16Array( buffer, byteOffset, 3 );
-      this.quantizedAabbMax = new Uint16Array( buffer, byteOffset + 6, 3 );
-      this.escapeIndexOrTriangleIndex = new Int32Array( buffer, byteOffset + 12, 1 );
+      if ( !buffer.__bvh_cache ) {
+        buffer.__bvh_cache = {};
+      }
+      var _cache = buffer.__bvh_cache[ byteOffset ];
+      if ( !buffer.__bvh_cache[ byteOffset ] ) {
+        _cache = buffer.__bvh_cache[ byteOffset ] = [];
+        _cache[ 0 ] = new Uint8Array( buffer, byteOffset, 16 );
+        _cache[ 1 ] = new Uint16Array( buffer, byteOffset, 3 );
+        _cache[ 2 ] = new Uint16Array( buffer, byteOffset + 6, 3 );
+        _cache[ 3 ] = new Int32Array( buffer, byteOffset + 12, 1 );
+      }
+      this.__view = _cache[ 0 ];
+      this.quantizedAabbMin = _cache[ 1 ];
+      this.quantizedAabbMax = _cache[ 2 ];
+      this.escapeIndexOrTriangleIndex = _cache[ 3 ];
     },
 
     members: {
