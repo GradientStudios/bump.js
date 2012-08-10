@@ -122,6 +122,8 @@
     }
   });
 
+  var tmpBroadphaseRayTester = Bump.BroadphaseRayTester.create();
+
   Bump.DbvtBroadphase = Bump.type({
     parent: Bump.BroadphaseInterface,
 
@@ -359,7 +361,9 @@
         aabbMin = aabbMin || Bump.Vector3.create();
         aabbMax = aabbMin || Bump.Vector3.create();
 
-        var callback = Bump.BroadphaseRayTester.create( rayCallback );
+        //var callback = Bump.BroadphaseRayTester.create( rayCallback );
+        var callback = tmpBroadphaseRayTester;
+        callback.init( rayCallback );
 
         this.sets[0].rayTestInternal(
           this.sets[0].root,
