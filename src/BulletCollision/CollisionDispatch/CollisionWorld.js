@@ -375,6 +375,7 @@
 
   // for rayTestSingle
   var vector3Pool = [];
+  var transformPool = [];
   var sphereShapePool = [];
   var voronoiPool = [];
   var convexCastPool = [];
@@ -384,6 +385,7 @@
   var rayTesterPool = [];
 
   var getVector3 = createGetter( Bump.Vector3, vector3Pool );
+  var getTransform = createGetter( Bump.Transform, transformPool );
   var getSphereShape = createGetter( Bump.SphereShape, sphereShapePool, [ 0.0 ] );
   var getVoronoiSimplexSolver = createGetter( Bump.VoronoiSimplexSolver, voronoiPool );
   var getSubsimplexConvexCast = createGetter( Bump.SubsimplexConvexCast, convexCastPool );
@@ -413,6 +415,7 @@
   ]);
 
   var delVector3 = createDeller( vector3Pool );
+  var delTransform = createDeller( transformPool );
   var delSphereShape = createDeller( sphereShapePool );
   var delVoronoiSimplexSolver = createDeller( voronoiPool );
   var delSubsimplexConvexCast = createDeller( convexCastPool );
@@ -573,7 +576,7 @@
       rayTest: function( rayFromWorld, rayToWorld, resultCallback ) {
         var rayCB = tmpSingleRayCallback.set( rayFromWorld, rayToWorld, this, resultCallback );
 
-        this.broadphasePairCache.rayTest( rayFromWorld, rayToWorld, rayCB );
+        this.broadphasePairCache.rayTest( rayFromWorld, rayToWorld, rayCB, tmpV1, tmpV2 );
       },
 
       // Use the broadphase to accelerate the search for objects, based on their
@@ -716,6 +719,7 @@
         // so allocations could be moved to where they are needed
         var tmpVec1 = getVector3();
         var tmpVec2 = getVector3();
+        var tmpTrans = getTransform();
         var tmpSS = getSphereShape();
         var tmpCR = getCastResult();
         var tmpVSS = getVoronoiSimplexSolver();
@@ -856,10 +860,10 @@
 
               if ( dbvt ) {
                 var localRayFrom = colObjWorldTransform
-                  .inverseTimes( rayFromTrans )
+                  .inverseTimes( rayFromTrans, tmpTrans )
                   .getOrigin().clone( tmpVec1 );
                 var localRayTo = colObjWorldTransform
-                  .inverseTimes( rayToTrans )
+                  .inverseTimes( rayToTrans, tmpTrans )
                   .getOrigin().clone( tmpVec2 );
                 Bump.Dbvt.rayTest( dbvt.root, localRayFrom, localRayTo, rayCB );
               } else {
@@ -875,6 +879,7 @@
         // free temporaries
         delVector3( tmpVec1 );
         delVector3( tmpVec2 );
+        delTransform( tmpTrans );
         delSphereShape( tmpSS );
         delCastResult( tmpCR );
         delVoronoiSimplexSolver( tmpVSS );
