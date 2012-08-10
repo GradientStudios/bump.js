@@ -125,6 +125,7 @@
         this.degenerate = false;
         this.setBarycentricCoordinates();
         this.usedVertices.reset();
+        return this;
       },
 
       isValid: function() {
@@ -149,6 +150,17 @@
       }
     }
   });
+
+
+  // memory pool for recycling SubSimplexClosestResult objects
+  var subSimplexClosestResultPool = [];
+
+  var getSubSimplexClosestResult = createGetter(
+    Bump.SubSimplexClosestResult,
+    subSimplexClosestResultPool
+  );
+  var delSubSimplexClosestResult = createDeller( subSimplexClosestResultPool );
+
 
   Bump.VoronoiSimplexSolver = Bump.type({
     init: function VoronoiSimplexSolver() {
@@ -357,11 +369,11 @@
       },
 
       closestPtPointTetrahedron: function( p, a, b, c, d, finalResult ) {
-        var tempResult = Bump.SubSimplexClosestResult.create();
-
         // Start out assuming point inside all halfspaces, so closest to itself.
         finalResult.closestPointOnSimplex.assign( p );
-        finalResult.usedVertices.reset();
+        // ASD: removed reset() since this is immediately undone by setting
+        // all the usedVertex values to true
+        // finalResult.usedVertices.reset();
         finalResult.usedVertices.usedVertexA = true;
         finalResult.usedVertices.usedVertexB = true;
         finalResult.usedVertices.usedVertexC = true;
@@ -381,9 +393,11 @@
           return false;
         }
 
-        var tmpV1 = Bump.Vector3.create(),
-            tmpV2 = Bump.Vector3.create(),
-            tmpV3 = Bump.Vector3.create();
+        // get some recycled temporaries
+        var tempResult = getSubSimplexClosestResult().reset();
+        var tmpV1 = getVector3().setZero();
+        var tmpV2 = getVector3().setZero();
+        var tmpV3 = getVector3().setZero();
 
         var q, sqDist, bestSqDist = Infinity;
         // If point outside face abc then compute closest point on abc
@@ -470,7 +484,7 @@
           q = tempResult.closestPointOnSimplex.clone( tmpV1 );
 
           // Convert result bitmask!
-          sqDist = q.subtract( p ).dot( q.subtract( p ) );
+          sqDist = q.subtract( p, tmpV2 ).dot( q.subtract( p, tmpV3 ) );
           if ( sqDist < bestSqDist ) {
             bestSqDist = sqDist;
             finalResult.closestPointOnSimplex.assign( q );
@@ -490,27 +504,34 @@
           }
         }
 
+        // ASD: commented out because unnecessary
         // Help! We ended up full!
-        if ( finalResult.usedVertices.usedVertexA &&
-             finalResult.usedVertices.usedVertexB &&
-             finalResult.usedVertices.usedVertexC &&
-             finalResult.usedVertices.usedVertexD )
-        {
-          return true;
-        }
+        // if ( finalResult.usedVertices.usedVertexA &&
+        //      finalResult.usedVertices.usedVertexB &&
+        //      finalResult.usedVertices.usedVertexC &&
+        //      finalResult.usedVertices.usedVertexD )
+        // {
+        //   return true;
+        // }
+
+        // deallocate the temporaries
+        delSubSimplexClosestResult( tempResult );
+        delVector3( tmpV1, tmpV2, tmpV3 );
 
         return true;
       },
 
       pointOutsideOfPlane: function( p, a, b, c, d ) {
-        var tmpV1 = Bump.Vector3.create(),
-            tmpV2 = Bump.Vector3.create();
+        var tmpV1 = getVector3();
+        var tmpV2 = getVector3();
 
         // `normal` uses `tmpV2`.
         var normal = b.subtract( a, tmpV1 ).cross( c.subtract( a, tmpV2 ), tmpV2 );
 
         var signp = p.subtract( a, tmpV1 ).dot( normal ), // [AP AB AC]
             signd = d.subtract( a, tmpV1 ).dot( normal ); // [AD AB AC]
+
+        delVector3( tmpV1, tmpV2 );
 
         if ( signd * signd < ( 1e-8 * 1e-8 ) ) {
           return -1;
@@ -524,9 +545,13 @@
 
         result.usedVertices.reset();
 
-        var tmpV1 = Bump.Vector3.create(),
-            ab = b.subtract( a ),
-            ac = c.subtract( a );
+        var tmpV1 = getVector3();
+        var tmpV2 = getVector3();
+        var tmpVab = getVector3();
+        var tmpVac = getVector3();
+
+        var ab = b.subtract( a, tmpVab );
+        var ac = c.subtract( a, tmpVac );
 
         // Check if P in vertex region outside A.
         var ap = p.subtract( a, tmpV1 ),
@@ -536,6 +561,8 @@
           result.closestPointOnSimplex.assign( a );
           result.usedVertices.usedVertexA = true;
           result.setBarycentricCoordinates( 1, 0, 0 );
+
+          delVector3( tmpV1, tmpV2, tmpVab, tmpVac );
           return true;
         }
 
@@ -548,6 +575,7 @@
           result.usedVertices.usedVertexB = true;
           result.setBarycentricCoordinates( 0, 1, 0 );
 
+          delVector3( tmpV1, tmpV2, tmpVab, tmpVac );
           return true;
         }
 
@@ -562,6 +590,8 @@
           result.usedVertices.usedVertexA = true;
           result.usedVertices.usedVertexB = true;
           result.setBarycentricCoordinates( 1 - v, v, 0 );
+
+          delVector3( tmpV1, tmpV2, tmpVab, tmpVac );
           return true;
         }
 
@@ -573,6 +603,8 @@
           result.closestPointOnSimplex.assign( c );
           result.usedVertices.usedVertexC = true;
           result.setBarycentricCoordinates( 0, 0, 1 );
+
+          delVector3( tmpV1, tmpV2, tmpVab, tmpVac );
           return true;
         }
 
@@ -585,6 +617,8 @@
           result.usedVertices.usedVertexA = true;
           result.usedVertices.usedVertexC = true;
           result.setBarycentricCoordinates( 1 - w, 0, w );
+
+          delVector3( tmpV1, tmpV2, tmpVab, tmpVac );
           return true;
         }
 
@@ -602,6 +636,8 @@
           result.usedVertices.usedVertexB = true;
           result.usedVertices.usedVertexC = true;
           result.setBarycentricCoordinates( 0, 1 - w, w );
+
+          delVector3( tmpV1, tmpV2, tmpVab, tmpVac );
           return true;
         }
 
@@ -611,7 +647,6 @@
         v = vb * denom;
         w = vc * denom;
 
-        var tmpV2 = Bump.Vector3.create();
         result.closestPointOnSimplex.assign(
           a
             .add( ab.multiplyScalar( v, tmpV2 ), tmpV1 )
@@ -622,6 +657,7 @@
         result.usedVertices.usedVertexC = true;
         result.setBarycentricCoordinates( 1 - v - w, v, w );
 
+        delVector3( tmpV1, tmpV2, tmpVab, tmpVac );
         return true;
       },
 
