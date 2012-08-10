@@ -114,13 +114,14 @@
     var step = function () {
       time += 16;
 
-      stats.begin();
       groundRot.setEuler( 0, 0, rate + amp * Math.sin( time / 500 ) );
       groundBody.getMotionState().getWorldTransform( newTransform );
       newTransform.basis.multiplyMatrix( tmpMat.setRotation( groundRot ), newTransform.basis );
       groundBody.getMotionState().setWorldTransform( newTransform );
 
+      stats.begin();
       dynamicsWorld.stepSimulation( 0.016 );
+      stats.end();
 
       for ( var i = 0; i < dynamicsWorld.getNumCollisionObjects(); ++i ) {
         var colObj = dynamicsWorld.getCollisionObjectArray()[i];
@@ -133,7 +134,6 @@
       }
 
       renderer.render();
-      stats.end();
 
       window.requestAnimationFrame( step );
     };
