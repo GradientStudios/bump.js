@@ -1247,8 +1247,6 @@
           var tmpV1 = getVector3();
           var tmpV2 = getVector3();
           var tmpV3 = getVector3();
-          var tmpV4 = getVector3();
-          var tmpV5 = getVector3();
 
           var diff = rayTo.subtract( rayFrom, tmpV1 ),
           rayDir = diff.normalized( tmpV2 );
@@ -1276,13 +1274,11 @@
           stack[ 0 ] = root;
 
           var bounds = getArray();
-          bounds[ 0 ] = tmpV4;
-          bounds[ 1 ] = tmpV5;
 
           do {
             var node = stack[ --depth ];
-            bounds[ 0 ].assign( node.volume.Mins() );
-            bounds[ 1 ].assign( node.volume.Maxs() );
+            bounds[ 0 ] = node.volume.Mins();
+            bounds[ 1 ] = node.volume.Maxs();
 
             var tmin = { tmin: 1 },
             lambda_min = 0,
@@ -1306,6 +1302,7 @@
 
           delVector3( tmpV1, tmpV2, tmpV3, tmpV4, tmpV5 );
           delRayTestStackArray( stack );
+          delArray( signs, bounds );
         }
       },
 
