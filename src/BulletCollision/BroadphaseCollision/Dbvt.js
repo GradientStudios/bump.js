@@ -29,6 +29,46 @@
 
   var delVector3 = createDeller( vector3Pool );
 
+  var createGetter = function( Type, pool ) {
+    return function() {
+      return pool.pop() || Type.create();
+    };
+  };
+
+  var createDeller = function( pool ) {
+    return function() {
+      for ( var i = 0; i < arguments.length; ++i ) {
+        pool.push( arguments[i] );
+      }
+    };
+  };
+
+  // memory pool for recycling Vector3 objects
+  var vector3Pool = [];
+
+  var getVector3 = createGetter( Bump.Vector3, vector3Pool );
+  var delVector3 = createDeller( vector3Pool );
+
+  // memory pool for recycling arrays
+  var arrayPool = [];
+
+  var getArray = function() {
+    return arrayPool.pop() || [];
+  };
+  var delArray = function( arr ) {
+    arr.length = 0;
+    arrayPool.push( arr );
+  };
+
+  // memory pool for recycling arrays for the rayTest function
+  var rayTestStackPool = [];
+  var getRayTestStackArray = function( length ) {
+    return rayTestStackPool.pop() || new Array( length );
+  };
+  var delRayTestStackArray = function( arr ) {
+    rayTestStackPool.push( arr );
+  };
+
   // Used in collideTV
   var tmpCTVVol1;
 
@@ -1225,33 +1265,40 @@
 
       rayTest: function( root, rayFrom, rayTo, policy ) {
         if ( root ) {
-          var diff = rayTo.subtract( rayFrom, getVector3() ),
-          rayDir = diff.normalized( getVector3() );
+          var tmpV1 = getVector3();
+          var tmpV2 = getVector3();
+          var tmpV3 = getVector3();
 
-          var rayDirectionInverse = getVector3().setValue(
+          var diff = rayTo.subtract( rayFrom, tmpV1 ),
+          rayDir = diff.normalized( tmpV2 );
+
+          var rayDirectionInverse = tmpV3.setValue(
             rayDir.x === 0 ? Infinity : 1 / rayDir.x,
             rayDir.y === 0 ? Infinity : 1 / rayDir.y,
             rayDir.z === 0 ? Infinity : 1 / rayDir.z
           );
 
-          var signs = [
-            rayDirectionInverse.x < 0 ? 1 : 0,
-            rayDirectionInverse.y < 0 ? 1 : 0,
-            rayDirectionInverse.z < 0 ? 1 : 0
-          ];
+          var signs = getArray();
+          signs[ 0 ] = rayDirectionInverse.x < 0 ? 1 : 0;
+          signs[ 1 ] = rayDirectionInverse.y < 0 ? 1 : 0;
+          signs[ 2 ] = rayDirectionInverse.z < 0 ? 1 : 0;
+
           var lambda_max = rayDir.dot( diff );
           var resultNormal;
-          var stack = [];
-          var depth = 1;
-          var threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 2;
+          var stack = getRayTestStackArray( Bump.Dbvt.DOUBLE_STACKSIZE );
+          // note that it is possible that stack's length is greater than the
+          // requested size, if it has been recycled from a previous call
 
-          stack[ Bump.Dbvt.DOUBLE_STACKSIZE - 1 ] = undefined;
+          var depth = 1;
+          var threshold = stack.length - 2;
+
           stack[ 0 ] = root;
 
-          var bounds = [];
+          var bounds = getArray();
 
           do {
             var node = stack[ --depth ];
+            // RayAabb2 does not modify bounds
             bounds[ 0 ] = node.volume.Mins();
             bounds[ 1 ] = node.volume.Maxs();
 
@@ -1262,7 +1309,8 @@
             if ( result1 ) {
               if ( node.isinternal() ) {
                 if ( depth > threshold ) {
-                  stack[ stack.length * 2 - 1] = undefined;
+                  // if we are resizing, just discard the old array
+                  Bump.resize( stack, stack.length * 2 );
                   threshold = stack.length - 2;
                 }
                 stack[ depth++ ] = node.childs[ 0 ];
@@ -1274,7 +1322,9 @@
             }
           } while ( depth );
 
-          delVector3( rayDirectionInverse, diff, rayDir );
+          delVector3( tmpV1, tmpV2, tmpV3 );
+          delRayTestStackArray( stack );
+          delArray( signs, bounds );
         }
       },
 
@@ -1606,3 +1656,4 @@
   sStkNNZero = Bump.Dbvt.sStkNN.create();
 
 })( this, this.Bump );
+ 
