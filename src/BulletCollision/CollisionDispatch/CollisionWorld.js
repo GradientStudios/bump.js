@@ -145,6 +145,16 @@
     },
 
     members: {
+      set: function(
+        i,
+        user
+      ) {
+        this.userCallback = user;
+        this.i = i;
+        this.closestHitFraction = this.userCallback.closestHitFraction;
+        return this;
+      },
+
       needsCollision: function(
         p                       // Bump.BroadphaseProxy
       ) {
@@ -215,13 +225,14 @@
       Process: function( i ) {
         var childCollisionShape = this.compoundShape.getChildShape( i );
         var childTrans = this.compoundShape.getChildTransform( i );
-        var childWorldTrans = this.colObjWorldTransform.multiplyTransform( childTrans );
+        var childWorldTrans = this.colObjWorldTransform.multiplyTransform( childTrans, getTransform() );
 
         // replace collision shape so that callback can determine the triangle
         var saveCollisionShape = this.collisionObject.getCollisionShape();
         this.collisionObject.internalSetTemporaryCollisionShape( childCollisionShape );
 
-        var my_cb = LocalInfoAdder2.create( i, this.resultCallback );
+        // var my_cb = LocalInfoAdder2.create( i, this.resultCallback );
+        var my_cb = getLocalAddrInfo2().set( i, this.resultCallback );
 
         Bump.CollisionWorld.rayTestSingle(
           this.rayFromTrans,
@@ -234,6 +245,9 @@
 
         // restore
         this.collisionObject.internalSetTemporaryCollisionShape( saveCollisionShape );
+
+        delTransform( childWorldTrans );
+        delLocalAddrInfo2( my_cb );
       },
 
       ProcessNode: function( leaf ) {
@@ -383,6 +397,7 @@
   var localRayResultPool = [];
   var bridgeTriangleRCBPool = [];
   var rayTesterPool = [];
+  var localAddrInfo2Pool = [];
 
   var getVector3 = createGetter( Bump.Vector3, vector3Pool );
   var getTransform = createGetter( Bump.Transform, transformPool );
@@ -414,6 +429,13 @@
     undefined
   ]);
 
+  var getLocalAddrInfo2 = createGetter( LocalInfoAdder2, localAddrInfo2Pool, [
+    undefined,
+    {
+      closestHitFraction: 0
+    }
+  ] );
+
   var delVector3 = createDeller( vector3Pool );
   var delTransform = createDeller( transformPool );
   var delSphereShape = createDeller( sphereShapePool );
@@ -423,6 +445,7 @@
   var delLocalRayResult = createDeller( localRayResultPool );
   var delBridgeTriangleRaycastCallback = createDeller( bridgeTriangleRCBPool );
   var delRayTester = createDeller( rayTesterPool );
+  var delLocalAddrInfo2 = createDeller( localAddrInfo2Pool );
 
   // used to reinitialize a SphereShape in rayTestSingle
   var emptySphereShape = Bump.SphereShape.create( 0.0 );
