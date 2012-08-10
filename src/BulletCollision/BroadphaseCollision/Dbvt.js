@@ -1131,12 +1131,13 @@
         policy
       ) {
         if ( root ) {
-          var resultNormal = Bump.Vector3.create();
+          // not used
+          // var resultNormal = Bump.Vector3.create();
 
           var depth = 1,
               threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 2,
               stack = this.rayTestStack,
-              bounds = [ Bump.Vector3.create(), Bump.Vector3.create() ];
+              bounds = [ getVector3(), getVector3() ];
           Bump.resize( stack, Bump.Dbvt.DOUBLE_STACKSIZE, undefined );
           stack[ 0 ] = root;
           do {
@@ -1164,6 +1165,7 @@
             }
           } while ( depth );
 
+          delVector3( bounds[ 0 ], bounds[ 1 ] )
         }
       }
 
