@@ -5,21 +5,27 @@
 
 (function( window, Bump ) {
 
-  var dDOT   = function( a, aOff, b, bOff ) { return a[ aOff ] * b[ bOff ] + a[ aOff + 1 ] * b[ bOff + 1 ] + a[ aOff + 2 ] * b[ bOff + 2 ]; },
+  // Used in getClosestPoints.
+  var tmpGCPVec1 = Bump.Vector3.create();
+  var tmpGCPVec2 = Bump.Vector3.create();
+  var tmpGCPVec3 = Bump.Vector3.create();
+
+  var dDOTAV = function( a, aOff, b       ) { return a[ aOff ] * b.x       + a[ aOff + 1 ] * b.y           + a[ aOff + 2 ] * b.z;           },
+      dDOTVA = function( a      , b, bOff ) { return a.x       * b[ bOff ] + a.y           * b[ bOff + 1 ] + a.z           * b[ bOff + 2 ]; },
       dDOT44 = function( a, aOff, b, bOff ) { return a[ aOff ] * b[ bOff ] + a[ aOff + 4 ] * b[ bOff + 4 ] + a[ aOff + 8 ] * b[ bOff + 8 ]; },
-      dDOT41 = function( a, aOff, b, bOff ) { return a[ aOff ] * b[ bOff ] + a[ aOff + 4 ] * b[ bOff + 1 ] + a[ aOff + 8 ] * b[ bOff + 2 ]; },
-      dDOT14 = function( a, aOff, b, bOff ) { return a[ aOff ] * b[ bOff ] + a[ aOff + 1 ] * b[ bOff + 4 ] + a[ aOff + 2 ] * b[ bOff + 8 ]; };
+      dDOT41 = function( a, aOff, b       ) { return a[ aOff ] * b.x       + a[ aOff + 4 ] * b.y           + a[ aOff + 8 ] * b.z;           },
+      dDOT14 = function( a      , b, bOff ) { return a.x       * b[ bOff ] + a.y           * b[ bOff + 4 ] + a.z           * b[ bOff + 8 ]; };
 
   var dMULTIPLY1_331 = function( A, B, C ) {
-    A[0] = dDOT41( B, 0, C, 0 );
-    A[1] = dDOT41( B, 1, C, 0 );
-    A[2] = dDOT41( B, 2, C, 0 );
+    A.x = dDOT41( B, 0, C );
+    A.y = dDOT41( B, 1, C );
+    A.z = dDOT41( B, 2, C );
   };
 
   var dMULTIPLY0_331 = function( A, B, C ) {
-    A[0] = dDOT( B, 0, C, 0 );
-    A[1] = dDOT( B, 4, C, 0 );
-    A[2] = dDOT( B, 8, C, 0 );
+    A.x = dDOTAV( B, 0, C );
+    A.y = dDOTAV( B, 4, C );
+    A.z = dDOTAV( B, 8, C );
   };
 
   var dMatrix3 = Bump.type({
@@ -31,11 +37,12 @@
   });
 
   var dLineClosestApproach = function( pa, ua, pb, ub, alpha, beta ) {
-    var p = pb.subtract( pa ),
-        uaub = dDOT( ua, 0, ub, 0 ),
-        q1 =  dDOT( ua, 0, p, 0 ),
-        q2 = -dDOT( ub, 0, p, 0 ),
-        d = 1 - uaub * uaub;
+    var p    = pb.subtract( pa ),
+        uaub =  dDOTVA( ua, ub, 0 ),
+        q1   =  dDOTVA( ua,  p, 0 ),
+        q2   = -dDOTVA( ub,  p, 0 ),
+        d    = 1 - uaub * uaub;
+
     if ( d <= 0.0001 ) {
       alpha.value = 0;
       beta.value  = 0;
@@ -218,6 +225,22 @@
     }
   };
 
+  var tmpBBp = Bump.Vector3.create();
+  var tmpBBpp = Bump.Vector3.create();
+  var tmpBBnormalC = Bump.Vector3.create();
+  var tmpBBpa = Bump.Vector3.create();
+  var tmpBBpb = Bump.Vector3.create();
+  var tmpBBua = Bump.Vector3.create();
+  var tmpBBub = Bump.Vector3.create();
+  var tmpBBnormal2  = Bump.Vector3.create();
+  var tmpBBnr = Bump.Vector3.create();
+  var tmpBBanr = Bump.Vector3.create();
+  var tmpBBcenter = Bump.Vector3.create();
+  var tmpBBpointInWorld = Bump.Vector3.create();
+  var tmpBBposInWorld = Bump.Vector3.create();
+
+  var tmpBBVec1 = Bump.Vector3.create();
+
   var dBoxBox2 = function(
     p1, R1, side1,
     p2, R2, side2,
@@ -225,9 +248,9 @@
     maxc, contact, skip, output
   ) {
     var fudge_factor = 1.05,
-        p = Bump.Vector3.create(),
-        pp = Bump.Vector3.create(),
-        normalC = Bump.Vector3.create( 0, 0, 0 ),
+        p = tmpBBp,
+        pp = tmpBBpp.setValue( 0, 0, 0 ),
+        normalC = tmpBBnormalC.setValue( 0, 0, 0 ),
         normalR = { matrix: null, index: 0 },
         A = [ 0, 0, 0 ],
         B = [ 0, 0, 0 ],
@@ -305,11 +328,11 @@
     if ( tstRet !== undefined ) { return tstRet; }
 
     // separating axis = v1, v2, v3
-    tstRet = TST( dDOT41( R2, 0, p, 0 ), A[0] * Q11 + A[1] * Q21 + A[2] * Q31 + B[0], R2, 0, 4 );
+    tstRet = TST( dDOT41( R2, 0, p ), A[0] * Q11 + A[1] * Q21 + A[2] * Q31 + B[0], R2, 0, 4 );
     if ( tstRet !== undefined ) { return tstRet; }
-    tstRet = TST( dDOT41( R2, 1, p, 0 ), A[0] * Q12 + A[1] * Q22 + A[2] * Q32 + B[1], R2, 1, 5 );
+    tstRet = TST( dDOT41( R2, 1, p ), A[0] * Q12 + A[1] * Q22 + A[2] * Q32 + B[1], R2, 1, 5 );
     if ( tstRet !== undefined ) { return tstRet; }
-    tstRet = TST( dDOT41( R2, 2, p, 0 ), A[0] * Q13 + A[1] * Q23 + A[2] * Q33 + B[2], R2, 2, 6 );
+    tstRet = TST( dDOT41( R2, 2, p ), A[0] * Q13 + A[1] * Q23 + A[2] * Q33 + B[2], R2, 2, 6 );
     if ( tstRet !== undefined ) { return tstRet; }
 
     // Note: cross product axes need to be scaled when s is computed.
@@ -323,9 +346,9 @@
         if ( s2 * fudge_factor > s ) {
           s = s2;
           normalR.matrix = null;
-          normalC[0] = n1 / l;
-          normalC[1] = n2 / l;
-          normalC[2] = n3 / l;
+          normalC.x = n1 / l;
+          normalC.y = n2 / l;
+          normalC.z = n3 / l;
           invert_normal = expr1 < 0;
           code = cc;
         }
@@ -395,11 +418,11 @@
     if ( code > 6 ) {
       // An edge from box 1 touches an edge from box 2.
       // Find a point `pa` on the intersecting edge of box 1.
-      pa = Bump.Vector3.create();
+      pa = tmpBBpa.setValue( 0, 0, 0 );
       var sign;
       pa.x = p1.x; pa.y = p1.y; pa.z = p1.z;
       for ( j = 0; j < 3; ++j ) {
-        sign = ( dDOT14( normal, R1, j, 0 ) > 0 ) ? 1 : -1;
+        sign = ( dDOT14( normal, j, 0 ) > 0 ) ? 1 : -1;
 
         pa.x += sign * A[j] * R1[     j ];
         pa.y += sign * A[j] * R1[ 4 + j ];
@@ -407,10 +430,10 @@
       }
 
       // Find a point `pb` on the intersecting edge of box 2.
-      pb = Bump.Vector3.create();
+      pb = tmpBBpb.setValue( 0, 0, 0 );
       pb.x = p2.x; pb.y = p2.y; pb.z = p2.z;
       for ( j = 0; j < 3; ++j ) {
-        sign = ( dDOT14( normal, R2, j, 0 ) > 0 ) ? -1 : 1;
+        sign = ( dDOT14( normal, j, 0 ) > 0 ) ? -1 : 1;
 
         pb.x += sign * B[j] * R1[     j ];
         pb.y += sign * B[j] * R1[ 4 + j ];
@@ -418,7 +441,8 @@
       }
 
       var alpha = { value: 0 }, beta = { value: 0 },
-          ua = Bump.Vector3.create(), ub = Bump.Vector3.create;
+          ua = tmpBBua.setValue( 0, 0, 0 ),
+          ub = tmpBBub.setValue( 0, 0, 0 );
 
       tmp = ~~(( code - 7 ) / 3);
       ua.x = R1[ tmp     ];
@@ -442,7 +466,7 @@
       pb.y += ub.y * tmp;
       pb.z += ub.z * tmp;
 
-      output.addContactPoint( normal.negate(), pb, -depth.value );
+      output.addContactPoint( normal.negate( tmpBBVec1 ), pb, -depth.value );
 
       return_code.value = code;
 
@@ -473,9 +497,9 @@
 
     // `nr` = normal vector of reference face dotted with axes of incident box.
     // `anr` = absolute values of nr.
-    var normal2 = Bump.Vector3.create(),
-        nr = Bump.Vector3.create(),
-        anr = Bump.Vector3.create();
+    var normal2 = tmpBBnormal2.setValue( 0, 0, 0 ),
+        nr = tmpBBnr.setValue( 0, 0, 0 ),
+        anr = tmpBBanr.setValue( 0, 0, 0 );
     if ( code <= 3 ) {
       normal2.x = normal.x;
       normal2.y = normal.y;
@@ -517,7 +541,7 @@
     }
 
     // Compute center point of incident face, in reference-face coordinates.
-    var center = Bump.Vector3.create();
+    var center = tmpBBcenter.setValue( 0, 0, 0 );
     if ( nr[ lanr ] < 0 ) {
       center.x = pb.x - pa.x + Sb[ lanr ] * Rb[     lanr ];
       center.y = pb.y - pa.y + Sb[ lanr ] * Rb[ 4 + lanr ];
@@ -547,8 +571,8 @@
     // `quad` is the 2D coordinate of incident face (x,y pairs).
     var quad = new Array( 8 ),
         c1, c2, m11, m12, m21, m22;
-    c1 = dDOT14( center, 0, Ra, code1 );
-    c2 = dDOT14( center, 0, Ra, code2 );
+    c1 = dDOT14( center, Ra, code1 );
+    c2 = dDOT14( center, Ra, code2 );
     // optimize this? - we have already computed this data above, but it is not
     // stored in an easy-to-index format. for now it's quicker just to recompute
     // the four dot products.
@@ -581,7 +605,7 @@
 
     if ( n < 1 ) {
       // This should never happen.
-      console.log( 'This should never happen.' );
+      // console.log( 'This should never happen.' );
       return 0;
     }
 
@@ -612,7 +636,7 @@
       point[ tmp + 1 ] = center.y + k1 * Rb[ 4 + a1 ] + k2 * Rb[ 4 + a2 ];
       point[ tmp + 2 ] = center.z + k1 * Rb[ 8 + a1 ] + k2 * Rb[ 8 + a2 ];
 
-      dep[ cnum ] = Sa[ codeN ] - dDOT( normal2, 0 , point, tmp );
+      dep[ cnum ] = Sa[ codeN ] - dDOTVA( normal2, point, tmp );
       if ( dep[ cnum ] >= 0 ) {
         ret[ cnum * 2    ] = ret[ j * 2     ];
         ret[ cnum * 2 + 1] = ret[ j * 2 + 1 ];
@@ -622,7 +646,7 @@
 
     if ( cnum < 1 ) {
       // This should never happen.
-      console.log( 'This should never happen.' );
+      // console.log( 'This should never happen.' );
       return 0;
     }
 
@@ -631,7 +655,7 @@
     if ( maxc < 1 ) { maxc = 1; }
 
     if ( cnum <= maxc ) {
-      var pointInWorld = Bump.Vector3.create();
+      var pointInWorld = tmpBBpointInWorld.setValue( 0, 0, 0 );
       if ( code < 4 ) {
         // We have less contacts than we need, so we use them all.
         for ( j = 0; j < cnum; ++j ) {
@@ -640,7 +664,7 @@
           pointInWorld.y = point[ tmp + 1 ] + pa.y;
           pointInWorld.z = point[ tmp + 2 ] + pa.z;
 
-          output.addContactPoint( normal.negate(), pointInWorld, -dep[j] );
+          output.addContactPoint( normal.negate( tmpBBVec1 ), pointInWorld, -dep[j] );
         }
       } else {
         // We have less contacts than we need, so we use them all.
@@ -649,7 +673,7 @@
           pointInWorld.x = point[ tmp     ] + pa.x - normal.x * dep[j];
           pointInWorld.y = point[ tmp + 1 ] + pa.y - normal.y * dep[j];
           pointInWorld.z = point[ tmp + 2 ] + pa.z - normal.z * dep[j];
-          output.addContactPoint( normal.negate(), pointInWorld , -dep[j] );
+          output.addContactPoint( normal.negate( tmpBBVec1 ), pointInWorld , -dep[j] );
         }
       }
     } else {
@@ -668,7 +692,7 @@
       cullPoints2( cnum, ret, maxc, i1, iret );
 
       for ( j = 0; j < maxc; ++j ) {
-        var posInWorld = Bump.Vector3.create();
+        var posInWorld = tmpBBposInWorld;
 
         tmp = iret[j] * 3;
         posInWorld.x = point[ tmp     ] + pa.x;
@@ -677,9 +701,9 @@
 
         tmp = dep[ iret[j] ];
         if ( code < 4 ) {
-          output.addContactPoint( normal.negate(), posInWorld, -tmp );
+          output.addContactPoint( normal.negate( tmpBBVec1 ), posInWorld, -tmp );
         } else {
-          output.addContactPoint( normal.negate(), posInWorld.subtract( normal.multiplyScalar( tmp ) ), -tmp );
+          output.addContactPoint( normal.negate( tmpBBVec1 ), posInWorld.subtract( normal.multiplyScalar( tmp ) ), -tmp );
         }
       }
       cnum = maxc;
@@ -740,18 +764,18 @@
           R2[ 2 + 4 * j ] = transformB.basis[j].z;
         }
 
-        var normal = Bump.Vector3.create(),
-            depth = { value: 0 },
+        var normal      = tmpGCPVec1.setValue( 0, 0, 0 ),
+            depth       = { value: 0 },
             return_code = { value: 0 },
-            maxc = 4;
+            maxc        = 4;
 
         var num = dBoxBox2(
           transformA.origin,
           R1,
-          this.box1.getHalfExtentsWithMargin().multiplyScalar( 2 ),
+          this.box1.getHalfExtentsWithMargin( tmpGCPVec2 ).multiplyScalar( 2, tmpGCPVec2 ),
           transformB.origin,
           R2,
-          this.box2.getHalfExtentsWithMargin().multiplyScalar( 2 ),
+          this.box2.getHalfExtentsWithMargin( tmpGCPVec3 ).multiplyScalar( 2, tmpGCPVec3 ),
           normal, depth, return_code,
           maxc, contact, skip,
           output

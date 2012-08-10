@@ -1,9 +1,9 @@
 // load: bump.js
 // load: BulletCollision/BroadphaseCollision/OverlappingPairCache.js
 // load: BulletCollision/BroadphaseCollision/Dispatcher.js
+// load: BulletCollision/CollisionDispatch/ManifoldResult.js
 
 // run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
-// run: BulletCollision/CollisionDispatch/ManifoldResult.js
 // run: BulletCollision/NarrowPhaseCollision/PersistentManifold.js
 // run: BulletCollision/BroadphaseCollision/CollisionAlgorithm.js
 
@@ -28,6 +28,9 @@
       }
     }
   });
+
+  // Used in defaultNearCallback
+  var tmpDNCMR1 = Bump.ManifoldResult.create();
 
   Bump.CollisionDispatcher = Bump.type({
     parent: Bump.Dispatcher,
@@ -255,24 +258,24 @@
         ci.dispatcher1 = this;
         ci.manifold = sharedManifold;
 
-        (function() {
-          console.warn( 'TODO: Remove this debug logic' );
-          var shape0 = body0.getCollisionShape().getShapeType();
-          var shape1 = body1.getCollisionShape().getShapeType();
-          if ( this.doubleDispatch[ shape0 ][ shape1 ] == null ) {
-            var type0, type1;
-            for ( var type in Bump.BroadphaseNativeTypes ) {
-              if ( Bump.BroadphaseNativeTypes[ type ] === shape0 ) {
-                type0 = type;
-              }
+        // (function() {
+        //   console.warn( 'TODO: Remove this debug logic' );
+        //   var shape0 = body0.getCollisionShape().getShapeType();
+        //   var shape1 = body1.getCollisionShape().getShapeType();
+        //   if ( this.doubleDispatch[ shape0 ][ shape1 ] == null ) {
+        //     var type0, type1;
+        //     for ( var type in Bump.BroadphaseNativeTypes ) {
+        //       if ( Bump.BroadphaseNativeTypes[ type ] === shape0 ) {
+        //         type0 = type;
+        //       }
 
-              if ( Bump.BroadphaseNativeTypes[ type ] === shape1 ) {
-                type1 = type;
-              }
-            }
-            console.error( 'Could not find collision algorithm between ' + type0 + ' and ' + type1 );
-          }
-        }.bind( this ))();
+        //       if ( Bump.BroadphaseNativeTypes[ type ] === shape1 ) {
+        //         type1 = type;
+        //       }
+        //     }
+        //     console.error( 'Could not find collision algorithm between ' + type0 + ' and ' + type1 );
+        //   }
+        // }.bind( this ))();
 
         var algo =
           this.doubleDispatch[ body0.getCollisionShape().getShapeType() ][ body1.getCollisionShape().getShapeType() ]
@@ -332,7 +335,7 @@
           }
 
           if ( collisionPair.algorithm ) {
-            var contactPointResult = Bump.ManifoldResult.create( colObj0, colObj1 );
+            var contactPointResult = tmpDNCMR1.setWithCollisionObjects( colObj0, colObj1 );
 
             if ( dispatchInfo.dispatchFunc === Bump.DispatcherInfo.DispatchFunc.DISPATCH_DISCRETE ) {
               // Discrete collision detection query.

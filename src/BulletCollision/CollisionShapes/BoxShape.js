@@ -143,8 +143,6 @@
           this.implicitShapeDimensions,
           this.getMargin(), t, aabbMin, aabbMax
         );
-        //     return this;
-        //     return { aabbMin: aabbMin, aabbMax: aabbMax };
       },
 
       // Uses the following temporary variables:

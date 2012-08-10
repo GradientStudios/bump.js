@@ -149,6 +149,12 @@
           }
         }
 
+      },
+
+      getAllContactManifolds: function( manifoldArray ) {
+        if ( this.btConvexTriangleCallback.manifoldPtr ) {
+          manifoldArray.push( this.btConvexTriangleCallback.manifoldPtr );
+        }
       }
 
     },

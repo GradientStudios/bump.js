@@ -250,14 +250,14 @@
       // Computes and returns the squared distance between
       // `this` vector and `vec`.
       distance2: function( vec ) {
-        return vec.subtract( this ).length2();
+        return vec.subtract( this, tmpVec1 ).length2();
       },
 
 
       // Computes and returns the squared distance between
       // `this` vector and `vec`.
       distance: function( vec ) {
-        return vec.subtract( this ).length();
+        return vec.subtract( this, tmpVec1 ).length();
       },
 
       // Normalizes `this` vector in place, safely checking for cases
@@ -651,7 +651,7 @@
         }
         if ( this.z < minVal ) {
           minIndex = 2;
-          minVal =this.z;
+          minVal = this.z;
         }
         if ( this.w < minVal ) {
           minIndex = 3;

@@ -1,17 +1,26 @@
 // load: bump.js
 // load: BulletCollision/NarrowPhaseCollision/ConvexCast.js
+// load: LinearMath/Vector3.js
+// load: LinearMath/Transform.js
 
-// run: LinearMath/Vector3.js
-// run: LinearMath/Transform.js
 // run: BulletCollision/CollisionShapes/ConvexShape.js
 
 (function( window, Bump ) {
 
-  var MAX_ITERATIONS = 64;
-
   var tmpV1 = Bump.Vector3.create();
   var tmpV2 = Bump.Vector3.create();
-  var tmpV3 = Bump.Vector3.create();
+
+  var tmpTITA = Bump.Transform.getIdentity();
+  var tmpTITB = Bump.Transform.getIdentity();
+
+  var tmpVr = Bump.Vector3.create();
+  var tmpVSVA = Bump.Vector3.create();
+  var tmpVSVB = Bump.Vector3.create();
+  var tmpVv = Bump.Vector3.create();
+  var tmpVn = Bump.Vector3.create();
+  var tmpVw = Bump.Vector3.create();
+
+  var MAX_ITERATIONS = 64;
 
   Bump.SubsimplexConvexCast = Bump.type({
     parent: Bump.ConvexCast,
@@ -34,19 +43,18 @@
         toB,                    // Bump.Transform
         result                  // CastResult
       ) {
-
         this.simplexSolver.reset();
 
-        var linVelA = toA.getOrigin().subtract( fromA.getOrigin() );
-        var linVelB = toB.getOrigin().subtract( fromB.getOrigin() );
+        var linVelA = toA.getOrigin().subtract( fromA.getOrigin(), tmpV1 );
+        var linVelB = toB.getOrigin().subtract( fromB.getOrigin(), tmpV2 );
 
         var lambda = 0;
 
-        var interpolatedTransA = fromA.clone();
-        var interpolatedTransB = fromB.clone();
+        var interpolatedTransA = fromA.clone( tmpTITA );
+        var interpolatedTransB = fromB.clone( tmpTITB );
 
         // take relative motion
-        var r = linVelA.subtract( linVelB );
+        var r = linVelA.subtract( linVelB, tmpVr );
         var v;
 
         var supVertexA = fromA.transform(
@@ -54,7 +62,7 @@
             fromA.getBasis().vectorMultiply( r.negate( tmpV1 ), tmpV1 ),
             tmpV1
           ),
-          tmpV1
+          tmpVSVA
         );
 
         var supVertexB = fromB.transform(
@@ -62,16 +70,16 @@
             fromB.getBasis().vectorMultiply( r, tmpV2 ),
             tmpV2
           ),
-          tmpV2
+          tmpVSVB
         );
 
-        v = supVertexA.subtract( supVertexB );
+        v = supVertexA.subtract( supVertexB, tmpVv );
         var maxIter = MAX_ITERATIONS;
 
-        var n = Bump.Vector3.create();
+        var n = tmpVn.setZero();
         // n.setValue( 0, 0, 0 );
         var hasResult = false;
-        var c = Bump.Vector3.create();
+        // var c = tmpVc.setZero(); // ASD: not used?
 
         var lastLambda = lambda;
 
@@ -82,8 +90,8 @@
         // #else
         // btScalar epsilon = btScalar(0.0001);
         // #endif //BT_USE_DOUBLE_PRECISION
-        var w = Bump.Vector3.create();
-        var p = Bump.Vector3.create();
+        var w = tmpVw.setZero();
+        // var p = tmpVp.setZero(); // ASD: not used?
         var VdotR;
 
         while ( ( dist2 > epsilon ) && maxIter-- ) {
@@ -92,14 +100,14 @@
               interpolatedTransA.getBasis().vectorMultiply( v.negate( tmpV1 ), tmpV1 ),
               tmpV1
             ),
-            tmpV1
+            tmpVSVA
           );
           supVertexB = interpolatedTransB.transform(
             this.convexB.localGetSupportingVertex(
               interpolatedTransB.getBasis().vectorMultiply( v, tmpV2 ),
               tmpV2
             ),
-            tmpV2
+            tmpVSVB
           );
 
           supVertexA.subtract( supVertexB, w );
@@ -172,7 +180,7 @@
         // var hitB = Bump.Vector3.create();
         // this.simplexSolver.compute_points( hitA, hitB );
         // result.hitPoint = hitB;
-        this.simplexSolver.compute_points( tmpV3, result.hitPoint );
+        this.simplexSolver.compute_points( tmpV1, result.hitPoint );
 
         return true;
       }

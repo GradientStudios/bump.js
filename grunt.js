@@ -15,7 +15,7 @@ module.exports = function(grunt) {
     },
     lint: {
       files: ['grunt.js', 'src/**/*.js'],
-      tests: ['tests/unit/**/*.js']
+      tests: ['tests/**/*.js']
     },
     depconcat: {
       dist: {

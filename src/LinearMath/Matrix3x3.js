@@ -7,6 +7,9 @@
 (function( window, Bump ) {
   var EPSILON = Math.pow( 2, -52 );
 
+  var rowLookup = [ 'el0', 'el1', 'el2' ];
+  var colLookup = [ 'x', 'y', 'z' ];
+
   Bump.Matrix3x3 = Bump.type({
     // Given *exactly* nine arguments in row major order,
     // initializes a 3x3 matrix.
@@ -166,13 +169,21 @@
           var j = ( i + 1 ) % 3;
           var k = ( i + 2 ) % 3;
 
-          s = Math.sqrt( this[i][i] - this[j][j] - this[k][k] + 1 );
+          var ia = rowLookup[i];
+          var ja = rowLookup[j];
+          var ka = rowLookup[k];
+
+          var ib = colLookup[i];
+          var jb = colLookup[j];
+          var kb = colLookup[k];
+
+          s = Math.sqrt( this[ia][ib] - this[ja][jb] - this[ka][kb] + 1 );
           temp[i] = s * 0.5;
           s = 0.5 / s;
 
-          temp[3] = ( this[k][j] - this[j][k] ) * s;
-          temp[j] = ( this[j][i] + this[i][j] ) * s;
-          temp[k] = ( this[k][i] + this[i][k] ) * s;
+          temp[3] = ( this[ka][jb] - this[ja][kb] ) * s;
+          temp[j] = ( this[ja][ib] + this[ia][jb] ) * s;
+          temp[k] = ( this[ka][ib] + this[ia][kb] ) * s;
         }
 
         return dest.setValue(

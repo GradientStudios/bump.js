@@ -273,7 +273,7 @@
 
       cleanOverlappingPair: function( pair, dispatcher ) {
         if ( pair.algorithm ) {
-          // pair->algorithm->~CollisionAlgorithm();
+          pair.algorithm.destruct();
           dispatcher.freeCollisionAlgorithm( pair.algorithm );
           pair.algorithm = null;
         }
