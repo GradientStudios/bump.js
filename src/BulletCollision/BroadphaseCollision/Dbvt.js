@@ -50,6 +50,18 @@
     rayTestStackPool.push( arr );
   };
 
+  var scalarRefPool = [];
+  var getScalarRef = function( init ) {
+    var ref = scalarRefPool.pop();
+    if ( ref ) {
+      ref.value = init;
+      return ref;
+    }
+
+    return { value: init };
+  };
+  var delScalarRef = createDeller( scalarRefPool );
+
   // Used in collideTV
   var tmpCTVVol1;
 
@@ -1158,14 +1170,17 @@
           var depth = 1,
               threshold = Bump.Dbvt.DOUBLE_STACKSIZE - 2,
               stack = this.rayTestStack,
-              bounds = [ getVector3(), getVector3() ];
+              bounds = getArray();
+          bounds[ 0 ] = getVector3();
+          bounds[ 1 ] = getVector3();
+
           Bump.resize( stack, Bump.Dbvt.DOUBLE_STACKSIZE, undefined );
           stack[ 0 ] = root;
           do {
             var node = stack[ --depth ];
             node.volume.Mins().subtract( aabbMax, bounds[ 0 ] );
             node.volume.Maxs().subtract( aabbMin, bounds[ 1 ] );
-            var tmin = { value: 1 }, // primitive "passed by reference"
+            var tmin = getScalarRef( 1 ), // primitive "passed by reference"
                 lambda_min = 0,
                 result1 = false;
             result1 = Bump.RayAabb2( rayFrom, rayDirectionInverse, signs, bounds,
@@ -1184,9 +1199,12 @@
                 policy.ProcessNode( node );
               }
             }
+
+            delScalarRef( tmin );
           } while ( depth );
 
-          delVector3( bounds[ 0 ], bounds[ 1 ] )
+          delVector3( bounds[ 0 ], bounds[ 1 ] );
+          delArray( bounds );
         }
       }
 
@@ -1194,10 +1212,14 @@
 
     typeMembers: {
       maxdepth: function( node ) {
-        var depth = { value: 0 };
+        var depth = getScalarRef( 0 );
         if ( node ) {
           getmaxdepth( node, 1, depth );
         }
+
+        // !!!: if delScalarRef changes the value of depth, then
+        // return value should be saved and then returned.
+        delScalarRef( depth );
         return depth.value;
       },
 
@@ -1276,13 +1298,15 @@
           stack[ 0 ] = root;
 
           var bounds = getArray();
+          bounds[ 0 ] = getVector3();
+          bounds[ 1 ] = getVector3();
 
           do {
             var node = stack[ --depth ];
-            bounds[ 0 ] = node.volume.Mins();
-            bounds[ 1 ] = node.volume.Maxs();
+            bounds[ 0 ].assign( node.volume.Mins() );
+            bounds[ 1 ].assign( node.volume.Maxs() );
 
-            var tmin = { value: 1 },
+            var tmin = getScalarRef( 1 ),
             lambda_min = 0,
             result1 = Bump.RayAabb2( rayFrom, rayDirectionInverse, signs,
                                      bounds, tmin, lambda_min, lambda_max );
@@ -1300,9 +1324,11 @@
                 policy.ProcessNode( node );
               }
             }
+
+            delScalarRef( tmin );
           } while ( depth );
 
-          delVector3( tmpV1, tmpV2, tmpV3, tmpV4, tmpV5 );
+          delVector3( tmpV1, tmpV2, tmpV3, bounds[0], bounds[1] );
           delRayTestStackArray( stack );
           delArray( signs, bounds );
         }
