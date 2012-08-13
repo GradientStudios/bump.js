@@ -776,16 +776,41 @@
         var R1 = tmpDMat31;
         var R2 = tmpDMat32;
 
-        for ( var j = 0; j < 3; ++j ) {
-          R1[ 0 + 4 * j ] = transformA.basis[j].x;
-          R2[ 0 + 4 * j ] = transformB.basis[j].x;
+        // !!!: Unrolled loop for direct access in Matrix3x3
+        // for ( var j = 0; j < 3; ++j ) {
+        //   R1[ 0 + 4 * j ] = transformA.basis[j].x;
+        //   R2[ 0 + 4 * j ] = transformB.basis[j].x;
+        //
+        //   R1[ 1 + 4 * j ] = transformA.basis[j].y;
+        //   R2[ 1 + 4 * j ] = transformB.basis[j].y;
+        //
+        //   R1[ 2 + 4 * j ] = transformA.basis[j].z;
+        //   R2[ 2 + 4 * j ] = transformB.basis[j].z;
+        // }
 
-          R1[ 1 + 4 * j ] = transformA.basis[j].y;
-          R2[ 1 + 4 * j ] = transformB.basis[j].y;
+        // j = 0
+        R1[ 0 ] = transformA.basis.el0.x;
+        R2[ 0 ] = transformB.basis.el0.x;
+        R1[ 1 ] = transformA.basis.el0.y;
+        R2[ 1 ] = transformB.basis.el0.y;
+        R1[ 2 ] = transformA.basis.el0.z;
+        R2[ 2 ] = transformB.basis.el0.z;
 
-          R1[ 2 + 4 * j ] = transformA.basis[j].z;
-          R2[ 2 + 4 * j ] = transformB.basis[j].z;
-        }
+        // j = 1
+        R1[ 4 ] = transformA.basis.el1.x;
+        R2[ 4 ] = transformB.basis.el1.x;
+        R1[ 5 ] = transformA.basis.el1.y;
+        R2[ 5 ] = transformB.basis.el1.y;
+        R1[ 6 ] = transformA.basis.el1.z;
+        R2[ 6 ] = transformB.basis.el1.z;
+
+        // j = 2
+        R1[ 8 ]  = transformA.basis.el2.x;
+        R2[ 8 ]  = transformB.basis.el2.x;
+        R1[ 9 ]  = transformA.basis.el2.y;
+        R2[ 9 ]  = transformB.basis.el2.y;
+        R1[ 10 ] = transformA.basis.el2.z;
+        R2[ 10 ] = transformB.basis.el2.z;
 
         var normal = tmpGCPVec1.setValue( 0, 0, 0 );
         var depth = tmpNumRef1;
