@@ -4,6 +4,10 @@
 // run: LinearMath/Vector3.js
 
 (function( window, Bump ) {
+  var tmpNumRef1 = { value: 0 };
+  var tmpNumRef2 = { value: 0 };
+  var tmpNumRef3 = { value: 0 };
+  var tmpNumRef4 = { value: 0 };
 
   // Used in getClosestPoints.
   var tmpGCPVec1 = Bump.Vector3.create();
@@ -254,6 +258,11 @@
   var dep   = new Float64Array(8);
   var iret  = new Float64Array(8);
 
+  var normalR = { matrix: null, index: 0 };
+
+  // Uses the following temporary variables:
+  //   - `tmpNumRef3`
+  //   - `tmpNumRef4`
   var dBoxBox2 = function(
     p1, R1, side1,
     p2, R2, side2,
@@ -264,7 +273,8 @@
     var p = tmpBBp;
     var pp = tmpBBpp.setValue( 0, 0, 0 );
     var normalC = tmpBBnormalC.setValue( 0, 0, 0 );
-    var normalR = { matrix: null, index: 0 };
+    // `normalR` is cached in the outside closure.
+    normalR.matrix = null; normalR.index = 0;
     // `A` and `B` are cached in the outside closure.
     var R11 = 0, R12 = 0, R13 = 0, R21 = 0, R22 = 0, R23 = 0, R31 = 0, R32 = 0, R33 = 0;
     var Q11 = 0, Q12 = 0, Q13 = 0, Q21 = 0, Q22 = 0, Q23 = 0, Q31 = 0, Q32 = 0, Q33 = 0;
@@ -444,7 +454,7 @@
         pb.z += sign * B[j] * R1[ 8 + j ];
       }
 
-      var alpha = { value: 0 }, beta = { value: 0 };
+      var alpha = tmpNumRef3, beta = tmpNumRef4;
       var ua = tmpBBua.setValue( 0, 0, 0 );
       var ub = tmpBBub.setValue( 0, 0, 0 );
 
@@ -749,6 +759,13 @@
         this._super();
       },
 
+      // Uses the following temporary variables:
+      //   - `tmpDMat31`
+      //   - `tmpDMat32`
+      //   - `tmpNumRef1`
+      //   - `tmpNumRef2`
+      //   - `tmpNumRef3` ← `dBoxBox2`
+      //   - `tmpNumRef4` ← `dBoxBox2`
       getClosestPoints: function( input, output, debugDraw, swapResults ) {
         var transformA = input.transformA;
         var transformB = input.transformB;
@@ -770,10 +787,13 @@
           R2[ 2 + 4 * j ] = transformB.basis[j].z;
         }
 
-        var normal      = tmpGCPVec1.setValue( 0, 0, 0 );
-        var depth       = { value: 0 };
-        var return_code = { value: 0 };
-        var maxc        = 4;
+        var normal = tmpGCPVec1.setValue( 0, 0, 0 );
+        var depth = tmpNumRef1;
+        var return_code = tmpNumRef2;
+        var maxc = 4;
+
+        depth.value = 0;
+        return_code.value = 0;
 
         var num = dBoxBox2(
           transformA.origin,
