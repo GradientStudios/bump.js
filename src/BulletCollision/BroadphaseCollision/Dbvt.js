@@ -1165,7 +1165,7 @@
             var node = stack[ --depth ];
             node.volume.Mins().subtract( aabbMax, bounds[ 0 ] );
             node.volume.Maxs().subtract( aabbMin, bounds[ 1 ] );
-            var tmin = { tmin: 1 }, // primitive "passed by reference"
+            var tmin = { value: 1 }, // primitive "passed by reference"
                 lambda_min = 0,
                 result1 = false;
             result1 = Bump.RayAabb2( rayFrom, rayDirectionInverse, signs, bounds,
@@ -1282,7 +1282,7 @@
             bounds[ 0 ] = node.volume.Mins();
             bounds[ 1 ] = node.volume.Maxs();
 
-            var tmin = { tmin: 1 },
+            var tmin = { value: 1 },
             lambda_min = 0,
             result1 = Bump.RayAabb2( rayFrom, rayDirectionInverse, signs,
                                      bounds, tmin, lambda_min, lambda_max );

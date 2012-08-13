@@ -151,7 +151,7 @@ test( 'basic', function() {
   testFunc( Bump, 'RayAabb2', {
     isStaticFunc: true,
     args: [
-      [ rayStart, rayInvDir, signs, bounds, { param: tMin, expected: { tmin: 0 } }, 0, 1 ]
+      [ rayStart, rayInvDir, signs, bounds, { param: tMin, expected: { value: 0 } }, 0, 1 ]
     ],
     expected: [
       false
