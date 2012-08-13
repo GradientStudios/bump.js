@@ -283,13 +283,13 @@
 
       // what about division by zero? --> just set rayDirection[i] to INF/BT_LARGE_FLOAT
       this.rayDirectionInverse = Bump.Vector3.create();
-      this.signs = Bump.Vector3.create();
-      this.rayDirectionInverse[ 0 ] = rayDir[ 0 ] === 0 ? Infinity : 1 / rayDir[ 0 ];
-      this.rayDirectionInverse[ 1 ] = rayDir[ 1 ] === 0 ? Infinity : 1 / rayDir[ 1 ];
-      this.rayDirectionInverse[ 2 ] = rayDir[ 2 ] === 0 ? Infinity : 1 / rayDir[ 2 ];
-      this.signs[ 0 ] = this.rayDirectionInverse[ 0 ] < 0 ? 1 : 0;
-      this.signs[ 1 ] = this.rayDirectionInverse[ 1 ] < 0 ? 1 : 0;
-      this.signs[ 2 ] = this.rayDirectionInverse[ 2 ] < 0 ? 1 : 0;
+      this.rayDirectionInverse.x = rayDir.x === 0 ? Infinity : 1 / rayDir.x;
+      this.rayDirectionInverse.y = rayDir.y === 0 ? Infinity : 1 / rayDir.y;
+      this.rayDirectionInverse.z = rayDir.z === 0 ? Infinity : 1 / rayDir.z;
+      this.signs = new Array( 3 );
+      this.signs[ 0 ] = this.rayDirectionInverse.x < 0 ? 1 : 0;
+      this.signs[ 1 ] = this.rayDirectionInverse.y < 0 ? 1 : 0;
+      this.signs[ 2 ] = this.rayDirectionInverse.z < 0 ? 1 : 0;
 
       this.lambda_max = rayDir.dot( this.rayToWorld.subtract( this.rayFromWorld, tmpV2 ));
     },
@@ -318,14 +318,12 @@
         var rayDir = rayToWorld.subtract( rayFromWorld, tmpV1 ).normalize();
 
         // what about division by zero? --> just set rayDirection[i] to INF/BT_LARGE_FLOAT
-        this.rayDirectionInverse.setZero();
-        this.signs.setZero();
-        this.rayDirectionInverse[ 0 ] = rayDir[ 0 ] === 0 ? Infinity : 1 / rayDir[ 0 ];
-        this.rayDirectionInverse[ 1 ] = rayDir[ 1 ] === 0 ? Infinity : 1 / rayDir[ 1 ];
-        this.rayDirectionInverse[ 2 ] = rayDir[ 2 ] === 0 ? Infinity : 1 / rayDir[ 2 ];
-        this.signs[ 0 ] = this.rayDirectionInverse[ 0 ] < 0 ? 1 : 0;
-        this.signs[ 1 ] = this.rayDirectionInverse[ 1 ] < 0 ? 1 : 0;
-        this.signs[ 2 ] = this.rayDirectionInverse[ 2 ] < 0 ? 1 : 0;
+        this.rayDirectionInverse.x = rayDir.x === 0 ? Infinity : 1 / rayDir.x;
+        this.rayDirectionInverse.y = rayDir.y === 0 ? Infinity : 1 / rayDir.y;
+        this.rayDirectionInverse.z = rayDir.z === 0 ? Infinity : 1 / rayDir.z;
+        this.signs[ 0 ] = this.rayDirectionInverse.x < 0 ? 1 : 0;
+        this.signs[ 1 ] = this.rayDirectionInverse.y < 0 ? 1 : 0;
+        this.signs[ 2 ] = this.rayDirectionInverse.z < 0 ? 1 : 0;
 
         this.lambda_max = rayDir.dot( this.rayToWorld.subtract( this.rayFromWorld, tmpV2 ));
 
