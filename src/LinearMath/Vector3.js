@@ -262,6 +262,10 @@
 
       // Normalizes `this` vector in place, safely checking for cases
       // of division by zero.
+      //
+      // Uses the following temporary variables:
+      //
+      // - `tmpVec1`
       safeNormalize: function( ) {
         // Altered slightly from `btVector3`'s original source to to
         // avoid index [] notation, which is slow.
@@ -288,6 +292,12 @@
 
       // Returns a rotated version of `this` vector, rotating around `wAxis` by `angle`.
       // Stores result in `dest` if provided. If not, creates and returns a new Vector3.
+      //
+      // Uses the following temporary variables:
+      //
+      // - `tmpVec1`
+      // - `tmpVec2`
+      // - `tmpVec3`
       rotate: function( wAxis, angle, dest ) {
         if ( !dest ) { dest = Bump.Vector3.create(); }
 
@@ -436,11 +446,19 @@
       // which `btVector3` defines as the axis with the least absolute value.
       // Note that accessing vector properties using [] notation is slow and
       // should be avoided.
+      //
+      // Uses the following temporary variables:
+      //
+      // - `tmpVec1`
       furthestAxis: function() {
         return this.absolute( tmpVec1 ).minAxis();
       },
 
       // Returns the "furthest" value stored in `this`.
+      //
+      // Uses the following temporary variables:
+      //
+      // - `tmpVec1`
       furthest: function() {
         return this.absolute( tmpVec1 ).min();
       },
@@ -449,11 +467,19 @@
       // which `btVector3` defines as the axis with the greatest absolute value.
       // Note that accessing vector properties using [] notation is slow and
       // should be avoided.
+      //
+      // Uses the following temporary variables:
+      //
+      // - `tmpVec1`
       closestAxis: function() {
         return this.absolute( tmpVec1 ).maxAxis();
       },
 
       // Returns the "closest" value stored in `this`.
+      //
+      // Uses the following temporary variables:
+      //
+      // - `tmpVec1`
       closest: function() {
         return this.absolute( tmpVec1 ).max();
       },
