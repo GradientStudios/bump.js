@@ -249,15 +249,23 @@
 
       // Computes and returns the squared distance between
       // `this` vector and `vec`.
+      //
+      // Uses the following temporary variables:
+      //
+      // - `tmpVec1`
       distance2: function( vec ) {
-        return vec.subtract( this ).length2();
+        return vec.subtract( this, tmpVec1 ).length2();
       },
 
 
       // Computes and returns the squared distance between
       // `this` vector and `vec`.
+      //
+      // Uses the following temporary variables:
+      //
+      // - `tmpVec1`
       distance: function( vec ) {
-        return vec.subtract( this ).length();
+        return vec.subtract( this, tmpVec1 ).length();
       },
 
       // Normalizes `this` vector in place, safely checking for cases
