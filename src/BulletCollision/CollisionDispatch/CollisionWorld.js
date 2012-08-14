@@ -734,7 +734,6 @@
                                collisionShape,
                                colObjWorldTransform,
                                resultCallback ) {
-
         // allocate temporaries
         // TODO: not all of these are needed for every rayTestSingle call,
         // so allocations could be moved to where they are needed
@@ -749,9 +748,8 @@
         var tmpBTRC = getBridgeTriangleRaycastCallback();
         var tmpRT = getRayTester();
 
-        // TODO: to get best speed-up, could in-line the clone code here
-        // to avoid multiple calls to _super functions
-        var castShape = emptySphereShape.clone( tmpSS );
+        // re-init the recycled SphereShape using `set`
+        var castShape = tmpSS.set( emptySphereShape );
 
         var worldTocollisionObject, rayFromLocal, rayToLocal, rcb;
 

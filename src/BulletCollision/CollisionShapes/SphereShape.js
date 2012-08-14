@@ -21,6 +21,24 @@
     },
 
     members: {
+      // !!!: added for fast, easy initialization of recycled SphereShapes
+      set: function( other ) {
+        // !!!: unroll the calls to super for performance
+        // from CollisionShape:
+        this.userPointer = other.userPointer;
+
+        // nothing from ConvexShape
+
+        // from ConvexInternalShape:
+        this.localScaling.assign( other.localScaling );
+
+        this.shapeType = other.shapeType;
+        this.implicitShapeDimensions.x = other.implicitShapeDimensions.x;
+        this.collisionMargin = other.collisionMargin;
+
+        return this;
+      },
+
       clone: function( dest ) {
         dest = dest || Bump.SphereShape.create( this.collisionMargin );
 
