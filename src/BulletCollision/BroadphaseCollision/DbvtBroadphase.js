@@ -361,7 +361,7 @@
         aabbMin = aabbMin || Bump.Vector3.create();
         aabbMax = aabbMin || Bump.Vector3.create();
 
-        //var callback = Bump.BroadphaseRayTester.create( rayCallback );
+        // var callback = Bump.BroadphaseRayTester.create( rayCallback );
         var callback = tmpBroadphaseRayTester;
         callback.init( rayCallback );
 

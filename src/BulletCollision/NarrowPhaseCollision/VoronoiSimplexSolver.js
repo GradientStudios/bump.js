@@ -129,10 +129,10 @@
       },
 
       isValid: function() {
-        var valid = ( ( this.barycentricCoords[0] >= 0 ) &&
-                      ( this.barycentricCoords[1] >= 0 ) &&
-                      ( this.barycentricCoords[2] >= 0 ) &&
-                      ( this.barycentricCoords[3] >= 0 ) );
+        var valid = (( this.barycentricCoords[0] >= 0 ) &&
+                     ( this.barycentricCoords[1] >= 0 ) &&
+                     ( this.barycentricCoords[2] >= 0 ) &&
+                     ( this.barycentricCoords[3] >= 0 ));
 
         return valid;
       },
@@ -247,11 +247,11 @@
           case 2:
             var from = this.simplexVectorW[0];
             var to = this.simplexVectorW[1];
-                // nearest = Bump.Vector3.create();
+            // nearest = Bump.Vector3.create();
 
-            var diff = p.subtract( from, tmpV3 ),
-                v = to.subtract( from, tmpV4 ),
-                t = v.dot( diff );
+            var diff = p.subtract( from, tmpV3 );
+            var v = to.subtract( from, tmpV4 );
+            var t = v.dot( diff );
 
             if ( t > 0 ) {
               var dotVV = v.dot( v );
@@ -272,7 +272,7 @@
               this.cachedBC.usedVertices.usedVertexA = true;
             }
             this.cachedBC.setBarycentricCoordinates( 1 - t, t );
-            // ASD: commented this out since it is apparently never used
+            // !!!: ASD: commented this out since it is apparently never used
             // nearest.assign( from.add( v.multiplyScalar( t, tmpV1 ), tmpV1 ) );
 
             this.cachedP1.assign( this.simplexPointsP[0].add( this.simplexPointsP[1].subtract( this.simplexPointsP[0], tmpV1 ).multiplyScalar( t, tmpV1 ), tmpV1 ) );

@@ -77,13 +77,13 @@
   var BridgeTriangleRaycastCallback = Bump.type({
     parent: Bump.TriangleRaycastCallback,
 
-    init: function BridgeTriangleRaycastCallback( from,
-                                                  to,
-                                                  resultCallback,
-                                                  collisionObject,
-                                                  triangleMesh,
-                                                  colObjWorldTransform
-                                                ) {
+    init: function BridgeTriangleRaycastCallback(
+      from, to,
+      resultCallback,
+      collisionObject,
+      triangleMesh,
+      colObjWorldTransform
+    ) {
       //@BP Mod
       this._super( from, to, resultCallback.flags );
       this.resultCallback = resultCallback;
@@ -94,13 +94,13 @@
 
     members: {
       // ASD: added for easy recycling, since init() calls clone
-      set: function BridgeTriangleRaycastCallback( from,
-                                                    to,
-                                                    resultCallback,
-                                                    collisionObject,
-                                                    triangleMesh,
-                                                    colObjWorldTransform
-                                                  ) {
+      set: function BridgeTriangleRaycastCallback(
+        from, to,
+        resultCallback,
+        collisionObject,
+        triangleMesh,
+        colObjWorldTransform
+      ) {
         //@BP Mod
         Bump.TriangleRaycastCallback.set.call(
           this, from, to, resultCallback.flags
