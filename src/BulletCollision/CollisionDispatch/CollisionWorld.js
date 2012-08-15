@@ -851,9 +851,9 @@
               );
               rcb.hitFraction = resultCallback.closestHitFraction;
 
-              var rayAabbMinLocal = rayFromLocal.clone( tmpVec1 );
+              var rayAabbMinLocal = tmpVec1.assign( rayFromLocal );
               rayAabbMinLocal.setMin( rayToLocal );
-              var rayAabbMaxLocal = rayFromLocal.clone( tmpVec2 );
+              var rayAabbMaxLocal = tmpVec2.assign( rayFromLocal );
               rayAabbMaxLocal.setMax( rayToLocal );
 
               concaveShape.processAllTriangles( rcb, rayAabbMinLocal, rayAabbMaxLocal );
@@ -878,12 +878,12 @@
               );
 
               if ( dbvt ) {
-                var localRayFrom = colObjWorldTransform
-                  .inverseTimes( rayFromTrans, tmpTrans )
-                  .getOrigin().clone( tmpVec1 );
-                var localRayTo = colObjWorldTransform
-                  .inverseTimes( rayToTrans, tmpTrans )
-                  .getOrigin().clone( tmpVec2 );
+                var localRayFrom = tmpVec1.assign(
+                  colObjWorldTransform.inverseTimes( rayFromTrans, tmpTrans ).origin
+                );
+                var localRayTo = tmpVec2.assign(
+                  colObjWorldTransform.inverseTimes( rayToTrans, tmpTrans ).origin
+                );
                 Bump.Dbvt.rayTest( dbvt.root, localRayFrom, localRayTo, rayCB );
               } else {
                 for ( var i = 0, n = compoundShape.getNumChildShapes(); i < n; ++i ) {

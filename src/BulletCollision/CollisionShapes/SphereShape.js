@@ -52,7 +52,7 @@
         var supVertex = dest;
         supVertex = this.localGetSupportingVertexWithoutMargin( vec, supVertex );
 
-        var vecnorm = vec.clone( tmpV1 );
+        var vecnorm = tmpV1.assign( vec );
         if ( vecnorm.length2() < Bump.SIMD_EPSILON * Bump.SIMD_EPSILON ) {
           vecnorm.setValue( -1, -1, -1 );
         }

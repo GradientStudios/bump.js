@@ -50,8 +50,8 @@
 
         var lambda = 0;
 
-        var interpolatedTransA = fromA.clone( tmpTITA );
-        var interpolatedTransB = fromB.clone( tmpTITB );
+        var interpolatedTransA = tmpTITA.assign( fromA );
+        var interpolatedTransB = tmpTITB.assign( fromB );
 
         // take relative motion
         var r = linVelA.subtract( linVelB, tmpVr );
