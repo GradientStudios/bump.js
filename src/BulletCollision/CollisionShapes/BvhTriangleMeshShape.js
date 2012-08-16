@@ -7,6 +7,8 @@
 // run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
 
 (function( window, Bump ) {
+  // Defined below.
+  var tmpMyNodeOverlapCallback;
 
   Bump.BvhTriangleMeshShape = Bump.type({
     parent: Bump.TriangleMeshShape,
@@ -43,8 +45,7 @@
       performConvexcast: Bump.notImplemented,
 
       processAllTriangles: function( callback, aabbMin, aabbMax ) {
-        var MyNodeOverlapCallback = Bump.BvhTriangleMeshShape.__processAllTriangles__MyNodeOverlapCallback;
-        var myNodeCallback = MyNodeOverlapCallback.create( callback, this.meshInterface );
+        var myNodeCallback = tmpMyNodeOverlapCallback.set( callback, this.meshInterface );
         this.bvh.reportAabbOverlappingNodex( myNodeCallback, aabbMin, aabbMax );
       },
 
@@ -113,6 +114,12 @@
     },
 
     members: {
+      set: function( callback, meshInterface ) {
+        this.meshInterface = meshInterface;
+        this.callback = callback;
+        return this;
+      },
+
       processNode: function( nodeSubPart, nodeTriangleIndex ) {
         var PHY_ScalarType = Bump.PHY_ScalarType;
         var PHY_UCHAR      = PHY_ScalarType.PHY_UCHAR;
@@ -145,25 +152,24 @@
         // var numfaces    = data.numFaces;
         var indicestype = data.indicesType;
 
-        var GfxbaseType = (
-          indicestype === PHY_SHORT ?
-            Uint16Array :
-            (
-              indicestype === PHY_INTEGER ?
-                Uint32Array :
-                Uint8Array
-            )
-        );
-
-        // var gfxbase = new GfxbaseType( indexbase.buffer, nodeTriangleIndex * indexstride );
-
         // !!!: Cache indexbase
         var offset = nodeTriangleIndex * indexstride;
         var cache = indexbase.buffer.__cache;
         if ( !cache[ offset ] ) {
+          var GfxbaseType = (
+            indicestype === PHY_SHORT ?
+              Uint16Array : (
+                indicestype === PHY_INTEGER ?
+                  Uint32Array :
+                  Uint8Array
+              )
+          );
+
           cache[ offset ] = new GfxbaseType( indexbase.buffer, offset );
         }
         var gfxbase = cache[ offset ];
+
+        // var gfxbase = new GfxbaseType( indexbase.buffer, nodeTriangleIndex * indexstride );
 
         Bump.Assert( indicestype === PHY_INTEGER ||
                      indicestype === PHY_SHORT   ||
@@ -185,7 +191,7 @@
             }
             graphicsbase = cache[ offset ];
 
-            m_triangle[j] = Bump.Vector3.create(
+            m_triangle[j].setValue(
               graphicsbase[0] * meshScaling.x,
               graphicsbase[1] * meshScaling.y,
               graphicsbase[2] * meshScaling.z
@@ -201,7 +207,7 @@
             }
             graphicsbase = cache[ offset ];
 
-            m_triangle[j] = Bump.Vector3.create(
+            m_triangle[j].setValue(
               graphicsbase[0] * meshScaling.x,
               graphicsbase[1] * meshScaling.y,
               graphicsbase[2] * meshScaling.z
@@ -215,5 +221,7 @@
 
     }
   });
+
+  tmpMyNodeOverlapCallback = Bump.BvhTriangleMeshShape.__processAllTriangles__MyNodeOverlapCallback.create( null, null );
 
 })( this, this.Bump );
