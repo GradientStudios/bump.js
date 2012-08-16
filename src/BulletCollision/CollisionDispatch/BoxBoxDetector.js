@@ -234,7 +234,6 @@
 
   var tmpBBp = Bump.Vector3.create();
   var tmpBBpp = Bump.Vector3.create();
-  var tmpBBnormalC = Bump.Vector3.create();
   var tmpBBpa = Bump.Vector3.create();
   var tmpBBpb = Bump.Vector3.create();
   var tmpBBua = Bump.Vector3.create();
@@ -249,6 +248,36 @@
   var tmpBBVec1 = Bump.Vector3.create();
   var tmpBBVec2 = Bump.Vector3.create();
 
+  var TST1 = function( expr1, expr2, normMatrix, normIndex, cc ) {
+    s2 = Math.abs( expr1 ) - expr2;
+    if ( s2 > 0 ) { return 0; }
+    if ( s2 > s ) {
+      s = s2;
+      normalR.matrix = normMatrix;
+      normalR.index = normIndex;
+      invert_normal = expr1 < 0;
+      code = cc;
+    }
+  };
+
+  var TST2 = function( expr1, expr2, n1, n2, n3, cc ) {
+    s2 = Math.abs( expr1 ) - expr2;
+    if ( s2 > Bump.SIMD_EPSILON ) { return 0; }
+    l = Math.sqrt( n1 * n1 + n2 * n2 + n3 * n3 );
+    if ( l > Bump.SIMD_EPSILON ) {
+      s2 /= l;
+      if ( s2 * fudge_factor > s ) {
+        s = s2;
+        normalR.matrix = null;
+        normalC.x = n1 / l;
+        normalC.y = n2 / l;
+        normalC.z = n3 / l;
+        invert_normal = expr1 < 0;
+        code = cc;
+      }
+    }
+  };
+
   var A     = new Float64Array(3);
   var B     = new Float64Array(3);
   var quad  = new Float64Array(8);
@@ -258,6 +287,8 @@
   var dep   = new Float64Array(8);
   var iret  = new Float64Array(8);
 
+  var fudge_factor, s, s2, l, invert_normal, code;
+  var normalC = Bump.Vector3.create();
   var normalR = { matrix: null, index: 0 };
 
   // Uses the following temporary variables:
@@ -269,17 +300,29 @@
     normal, depth, return_code,
     maxc, contact, skip, output
   ) {
-    var fudge_factor = 1.05;
+    // `fudge_factor` is cached in the outside closure;
+    fudge_factor = 1.05;
+
     var p = tmpBBp;
     var pp = tmpBBpp.setValue( 0, 0, 0 );
-    var normalC = tmpBBnormalC.setValue( 0, 0, 0 );
+
+    // `normalC` is cached in the outside closure;
+    normalC.setValue( 0, 0, 0 );
     // `normalR` is cached in the outside closure.
     normalR.matrix = null; normalR.index = 0;
     // `A` and `B` are cached in the outside closure.
+
     var R11 = 0, R12 = 0, R13 = 0, R21 = 0, R22 = 0, R23 = 0, R31 = 0, R32 = 0, R33 = 0;
     var Q11 = 0, Q12 = 0, Q13 = 0, Q21 = 0, Q22 = 0, Q23 = 0, Q31 = 0, Q32 = 0, Q33 = 0;
-    var s = 0, s2 = 0, l = 0;
-    var i = 0, j = 0, invert_normal = false, code = 0;
+
+    // `s`, `s2`, and `l` are cached in the outside closure.
+    s = 0; s2 = 0; l = 0;
+
+    var i = 0, j = 0;
+
+    // `invert_normal` and `code` are cached in the outside closure.
+    invert_normal = false; code = 0;
+
     var pa, pb, tmp;
 
     // Get vector from centers of box 1 to box 2, relative to box 1.
@@ -315,17 +358,9 @@
     // `null` and `normalC` is set to a vector relative to body 1.
     // `invert_normal` is `true` if the sign of the normal should be flipped.
 
-    var TST = function( expr1, expr2, normMatrix, normIndex, cc ) {
-      s2 = Math.abs( expr1 ) - expr2;
-      if ( s2 > 0 ) { return 0; }
-      if ( s2 > s ) {
-        s = s2;
-        normalR.matrix = normMatrix;
-        normalR.index = normIndex;
-        invert_normal = expr1 < 0;
-        code = cc;
-      }
-    };
+    // !!!: TST is redefined in the outside closure so that it doesn't need
+    // to be allocated each time dBoxBox2 is called.
+    var TST = TST1;
 
     s = -Infinity;
     invert_normal = false;
@@ -351,24 +386,10 @@
 
     // Note: cross product axes need to be scaled when s is computed.
     // normal (n1, n2, n3) is relative to box 1.
-    TST = function( expr1, expr2, n1, n2, n3, cc ) {
-      s2 = Math.abs( expr1 ) - expr2;
-      if ( s2 > Bump.SIMD_EPSILON ) { return 0; }
-      l = Math.sqrt( n1 * n1 + n2 * n2 + n3 * n3 );
-      if ( l > Bump.SIMD_EPSILON ) {
-        s2 /= l;
-        if ( s2 * fudge_factor > s ) {
-          s = s2;
-          normalR.matrix = null;
-          normalC.x = n1 / l;
-          normalC.y = n2 / l;
-          normalC.z = n3 / l;
-          invert_normal = expr1 < 0;
-          code = cc;
-        }
-      }
-    };
-
+    //
+    // !!!: TST is redefined in the outside closure so that it doesn't need
+    // to be allocated each time dBoxBox2 is called.
+    TST = TST2;
     var fudge2 = 1.0e-5;
 
     Q11 += fudge2;
