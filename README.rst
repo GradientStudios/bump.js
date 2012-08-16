@@ -1,30 +1,22 @@
 Bump.js
 =======
 
+bump.js is JavaScript port of the Bullet physics engine.
+
 Dependencies
 ============
-* grunt (>= 0.3.9)
-* uglify-js (>= 1.2.3)
 
-The current version of grunt runs ``uglify-js@1.0.7``, which contains a bug causing exponential runtime when minifying BoxBoxDetector.js. The current workaround is::
+* Node.js (installation: http://nodejs.org/#download)
+* NPM (installation: https://npmjs.org/doc/README.html#Super-Easy-Install)
+
+The current version of grunt runs ``uglify-js@1.0.7``, which contains a bug causing exponential runtime when minifying bump.js. Running ``make`` will fix this locally. What it is doing under the hood is::
 
 	$ cd node_modules/grunt
 	$ npm install uglify-js@1.2.6
 
-Or build with ``make``::
-
-	$ make
-
-One time setup for build process:
----------------------------------
-
-* Node.js (installation: https://github.com/joyent/node/wiki/Installation)
-* NPM (installation: ``curl http://npmjs.org/install.sh | sh``)
-* grunt (installation: ``npm install -g grunt``)
-
-Setup
+Build
 -----
 
 Once the dependencies are installed::
 
-	$ grunt
+	$ make
