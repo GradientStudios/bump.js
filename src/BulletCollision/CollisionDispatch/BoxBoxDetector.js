@@ -4,6 +4,10 @@
 // run: LinearMath/Vector3.js
 
 (function( window, Bump ) {
+  var tmpNumRef1 = { value: 0 };
+  var tmpNumRef2 = { value: 0 };
+  var tmpNumRef3 = { value: 0 };
+  var tmpNumRef4 = { value: 0 };
 
   // Used in getClosestPoints.
   var tmpGCPVec1 = Bump.Vector3.create();
@@ -31,18 +35,18 @@
   var dMatrix3 = Bump.type({
     typeMembers: {
       create: function() {
-        return [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
+        return new Float64Array(12);
       }
     }
   });
 
   var tmpLCAVec1 = Bump.Vector3.create();
   var dLineClosestApproach = function( pa, ua, pb, ub, alpha, beta ) {
-    var p    = pb.subtract( pa, tmpLCAVec1 ),
-        uaub =  dDOTVA( ua, ub, 0 ),
-        q1   =  dDOTVA( ua,  p, 0 ),
-        q2   = -dDOTVA( ub,  p, 0 ),
-        d    = 1 - uaub * uaub;
+    var p    = pb.subtract( pa, tmpLCAVec1 );
+    var uaub =  dDOTVA( ua, ub, 0 );
+    var q1   =  dDOTVA( ua,  p, 0 );
+    var q2   = -dDOTVA( ub,  p, 0 );
+    var d    = 1 - uaub * uaub;
 
     if ( d <= 0.0001 ) {
       alpha.value = 0;
@@ -62,18 +66,18 @@
   // The intersection points are returned as `x,y` pairs in the `ret` array.
   // The number of intersection points is returned by the function (this will
   // be in the range 0 to 8).
+  var buffer = new Float64Array(16);
   var intersectRectQuad2 = function( h, p, ret ) {
     // `qIdx` (and `rIdx`) contain `nq` (and `nr`) coordinate points for the
     // current (and chopped) polygons.
-    var nq = 4, nr = 0,
-        buffer = new Array( 16 ),
-        // `qIdx` indexes inside `p`.
-        q = p,
-        qIdx = 0,
-        // `rIdx` indexes inside `r`.
-        r = ret,
-        rIdx = 0,
-        z;
+    var nq = 4, nr = 0;
+    // `buffer` is cached in the outside closure.
+    // `qIdx` indexes inside `q`.
+    var q = p, qIdx = 0;
+    // `rIdx` indexes inside `r`.
+    var r = ret, rIdx = 0;
+    // `z` used for iterating.
+    var z;
 
     for ( var dir = 0; dir <= 1; ++dir ) {
       // Direction notation: `xy[0]` = x axis, `xy[1]` = y axis.
@@ -81,9 +85,9 @@
         // Chop `q` along the line `xy[dir] = sign * h[dir]`.
 
         // `pqIdx` indexes inside `p`.
-        var pqIdx = qIdx,
-            // `prIdx` indexes inside `r`.
-            prIdx = rIdx;
+        var pqIdx = qIdx;
+        // `prIdx` indexes inside `r`.
+        var prIdx = rIdx;
         nr = 0;
         for ( var i = nq; i > 0; --i ) {
           // Go through all points in `q` and all lines between adjacent points.
@@ -147,6 +151,7 @@
         nq = nr;
       }
     }
+
     // done:
     if ( q !== ret || qIdx !== 0 ) {
       for ( z = 0; z < nr * 2; ++z ) {
@@ -156,6 +161,8 @@
     return nr;
   };
 
+  var cullPoints2Arr = new Float64Array( 8 );
+  var avail = new Uint8Array(8);
   var cullPoints2 = function( n, p, m, i0, iret ) {
     var iretIdx = 0;
     // Compute the centroid of the polygon in `cx,cy`.
@@ -188,14 +195,13 @@
     }
 
     // Compute the angle of each point w.r.t. the centroid.
-    //     new Array( 8 );
-    var A = [ 0, 0, 0, 0, 0, 0, 0, 0 ];
+    var A = cullPoints2Arr;
     for ( i = 0; i < n; ++i ) {
       A[i] = Math.atan2( p[ i * 2 + 1 ] - cy, p[ i * 2 ] - cx );
     }
 
     // Search for points that have angles closest to `A[i0] + i*(2*pi/m)`.
-    var avail = new Array( 8 );
+    // `avail` is cached in the outside closure.
     for ( i = 0; i < n; ++i ) {
       avail[i] = 1;
     }
@@ -228,7 +234,6 @@
 
   var tmpBBp = Bump.Vector3.create();
   var tmpBBpp = Bump.Vector3.create();
-  var tmpBBnormalC = Bump.Vector3.create();
   var tmpBBpa = Bump.Vector3.create();
   var tmpBBpb = Bump.Vector3.create();
   var tmpBBua = Bump.Vector3.create();
@@ -243,28 +248,86 @@
   var tmpBBVec1 = Bump.Vector3.create();
   var tmpBBVec2 = Bump.Vector3.create();
 
+  var TST1 = function( expr1, expr2, normMatrix, normIndex, cc ) {
+    s2 = Math.abs( expr1 ) - expr2;
+    if ( s2 > 0 ) { return 0; }
+    if ( s2 > s ) {
+      s = s2;
+      normalR.matrix = normMatrix;
+      normalR.index = normIndex;
+      invert_normal = expr1 < 0;
+      code = cc;
+    }
+  };
+
+  var TST2 = function( expr1, expr2, n1, n2, n3, cc ) {
+    s2 = Math.abs( expr1 ) - expr2;
+    if ( s2 > Bump.SIMD_EPSILON ) { return 0; }
+    l = Math.sqrt( n1 * n1 + n2 * n2 + n3 * n3 );
+    if ( l > Bump.SIMD_EPSILON ) {
+      s2 /= l;
+      if ( s2 * fudge_factor > s ) {
+        s = s2;
+        normalR.matrix = null;
+        normalC.x = n1 / l;
+        normalC.y = n2 / l;
+        normalC.z = n3 / l;
+        invert_normal = expr1 < 0;
+        code = cc;
+      }
+    }
+  };
+
+  var A     = new Float64Array(3);
+  var B     = new Float64Array(3);
+  var quad  = new Float64Array(8);
+  var rect  = new Float64Array(2);
+  var ret   = new Float64Array(16);
+  var point = new Float64Array(24);
+  var dep   = new Float64Array(8);
+  var iret  = new Float64Array(8);
+
+  var fudge_factor, s, s2, l, invert_normal, code;
+  var normalC = Bump.Vector3.create();
+  var normalR = { matrix: null, index: 0 };
+
+  // Uses the following temporary variables:
+  //   - `tmpNumRef3`
+  //   - `tmpNumRef4`
   var dBoxBox2 = function(
     p1, R1, side1,
     p2, R2, side2,
     normal, depth, return_code,
     maxc, contact, skip, output
   ) {
-    var fudge_factor = 1.05,
-        p = tmpBBp,
-        pp = tmpBBpp.setValue( 0, 0, 0 ),
-        normalC = tmpBBnormalC.setValue( 0, 0, 0 ),
-        normalR = { matrix: null, index: 0 },
-        A = [ 0, 0, 0 ],
-        B = [ 0, 0, 0 ],
-        R11 = 0, R12 = 0, R13 = 0, R21 = 0, R22 = 0, R23 = 0, R31 = 0, R32 = 0, R33 = 0,
-        Q11 = 0, Q12 = 0, Q13 = 0, Q21 = 0, Q22 = 0, Q23 = 0, Q31 = 0, Q32 = 0, Q33 = 0,
-        s = 0, s2 = 0, l = 0,
-        i = 0, j = 0, invert_normal = false, code = 0,
-        pa, pb, tmp;
+    // `fudge_factor` is cached in the outside closure;
+    fudge_factor = 1.05;
+
+    var p = tmpBBp;
+    var pp = tmpBBpp.setValue( 0, 0, 0 );
+
+    // `normalC` is cached in the outside closure;
+    normalC.setValue( 0, 0, 0 );
+    // `normalR` is cached in the outside closure.
+    normalR.matrix = null; normalR.index = 0;
+    // `A` and `B` are cached in the outside closure.
+
+    var R11 = 0, R12 = 0, R13 = 0, R21 = 0, R22 = 0, R23 = 0, R31 = 0, R32 = 0, R33 = 0;
+    var Q11 = 0, Q12 = 0, Q13 = 0, Q21 = 0, Q22 = 0, Q23 = 0, Q31 = 0, Q32 = 0, Q33 = 0;
+
+    // `s`, `s2`, and `l` are cached in the outside closure.
+    s = 0; s2 = 0; l = 0;
+
+    var i = 0, j = 0;
+
+    // `invert_normal` and `code` are cached in the outside closure.
+    invert_normal = false; code = 0;
+
+    var pa, pb, tmp;
 
     // Get vector from centers of box 1 to box 2, relative to box 1.
     p = p2.subtract( p1, p );
-    dMULTIPLY1_331( pp, R1, p );             // get pp = p relative to body 1
+    dMULTIPLY1_331( pp, R1, p ); // get pp = p relative to body 1
 
     // get side lengths / 2
     A[0] = side1[0] * 0.5;
@@ -283,14 +346,6 @@
     Q21 = Math.abs( R21 ); Q22 = Math.abs( R22 ); Q23 = Math.abs( R23 );
     Q31 = Math.abs( R31 ); Q32 = Math.abs( R32 ); Q33 = Math.abs( R33 );
 
-    // console.log( 'p1 = (' + p1.x + ', ' + p1.y + ', ' + p1.z + ')' );
-    // console.log( 'R1 = [' + [ R1[0], R1[1], R1[2], R1[3], R1[4], R1[5], R1[6], R1[7], R1[8], R1[9], R1[10], R1[11] ] + ']' );
-    // console.log( 'side1 = (' + side1.x + ', ' + side1.y + ', ' + side1.z + ')' );
-    // console.log( 'p2 = (' + p2.x + ', ' + p2.y + ', ' + p2.z + ')' );
-    // console.log( 'R2 = [' + [ R2[0], R2[1], R2[2], R2[3], R2[4], R2[5], R2[6], R2[7], R2[8], R2[9], R2[10], R2[11] ] + ']' );
-    // console.log( 'pp = (' + pp.x + ', ' + pp.y + ', ' + pp.z + ')' );
-    // console.log( 'Q = [' + [ Q11, Q12, Q13, Q21, Q22, Q23, Q31, Q32, Q33 ] + ']' );
-
     // For all 15 possible separating axes:
     //
     // - see if the axis separates the boxes. if so, return 0.
@@ -303,17 +358,9 @@
     // `null` and `normalC` is set to a vector relative to body 1.
     // `invert_normal` is `true` if the sign of the normal should be flipped.
 
-    var TST = function( expr1, expr2, normMatrix, normIndex, cc ) {
-      s2 = Math.abs( expr1 ) - expr2;
-      if ( s2 > 0 ) { return 0; }
-      if ( s2 > s ) {
-        s = s2;
-        normalR.matrix = normMatrix;
-        normalR.index = normIndex;
-        invert_normal = expr1 < 0;
-        code = cc;
-      }
-    };
+    // !!!: TST is redefined in the outside closure so that it doesn't need
+    // to be allocated each time dBoxBox2 is called.
+    var TST = TST1;
 
     s = -Infinity;
     invert_normal = false;
@@ -339,24 +386,10 @@
 
     // Note: cross product axes need to be scaled when s is computed.
     // normal (n1, n2, n3) is relative to box 1.
-    TST = function( expr1, expr2, n1, n2, n3, cc ) {
-      s2 = Math.abs( expr1 ) - expr2;
-      if ( s2 > Bump.SIMD_EPSILON ) { return 0; }
-      l = Math.sqrt( n1 * n1 + n2 * n2 + n3 * n3 );
-      if ( l > Bump.SIMD_EPSILON ) {
-        s2 /= l;
-        if ( s2 * fudge_factor > s ) {
-          s = s2;
-          normalR.matrix = null;
-          normalC.x = n1 / l;
-          normalC.y = n2 / l;
-          normalC.z = n3 / l;
-          invert_normal = expr1 < 0;
-          code = cc;
-        }
-      }
-    };
-
+    //
+    // !!!: TST is redefined in the outside closure so that it doesn't need
+    // to be allocated each time dBoxBox2 is called.
+    TST = TST2;
     var fudge2 = 1.0e-5;
 
     Q11 += fudge2;
@@ -442,9 +475,9 @@
         pb.z += sign * B[j] * R1[ 8 + j ];
       }
 
-      var alpha = { value: 0 }, beta = { value: 0 },
-          ua = tmpBBua.setValue( 0, 0, 0 ),
-          ub = tmpBBub.setValue( 0, 0, 0 );
+      var alpha = tmpNumRef3, beta = tmpNumRef4;
+      var ua = tmpBBua.setValue( 0, 0, 0 );
+      var ub = tmpBBub.setValue( 0, 0, 0 );
 
       tmp = ~~(( code - 7 ) / 3);
       ua.x = R1[ tmp     ];
@@ -571,8 +604,8 @@
     // Find the four corners of the incident face, in reference-face coordinates.
 
     // `quad` is the 2D coordinate of incident face (x,y pairs).
-    var quad = new Array( 8 ),
-        c1, c2, m11, m12, m21, m22;
+    // `quad` is cached in the outside closure.
+    var c1, c2, m11, m12, m21, m22;
     c1 = dDOT14( center, Ra, code1 );
     c2 = dDOT14( center, Ra, code2 );
     // optimize this? - we have already computed this data above, but it is not
@@ -583,10 +616,10 @@
     m21 = dDOT44( Ra, code2, Rb, a1 );
     m22 = dDOT44( Ra, code2, Rb, a2 );
 
-    var k1 = m11 * Sb[ a1 ],
-        k2 = m21 * Sb[ a1 ],
-        k3 = m12 * Sb[ a2 ],
-        k4 = m22 * Sb[ a2 ];
+    var k1 = m11 * Sb[ a1 ];
+    var k2 = m21 * Sb[ a1 ];
+    var k3 = m12 * Sb[ a2 ];
+    var k4 = m22 * Sb[ a2 ];
     quad[0] = c1 - k1 - k3;
     quad[1] = c2 - k2 - k4;
     quad[2] = c1 - k1 + k3;
@@ -597,13 +630,13 @@
     quad[7] = c2 + k2 - k4;
 
     // find the size of the reference face
-    var rect = [ 0, 0 ];
+    // `rect` is cached in the outside closure.
     rect[0] = Sa[ code1 ];
     rect[1] = Sa[ code2 ];
 
     // intersect the incident and reference faces
-    var ret = new Array( 16 ),
-        n = intersectRectQuad2( rect, quad, ret );
+    // `ret` is cached in the outside closure.
+    var n = intersectRectQuad2( rect, quad, ret );
 
     if ( n < 1 ) {
       // This should never happen.
@@ -617,10 +650,10 @@
     // the `ret` array as necessary so that `point` and `ret` correspond.
 
     // Penetrating contact points.
-    var point = new Array( 3 * 8 );
+    // `point` is cached in the outside closure.
     // Depths for those points.
-    var dep = new Array( 8 ),
-        det1 = 1 / ( m11 * m22 - m12 * m21 );
+    // `dep` is cached in the outside closure.
+    var det1 = 1 / ( m11 * m22 - m12 * m21 );
     m11 *= det1;
     m12 *= det1;
     m21 *= det1;
@@ -690,7 +723,7 @@
         }
       }
 
-      var iret = new Array( 8 );
+      // `iret` is cached in the outside closure.
       cullPoints2( cnum, ret, maxc, i1, iret );
 
       for ( j = 0; j < maxc; ++j ) {
@@ -715,6 +748,8 @@
     return cnum;
   };
 
+  var tmpDMat31 = dMatrix3.create();
+  var tmpDMat32 = dMatrix3.create();
   Bump.BoxBoxDetector = Bump.type({
     parent: Bump.DiscreteCollisionDetectorInterface,
 
@@ -745,31 +780,66 @@
         this._super();
       },
 
+      // Uses the following temporary variables:
+      //   - `tmpDMat31`
+      //   - `tmpDMat32`
+      //   - `tmpNumRef1`
+      //   - `tmpNumRef2`
+      //   - `tmpNumRef3` ← `dBoxBox2`
+      //   - `tmpNumRef4` ← `dBoxBox2`
       getClosestPoints: function( input, output, debugDraw, swapResults ) {
-        var transformA = input.transformA,
-            transformB = input.transformB;
+        var transformA = input.transformA;
+        var transformB = input.transformB;
 
-        var skip = 0,
-            contact = null;
+        var skip = 0;
+        var contact = null;
 
-        var R1 = dMatrix3.create(),
-            R2 = dMatrix3.create();
+        var R1 = tmpDMat31;
+        var R2 = tmpDMat32;
 
-        for ( var j = 0; j < 3; ++j ) {
-          R1[ 0 + 4 * j ] = transformA.basis[j].x;
-          R2[ 0 + 4 * j ] = transformB.basis[j].x;
+        // !!!: Unrolled loop for direct access in Matrix3x3
+        // for ( var j = 0; j < 3; ++j ) {
+        //   R1[ 0 + 4 * j ] = transformA.basis[j].x;
+        //   R2[ 0 + 4 * j ] = transformB.basis[j].x;
+        //
+        //   R1[ 1 + 4 * j ] = transformA.basis[j].y;
+        //   R2[ 1 + 4 * j ] = transformB.basis[j].y;
+        //
+        //   R1[ 2 + 4 * j ] = transformA.basis[j].z;
+        //   R2[ 2 + 4 * j ] = transformB.basis[j].z;
+        // }
 
-          R1[ 1 + 4 * j ] = transformA.basis[j].y;
-          R2[ 1 + 4 * j ] = transformB.basis[j].y;
+        // j = 0
+        R1[ 0 ] = transformA.basis.el0.x;
+        R2[ 0 ] = transformB.basis.el0.x;
+        R1[ 1 ] = transformA.basis.el0.y;
+        R2[ 1 ] = transformB.basis.el0.y;
+        R1[ 2 ] = transformA.basis.el0.z;
+        R2[ 2 ] = transformB.basis.el0.z;
 
-          R1[ 2 + 4 * j ] = transformA.basis[j].z;
-          R2[ 2 + 4 * j ] = transformB.basis[j].z;
-        }
+        // j = 1
+        R1[ 4 ] = transformA.basis.el1.x;
+        R2[ 4 ] = transformB.basis.el1.x;
+        R1[ 5 ] = transformA.basis.el1.y;
+        R2[ 5 ] = transformB.basis.el1.y;
+        R1[ 6 ] = transformA.basis.el1.z;
+        R2[ 6 ] = transformB.basis.el1.z;
 
-        var normal      = tmpGCPVec1.setValue( 0, 0, 0 ),
-            depth       = { value: 0 },
-            return_code = { value: 0 },
-            maxc        = 4;
+        // j = 2
+        R1[ 8 ]  = transformA.basis.el2.x;
+        R2[ 8 ]  = transformB.basis.el2.x;
+        R1[ 9 ]  = transformA.basis.el2.y;
+        R2[ 9 ]  = transformB.basis.el2.y;
+        R1[ 10 ] = transformA.basis.el2.z;
+        R2[ 10 ] = transformB.basis.el2.z;
+
+        var normal = tmpGCPVec1.setValue( 0, 0, 0 );
+        var depth = tmpNumRef1;
+        var return_code = tmpNumRef2;
+        var maxc = 4;
+
+        depth.value = 0;
+        return_code.value = 0;
 
         var num = dBoxBox2(
           transformA.origin,
@@ -782,7 +852,6 @@
           maxc, contact, skip,
           output
         );
-        // console.log( num );
       }
 
     }
