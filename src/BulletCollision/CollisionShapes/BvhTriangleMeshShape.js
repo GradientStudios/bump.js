@@ -155,7 +155,16 @@
             )
         );
 
-        var gfxbase = new GfxbaseType( indexbase.buffer, nodeTriangleIndex * indexstride );
+        // var gfxbase = new GfxbaseType( indexbase.buffer, nodeTriangleIndex * indexstride );
+
+        // !!!: Cache indexbase
+        var offset = nodeTriangleIndex * indexstride;
+        var cache = indexbase.buffer.__cache;
+        if ( !cache[ offset ] ) {
+          cache[ offset ] = new GfxbaseType( indexbase.buffer, offset );
+        }
+        var gfxbase = cache[ offset ];
+
         Bump.Assert( indicestype === PHY_INTEGER ||
                      indicestype === PHY_SHORT   ||
                      indicestype === PHY_UCHAR   );
@@ -166,7 +175,15 @@
 
           var graphicsbase;
           if ( type === PHY_FLOAT ) {
-            graphicsbase = new Float32Array( vertexbase.buffer, graphicsindex * stride );
+            // graphicsbase = new Float32Array( vertexbase.buffer, graphicsindex * stride );
+
+            // !!!: Cache vertexbase
+            offset = graphicsindex * stride;
+            cache = vertexbase.buffer.__cache;
+            if ( !cache[ offset ] ) {
+              cache[ offset ] = new Float32Array( vertexbase.buffer, offset );
+            }
+            graphicsbase = cache[ offset ];
 
             m_triangle[j] = Bump.Vector3.create(
               graphicsbase[0] * meshScaling.x,
@@ -174,7 +191,15 @@
               graphicsbase[2] * meshScaling.z
             );
           } else {
-            graphicsbase = new Float64Array( vertexbase.buffer, graphicsindex * stride );
+            // graphicsbase = new Float64Array( vertexbase.buffer, graphicsindex * stride );
+
+            // !!!: Cache vertexbase
+            offset = graphicsindex * stride;
+            cache = vertexbase.buffer.__cache;
+            if ( !cache[ offset ] ) {
+              cache[ offset ] = new Float64Array( vertexbase.buffer, offset );
+            }
+            graphicsbase = cache[ offset ];
 
             m_triangle[j] = Bump.Vector3.create(
               graphicsbase[0] * meshScaling.x,
