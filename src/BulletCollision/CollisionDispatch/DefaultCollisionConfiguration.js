@@ -89,6 +89,8 @@
       this.swappedCompoundCreateFunc = null;
       this.emptyCreateFunc = null;
       this.sphereSphereCF = null;
+      this.sphereBoxCF = null;
+      this.boxSphereCF = null;
 
       this.boxBoxCF = null;
       this.sphereTriangleCF = null;
@@ -122,6 +124,13 @@
 
       if ( Bump.SphereSphereCollisionAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
         this.sphereSphereCF = Bump.SphereSphereCollisionAlgorithm.CreateFunc.create();
+      }
+
+      if ( Bump.SphereBoxCollisionAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
+        this.sphereBoxCF = Bump.SphereBoxCollisionAlgorithm.CreateFunc.create();
+        this.sphereBoxCF.swapped = false;
+        this.boxSphereCF = Bump.SphereBoxCollisionAlgorithm.CreateFunc.create();
+        this.boxSphereCF.swapped = true;
       }
 
       if ( Bump.SphereTriangleCollisionAlgorithm || !Bump.INCOMPLETE_IMPLEMENTATION ) {
@@ -236,6 +245,14 @@
       getCollisionAlgorithmCreateFunc: function( proxyType0, proxyType1 ) {
         if ( ( proxyType0 === Bump.BroadphaseNativeTypes.SPHERE_SHAPE_PROXYTYPE ) && ( proxyType1 === Bump.BroadphaseNativeTypes.SPHERE_SHAPE_PROXYTYPE ) ) {
           return this.sphereSphereCF;
+        }
+
+        if ( ( proxyType0 === Bump.BroadphaseNativeTypes.SPHERE_SHAPE_PROXYTYPE ) && ( proxyType1 === Bump.BroadphaseNativeTypes.BOX_SHAPE_PROXYTYPE ) ) {
+          return this.sphereBoxCF;
+        }
+
+        if ( ( proxyType0 === Bump.BroadphaseNativeTypes.BOX_SHAPE_PROXYTYPE ) && ( proxyType1 === Bump.BroadphaseNativeTypes.SPHERE_SHAPE_PROXYTYPE ) ) {
+          return this.boxSphereCF;
         }
 
         if ( ( proxyType0 === Bump.BroadphaseNativeTypes.SPHERE_SHAPE_PROXYTYPE ) && ( proxyType1 === Bump.BroadphaseNativeTypes.TRIANGLE_SHAPE_PROXYTYPE ) ) {
