@@ -1,14 +1,17 @@
 // load: bump.js
+// load: LinearMath/Vector3.js
+// load: LinearMath/Transform.js
+// load: BulletCollision/BroadphaseCollision/CollisionAlgorithm.js
 // load: BulletCollision/CollisionShapes/TriangleCallback.js
+// load: BulletCollision/CollisionShapes/TriangleShape.js
 // load: BulletCollision/CollisionDispatch/ActivatingCollisionAlgorithm.js
 // load: BulletCollision/CollisionDispatch/CollisionAlgorithmCreateFunc.js
 
-// run: LinearMath/Vector3.js
-// run: LinearMath/Transform.js
-// run: BulletCollision/BroadphaseCollision/CollisionAlgorithm.js
-// run: BulletCollision/CollisionShapes/TriangleShape.js
-
 (function( window, Bump ) {
+  var tmpV1 = Bump.Vector3.create();
+  var tmpT1 = Bump.Transform.create();
+  var tmpCollisionAlgorithmConstructionInfo = Bump.CollisionAlgorithmConstructionInfo.create();
+  var tmpTriangleShape = Bump.TriangleShape.create();
 
   Bump.ConvexTriangleCallback = Bump.type({
     parent: Bump.TriangleCallback,
@@ -42,18 +45,23 @@
         this.dispatcher.releaseManifold( this.manifoldPtr );
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      // - `tmpM1`
       setTimeStepAndCounters: function( collisionMarginTriangle, dispatchInfo, resultOut ) {
         this.dispatchInfoPtr = dispatchInfo;
         this.collisionMarginTriangle = collisionMarginTriangle;
         this.resultOut = resultOut;
 
         // recalc aabbs
-        var convexInTriangleSpace = Bump.Transform.create();
-        this.triBody.getWorldTransform().inverse().multiplyTransform( this.convexBody.getWorldTransform(), convexInTriangleSpace );
-        var convexShape = this.convexBody.getCollisionShape();
+        var convexInTriangleSpace; // btTransform
+        convexInTriangleSpace = this.triBody.worldTransform.inverse( tmpT1 )
+          .multiplyTransform( this.convexBody.worldTransform, tmpT1 );
+        var convexShape = this.convexBody.collisionShape;
         convexShape.getAabb( convexInTriangleSpace, this.aabbMin, this.aabbMax );
         var extraMargin = collisionMarginTriangle;
-        var extra = Bump.Vector3.create( extraMargin, extraMargin, extraMargin );
+        var extra = tmpV1.setValue( extraMargin, extraMargin, extraMargin );
 
         this.aabbMax.addSelf( extra );
         this.aabbMin.subtractSelf( extra );
@@ -65,13 +73,14 @@
         var m_resultOut = this.resultOut;
 
         // aabb filter is already applied!
-        var ci = Bump.CollisionAlgorithmConstructionInfo.create();
+        var ci = tmpCollisionAlgorithmConstructionInfo;
+        ci.manifold    = null;
         ci.dispatcher1 = this.dispatcher;
 
         var ob = m_triBody;
 
         if ( m_convexBody.getCollisionShape().isConvex() ) {
-          var tm = Bump.TriangleShape.create( triangle[0], triangle[1], triangle[2] );
+          var tm = tmpTriangleShape.set( triangle[0], triangle[1], triangle[2] );
           tm.setMargin( this.collisionMarginTriangle );
 
           var tmpShape = ob.getCollisionShape();
@@ -121,6 +130,10 @@
     },
 
     members: {
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1` ← `setTimeStepAndCounters`
+      // - `tmpM1` ← `setTimeStepAndCounters`
       processCollision: function( body0, body1, dispatchInfo, resultOut ) {
         var m_btConvexTriangleCallback = this.btConvexTriangleCallback;
 
