@@ -2,7 +2,7 @@
 
 (function() {
   var stats = new Stats();
-  // stats.setMode(1);
+  stats.setMode( 1 );
 
   // Align top-left
   stats.domElement.style.position = 'absolute';
