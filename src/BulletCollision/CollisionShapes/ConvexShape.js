@@ -5,10 +5,10 @@
 // run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
 
 (function( window, Bump ) {
-  var EPSILON = Math.pow( 2, -52 ),
-      tmpV1 = Bump.Vector3.create(),
-      tmpV2 = Bump.Vector3.create(),
-      tmpV3 = Bump.Vector3.create();
+  var EPSILON = Math.pow( 2, -52 );
+  var tmpV1 = Bump.Vector3.create();
+  var tmpV2 = Bump.Vector3.create();
+  var tmpV3 = Bump.Vector3.create();
 
   Bump.ConvexShape = Bump.type({
     parent: Bump.CollisionShape,
@@ -19,18 +19,18 @@
 
     members: {
       clone: function( dest ) {
-        dest = dest || Bump.ConvexShape.create();
+        if ( !dest ) { dest = Bump.ConvexShape.create(); }
         return this._super( dest );
       },
 
       localGetSupportVertexWithoutMarginNonVirtual: function( localDir, dest ) {
-        dest = dest || Bump.Vector3.create();
+        if ( !dest ) { dest = Bump.Vector3.create(); }
 
         var halfExtents, halfHeight, radius, points, numPoints;
 
         switch ( this.shapeType ) {
         case Bump.BroadphaseNativeTypes.SPHERE_SHAPE_PROXYTYPE:
-            return dest.setValue( 0, 0, 0 );
+          return dest.setValue( 0, 0, 0 );
 
         case Bump.BroadphaseNativeTypes.BOX_SHAPE_PROXYTYPE:
           var convexShape = this;
@@ -184,9 +184,9 @@
       // - `tmpV1`
       // - `tmpV2`
       localGetSupportVertexNonVirtual: function( localDir, dest ) {
-        dest = dest || Bump.Vector3.create();
+        if ( !dest ) { dest = Bump.Vector3.create(); }
 
-        var localDirNorm = localDir.clone( tmpV1 );
+        var localDirNorm = tmpV1.assign( localDir );
         if ( localDirNorm.length2() < EPSILON * EPSILON ) {
           localDirNorm.setValue( -1, -1, -1 );
         }

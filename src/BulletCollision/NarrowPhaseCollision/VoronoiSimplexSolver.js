@@ -3,12 +3,12 @@
 // run: LinearMath/Vector3.js
 
 (function( window, Bump ) {
-  var VORONOI_SIMPLEX_MAX_VERTS = 5,
-      VORONOI_DEFAULT_EQUAL_VERTEX_THRESHOLD = 0.0001,
-      VERTA = 0,
-      VERTB = 1,
-      VERTC = 2,
-      VERTD = 3;
+  var VORONOI_SIMPLEX_MAX_VERTS = 5;
+  var VORONOI_DEFAULT_EQUAL_VERTEX_THRESHOLD = 0.0001;
+  var VERTA = 0;
+  var VERTB = 1;
+  var VERTC = 2;
+  var VERTD = 3;
 
   Bump.UsageBitfield = Bump.type({
     init: function UsageBitfield() {
@@ -28,7 +28,7 @@
 
     members: {
       clone: function( dest ) {
-        dest = dest || Bump.UsageBitfield.create();
+        if ( !dest ) { dest = Bump.UsageBitfield.create(); }
 
         dest.usedVertexA = this.usedVertexA;
         dest.usedVertexB = this.usedVertexB;
@@ -78,7 +78,7 @@
 
     members: {
       clone: function( dest ) {
-        dest = dest || Bump.SubSimplexClosestResult.create();
+        if ( !dest ) { dest = Bump.SubSimplexClosestResult.create(); }
 
         dest.closestPointOnSimplex.assign( this.closestPointOnSimplex );
         dest.usedVertices.assign( this.usedVertices );
@@ -108,10 +108,10 @@
       },
 
       isValid: function() {
-        var valid = ( ( this.barycentricCoords[0] >= 0 ) &&
-                      ( this.barycentricCoords[1] >= 0 ) &&
-                      ( this.barycentricCoords[2] >= 0 ) &&
-                      ( this.barycentricCoords[3] >= 0 ) );
+        var valid = (( this.barycentricCoords[0] >= 0 ) &&
+                     ( this.barycentricCoords[1] >= 0 ) &&
+                     ( this.barycentricCoords[2] >= 0 ) &&
+                     ( this.barycentricCoords[3] >= 0 ));
 
         return valid;
       },
@@ -212,14 +212,14 @@
           case 2:
             tmpV1 = Bump.Vector3.create();
 
-            var from = this.simplexVectorW[0],
-                to = this.simplexVectorW[1],
-                nearest = Bump.Vector3.create();
+            var from = this.simplexVectorW[0];
+            var to = this.simplexVectorW[1];
+            var nearest = Bump.Vector3.create();
 
             p = Bump.Vector3.create( 0, 0, 0 );
-            var diff = p.subtract( from ),
-                v = to.subtract( from ),
-                t = v.dot( diff );
+            var diff = p.subtract( from );
+            var v = to.subtract( from );
+            var t = v.dot( diff );
 
             if ( t > 0 ) {
               var dotVV = v.dot( v );
@@ -350,10 +350,10 @@
         finalResult.usedVertices.usedVertexC = true;
         finalResult.usedVertices.usedVertexD = true;
 
-        var pointOutsideABC = this.pointOutsideOfPlane( p, a, b, c, d ),
-            pointOutsideACD = this.pointOutsideOfPlane( p, a, c, d, b ),
-            pointOutsideADB = this.pointOutsideOfPlane( p, a, d, b, c ),
-            pointOutsideBDC = this.pointOutsideOfPlane( p, b, d, c, a );
+        var pointOutsideABC = this.pointOutsideOfPlane( p, a, b, c, d );
+        var pointOutsideACD = this.pointOutsideOfPlane( p, a, c, d, b );
+        var pointOutsideADB = this.pointOutsideOfPlane( p, a, d, b, c );
+        var pointOutsideBDC = this.pointOutsideOfPlane( p, b, d, c, a );
 
         if ( pointOutsideABC < 0 || pointOutsideACD < 0 || pointOutsideADB < 0 || pointOutsideBDC < 0 ) {
           finalResult.degenerate = true;
@@ -364,9 +364,9 @@
           return false;
         }
 
-        var tmpV1 = Bump.Vector3.create(),
-            tmpV2 = Bump.Vector3.create(),
-            tmpV3 = Bump.Vector3.create();
+        var tmpV1 = Bump.Vector3.create();
+        var tmpV2 = Bump.Vector3.create();
+        var tmpV3 = Bump.Vector3.create();
 
         var q, sqDist, bestSqDist = Infinity;
         // If point outside face abc then compute closest point on abc
@@ -486,14 +486,14 @@
       },
 
       pointOutsideOfPlane: function( p, a, b, c, d ) {
-        var tmpV1 = Bump.Vector3.create(),
-            tmpV2 = Bump.Vector3.create();
+        var tmpV1 = Bump.Vector3.create();
+        var tmpV2 = Bump.Vector3.create();
 
         // `normal` uses `tmpV2`.
         var normal = b.subtract( a, tmpV1 ).cross( c.subtract( a, tmpV2 ), tmpV2 );
 
-        var signp = p.subtract( a, tmpV1 ).dot( normal ), // [AP AB AC]
-            signd = d.subtract( a, tmpV1 ).dot( normal ); // [AD AB AC]
+        var signp = p.subtract( a, tmpV1 ).dot( normal ); // [AP AB AC]
+        var signd = d.subtract( a, tmpV1 ).dot( normal ); // [AD AB AC]
 
         if ( signd * signd < ( 1e-8 * 1e-8 ) ) {
           return -1;
@@ -507,14 +507,14 @@
 
         result.usedVertices.reset();
 
-        var tmpV1 = Bump.Vector3.create(),
-            ab = b.subtract( a ),
-            ac = c.subtract( a );
+        var tmpV1 = Bump.Vector3.create();
+        var ab = b.subtract( a );
+        var ac = c.subtract( a );
 
         // Check if P in vertex region outside A.
-        var ap = p.subtract( a, tmpV1 ),
-            d1 = ab.dot( ap ),
-            d2 = ac.dot( ap );
+        var ap = p.subtract( a, tmpV1 );
+        var d1 = ab.dot( ap );
+        var d2 = ac.dot( ap );
         if ( d1 <= 0 && d2 <= 0 ) {
           result.closestPointOnSimplex.assign( a );
           result.usedVertices.usedVertexA = true;
@@ -523,9 +523,9 @@
         }
 
         // Check if P in vertex region outside B.
-        var bp = p.subtract( b, tmpV1 ),
-            d3 = ab.dot( bp ),
-            d4 = ac.dot( bp );
+        var bp = p.subtract( b, tmpV1 );
+        var d3 = ab.dot( bp );
+        var d4 = ac.dot( bp );
         if ( d3 >= 0 && d4 <= d3 ) {
           result.closestPointOnSimplex.assign( b );
           result.usedVertices.usedVertexB = true;
@@ -549,9 +549,9 @@
         }
 
         // Check if P in vertex region outside C.
-        var cp = p.subtract( c, tmpV1 ),
-            d5 = ab.dot( cp ),
-            d6 = ac.dot( cp );
+        var cp = p.subtract( c, tmpV1 );
+        var d5 = ab.dot( cp );
+        var d6 = ac.dot( cp );
         if ( d6 >= 0 && d5 <= d6 ) {
           result.closestPointOnSimplex.assign( c );
           result.usedVertices.usedVertexC = true;
@@ -668,8 +668,8 @@
       },
 
       inSimplex: function( w ) {
-        var found = false,
-            i, numverts = this.numVertices;
+        var found = false;
+        var i, numverts = this.numVertices;
 
         // `w` is in the current (reduced) simplex.
         for ( i = 0; i < numverts; ++i ) {
