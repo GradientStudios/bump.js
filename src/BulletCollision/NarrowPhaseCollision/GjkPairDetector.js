@@ -70,6 +70,51 @@
     },
 
     members: {
+      set: function( objectA, objectB ) {
+        // This could probably be improved in some way
+        var shapeTypeA, shapeTypeB, marginA, marginB, simplexSolver, penetrationDepthSolver;
+
+        if ( arguments.length === 4 ) {
+          shapeTypeA = objectA.getShapeType();
+          shapeTypeB = objectB.getShapeType();
+          marginA    = objectA.getMargin();
+          marginB    = objectB.getMargin();
+
+          simplexSolver          = arguments[2];
+          penetrationDepthSolver = arguments[3];
+        } else {
+          shapeTypeA             = arguments[2];
+          shapeTypeB             = arguments[3];
+          marginA                = arguments[4];
+          marginB                = arguments[5];
+          simplexSolver          = arguments[6];
+          penetrationDepthSolver = arguments[7];
+        }
+
+        // Initializer list
+        this.cachedSeparatingAxis.setValue( 0, 1, 0 );
+        this.penetrationDepthSolver = penetrationDepthSolver;
+        this.simplexSolver = simplexSolver;
+        this.minkowskiA = objectA;
+        this.minkowskiB = objectB;
+        this.shapeTypeA = shapeTypeA;
+        this.shapeTypeB = shapeTypeB;
+        this.marginA = marginA;
+        this.marginB = marginB;
+        this.ignoreMargin = false;
+        this.lastUsedMethod = -1;
+        this.catchDegeneracies = 1;
+        // End initializer list
+
+        // Default initializers
+        this.cachedSeparatingDistance = 0;
+        this.curIter = 0;
+        this.degenerateSimplex = 0;
+        // End default initializers
+
+        return this;
+      },
+
       // Uses the following temporary variables:
       //
       // - `tmpV1` ← `getClosestPointsNonVirtual`
