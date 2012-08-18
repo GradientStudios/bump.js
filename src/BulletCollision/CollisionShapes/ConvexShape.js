@@ -179,6 +179,10 @@
         return dest.setValue( 0, 0, 0 );
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      // - `tmpV2`
       localGetSupportVertexNonVirtual: function( localDir, dest ) {
         dest = dest || Bump.Vector3.create();
 
@@ -228,6 +232,11 @@
         return 0;
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      // - `tmpV2`
+      // - `tmpV3`
       getAabbNonVirtual: function( t, aabbMin, aabbMax ) {
         var margin, center, extent;
 
@@ -304,6 +313,9 @@
         }
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
       project: function( trans, dir, minMax ) {
         // `dir * trans.getBasis();`
         var localAxis = trans.basis.vectorMultiply( dir, tmpV1 );
