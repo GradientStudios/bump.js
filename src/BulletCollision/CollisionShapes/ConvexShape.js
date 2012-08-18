@@ -23,6 +23,10 @@
         return this._super( dest );
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      // - `tmpV2`
       localGetSupportVertexWithoutMarginNonVirtual: function( localDir, dest ) {
         if ( !dest ) { dest = Bump.Vector3.create(); }
 
@@ -44,8 +48,8 @@
 
         case Bump.BroadphaseNativeTypes.TRIANGLE_SHAPE_PROXYTYPE:
           var triangleShape = this;
-          var dir = localDir.clone();
-          var dots = Bump.Vector3.create(
+          var dir = tmpV1.assign( localDir );
+          var dots = tmpV2.setValue(
             dir.dot( triangleShape.vertices10 ),
             dir.dot( triangleShape.vertices11 ),
             dir.dot( triangleShape.vertices12 )
