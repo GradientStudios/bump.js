@@ -1,9 +1,20 @@
 // load: bump.js
+// load: LinearMath/Vector3.js
+// load: LinearMath/Transform.js
 // load: BulletCollision/NarrowPhaseCollision/DiscreteCollisionDetectorInterface.js
 
-// run: LinearMath/Vector3.js
-
 (function( window, Bump ) {
+  var tmpV1 = Bump.Vector3.create();
+  var tmpV2 = Bump.Vector3.create();
+  var tmpV3 = Bump.Vector3.create();
+  var tmpV4 = Bump.Vector3.create();
+  var tmpV5 = Bump.Vector3.create();
+  var tmpV6 = Bump.Vector3.create();
+  var tmpV7 = Bump.Vector3.create();
+  var tmpV8 = Bump.Vector3.create();
+
+  var tmpT1 = Bump.Transform.create();
+  var tmpT2 = Bump.Transform.create();
 
   Bump.REL_ERROR2 = 1e-6;
 
@@ -59,6 +70,17 @@
     },
 
     members: {
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1` ← `getClosestPointsNonVirtual`
+      // - `tmpV2` ← `getClosestPointsNonVirtual`
+      // - `tmpV3` ← `getClosestPointsNonVirtual`
+      // - `tmpV4` ← `getClosestPointsNonVirtual`
+      // - `tmpV5` ← `getClosestPointsNonVirtual`
+      // - `tmpV6` ← `getClosestPointsNonVirtual`
+      // - `tmpV7` ← `getClosestPointsNonVirtual`
+      // - `tmpT1` ← `getClosestPointsNonVirtual`
+      // - `tmpT2` ← `getClosestPointsNonVirtual`
       getClosestPoints: function( input, output, debugDraw, swapResults ) {
         if ( arguments.length < 4 ) {
           swapResults = false;
@@ -67,6 +89,17 @@
         this.getClosestPointsNonVirtual( input, output, debugDraw );
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      // - `tmpV2`
+      // - `tmpV3`
+      // - `tmpV4`
+      // - `tmpV5`
+      // - `tmpV6`
+      // - `tmpV7`
+      // - `tmpT1`
+      // - `tmpT2`
       getClosestPointsNonVirtual: function( input, output, debugDraw ) {
         var m_penetrationDepthSolver = this.penetrationDepthSolver;
         var SIMD_EPSILON = Bump.SIMD_EPSILON;
@@ -78,12 +111,12 @@
         this.cachedSeparatingDistance = 0;
 
         var distance = 0;
-        var normalInB = Bump.Vector3.create( 0, 0, 0 );
-        var pointOnA = Bump.Vector3.create();
-        var pointOnB = Bump.Vector3.create();
-        var localTransA = input.transformA.clone();
-        var localTransB = input.transformB.clone();
-        var positionOffset = localTransA.origin.add( localTransB.origin ).multiplyScalar( 0.5 );
+        var normalInB = tmpV1.setValue( 0, 0, 0 );
+        var pointOnA = tmpV2;
+        var pointOnB = tmpV3;
+        var localTransA = tmpT1.assign( input.transformA );
+        var localTransB = tmpT2.assign( input.transformB );
+        var positionOffset = localTransA.origin.add( localTransB.origin, tmpV4 ).multiplyScalar( 0.5, tmpV4 );
         localTransA.origin.subtractSelf( positionOffset );
         localTransB.origin.subtractSelf( positionOffset );
 
@@ -119,21 +152,23 @@
         m_simplexSolver.reset();
 
         for ( ; ; ) {
-          var seperatingAxisInA = input.transformA.basis.vectorMultiply( m_cachedSeparatingAxis.negate() );
-          var seperatingAxisInB = input.transformB.basis.vectorMultiply( m_cachedSeparatingAxis );
+          var seperatingAxisInA = input.transformA.basis.vectorMultiply( m_cachedSeparatingAxis.negate( tmpV5 ), tmpV5 );
+          var seperatingAxisInB = input.transformB.basis.vectorMultiply( m_cachedSeparatingAxis, tmpV6 );
 
-          var pInA = m_minkowskiA.localGetSupportVertexWithoutMarginNonVirtual( seperatingAxisInA );
-          var qInB = m_minkowskiB.localGetSupportVertexWithoutMarginNonVirtual( seperatingAxisInB );
+          // !!!: tmpV5 and tmpV6 is no longer used, so use them in pInA/qInB.
+          var pInA = m_minkowskiA.localGetSupportVertexWithoutMarginNonVirtual( seperatingAxisInA, tmpV5 );
+          var qInB = m_minkowskiB.localGetSupportVertexWithoutMarginNonVirtual( seperatingAxisInB, tmpV6 );
 
-          var pWorld = localTransA.transform( pInA );
-          var qWorld = localTransB.transform( qInB );
+          // !!!: tmpV5 and tmpV6 is no longer used, so use them in [pq]World.
+          var pWorld = localTransA.transform( pInA, tmpV5 );
+          var qWorld = localTransB.transform( qInB, tmpV6 );
 
           if ( check2d ) {
             pWorld.z = 0;
             qWorld.z = 0;
           }
 
-          var w = pWorld.subtract( qWorld );
+          var w = pWorld.subtract( qWorld, tmpV7 );
           delta = m_cachedSeparatingAxis.dot( w );
 
           // potential exit, they don't overlap
@@ -167,7 +202,11 @@
 
           // add current vertex to simplex
           m_simplexSolver.addVertex( w, pWorld, qWorld );
-          var newCachedSeparatingAxis = Bump.Vector3.create( 0, 0, 0 );
+
+          // !!!: w, pWorld, and qWorld are no longer used, so we can reuse
+          // tmpV5, tmpV6, and tmpV7.
+
+          var newCachedSeparatingAxis = tmpV5.setValue( 0, 0, 0 );
 
           // calculate the closest point to the origin (update vector v)
           if ( !m_simplexSolver.closest( newCachedSeparatingAxis ) ) {
@@ -211,6 +250,8 @@
           }
         }
 
+        // !!!: tmpV5, tmpV6, tmpV7 fall out of scope.
+
         var lenSqr;
         if ( checkSimplex ) {
           m_simplexSolver.compute_points( pointOnA, pointOnB );
@@ -228,8 +269,8 @@
             var s = Math.sqrt( squaredDistance );
 
             Bump.Assert( s > 0 );
-            pointOnA.subtractSelf( m_cachedSeparatingAxis.multiplyScalar( marginA / s ) );
-            pointOnB.addSelf( m_cachedSeparatingAxis.multiplyScalar( marginB / s ) );
+            pointOnA.subtractSelf( m_cachedSeparatingAxis.multiplyScalar( marginA / s, tmpV5 ) );
+            pointOnB.addSelf( m_cachedSeparatingAxis.multiplyScalar( marginB / s, tmpV5 ) );
             distance = ( ( 1 / rlen ) - margin );
             isValid = true;
 
@@ -252,8 +293,8 @@
           // if there is no way to handle penetrations, bail out
           if ( m_penetrationDepthSolver ) {
             // Penetration depth case.
-            var tmpPointOnA = Bump.Vector3.create();
-            var tmpPointOnB = Bump.Vector3.create();
+            var tmpPointOnA = tmpV5;
+            var tmpPointOnB = tmpV6;
 
             ++Bump.gNumDeepPenetrationChecks;
             m_cachedSeparatingAxis.setZero();
@@ -268,7 +309,7 @@
 
             var distance2;
             if ( isValid2 ) {
-              var tmpNormalInB = tmpPointOnB.subtract( tmpPointOnA );
+              var tmpNormalInB = tmpPointOnB.subtract( tmpPointOnA, tmpV7 );
               lenSqr = tmpNormalInB.length2();
               if ( lenSqr <= ( SIMD_EPSILON * SIMD_EPSILON ) ) {
                 tmpNormalInB.assign( m_cachedSeparatingAxis );
@@ -277,7 +318,7 @@
 
               if ( lenSqr > ( SIMD_EPSILON * SIMD_EPSILON ) ) {
                 tmpNormalInB.divideScalarSelf( Math.sqrt( lenSqr ) );
-                distance2 = -(tmpPointOnA.subtract( tmpPointOnB ).length());
+                distance2 = -(tmpPointOnA.subtract( tmpPointOnB, tmpV8 ).length());
                 // only replace valid penetrations when the result is deeper (check)
                 if ( !isValid || ( distance2 < distance ) ) {
                   distance = distance2;
@@ -300,14 +341,14 @@
               // http://code.google.com/p/bullet/issues/detail?id=250
 
               if ( m_cachedSeparatingAxis.length2() > 0 ) {
-                distance2 = tmpPointOnA.subtract( tmpPointOnB ).length() - margin;
+                distance2 = tmpPointOnA.subtract( tmpPointOnB, tmpV7 ).length() - margin;
                 // only replace valid distances when the distance is less
                 if ( !isValid || ( distance2 < distance ) ) {
                   distance = distance2;
                   pointOnA.assign( tmpPointOnA );
                   pointOnB.assign( tmpPointOnB );
-                  pointOnA.subtractSelf( m_cachedSeparatingAxis.multiplyScalar( marginA ) );
-                  pointOnB.addSelf( m_cachedSeparatingAxis.multiplyScalar( marginB ) );
+                  pointOnA.subtractSelf( m_cachedSeparatingAxis.multiplyScalar( marginA, tmpV7 ) );
+                  pointOnB.addSelf( m_cachedSeparatingAxis.multiplyScalar( marginB, tmpV7 ) );
                   normalInB.assign( m_cachedSeparatingAxis );
                   normalInB.normalize();
                   isValid = true;
@@ -328,7 +369,7 @@
 
           output.addContactPoint(
             normalInB,
-            pointOnB.add( positionOffset ),
+            pointOnB.add( positionOffset, tmpV5 ),
             distance
           );
         }
