@@ -108,6 +108,8 @@
 
         resultOut.setPersistentManifold( this.manifoldPtr );
 
+        this.manifoldPtr.setBodies( sphereObjWrap, boxObjWrap );
+
         if ( this.getSphereDistance( boxObjWrap, pOnBox, normalOnSurfaceB, penetrationDepthRef, sphereCenter, radius, maxContactDistance ) )
         {
           /// report a contact. internally this will be kept persistent, and contact reduction is done
