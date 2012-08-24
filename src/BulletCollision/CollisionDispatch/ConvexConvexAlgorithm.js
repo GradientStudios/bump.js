@@ -283,11 +283,17 @@
       },
 
       calculateTimeOfImpact: Bump.notImplemented,
-      getAllContactManifolds: Bump.notImplemented,
+      // getAllContactManifolds: Bump.notImplemented,
       setLowLevelOfDetail: Bump.notImplemented,
 
       getManifold: function() {
         return this.manifoldPtr;
+      },
+
+      getAllContactManifolds: function( manifoldArray ) {
+        if ( this.manifoldPtr && this.ownManifold ) {
+          manifoldArray.push( this.manifoldPtr );
+        }
       }
 
     },
