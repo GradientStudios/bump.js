@@ -13,7 +13,7 @@ $(LOCAL_NODE_MODULES):
 	npm install
 
 setup: | $(LOCAL_NODE_MODULES)
-	$(if $(filter-out $(GRUNT_UGLIFY_VERSION),$(REQUIRED_UGLIFY_VERSION)), @cd $(GRUNT_PATH); npm install uglify-js@$(REQUIRED_UGLIFY_VERSION))
+#	$(if $(filter-out $(GRUNT_UGLIFY_VERSION),$(REQUIRED_UGLIFY_VERSION)), @cd $(GRUNT_PATH); npm install uglify-js@$(REQUIRED_UGLIFY_VERSION))
 
 build: | setup
 	@$(GRUNT) $(GRUNT_OPTS)
