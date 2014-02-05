@@ -118,21 +118,20 @@
 
         var i, vec;
         if ( this.use4componentVertices ) {
-          var m_4componentVertices = this._4componentVertices;
-
           if ( removeDuplicateVertices ) {
-            for ( i = 0; i < m_4componentVertices.length; ++i ) {
-              vec = tmpV1.assign( m_4componentVertices.at(i) );
+            for ( i = 0; i < this._4componentVertices.length; ++i ) {
+              vec = tmpV1.assign( this._4componentVertices.at(i) );
               if ( vec.subtract( vertex, tmpV1 ).length2() <= m_weldingThreshold ) {
                 return i;
               }
             }
           }
           ++this.indexedMeshes[0].numVertices;
-          m_4componentVertices.push( vertex );
-          this.indexedMeshes[0].vertexBase = m_4componentVertices.pointerAt(0);
+          this._4componentVertices.push( vertex );
+          this.indexedMeshes[0].vertexBase = this._4componentVertices.pointerAt(0);
+          this.indexedMeshes[0].vertexBase.buffer.__cache = {};
 
-          return m_4componentVertices.length - 1;
+          return this._4componentVertices.length - 1;
         }
 
         else {
@@ -165,6 +164,7 @@
         if ( this.use32bitIndices ) {
           this._32bitIndices.push( index );
           this.indexedMeshes[0].triangleIndexBase = this._32bitIndices.pointerAt(0);
+          this.indexedMeshes[0].triangleIndexBase.buffer.__cache = {};
         } else {
           this._16bitIndices.push_back( index );
           this.indexedMeshes[0].triangleIndexBase = this._16bitIndices;

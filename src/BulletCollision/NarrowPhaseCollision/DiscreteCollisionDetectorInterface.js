@@ -23,6 +23,18 @@
           this.transformB = Bump.Transform.create();
           this.maximumDistanceSquared = Infinity;
           this.stackAlloc = null;
+        },
+
+        members: {
+          reset: function() {
+            this.transformA.basis.setValue( 0, 0, 0, 0, 0, 0, 0, 0, 0 );
+            this.transformA.origin.setValue( 0, 0, 0 );
+            this.transformB.basis.setValue( 0, 0, 0, 0, 0, 0, 0, 0, 0 );
+            this.transformB.origin.setValue( 0, 0, 0 );
+            this.maximumDistanceSquared = Infinity;
+            this.stackAlloc = null;
+            return this;
+          }
         }
       })
     },

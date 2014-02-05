@@ -26,6 +26,19 @@
     },
 
     members: {
+      set: function( p0, p1, p2 ) {
+        this.userPointer = null;
+        this.localScaling.setValue( 1, 1, 1 );
+        this.implicitShapeDimensions.setValue( 0, 0, 0 );
+        this.collisionMargin = Bump.CONVEX_DISTANCE_MARGIN;
+        this.polyhedron = null;
+
+        this.vertices10.assign( p0 );
+        this.vertices11.assign( p1 );
+        this.vertices12.assign( p2 );
+        return this;
+      },
+
       getNumVertices: function() {
         return 3;
       },

@@ -1,10 +1,19 @@
 // load: bump.js
+// load: LinearMath/Vector3.js
 
-// run: LinearMath/Vector3.js
 // run: LinearMath/AlignedObjectArray.js
 // run: LinearMath/AabbUtil2.js
 
 (function( window, Bump ) {
+  var tmpV1 = Bump.Vector3.create();
+  var tmpV2 = Bump.Vector3.create();
+  var tmpV3 = Bump.Vector3.create();
+
+  // Used in reportAabbOverlappingNodex.
+  var rAONBuffer = new ArrayBuffer( 12 );
+  var rAONAabbMin = new Uint16Array( rAONBuffer, 0, 3 );
+  var rAONAabbMax = new Uint16Array( rAONBuffer, 6, 3 );
+
   // 10 gives the potential for 1024 parts, with at most 2^21 (2097152) (minus
   // one actually) triangles each (since the sign bit is reserved)
   Bump.MAX_NUM_PARTS_IN_BITS = 10;
@@ -19,12 +28,23 @@
 
       if ( arguments.length < 1 ) {
         buffer = new ArrayBuffer( 16 );
+        buffer.__cache = {};
       }
 
-      this.__view = new Uint8Array( buffer, byteOffset, 16 );
-      this.quantizedAabbMin = new Uint16Array( buffer, byteOffset, 3 );
-      this.quantizedAabbMax = new Uint16Array( buffer, byteOffset + 6, 3 );
-      this.escapeIndexOrTriangleIndex = new Int32Array( buffer, byteOffset + 12, 1 );
+      if ( !buffer.__cache[ byteOffset ] ) {
+        buffer.__cache[ byteOffset ] = {
+          a: new Uint8Array( buffer, byteOffset, 16 ),
+          b: new Uint16Array( buffer, byteOffset, 3 ),
+          c: new Uint16Array( buffer, byteOffset + 6, 3 ),
+          d: new Int32Array( buffer, byteOffset + 12, 1 )
+        };
+      }
+
+      var cache = buffer.__cache[ byteOffset ];
+      this.__view = cache.a;
+      this.quantizedAabbMin = cache.b;
+      this.quantizedAabbMax = cache.c;
+      this.escapeIndexOrTriangleIndex = cache.d;
     },
 
     members: {
@@ -129,9 +149,14 @@
 
       this.bvhAabbMin = Bump.Vector3.create( -Infinity, -Infinity, -Infinity );
       this.bvhAabbMax = Bump.Vector3.create(  Infinity,  Infinity,  Infinity );
+
+      this.__cacheRootNode = Bump.QuantizedBvhNode.createRef();
     },
 
     members: {
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1` ← `quantize`
       setInternalNodeAabbMin: function( nodeIndex, aabbMin ) {
         if ( this.useQuantization ) {
           this.quantize( this.quantizedContiguousNodes.at( nodeIndex ).quantizedAabbMin, aabbMin, false );
@@ -140,6 +165,9 @@
         }
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1` ← `quantize`
       setInternalNodeAabbMax: function( nodeIndex, aabbMax ) {
         if ( this.useQuantization ) {
           this.quantize( this.quantizedContiguousNodes.at( nodeIndex ).quantizedAabbMax, aabbMax, true );
@@ -172,6 +200,9 @@
         }
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1` ← `quantize`
       mergeInternalNodeAabb: function( nodeIndex, newAabbMin, newAabbMax ) {
         if ( this.useQuantization ) {
           var m_quantizedContiguousNodes = this.quantizedContiguousNodes;
@@ -230,6 +261,11 @@
         }
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1` ← `calcSplittingAxis`
+      // - `tmpV2` ← `calcSplittingAxis`
+      // - `tmpV3` ← `calcSplittingAxis`
       buildTree: function( startIndex, endIndex ) {
         var splitAxis, splitIndex, i;
         var numIndices = endIndex - startIndex;
@@ -287,25 +323,29 @@
         this.setInternalNodeEscapeIndex( internalNodeIndex, escapeIndex );
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      // - `tmpV2`
+      // - `tmpV3`
       calcSplittingAxis: function( startIndex, endIndex ) {
         var i;
 
-        var means = Bump.Vector3.create( 0, 0, 0 );
-        var variance = Bump.Vector3.create( 0, 0, 0 );
+        var means = tmpV1.setValue( 0, 0, 0 );
+        var variance = tmpV2.setValue( 0, 0, 0 );
         var numIndices = endIndex - startIndex;
 
         var center;
-        var tmpVec = Bump.Vector3.create( 0, 0, 0 );
         for ( i = startIndex; i < endIndex; ++i ) {
-          center = this.getAabbMax( i ).add( this.getAabbMin( i ), tmpVec ).multiplyScalar( 0.5, tmpVec );
+          center = this.getAabbMax( i ).add( this.getAabbMin( i ), tmpV3 ).multiplyScalar( 0.5, tmpV3 );
           means.addSelf( center );
         }
         means.multiplyScalarSelf( 1 / numIndices );
 
         for ( i = startIndex; i < endIndex; ++i ) {
-          center = this.getAabbMax( i ).add( this.getAabbMin( i ), tmpVec ).multiplyScalar( 0.5, tmpVec );
-          var diff2 = center.subtract( means, tmpVec );
-          diff2 = diff2.multiplyVector( diff2, tmpVec );
+          center = this.getAabbMax( i ).add( this.getAabbMin( i ), tmpV3 ).multiplyScalar( 0.5, tmpV3 );
+          var diff2 = center.subtract( means, tmpV3 );
+          diff2 = diff2.multiplyVector( diff2, tmpV3 );
           variance.addSelf( diff2 );
         }
         variance.multiplyScalarSelf( 1 / (numIndices - 1) );
@@ -376,7 +416,7 @@
         var walkIterations = 0;
         var subTreeSize = endNodeIndex - startNodeIndex;
 
-        var rootNode = Bump.QuantizedBvhNode.createRef();
+        var rootNode = this.__cacheRootNode;
         var rootNodeIndex = startNodeIndex;
         m_quantizedContiguousNodes.at( startNodeIndex, rootNode );
         var escapeIndex = 0;
@@ -436,15 +476,19 @@
 
       buildInternal: Bump.notImplemented,
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1` ← `quantizeWithClamp`
+      // - `tmpV2` ← `quantizeWithClamp`
       reportAabbOverlappingNodex: function( nodeCallback, aabbMin, aabbMax ) {
         // Either choose recursive traversal (walkTree)
         // or stackless (walkStacklessTree).
 
         if ( this.useQuantization ) {
           // quantize query AABB
-          var buffer = new ArrayBuffer( 12 );
-          var quantizedQueryAabbMin = new Uint16Array( buffer, 0, 3 );
-          var quantizedQueryAabbMax = new Uint16Array( buffer, 6, 3 );
+          // !!!: `quantizeWithClamp` will initialize the typed arrays.
+          var quantizedQueryAabbMin = rAONAabbMin;
+          var quantizedQueryAabbMax = rAONAabbMax;
           this.quantizeWithClamp( quantizedQueryAabbMin, aabbMin, false );
           this.quantizeWithClamp( quantizedQueryAabbMax, aabbMax, true  );
 
@@ -471,6 +515,9 @@
       reportRayOverlappingNodex: Bump.notImplemented,
       reportBoxCastOverlappingNodex: Bump.notImplemented,
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
       quantize: function( out, point, isMax ) {
         var m_bvhAabbMin = this.bvhAabbMin;
         var m_bvhAabbMax = this.bvhAabbMax;
@@ -485,7 +532,7 @@
         Bump.Assert( point.y >= m_bvhAabbMin.y );
         Bump.Assert( point.z >= m_bvhAabbMin.z );
 
-        var v = point.subtract( m_bvhAabbMin ).multiplyVector( this.bvhQuantization );
+        var v = point.subtract( m_bvhAabbMin, tmpV1 ).multiplyVector( this.bvhQuantization, tmpV1 );
         // Make sure rounding is done in a way that unQuantize(quantizeWithClamp(...))
         // is conservative. End-points always set the first bit, so that they
         // are sorted properly (so that neighbouring AABBs overlap properly).
@@ -507,10 +554,14 @@
         }
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1` ← `quantize`
+      // - `tmpV2`
       quantizeWithClamp: function( out, point2, isMax ) {
         Bump.Assert( this.useQuantization );
 
-        var clampedPoint = point2.clone();
+        var clampedPoint = tmpV2.assign( point2 );
         clampedPoint.setMax( this.bvhAabbMin );
         clampedPoint.setMin( this.bvhAabbMax );
 

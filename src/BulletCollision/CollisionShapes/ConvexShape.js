@@ -1,14 +1,21 @@
 // load: bump.js
 // load: LinearMath/Vector3.js
 // load: BulletCollision/CollisionShapes/CollisionShape.js
-
-// run: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
+// load: BulletCollision/BroadphaseCollision/BroadphaseProxy.js
 
 (function( window, Bump ) {
-  var EPSILON = Math.pow( 2, -52 ),
-      tmpV1 = Bump.Vector3.create(),
-      tmpV2 = Bump.Vector3.create(),
-      tmpV3 = Bump.Vector3.create();
+  var EPSILON = Math.pow( 2, -52 );
+  var tmpV1 = Bump.Vector3.create();
+  var tmpV2 = Bump.Vector3.create();
+  var tmpV3 = Bump.Vector3.create();
+
+  var SPHERE_SHAPE_PROXYTYPE             = Bump.BroadphaseNativeTypes.SPHERE_SHAPE_PROXYTYPE;
+  var BOX_SHAPE_PROXYTYPE                = Bump.BroadphaseNativeTypes.BOX_SHAPE_PROXYTYPE;
+  var TRIANGLE_SHAPE_PROXYTYPE           = Bump.BroadphaseNativeTypes.TRIANGLE_SHAPE_PROXYTYPE;
+  var CYLINDER_SHAPE_PROXYTYPE           = Bump.BroadphaseNativeTypes.CYLINDER_SHAPE_PROXYTYPE;
+  var CAPSULE_SHAPE_PROXYTYPE            = Bump.BroadphaseNativeTypes.CAPSULE_SHAPE_PROXYTYPE;
+  var CONVEX_POINT_CLOUD_SHAPE_PROXYTYPE = Bump.BroadphaseNativeTypes.CONVEX_POINT_CLOUD_SHAPE_PROXYTYPE;
+  var CONVEX_HULL_SHAPE_PROXYTYPE        = Bump.BroadphaseNativeTypes.CONVEX_HULL_SHAPE_PROXYTYPE;
 
   Bump.ConvexShape = Bump.type({
     parent: Bump.CollisionShape,
@@ -19,20 +26,24 @@
 
     members: {
       clone: function( dest ) {
-        dest = dest || Bump.ConvexShape.create();
+        if ( !dest ) { dest = Bump.ConvexShape.create(); }
         return this._super( dest );
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      // - `tmpV2`
       localGetSupportVertexWithoutMarginNonVirtual: function( localDir, dest ) {
-        dest = dest || Bump.Vector3.create();
+        if ( !dest ) { dest = Bump.Vector3.create(); }
 
         var halfExtents, halfHeight, radius, points, numPoints;
 
         switch ( this.shapeType ) {
-        case Bump.BroadphaseNativeTypes.SPHERE_SHAPE_PROXYTYPE:
-            return dest.setValue( 0, 0, 0 );
+        case SPHERE_SHAPE_PROXYTYPE:
+          return dest.setValue( 0, 0, 0 );
 
-        case Bump.BroadphaseNativeTypes.BOX_SHAPE_PROXYTYPE:
+        case BOX_SHAPE_PROXYTYPE:
           var convexShape = this;
           halfExtents = convexShape.getImplicitShapeDimensions();
 
@@ -42,17 +53,26 @@
             Bump.Fsels( localDir.z, halfExtents.z, -halfExtents.z )
           );
 
-        case Bump.BroadphaseNativeTypes.TRIANGLE_SHAPE_PROXYTYPE:
+        case TRIANGLE_SHAPE_PROXYTYPE:
           var triangleShape = this;
-          var dir = localDir.clone();
-          var dots = Bump.Vector3.create(
+          var dir = tmpV1.assign( localDir );
+          var dots = tmpV2.setValue(
             dir.dot( triangleShape.vertices10 ),
             dir.dot( triangleShape.vertices11 ),
             dir.dot( triangleShape.vertices12 )
           );
-          return dest.assign( triangleShape[ 'vertices1' + dots.maxAxis() ] );
 
-    //     case Bump.BroadphaseNativeTypes.CYLINDER_SHAPE_PROXYTYPE:
+          switch ( dots.maxAxis() ) {
+          case 0:
+            return dest.assign( triangleShape.vertices10 );
+          case 1:
+            return dest.assign( triangleShape.vertices11 );
+          default:
+            return dest.assign( triangleShape.vertices12 );
+          }
+          break;
+
+    //     case CYLINDER_SHAPE_PROXYTYPE:
     //       var cylShape = this;
     //       // mapping of halfextents/dimension onto radius/height depends on how
     //       // cylinder local orientation is (upAxis)
@@ -107,7 +127,7 @@
     //       tmp[ZZ] = 0;
     //       return tmp.clone();
 
-    //     case Bump.BroadphaseNativeTypes.CAPSULE_SHAPE_PROXYTYPE:
+    //     case CAPSULE_SHAPE_PROXYTYPE:
     //       var vec0 = localDir.clone();
 
     //       var capsuleShape = this;
@@ -158,13 +178,13 @@
     //       }
     //       return supVec.clone();
 
-    //     case Bump.BroadphaseNativeTypes.CONVEX_POINT_CLOUD_SHAPE_PROXYTYPE:
+    //     case CONVEX_POINT_CLOUD_SHAPE_PROXYTYPE:
     //       var convexPointCloudShape = this;
     //       points = convexPointCloudShape.getUnscaledPoints();
     //       numPoints = convexPointCloudShape.getNumPoints();
     //       return Bump.convexHullSupport( localDir, points, numPoints, convexPointCloudShape.getLocalScalingNV() );
 
-    //     case Bump.BroadphaseNativeTypes.CONVEX_HULL_SHAPE_PROXYTYPE:
+    //     case CONVEX_HULL_SHAPE_PROXYTYPE:
     //       var convexHullShape = this;
     //       points = convexHullShape.getUnscaledPoints();
     //       numPoints = convexHullShape.getNumPoints();
@@ -179,10 +199,14 @@
         return dest.setValue( 0, 0, 0 );
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      // - `tmpV2`
       localGetSupportVertexNonVirtual: function( localDir, dest ) {
-        dest = dest || Bump.Vector3.create();
+        if ( !dest ) { dest = Bump.Vector3.create(); }
 
-        var localDirNorm = localDir.clone( tmpV1 );
+        var localDirNorm = tmpV1.assign( localDir );
         if ( localDirNorm.length2() < EPSILON * EPSILON ) {
           localDirNorm.setValue( -1, -1, -1 );
         }
@@ -194,28 +218,28 @@
 
       getMarginNonVirtual: function() {
         switch ( this.shapeType ) {
-        case Bump.BroadphaseNativeTypes.SPHERE_SHAPE_PROXYTYPE:
+        case SPHERE_SHAPE_PROXYTYPE:
           var sphereShape = this;
           return sphereShape.getRadius();
 
-        case Bump.BroadphaseNativeTypes.BOX_SHAPE_PROXYTYPE:
+        case BOX_SHAPE_PROXYTYPE:
           var convexShape = this;
           return convexShape.getMarginNV();
 
-        case Bump.BroadphaseNativeTypes.TRIANGLE_SHAPE_PROXYTYPE:
+        case TRIANGLE_SHAPE_PROXYTYPE:
           var triangleShape = this;
           return triangleShape.getMarginNV();
 
-        case Bump.BroadphaseNativeTypes.CYLINDER_SHAPE_PROXYTYPE:
+        case CYLINDER_SHAPE_PROXYTYPE:
           var cylShape = this;
           return cylShape.getMarginNV();
 
-        case Bump.BroadphaseNativeTypes.CAPSULE_SHAPE_PROXYTYPE:
+        case CAPSULE_SHAPE_PROXYTYPE:
           var capsuleShape = this;
           return capsuleShape.getMarginNV();
 
-        case Bump.BroadphaseNativeTypes.CONVEX_POINT_CLOUD_SHAPE_PROXYTYPE:
-        case Bump.BroadphaseNativeTypes.CONVEX_HULL_SHAPE_PROXYTYPE:
+        case CONVEX_POINT_CLOUD_SHAPE_PROXYTYPE:
+        case CONVEX_HULL_SHAPE_PROXYTYPE:
           var convexHullShape = this;
           return convexHullShape.getMarginNV();
 
@@ -228,11 +252,16 @@
         return 0;
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
+      // - `tmpV2`
+      // - `tmpV3`
       getAabbNonVirtual: function( t, aabbMin, aabbMax ) {
         var margin, center, extent;
 
         switch ( this.shapeType ) {
-        case Bump.BroadphaseNativeTypes.SPHERE_SHAPE_PROXYTYPE:
+        case SPHERE_SHAPE_PROXYTYPE:
           var sphereShape = this;
           var radius = sphereShape.getImplicitShapeDimensions( tmpV1 ).x;
           margin = radius + sphereShape.getMarginNonVirtual();
@@ -242,8 +271,8 @@
           aabbMax = center.add( extent, aabbMax );
           break;
 
-        case Bump.BroadphaseNativeTypes.CYLINDER_SHAPE_PROXYTYPE:
-        case Bump.BroadphaseNativeTypes.BOX_SHAPE_PROXYTYPE:
+        case CYLINDER_SHAPE_PROXYTYPE:
+        case BOX_SHAPE_PROXYTYPE:
           var convexShape = this;
           margin = convexShape.getMarginNonVirtual();
           var halfExtents = convexShape.getImplicitShapeDimensions( tmpV1 );
@@ -260,7 +289,7 @@
           aabbMax = center.add( extent, aabbMax );
           break;
 
-    //     case Bump.BroadphaseNativeTypes.TRIANGLE_SHAPE_PROXYTYPE:
+    //     case TRIANGLE_SHAPE_PROXYTYPE:
     //       var triangleShape = this;
     //       btScalar margin = triangleShape.getMarginNonVirtual();
     //       for ( var i = 0; i < 3; ++i ) {
@@ -277,7 +306,7 @@
     //       }
     //       break;
 
-    //     case Bump.BroadphaseNativeTypes.CAPSULE_SHAPE_PROXYTYPE:
+    //     case CAPSULE_SHAPE_PROXYTYPE:
     //       btCapsuleShape* capsuleShape = (btCapsuleShape*)this;
     //       btVector3 halfExtents(capsuleShape->getRadius(),capsuleShape->getRadius(),capsuleShape->getRadius());
     //       int upAxis = capsuleShape->getUpAxis();
@@ -290,8 +319,8 @@
     //       aabbMax = center + extent;
     //       break;
 
-    //     case Bump.BroadphaseNativeTypes.CONVEX_POINT_CLOUD_SHAPE_PROXYTYPE:
-    //     case Bump.BroadphaseNativeTypes.CONVEX_HULL_SHAPE_PROXYTYPE:
+    //     case CONVEX_POINT_CLOUD_SHAPE_PROXYTYPE:
+    //     case CONVEX_HULL_SHAPE_PROXYTYPE:
     //       btPolyhedralConvexAabbCachingShape* convexHullShape = (btPolyhedralConvexAabbCachingShape*)this;
     //       btScalar margin = convexHullShape->getMarginNonVirtual();
     //       convexHullShape->getNonvirtualAabb (t, aabbMin, aabbMax, margin);
@@ -304,6 +333,9 @@
         }
       },
 
+      // Uses the following temporary variables:
+      //
+      // - `tmpV1`
       project: function( trans, dir, minMax ) {
         // `dir * trans.getBasis();`
         var localAxis = trans.basis.vectorMultiply( dir, tmpV1 );
