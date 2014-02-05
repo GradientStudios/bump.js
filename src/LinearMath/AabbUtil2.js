@@ -66,17 +66,17 @@
   AabbUtil2.RayAabb2 = function( rayFrom, rayInvDirection, raySign, bounds, tmin, lambda_min, lambda_max ) {
     var tmax, tymin, tymax, tzmin, tzmax;
 
-    tmin.tmin = ( bounds[ raySign[0] ].x - rayFrom.x ) * rayInvDirection.x;
+    tmin.value = ( bounds[ raySign[0] ].x - rayFrom.x ) * rayInvDirection.x;
     tmax = ( bounds[ 1 - raySign[0] ].x - rayFrom.x ) * rayInvDirection.x;
     tymin = ( bounds[ raySign[1] ].y - rayFrom.y ) * rayInvDirection.y;
     tymax = ( bounds[ 1 - raySign[1] ].y - rayFrom.y ) * rayInvDirection.y;
 
-    if ( ( tmin.tmin > tymax ) || ( tymin > tmax ) ) {
+    if ( ( tmin.value > tymax ) || ( tymin > tmax ) ) {
       return false;
     }
 
-    if ( tymin > tmin.tmin ) {
-      tmin.tmin = tymin;
+    if ( tymin > tmin.value ) {
+      tmin.value = tymin;
     }
 
     if ( tymax < tmax ) {
@@ -86,19 +86,19 @@
     tzmin = ( bounds[ raySign[2] ].z - rayFrom.z ) * rayInvDirection.z;
     tzmax = ( bounds[ 1 - raySign[2] ].z - rayFrom.z ) * rayInvDirection.z;
 
-    if ( ( tmin.tmin > tzmax ) || ( tzmin > tmax ) ) {
+    if ( ( tmin.value > tzmax ) || ( tzmin > tmax ) ) {
       return false;
     }
 
-    if ( tzmin > tmin.tmin ) {
-      tmin.tmin = tzmin;
+    if ( tzmin > tmin.value ) {
+      tmin.value = tzmin;
     }
 
     if ( tzmax < tmax ) {
       tmax = tzmax;
     }
 
-    return ( ( tmin.tmin < lambda_max ) && ( tmax > lambda_min ) );
+    return ( tmin.value < lambda_max ) && ( tmax > lambda_min );
   };
 
   AabbUtil2.RayAabb = function( rayFrom, rayTo, aabbMin, aabbMax, param, normal ) {

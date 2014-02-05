@@ -94,7 +94,7 @@ test( 'test skipped', function() {
       [ 'rayFromTrans',        Bump.Transform ],
       [ 'rayToTrans',          Bump.Transform ],
       [ 'rayDirectionInverse', Bump.Vector3   ],
-      [ 'signs',               Bump.Vector3   ],
+      [ 'signs',               'array'   ],
       [ 'lambda_max',          'number'       ]
     ];
 

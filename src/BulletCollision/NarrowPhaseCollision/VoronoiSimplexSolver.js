@@ -3,6 +3,26 @@
 // run: LinearMath/Vector3.js
 
 (function( window, Bump ) {
+  var createGetter = function( Type, pool ) {
+    return function() {
+      return pool.pop() || Type.create();
+    };
+  };
+
+  var createDeller = function( pool ) {
+    return function() {
+      for ( var i = 0; i < arguments.length; ++i ) {
+        pool.push( arguments[i] );
+      }
+    };
+  };
+
+  // memory pool for recycling Vector3 objects
+  var vector3Pool = [];
+
+  var getVector3 = createGetter( Bump.Vector3, vector3Pool );
+  var delVector3 = createDeller( vector3Pool );
+
   var VORONOI_SIMPLEX_MAX_VERTS = 5,
       VORONOI_DEFAULT_EQUAL_VERTEX_THRESHOLD = 0.0001,
       VERTA = 0,
@@ -105,13 +125,14 @@
         this.degenerate = false;
         this.setBarycentricCoordinates();
         this.usedVertices.reset();
+        return this;
       },
 
       isValid: function() {
-        var valid = ( ( this.barycentricCoords[0] >= 0 ) &&
-                      ( this.barycentricCoords[1] >= 0 ) &&
-                      ( this.barycentricCoords[2] >= 0 ) &&
-                      ( this.barycentricCoords[3] >= 0 ) );
+        var valid = (( this.barycentricCoords[0] >= 0 ) &&
+                     ( this.barycentricCoords[1] >= 0 ) &&
+                     ( this.barycentricCoords[2] >= 0 ) &&
+                     ( this.barycentricCoords[3] >= 0 ));
 
         return valid;
       },
@@ -129,6 +150,17 @@
       }
     }
   });
+
+
+  // memory pool for recycling SubSimplexClosestResult objects
+  var subSimplexClosestResultPool = [];
+
+  var getSubSimplexClosestResult = createGetter(
+    Bump.SubSimplexClosestResult,
+    subSimplexClosestResultPool
+  );
+  var delSubSimplexClosestResult = createDeller( subSimplexClosestResultPool );
+
 
   Bump.VoronoiSimplexSolver = Bump.type({
     init: function VoronoiSimplexSolver() {
@@ -185,7 +217,12 @@
       },
 
       updateClosestVectorAndPoints: function() {
-        var tmpV1, tmpV2, p, a, b, c, d;
+        var tmpV1 = getVector3().setZero();
+        var tmpV2 = getVector3().setZero();
+        var tmpV3 = getVector3().setZero();
+        var tmpV4 = getVector3().setZero();
+        var p = getVector3().setZero();
+        var a, b, c, d;
 
         if ( this.needsUpdate ) {
           this.cachedBC.reset();
@@ -198,11 +235,9 @@
             break;
 
           case 1:
-            tmpV1 = Bump.Vector3.create();
-
             this.cachedP1.assign( this.simplexPointsP[0] );
             this.cachedP2.assign( this.simplexPointsQ[0] );
-            this.cachedV.assign( this.cachedP1.subtract( this.cachedP2 ) );
+            this.cachedV.assign( this.cachedP1.subtract( this.cachedP2, tmpV1 ));
             this.cachedBC.reset();
             this.cachedBC.setBarycentricCoordinates( 1, 0, 0, 0 );
             this.cachedValidClosest = this.cachedBC.isValid();
@@ -210,16 +245,13 @@
 
           // Closest point origin from line segment.
           case 2:
-            tmpV1 = Bump.Vector3.create();
+            var from = this.simplexVectorW[0];
+            var to = this.simplexVectorW[1];
+            // nearest = Bump.Vector3.create();
 
-            var from = this.simplexVectorW[0],
-                to = this.simplexVectorW[1],
-                nearest = Bump.Vector3.create();
-
-            p = Bump.Vector3.create( 0, 0, 0 );
-            var diff = p.subtract( from ),
-                v = to.subtract( from ),
-                t = v.dot( diff );
+            var diff = p.subtract( from, tmpV3 );
+            var v = to.subtract( from, tmpV4 );
+            var t = v.dot( diff );
 
             if ( t > 0 ) {
               var dotVV = v.dot( v );
@@ -240,7 +272,8 @@
               this.cachedBC.usedVertices.usedVertexA = true;
             }
             this.cachedBC.setBarycentricCoordinates( 1 - t, t );
-            nearest.assign( from.add( v.multiplyScalar( t, tmpV1 ), tmpV1 ) );
+            // !!!: ASD: commented this out since it is apparently never used
+            // nearest.assign( from.add( v.multiplyScalar( t, tmpV1 ), tmpV1 ) );
 
             this.cachedP1.assign( this.simplexPointsP[0].add( this.simplexPointsP[1].subtract( this.simplexPointsP[0], tmpV1 ).multiplyScalar( t, tmpV1 ), tmpV1 ) );
             this.cachedP2.assign( this.simplexPointsQ[0].add( this.simplexPointsQ[1].subtract( this.simplexPointsQ[0], tmpV1 ).multiplyScalar( t, tmpV1 ), tmpV1 ) );
@@ -253,11 +286,6 @@
 
           // Closest point origin from triangle.
           case 3:
-            tmpV1 = Bump.Vector3.create();
-            tmpV2 = Bump.Vector3.create();
-
-            p = Bump.Vector3.create( 0, 0, 0 );
-
             a = this.simplexVectorW[0];
             b = this.simplexVectorW[1];
             c = this.simplexVectorW[2];
@@ -283,11 +311,6 @@
             break;
 
           case 4:
-            tmpV1 = Bump.Vector3.create();
-            tmpV2 = Bump.Vector3.create();
-
-            p = Bump.Vector3.create( 0, 0, 0 );
-
             a = this.simplexVectorW[0];
             b = this.simplexVectorW[1];
             c = this.simplexVectorW[2];
@@ -310,7 +333,7 @@
                   .add( this.simplexPointsQ[3].multiplyScalar( this.cachedBC.barycentricCoords[3], tmpV1 ), tmpV2 )
               );
 
-              this.cachedV.assign( this.cachedP1.subtract( this.cachedP2 ) );
+              this.cachedV.assign( this.cachedP1.subtract( this.cachedP2, tmpV1 ) );
               this.reduceVertices( this.cachedBC.usedVertices );
             } else {
               //     console.log( 'sub distance got penetration' );
@@ -335,16 +358,22 @@
           }
         }
 
+        delVector3( tmpV1 );
+        delVector3( tmpV2 );
+        delVector3( tmpV3 );
+        delVector3( tmpV4 );
+        delVector3( p );
+
         return this.cachedValidClosest;
 
       },
 
       closestPtPointTetrahedron: function( p, a, b, c, d, finalResult ) {
-        var tempResult = Bump.SubSimplexClosestResult.create();
-
         // Start out assuming point inside all halfspaces, so closest to itself.
         finalResult.closestPointOnSimplex.assign( p );
-        finalResult.usedVertices.reset();
+        // ASD: removed reset() since this is immediately undone by setting
+        // all the usedVertex values to true
+        // finalResult.usedVertices.reset();
         finalResult.usedVertices.usedVertexA = true;
         finalResult.usedVertices.usedVertexB = true;
         finalResult.usedVertices.usedVertexC = true;
@@ -364,9 +393,11 @@
           return false;
         }
 
-        var tmpV1 = Bump.Vector3.create(),
-            tmpV2 = Bump.Vector3.create(),
-            tmpV3 = Bump.Vector3.create();
+        // get some recycled temporaries
+        var tempResult = getSubSimplexClosestResult().reset();
+        var tmpV1 = getVector3().setZero();
+        var tmpV2 = getVector3().setZero();
+        var tmpV3 = getVector3().setZero();
 
         var q, sqDist, bestSqDist = Infinity;
         // If point outside face abc then compute closest point on abc
@@ -453,7 +484,7 @@
           q = tempResult.closestPointOnSimplex.clone( tmpV1 );
 
           // Convert result bitmask!
-          sqDist = q.subtract( p ).dot( q.subtract( p ) );
+          sqDist = q.subtract( p, tmpV2 ).dot( q.subtract( p, tmpV3 ) );
           if ( sqDist < bestSqDist ) {
             bestSqDist = sqDist;
             finalResult.closestPointOnSimplex.assign( q );
@@ -473,27 +504,34 @@
           }
         }
 
+        // ASD: commented out because unnecessary
         // Help! We ended up full!
-        if ( finalResult.usedVertices.usedVertexA &&
-             finalResult.usedVertices.usedVertexB &&
-             finalResult.usedVertices.usedVertexC &&
-             finalResult.usedVertices.usedVertexD )
-        {
-          return true;
-        }
+        // if ( finalResult.usedVertices.usedVertexA &&
+        //      finalResult.usedVertices.usedVertexB &&
+        //      finalResult.usedVertices.usedVertexC &&
+        //      finalResult.usedVertices.usedVertexD )
+        // {
+        //   return true;
+        // }
+
+        // deallocate the temporaries
+        delSubSimplexClosestResult( tempResult );
+        delVector3( tmpV1, tmpV2, tmpV3 );
 
         return true;
       },
 
       pointOutsideOfPlane: function( p, a, b, c, d ) {
-        var tmpV1 = Bump.Vector3.create(),
-            tmpV2 = Bump.Vector3.create();
+        var tmpV1 = getVector3();
+        var tmpV2 = getVector3();
 
         // `normal` uses `tmpV2`.
         var normal = b.subtract( a, tmpV1 ).cross( c.subtract( a, tmpV2 ), tmpV2 );
 
         var signp = p.subtract( a, tmpV1 ).dot( normal ), // [AP AB AC]
             signd = d.subtract( a, tmpV1 ).dot( normal ); // [AD AB AC]
+
+        delVector3( tmpV1, tmpV2 );
 
         if ( signd * signd < ( 1e-8 * 1e-8 ) ) {
           return -1;
@@ -507,9 +545,13 @@
 
         result.usedVertices.reset();
 
-        var tmpV1 = Bump.Vector3.create(),
-            ab = b.subtract( a ),
-            ac = c.subtract( a );
+        var tmpV1 = getVector3();
+        var tmpV2 = getVector3();
+        var tmpVab = getVector3();
+        var tmpVac = getVector3();
+
+        var ab = b.subtract( a, tmpVab );
+        var ac = c.subtract( a, tmpVac );
 
         // Check if P in vertex region outside A.
         var ap = p.subtract( a, tmpV1 ),
@@ -519,6 +561,8 @@
           result.closestPointOnSimplex.assign( a );
           result.usedVertices.usedVertexA = true;
           result.setBarycentricCoordinates( 1, 0, 0 );
+
+          delVector3( tmpV1, tmpV2, tmpVab, tmpVac );
           return true;
         }
 
@@ -531,6 +575,7 @@
           result.usedVertices.usedVertexB = true;
           result.setBarycentricCoordinates( 0, 1, 0 );
 
+          delVector3( tmpV1, tmpV2, tmpVab, tmpVac );
           return true;
         }
 
@@ -545,6 +590,8 @@
           result.usedVertices.usedVertexA = true;
           result.usedVertices.usedVertexB = true;
           result.setBarycentricCoordinates( 1 - v, v, 0 );
+
+          delVector3( tmpV1, tmpV2, tmpVab, tmpVac );
           return true;
         }
 
@@ -556,6 +603,8 @@
           result.closestPointOnSimplex.assign( c );
           result.usedVertices.usedVertexC = true;
           result.setBarycentricCoordinates( 0, 0, 1 );
+
+          delVector3( tmpV1, tmpV2, tmpVab, tmpVac );
           return true;
         }
 
@@ -568,6 +617,8 @@
           result.usedVertices.usedVertexA = true;
           result.usedVertices.usedVertexC = true;
           result.setBarycentricCoordinates( 1 - w, 0, w );
+
+          delVector3( tmpV1, tmpV2, tmpVab, tmpVac );
           return true;
         }
 
@@ -585,6 +636,8 @@
           result.usedVertices.usedVertexB = true;
           result.usedVertices.usedVertexC = true;
           result.setBarycentricCoordinates( 0, 1 - w, w );
+
+          delVector3( tmpV1, tmpV2, tmpVab, tmpVac );
           return true;
         }
 
@@ -594,7 +647,6 @@
         v = vb * denom;
         w = vc * denom;
 
-        var tmpV2 = Bump.Vector3.create();
         result.closestPointOnSimplex.assign(
           a
             .add( ab.multiplyScalar( v, tmpV2 ), tmpV1 )
@@ -605,6 +657,7 @@
         result.usedVertices.usedVertexC = true;
         result.setBarycentricCoordinates( 1 - v - w, v, w );
 
+        delVector3( tmpV1, tmpV2, tmpVab, tmpVac );
         return true;
       },
 

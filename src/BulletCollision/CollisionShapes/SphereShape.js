@@ -6,6 +6,8 @@
 
 (function( window, Bump ) {
 
+  var tmpV1 = Bump.Vector3.create();
+
   Bump.SphereShape = Bump.type({
     parent: Bump.ConvexInternalShape,
 
@@ -19,6 +21,24 @@
     },
 
     members: {
+      // !!!: added for fast, easy initialization of recycled SphereShapes
+      set: function( other ) {
+        // !!!: unroll the calls to super for performance
+        // from CollisionShape:
+        this.userPointer = other.userPointer;
+
+        // nothing from ConvexShape
+
+        // from ConvexInternalShape:
+        this.localScaling.assign( other.localScaling );
+
+        this.shapeType = other.shapeType;
+        this.implicitShapeDimensions.x = other.implicitShapeDimensions.x;
+        this.collisionMargin = other.collisionMargin;
+
+        return this;
+      },
+
       clone: function( dest ) {
         dest = dest || Bump.SphereShape.create( this.collisionMargin );
 
@@ -32,12 +52,12 @@
         var supVertex = dest;
         supVertex = this.localGetSupportingVertexWithoutMargin( vec, supVertex );
 
-        var vecnorm = vec.clone();
+        var vecnorm = tmpV1.assign( vec );
         if ( vecnorm.length2() < Bump.SIMD_EPSILON * Bump.SIMD_EPSILON ) {
           vecnorm.setValue( -1, -1, -1 );
         }
         vecnorm.normalize();
-        supVertex.addSelf( vecnorm.multiplyScalar( this.getMargin() ) );
+        supVertex.addSelf( vecnorm.multiplyScalar( this.getMargin(), tmpV1 ) );
         return supVertex;
       },
 
